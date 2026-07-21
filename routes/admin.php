@@ -99,10 +99,11 @@ Route::controller(UpdateController::class)->group(function () {
 Route::get('/admin', [AdminController::class, 'admin_dashboard'])->name('admin.dashboard')->middleware(['auth', 'admin', 'prevent-back-history']);
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-back-history']], function () {
 
-    // cyber sources
-    Route::controller(CybersourceSettingController::class)->group(function () {
-        Route::get('/cybersource-configuration', 'configuration')->name('cybersource_configuration');
-    });
+    // Cybersource\CybersourceSettingController does not exist -- add-on not installed, disabled 2026-07-21
+    // // cyber sources
+    // Route::controller(CybersourceSettingController::class)->group(function () {
+    // Route::get('/cybersource-configuration', 'configuration')->name('cybersource_configuration');
+    // });
     
     // category
     Route::resource('categories', CategoryController::class);
