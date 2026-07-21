@@ -1,0 +1,74 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Laravel environment and local keys
+.env
+.env.*
+!.env.example
+/storage/*.key
+/auth.json
+
+# Laravel runtime storage
+/storage/app/public/*
+!/storage/app/public/.gitignore
+/storage/debugbar/
+/storage/framework/cache/*
+!/storage/framework/cache/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/testing/*
+!/storage/framework/testing/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+/storage/logs/*
+!/storage/logs/.gitignore
+
+# Laravel generated/cache files
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+/bootstrap/compiled.php
+/.phpunit.result.cache
+/public/storage
+/public/hot
+
+# User uploads and generated public files (keep the app's shipped assets/addons)
+/public/uploads/*
+!/public/uploads/.gitignore
+/public/uploads.zip
+/public/app-translations
+/public/all
+/public/logs/*
+!/public/logs/.gitignore
+
+# Local dev/demo data dumps — not app code, don't ship in the image
+/shop.sql
+/public/demo.sql
+/sqlupdates/
+/temp/
+
+# IDE helper (regenerate with `php artisan ide-helper:generate`)
+/_ide_helper.php
+
+# Packaged updates from the vendor's update mechanism
+/updates/
+updates.zip
+ecommerce.zip
+install.zip
+
+# OS and editor files
+.DS_Store
+*.swp
+*.swo
+/.idea/
+/.vscode/
+/.vagrant/
+/.fleet/
+/nbproject/
+/nbproject/private/
+Homestead.json
+Homestead.yaml
+
+# Package manager logs
+npm-debug.log*
+yarn-error.log*
