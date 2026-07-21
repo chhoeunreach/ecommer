@@ -24,7 +24,11 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN printf "# Managed by Kubernetes env vars - see deployment-active-commerce.yaml. Do not put secrets here.\n" > /var/www/.env && \
     chown www-data:www-data /var/www/.env && \
     chown -R www-data:www-data storage bootstrap/cache public/uploads public/logs && \
-    rm -f /etc/nginx/sites-enabled/*
+    rm -f /etc/nginx/sites-enabled/*; \
+    php artisan view:cache 2>/dev/null; \
+    php artisan event:cache 2>/dev/null; \
+    rm -rf /var/www/storage/framework/cache/data 2>/dev/null; \
+    true
 
 COPY docker/php/start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
