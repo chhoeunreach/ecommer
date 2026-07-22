@@ -64,7 +64,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: active_commerce_mysql
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     ports:
       - "3307:3306"
     environment:

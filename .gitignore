@@ -46,6 +46,7 @@
 /public/demo.sql
 /sqlupdates/
 /temp/
+/docker/mysql/init/
 
 # IDE helper (regenerate with `php artisan ide-helper:generate`)
 /_ide_helper.php
