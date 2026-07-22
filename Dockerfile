@@ -26,6 +26,7 @@ RUN printf "# Managed by Kubernetes env vars - see deployment-active-commerce.ya
     chown www-data:www-data /var/www/.env && \
     chown -R www-data:www-data storage bootstrap/cache public/uploads public/logs && \
     chown -R www-data:www-data app/Providers app/Http/Controllers public resources/views && \
+    chown www-data:www-data /var/www && \
     rm -f /etc/nginx/sites-enabled/*; \
     php artisan view:cache 2>/dev/null; \
     php artisan event:cache 2>/dev/null; \
