@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./.env:/var/www/.env:ro
+      - ./.env:/var/www/.env
     ports:
       - "8082:80"
     environment:
@@ -37,7 +37,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./.env:/var/www/.env:ro
+      - ./.env:/var/www/.env
     command: php artisan queue:work redis --queue=default --sleep=3 --tries=3 --timeout=900
     environment:
       DB_CONNECTION: mysql
