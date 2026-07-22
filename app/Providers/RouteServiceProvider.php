@@ -40,51 +40,61 @@ class RouteServiceProvider extends ServiceProvider
    */
   public function map()
   {
-    // The following route groups reference controllers that don't exist
-    // anywhere in this codebase (checked via class_exists() against every
-    // App\Http\Controllers\* reference in routes/*.php) -- these are
-    // CodeCanyon paid add-on modules that were never purchased/installed
-    // for this store, not a packaging bug. RouteServiceProvider.txt (the
-    // "fully installed" reference this file was copied from) enables all
-    // of them unconditionally, which assumes every add-on is present.
-    // Left disabled 2026-07-21; if an add-on is purchased later, its
-    // controllers need to be added to app/Http/Controllers before
-    // re-enabling the matching line here.
-    // $this->mapAffiliateRoutes();       -- AffiliateController missing
-    // $this->mapClubPointsRoutes();      -- ClubPointController missing
-    // $this->mapOtpRoutes();             -- OTP*/Sms*Controller missing
-    // $this->mapOfflinePaymentRoutes();  -- OfflinePayoutMethodController etc missing
-    // $this->mapAfricanPaymentGatewayRoutes(); -- AfricanPaymentGatewayController etc missing
-    // $this->mapPaytmRoutes();           -- Paytm/Toyyibpay/Myfatoorah/Khalti/Phonepe Controllers missing
-    // $this->mapPosRoutes();             -- PosController missing
-    // $this->mapSellerPackageRoutes();   -- SellerPackageController missing
-    // $this->mapDeliveryBoyRoutes();     -- DeliveryBoyController missing
-    // $this->mapAuctionRoutes();         -- AuctionProduct*Controller missing
-    // $this->mapWholesaleRoutes();       -- WholesaleProductController missing
-    // $this->mapPreorderRoutes();        -- Preorder\*Controller missing (whole module)
-    // $this->mapCybersourceRoutes();     -- Cybersource\CybersourceSettingController missing
-    // $this->mapGstRoutes();             -- GSTController missing
-    // $this->mapShiprocketRoutes();      -- ShiprocketController missing
-    // $this->mapSteadfastRoutes();       -- SteadfastController missing
-    // $this->mapPathaoRoutes();          -- PathaoController missing
-    // $this->mapKnetRoutes();            -- Payment\KnetController missing
-    // $this->mapUddoktapayRoutes();      -- Payment\UddoktapayController missing
-    // $this->mapRedxRoutes();            -- RedxController missing
-    // $this->mapRefundRoutes();          -- RefundReason/RefundRequestController missing
+    //$this->mapApiRoutes();
 
-    $this->mapApiRoutes();
+    //$this->mapApiSellerRoutes();
 
-    $this->mapApiSellerRoutes();
+    //$this->mapAdminRoutes();
 
-    $this->mapAdminRoutes();
+    //$this->mapSellerRoutes();
 
-    $this->mapSellerRoutes();
+    //$this->mapAffiliateRoutes();
 
-    $this->mapWebRoutes();
+    //$this->mapRefundRoutes();
 
-    // $this->mapInstallRoutes();
+    //$this->mapClubPointsRoutes();
 
-    // $this->mapUpdateRoutes();
+    //$this->mapOtpRoutes();
+
+    //$this->mapOfflinePaymentRoutes();
+
+    //$this->mapAfricanPaymentGatewayRoutes();
+
+    //$this->mapPaytmRoutes();
+
+    //$this->mapPosRoutes();
+
+    //$this->mapSellerPackageRoutes();
+
+    //$this->mapDeliveryBoyRoutes();
+
+    //$this->mapAuctionRoutes();
+
+    //$this->mapWholesaleRoutes();
+
+    //$this->mapPreorderRoutes();
+
+    //$this->mapCybersourceRoutes();
+
+    //$this->mapGstRoutes();
+
+    //$this->mapShiprocketRoutes();
+
+    //$this->mapSteadfastRoutes();
+
+    //$this->mapPathaoRoutes();
+
+    //$this->mapKnetRoutes();
+
+    //$this->mapUddoktapayRoutes();
+
+    //$this->mapRedxRoutes();
+
+    //$this->mapWebRoutes();
+
+    $this->mapInstallRoutes();
+
+    //$this->mapUpdateRoutes();
   }
 
   /**
@@ -370,7 +380,6 @@ class RouteServiceProvider extends ServiceProvider
        ->group(base_path('routes/api.php'));
   }
 
-
   /**
    * Define the "b2b" routes for the application.
    *
@@ -397,35 +406,35 @@ class RouteServiceProvider extends ServiceProvider
         });
     }
 
-  /**
-   * Define the "GST System" routes for the application.
-   *
-   * These routes all receive session state, CSRF protection, etc.
-   *
-   * @return void
-   */
-  protected function mapGstRoutes()
-  {
-    Route::middleware('web')
-       ->namespace($this->namespace)
-       ->group(base_path('routes/gst.php'));
-  }
+     /**
+     * Define the "GST System" routes for the application.
+     *
+     * These routes all receive session state, CSRF protection, etc.
+     *
+     * @return void
+     */
+    protected function mapGstRoutes()
+    {
+      Route::middleware('web')
+        ->namespace($this->namespace)
+        ->group(base_path('routes/gst.php'));
+    }
 
-  /**
-   * Define the "Shiprocket System" routes for the application.
-   *
-   * These routes all receive session state, CSRF protection, etc.
-   *
-   * @return void
-   */
-  protected function mapShiprocketRoutes()
-  {
-    Route::middleware('web')
-       ->namespace($this->namespace)
-       ->group(base_path('routes/shiprocket.php'));
-  }
+    /**
+     * Define the "Shiprocket System" routes for the application.
+     *
+     * These routes all receive session state, CSRF protection, etc.
+     *
+     * @return void
+     */
+    protected function mapShiprocketRoutes()
+    {
+      Route::middleware('web')
+        ->namespace($this->namespace)
+        ->group(base_path('routes/shiprocket.php'));
+    }
 
-  /**
+    /**
    * Define the "Steadfast System" routes for the application.
    *
    * These routes all receive session state, CSRF protection, etc.
@@ -467,7 +476,7 @@ class RouteServiceProvider extends ServiceProvider
        ->group(base_path('routes/knet.php'));
   }
 
-  /**
+    /**
    * Define the "Uddoktapay" routes for the application.
    *
    * These routes all receive session state, CSRF protection, etc.
@@ -480,7 +489,7 @@ class RouteServiceProvider extends ServiceProvider
        ->namespace($this->namespace)
        ->group(base_path('routes/uddoktapay.php'));
   }
-  
+
     /**
    * Define the "Redx System" routes for the application.
    *

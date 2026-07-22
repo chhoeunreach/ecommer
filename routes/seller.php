@@ -192,18 +192,17 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
 
     });
 
-    // Seller\GSTController does not exist -- add-on not installed, disabled 2026-07-21
-    // Route::controller(GSTController::class)->group(function () {
-    // Route::get('/gst-configuration', 'configure_index')->name('gst.configconfiguration');
-    // Route::post('/gst-docs-update', 'update_documents')->name('update_gst_docs');
-    // Route::get('/product-hsn-gst-assign', 'hsn_gst_assign')->name('products.hsn-gst.assigns');
-    // Route::get('/wholesale-product-hsn-gst-assign', 'wholesale_hsn_gst_assign')->name('products.wholesale-hsn-gst.assigns');
-    // Route::get('/auction-product-hsn-gst-assign', 'auction_hsn_gst_assign')->name('products.auction-hsn-gst.assigns');
-    // Route::get('/preorder-product-hsn-gst-assign', 'preorder_hsn_gst_assign')->name('products.preorder-hsn-gst.assigns');
-    // Route::post('/products-hsn-gst-single-update', 'updateHsnGstRate')->name('products.single-hsn-gst.update');
-    // Route::post('/bulk-product-gst-assign', 'updateBulkHsnGstRate')->name('products.bulk-product-gst-assign');
-    // Route::get('/products/gst/products/{type}', 'get_filter_products')->name('products.gst.filter');
-    // });
+    Route::controller(GSTController::class)->group(function () {
+        Route::get('/gst-configuration', 'configure_index')->name('gst.configconfiguration');
+        Route::post('/gst-docs-update', 'update_documents')->name('update_gst_docs');
+        Route::get('/product-hsn-gst-assign', 'hsn_gst_assign')->name('products.hsn-gst.assigns');
+        Route::get('/wholesale-product-hsn-gst-assign', 'wholesale_hsn_gst_assign')->name('products.wholesale-hsn-gst.assigns');
+        Route::get('/auction-product-hsn-gst-assign', 'auction_hsn_gst_assign')->name('products.auction-hsn-gst.assigns');
+        Route::get('/preorder-product-hsn-gst-assign', 'preorder_hsn_gst_assign')->name('products.preorder-hsn-gst.assigns');
+        Route::post('/products-hsn-gst-single-update', 'updateHsnGstRate')->name('products.single-hsn-gst.update');
+        Route::post('/bulk-product-gst-assign', 'updateBulkHsnGstRate')->name('products.bulk-product-gst-assign');
+        Route::get('/products/gst/products/{type}', 'get_filter_products')->name('products.gst.filter');
+    });
 
 });
 
