@@ -5,13 +5,14 @@ FROM php:8.2-fpm-bookworm
 # at "~8.1.0 || ~8.2.0" and fails `composer install` on 8.3.
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev nginx \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
+    && docker-php-ext-install pdo_mysql mysqli mbstring exif pcntl bcmath gd zip \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
 COPY . /var/www
 WORKDIR /var/www
@@ -24,7 +25,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN printf "# Managed by Kubernetes env vars - see deployment-active-commerce.yaml. Do not put secrets here.\n" > /var/www/.env && \
     chown www-data:www-data /var/www/.env && \
     chown -R www-data:www-data storage bootstrap/cache public/uploads public/logs && \
-    chown www-data:www-data app/Providers/RouteServiceProvider.php && \
+    chown -R www-data:www-data app/Providers app/Http/Controllers public resources/views && \
     rm -f /etc/nginx/sites-enabled/*; \
     php artisan view:cache 2>/dev/null; \
     php artisan event:cache 2>/dev/null; \
