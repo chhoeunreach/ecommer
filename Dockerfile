@@ -43,7 +43,7 @@ RUN sed -i 's/^pm.max_children = 5/pm.max_children = 16/' /usr/local/etc/php-fpm
     sed -i 's/^pm.min_spare_servers = 1/pm.min_spare_servers = 2/' /usr/local/etc/php-fpm.d/www.conf && \
     sed -i 's/^pm.max_spare_servers = 3/pm.max_spare_servers = 8/' /usr/local/etc/php-fpm.d/www.conf && \
     sed -i 's/^;pm.max_requests = 500/pm.max_requests = 500/' /usr/local/etc/php-fpm.d/www.conf && \
-    sed -i 's/^;request_terminate_timeout = 0/request_terminate_timeout = 30s/' /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i 's/^;request_terminate_timeout = 0/request_terminate_timeout = 300s/' /usr/local/etc/php-fpm.d/www.conf && \
     sed -i 's/^[[:space:]]*worker_connections 768/worker_connections 1024/' /etc/nginx/nginx.conf
 
 EXPOSE 80
