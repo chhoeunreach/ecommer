@@ -26,12 +26,17 @@ class TrustProxies extends Middleware
     /**
      * The headers that should be used to detect proxies.
      *
+     * Deliberately excludes HEADER_X_FORWARDED_PORT: ingress-nginx forwards
+     * its own internal listening port (80, plain HTTP) via X-Forwarded-Port,
+     * which reflects the ingress<->pod hop, not the real public port (443,
+     * terminated at Cloudflare and invisible to the origin). Trusting it
+     * made every generated URL come out as "https://host:80/...".
+     *
      * @var int
      */
     protected $headers =
     Request::HEADER_X_FORWARDED_FOR |
     Request::HEADER_X_FORWARDED_HOST |
-    Request::HEADER_X_FORWARDED_PORT |
     Request::HEADER_X_FORWARDED_PROTO |
     Request::HEADER_X_FORWARDED_AWS_ELB;
 }
