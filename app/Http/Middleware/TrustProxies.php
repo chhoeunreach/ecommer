@@ -10,9 +10,18 @@ class TrustProxies extends Middleware
     /**
      * The trusted proxies for this application.
      *
-     * @var array
+     * Trusts all proxies ('*') -- the pod is only reachable through the
+     * internal cluster network via nginx-ingress (itself only reachable via
+     * the Cloudflare tunnel), never directly from the internet. Without
+     * this, Laravel ignores X-Forwarded-Proto entirely and treats every
+     * request as plain HTTP even though it arrived as HTTPS, so url()/
+     * route() generate http:// links -- which browsers block as mixed
+     * content on an https:// page (breaks AJAX-loaded homepage sections,
+     * cart, search, etc).
+     *
+     * @var array|string
      */
-    protected $proxies;
+    protected $proxies = '*';
 
     /**
      * The headers that should be used to detect proxies.
