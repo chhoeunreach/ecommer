@@ -1375,7 +1375,10 @@ if (!function_exists('my_asset')) {
             return Storage::disk(config('filesystems.default'))->url($path);
         }
 
-        return app('url')->asset($path, $secure);
+        // This app's docroot is the project root, not /public (see
+        // nginx/default.conf) -- asset() must be prefixed with 'public/' to
+        // resolve correctly. Without it, every asset URL 404s.
+        return app('url')->asset('public/' . $path, $secure);
     }
 }
 
@@ -1389,7 +1392,7 @@ if (!function_exists('static_asset')) {
      */
     function static_asset($path, $secure = null)
     {
-        return app('url')->asset($path, $secure);
+        return app('url')->asset('public/' . $path, $secure);
     }
 }
 
