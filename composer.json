@@ -98,6 +98,11 @@
         "optimize-autoloader": true,
         "allow-plugins": {
             "symfony/thanks": true
+        },
+        "policy": {
+            "advisories": {
+                "ignore-id": ["PKSA-y2cr-5h3j-g3ys"]
+            }
         }
     },
     "minimum-stability": "stable",
