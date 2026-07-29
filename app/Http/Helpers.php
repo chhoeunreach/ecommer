@@ -58,6 +58,7 @@ use App\Models\CustomerPackagePayment;
 use App\Models\CustomLabel;
 use App\Models\CustomSaleAlert;
 use App\Models\ElementStyle;
+use Illuminate\Support\Facades\Schema;
 use App\Models\ElementType;
 use App\Models\EmailTemplate;
 use App\Models\FlashDealProduct;
@@ -3343,11 +3344,18 @@ if (!function_exists('get_all_sale_alert_products')) {
 //get products label
 if (!function_exists('get_custom_labels')) {
     function get_custom_labels($labels) {
+        static $hasCustomLabelStatusColumn = null;
+
         $labels_array = [];
         if($labels){
+            $hasCustomLabelStatusColumn ??= Schema::hasColumn('custom_labels', 'status');
             $labels = explode(',',$labels);
             foreach($labels as $label){
-                $label_data = CustomLabel::where('id',$label)->where('status', 1)->first();
+                $label_query = CustomLabel::where('id', $label);
+                if ($hasCustomLabelStatusColumn) {
+                    $label_query->where('status', 1);
+                }
+                $label_data = $label_query->first();
                 if($label_data){
                     $labels_array[] = $label_data;
                 }
@@ -3360,8 +3368,15 @@ if (!function_exists('get_custom_labels')) {
 //get products label
 if (!function_exists('get_custom_label')) {
     function get_custom_label($label) {
+            static $hasCustomLabelStatusColumn = null;
+
+            $hasCustomLabelStatusColumn ??= Schema::hasColumn('custom_labels', 'status');
             $label = explode(',',$label);
-            $label_data = CustomLabel::where('id',$label)->where('status', 1)->first();
+            $label_query = CustomLabel::where('id', $label);
+            if ($hasCustomLabelStatusColumn) {
+                $label_query->where('status', 1);
+            }
+            $label_data = $label_query->first();
             if($label_data){
                 $label = $label_data;
             }
