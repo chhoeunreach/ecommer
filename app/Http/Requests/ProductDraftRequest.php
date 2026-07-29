@@ -19,7 +19,19 @@ class ProductDraftRequest extends FormRequest
         $rules['category_ids'] = 'nullable|array';
 
         if ($this->filled('category_id') && $this->filled('category_ids')) {
-            $rules['category_id'] = ['in:' . implode(',', $this->category_ids)];
+            $categoryIds = $this->category_ids;
+            
+            if (is_string($categoryIds)) {
+                $categoryIds = json_decode($categoryIds, true) ?? explode(',', $categoryIds);
+            }
+            
+            $categoryIds = array_map('strval', (array) $categoryIds);
+            $categoryId  = strval($this->category_id);
+            
+            if (!empty($categoryIds) && in_array($categoryId, $categoryIds)) {
+                $rules['category_id'] = ['in:' . implode(',', $categoryIds)];
+            }
+            
         }
         $rules['unit']           = 'nullable|string|max:50';
         $rules['min_qty']        = 'nullable|numeric';

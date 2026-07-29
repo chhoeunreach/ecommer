@@ -26,12 +26,14 @@
         </a>
         @php
             $badgeIndex = 0;
+            $singleCustomLabel = get_custom_label('202');
+            $singleCustomLabelWholesale = get_custom_label('203');
         @endphp
 
         <!-- Discount percentage tag -->
         @if (discount_in_percentage($product) > 0)
-            <span class="absolute-top-left rounded rounded-4 bg-primary ml-1 mt-1 fs-11 fw-700 text-white w-35px text-center"
-                style="padding-top:2px; padding-bottom:2px; top:{{ 25 * $badgeIndex }}px;">
+            <span class="absolute-top-left rounded rounded-4 ml-1 mt-1 fs-11 fw-700 w-35px text-center"
+                style="padding-top:2px; padding-bottom:2px; top:{{ 25 * $badgeIndex }}px; background-color:{{ $singleCustomLabel->background_color }}; color:{{ $singleCustomLabel->text_color }};">
                 -{{ discount_in_percentage($product) }}%
             </span>
             @php $badgeIndex++; @endphp
@@ -39,8 +41,8 @@
 
         <!-- Wholesale tag -->
         @if ($product->wholesale_product)
-            <span class="absolute-top-left rounded rounded-4 fs-11 text-white fw-700 px-2 lh-1-8 ml-1 mt-1"
-                style="background-color:#455a64; top:{{ 25 * $badgeIndex }}px;">
+            <span class="absolute-top-left rounded rounded-4 fs-11 fw-700 px-2 lh-1-8 ml-1 mt-1"
+                style="background-color: {{ $singleCustomLabelWholesale->background_color }}; color:{{ $singleCustomLabelWholesale->text_color }}; top:{{ 25 * $badgeIndex }}px;">
                 {{ translate('Wholesale') }}
             </span>
             @php $badgeIndex++; @endphp

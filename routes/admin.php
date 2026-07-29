@@ -15,6 +15,7 @@ use App\Http\Controllers\BrandBulkUploadController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\BusinessSettingsController;
 use App\Http\Controllers\CarrierController;
+use App\Http\Controllers\CategoryBulkUploadController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\CommissionController;
@@ -43,6 +44,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PickupPointController;
+use App\Http\Controllers\PosConnectorController;
 use App\Http\Controllers\ProductBulkUploadController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductQueryController;
@@ -68,13 +70,16 @@ use App\Http\Controllers\WebsiteController;
 use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\Cybersource\CybersourceSettingController;
 use App\Http\Controllers\ElementController;
+use App\Http\Controllers\FacebookCatalogueController;
 use App\Http\Controllers\FinalUpdateController;
+use App\Http\Controllers\GoogleMerchantCenterController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MarketingController;
 use App\Http\Controllers\NewUpdateController;
 use App\Http\Controllers\PickupController;
 use App\Http\Controllers\ShippingBoxSizeController;
 use App\Http\Controllers\ShippingSystemController;
+use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -98,6 +103,16 @@ Route::controller(UpdateController::class)->group(function () {
 
 Route::get('/admin', [AdminController::class, 'admin_dashboard'])->name('admin.dashboard')->middleware(['auth', 'admin', 'prevent-back-history']);
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-back-history']], function () {
+
+    Route::controller(PosConnectorController::class)->group(function () {
+        Route::get('/pos-connector', 'index')->name('pos-connector.index');
+        Route::post('/pos-connector', 'update')->name('pos-connector.update');
+        Route::post('/pos-connector/test', 'test')->name('pos-connector.test');
+        Route::post('/pos-connector/sync/{type}', 'sync')->name('pos-connector.sync');
+        Route::post('/pos-connector/products/action', 'productsAction')->name('pos-connector.products.action');
+        Route::post('/pos-connector/orders/{orderId}/send', 'sendOrder')->name('pos-connector.orders.send');
+        Route::post('/pos-connector/orders/send-pending', 'sendPendingOrders')->name('pos-connector.orders.pending');
+    });
 
     // cyber sources
     Route::controller(CybersourceSettingController::class)->group(function () {
@@ -126,6 +141,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/categories/details/{id}', 'category_details')->name('categories.details');
         Route::post('/bulk-categories-featured', 'bulk_categories_featured')->name('bulk-categories-featured');
         Route::post('/bulk-categories-hot', 'bulk_categories_hot')->name('bulk-categories-hot');
+        
+        Route::post('/admin-ajax-add-category/modal', 'admin_ajax_add_category_modal')->name('admin_ajax_add_category_modal');
+        Route::post('/admin-ajax-add-category/store', 'admin_ajax_add_category_store')->name('admin_ajax_add_category_store');
+
     });
 
     // Brand
@@ -136,13 +155,23 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/brands/filter/brands', 'get_brands_by_filter')->name('brands.filter');
         Route::post('/bulk-brands-delete', 'bulk_brands_delete')->name('bulk-brands-delete');
         Route::get('/brand_category/show/{id}', 'showCategories')->name('brand_category.show');
+
+        Route::post('/admin-ajax-add-brand/modal', 'admin_ajax_add_brand_modal')->name('admin_ajax_add_brand_modal');
+        Route::post('/admin-ajax-add-brand/store', 'admin_ajax_add_brand_store')->name('admin_ajax_add_brand_store');
+
     });
 
-    // Warranty
-    Route::resource('warranties', WarrantyController::class);
     Route::controller(WarrantyController::class)->group(function () {
-        Route::get('/warranties/edit/{id}', 'edit')->name('warranties.edit');
+        Route::get('/warranties', 'index')->name('warranties.index');
+        Route::post('/warranties/create', 'create')->name('warranties.create');
+        Route::post('/warranties/store', 'store')->name('warranties.store');
+        Route::post('/warranties/edit', 'edit')->name('warranties.edit');
+        Route::post('/warranties/update', 'update')->name('warranties.update');
         Route::get('/warranties/destroy/{id}', 'destroy')->name('warranties.destroy');
+        Route::get('/warranties-filter', 'filter')->name('warranties.filter'); 
+        Route::post('/bulk-warranty-delete', 'bulk_warranty_delete')->name('bulk-warranty-delete');  
+        Route::post('/admin-ajax-add-warranty/modal', 'admin_ajax_add_warranty_modal')->name('admin_ajax_add_warranty_modal');
+        Route::post('/admin-ajax-add-warranty/store', 'admin_ajax_add_warranty_store')->name('admin_ajax_add_warranty_store');
     });
 
     // custom label
@@ -154,13 +183,28 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::post('/custom-label-update/{id}', 'update')->name('custom_label.update');
         Route::get('/custom-label-delete/{id}', 'destroy')->name('custom_label.delete');
         Route::post('custom-label/update-seller-access', 'updateSellerAccess')->name('custom_label.update-seller-access');
-        Route::post('/custom-label/products', 'products')->name('custom_label.products');
-        Route::post('/custom-label-update-status', 'update_status')->name('custom-label.update-status');
+        Route::post('/custom-label-update-status-seller-access', 'update_status')->name('custom-label.update-status');
+
+        Route::post('/bulk-custom-label-delete', 'bulk_custom_label_delete')->name('bulk-custom-label-delete');
+        Route::post('/custom-label-status-update', 'status_update')->name('custom_label.status_update');
+        Route::get('/custom-labels-filter', 'filter')->name('custom_labels.filter');  
+        Route::post('/custom-labels/product-search',  'custom_label_product_search')->name('custom_labels.product_search'); 
+        Route::post('/custom-labels/product-add', 'product_add')->name('custom_labels.product_add');
+        Route::post('/custom-labels/product-edit', 'product_edit')->name('custom_labels.product_edit');
     });
 
     Route::controller(BrandBulkUploadController::class)->group(function () {
         Route::get('/brand-bulk-upload', 'index')->name('brand_bulk_upload.index');
         Route::post('/brand-bulk-upload/store', 'bulk_upload')->name('brand_bulk_upload');
+        Route::get('/bulk-brand-demo-download', 'download_demo')->name('bulk_brand_demo_download');
+        Route::get('/brand-bulk-export', 'export')->name('brand_bulk_export');
+    });
+
+    Route::controller(CategoryBulkUploadController::class)->group(function () {
+        Route::get('/category-bulk-upload', 'index')->name('category_bulk_upload.index');
+        Route::post('/category-bulk-upload/store', 'bulk_upload')->name('category_bulk_upload');
+        Route::get('/bulk-category-demo-download', 'download_demo')->name('bulk_category_demo_download');
+        Route::get('/category-bulk-export', 'export')->name('category_bulk_export');
     });
 
     Route::controller(AdminController::class)->group(function () {
@@ -229,19 +273,25 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::post('/bulk-product-upload', 'bulk_upload')->name('bulk_product_upload');
         Route::get('/product-csv-download/{type}', 'import_product')->name('product_csv.download');
         Route::get('/vendor-product-csv-download/{id}', 'import_vendor_product')->name('import_vendor_product.download');
+        Route::get('/bulk-product-demo-download', 'download_demo')->name('bulk_product_demo_download');
         Route::group(['prefix' => 'bulk-upload/download'], function () {
-            Route::get('/category', 'pdf_download_category')->name('pdf.download_category');
-            Route::get('/brand', 'pdf_download_brand')->name('pdf.download_brand');
             Route::get('/seller', 'pdf_download_seller')->name('pdf.download_seller');
         });
     });
 
     // Note
-    Route::resource('note', NoteController::class);
     Route::controller(NoteController::class)->group(function () {
-        Route::get('/note/edit/{id}', 'edit')->name('note.edit');
-        Route::get('note/delete/{note}', 'destroy')->name('note.delete');
-        Route::post('note/update-seller-access', 'updateSelelrAccess')->name('note.update-seller-access');
+        Route::get('/notes', 'index')->name('note.index');
+        Route::post('/notes/create', 'create')->name('note.create');
+        Route::post('/notes/store', 'store')->name('note.store');
+        Route::post('/notes/edit', 'edit')->name('note.edit');
+        Route::post('/notes/update', 'update')->name('note.update');
+        Route::get('/notes/destroy/{id}', 'destroy')->name('note.delete');
+        Route::get('/notes-filter', 'filter')->name('note.filter'); 
+        Route::post('/bulk-note-delete', 'bulk_note_delete')->name('bulk-note-delete');  
+        Route::post('note/update-seller-access', 'updateSellerAccess')->name('note.update-seller-access');
+        Route::post('/admin-ajax-add-note/modal', 'admin_ajax_add_note_modal')->name('admin_ajax_add_note_modal');
+        Route::post('/admin-ajax-add-note/store', 'admin_ajax_add_note_store')->name('admin_ajax_add_note_store');
     });
 
     // Seller
@@ -275,13 +325,16 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     // Seller Payment
     Route::controller(PaymentController::class)->group(function () {
         Route::get('/seller/payments', 'payment_histories')->name('sellers.payment_histories');
-        Route::get('/seller/payments/show/{id}', 'show')->name('sellers.payment_history');
+        Route::get('/seller/payments-filter', 'filter')->name('sellers.payment_histories_filter');
+        Route::get('/seller/payments/history/show/{id}', 'show')->name('sellers.payment_history');
+        Route::get('/seller/payments/history/show-filter/{id}', 'history_filter')->name('sellers.payment_history_filter');
     });
 
     // Seller Withdraw Request
     Route::resource('/withdraw_requests', SellerWithdrawRequestController::class);
     Route::controller(SellerWithdrawRequestController::class)->group(function () {
         Route::get('/withdraw_requests_all', 'index')->name('withdraw_requests_all');
+        Route::get('//withdraw_requests_all_filter', 'filter')->name('withdraw_requests_all_filter');
         Route::post('/withdraw_request/payment_modal', 'payment_modal')->name('withdraw_request.payment_modal');
         Route::post('/withdraw_request/message_modal', 'message_modal')->name('withdraw_request.message_modal');
     });
@@ -362,10 +415,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/facebook-comment', 'facebook_comment')->name('facebook-comment');
         Route::post('/facebook-comment', 'facebook_comment_update')->name('facebook-comment.update');
         Route::post('/facebook_pixel', 'facebook_pixel_update')->name('facebook_pixel.update');
+        Route::post('/facebook_catalogue', 'facebook_catalogue_update')->name('facebook_catalogue.update');
 
         Route::post('/env_key_update', 'env_key_update')->name('env_key_update.update');
         Route::post('/payment_method_update', 'payment_method_update')->name('payment_method.update');
         Route::post('/google_analytics', 'google_analytics_update')->name('google_analytics.update');
+        Route::post('/google_merchant', 'google_merchant_update')->name('google_merchant_center.update');
         Route::post('/google_recaptcha', 'google_recaptcha_update')->name('google_recaptcha.update');
         Route::post('/google-map', 'google_map_update')->name('google-map.update');
         Route::post('/google-firebase', 'google_firebase_update')->name('google-firebase.update');
@@ -533,6 +588,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/flash-deals-filter', 'filter_flash_deal')->name('flash_deals.filter');        
         Route::post('/flash-deals/product-search',  'flash_deal_product_search')->name('flash_deals.product_search');
         Route::post('/flash-deals/update-product-discount', 'update_product_discount')->name('flash_deals.update_product_discount');
+
+        Route::post('/ajax-flash-deals/product-search',  'ajax_flash_deal_product_search')->name('ajax_flash_deals.product_search');
+        Route::post('/admin-ajax-add-flash-sale/modal', 'admin_ajax_add_flash_sale_modal')->name('admin_ajax_add_flash_sale_modal');
+        Route::post('/admin-ajax-add-flash-sale/store', 'admin_ajax_add_flash_sale_store')->name('admin_ajax_add_flash_sale_store');
     });
 
     // Promotional Products
@@ -655,14 +714,20 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     //Reviews
     Route::controller(ReviewController::class)->group(function () {
         Route::get('/reviews', 'index')->name('reviews.index');
+        Route::get('/review-filter', 'filter')->name('reviews.filter'); 
+        
         Route::post('/reviews/published', 'updatePublished')->name('reviews.published');
-        Route::get('/reviews/detail-reviews/{id}', 'detailReviews')->name('detail-reviews');
+        Route::post('/reviews/bulk-published', 'updateBulkPublished')->name('bulk-review-published');
+
+        Route::get('/reviews/details/{product_id}', 'detailReviews')->name('detail-reviews');
+        Route::get('/reviews-details-filter', 'detailFilter')->name('reviews-details.filter');
         Route::get('/reviews/destroy', 'destroy')->name('reviews.destroy');
 
         Route::get('/custom-review/create/{productId?}', 'customReviewCreate')->name('custom-review.create');
         Route::get('/custom-review/edit/{id}', 'customReviewEdit')->name('custom-review.edit');
         Route::post('/custom-review/update', 'customReviewUpdate')->name('custom-review.update');
         Route::post('/custom-review/get-products', 'getProductByCategory')->name('get-custom-review-product-by-category');
+
     });
 
     //Support_Ticket
@@ -701,28 +766,75 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Product Attribute
-    Route::resource('attributes', AttributeController::class);
     Route::controller(AttributeController::class)->group(function () {
-        Route::get('/attributes/edit/{id}', 'edit')->name('attributes.edit');
+        Route::get('/attributes', 'index')->name('attributes.index');
+        Route::post('/attributes/create', 'create')->name('attributes.create');
+        Route::post('/attributes/store', 'store')->name('attributes.store');
+        Route::post('/attributes/edit', 'edit')->name('attributes.edit');
+        Route::post('/attributes/update', 'update')->name('attributes.update');
         Route::get('/attributes/destroy/{id}', 'destroy')->name('attributes.destroy');
-
+        Route::get('/attributes-filter', 'filter')->name('attributes.filter'); 
+        Route::post('/bulk-attribute-delete', 'bulk_attribute_delete')->name('bulk-attribute-delete'); 
+        Route::post('/admin-ajax-add-attribute/modal', 'admin_ajax_add_attribute_modal')->name('admin_ajax_add_attribute_modal');
+        Route::post('/admin-ajax-add-attribute/store', 'admin_ajax_add_attribute_store')->name('admin_ajax_add_attribute_store');
         //Colors
         Route::get('/colors', 'colors')->name('colors');
-        Route::get('/colors/create', 'colors_create')->name('colors.create');
+        Route::post('/colors/create', 'colors_create')->name('colors.create');
         Route::post('/colors/store', 'store_color')->name('colors.store');
-        Route::get('/colors/edit/{id}', 'edit_color')->name('colors.edit');
-        Route::post('/colors/update/{id}', 'update_color')->name('colors.update');
+        Route::post('/colors/edit', 'edit_color')->name('colors.edit');
+        Route::post('/colors/update', 'update_color')->name('colors.update');
         Route::get('/colors/destroy/{id}', 'destroy_color')->name('colors.destroy');
+        Route::get('/colors-filter', 'colors_filter')->name('colors.filter'); 
+        Route::post('/bulk-color-delete', 'bulk_color_delete')->name('bulk-color-delete');  
+        Route::post('/admin-ajax-add-color/modal', 'admin_ajax_add_color_modal')->name('admin_ajax_add_color_modal');
+        Route::post('/admin-ajax-add-color/store', 'admin_ajax_add_color_store')->name('admin_ajax_add_color_store');
+
     });
 
     // Size Chart
-    Route::resource('size-charts', SizeChartController::class);
-    Route::get('/size-charts/destroy/{id}',  [SizeChartController::class, 'destroy'])->name('size-charts.destroy');
-    Route::post('size-charts/get-combination',   [SizeChartController::class, 'get_combination'])->name('size-charts.get-combination');
+    Route::controller(SizeChartController::class)->group(function () {  
+        Route::get('/size-charts', 'index')->name('size-charts.index');
+        Route::get('/size-chart-create', 'create')->name('size-charts.create');
+        Route::get('/size-chart-show/{id}', 'show')->name('size-charts.show');
+        Route::post('/size-chart-store', 'store')->name('size-charts.store');
+        Route::get('/size-chart-edit/{size_chart}', 'edit')->name('size-charts.edit');
+        Route::post('/size-chart-update/{size_chart}', 'update')->name('size-charts.update');
+        Route::get('/size-charts/destroy/{id}',  'destroy')->name('size-charts.destroy');
+        Route::get('/size-charts-filter', 'filter')->name('size_charts.filter'); 
+        Route::post('/sizeChart-products-search', 'search')->name('sizeChart_products.search');  
+        Route::post('/sizeChart-category-products-update', 'updateCategoryOrProducts')->name('assignCategoryOrProducts.update');        
+        Route::post('/bulk-size-chart-delete', 'bulk_size_chart_delete')->name('bulk-size-chart-delete');  
+        Route::post('size-charts/get-combination',  'get_combination')->name('size-charts.get-combination');
+        Route::post('size-charts/update-seller-access', 'updateSellerAccess')->name('sizechart.update-seller-access');
+    });
 
     // Measurement Points
-    Route::resource('measurement-points', MeasurementPointsController::class);
-    Route::get('/measurement-points/destroy/{id}',  [MeasurementPointsController::class, 'destroy'])->name('measurement-points.destroy');
+    Route::controller(MeasurementPointsController::class)->group(function () {  
+        Route::get('/measurement-points', 'index')->name('measurement-points.index');
+        Route::post('/measurement-points/create', 'create')->name('measurement-points.create');
+        Route::post('/measurement-points/store', 'store')->name('measurement-points.store');
+        Route::post('/measurement-points/edit', 'edit')->name('measurement-points.edit');
+        Route::post('/measurement-points/update', 'update')->name('measurement-points.update');
+        Route::get('/measurement-points/destroy/{id}', 'destroy')->name('measurement-points.destroy');
+        Route::get('/measurement-points-filter', 'filter')->name('measurement-points.filter'); 
+        Route::post('/bulk-measurement-points-delete', 'bulk_measurement_points_delete')->name('bulk-measurement-points-delete');   
+        Route::post('/admin-ajax-add-measurement-point/modal', 'admin_ajax_add_measurement_point_modal')->name('admin_ajax_add_measurement_point_modal');
+        Route::post('/admin-ajax-add-measurement-point/store', 'admin_ajax_add_measurement_point_store')->name('admin_ajax_add_measurement_point_store');
+    });
+
+    Route::controller(UnitController::class)->group(function () {  
+        Route::get('/unit-list', 'index')->name('unit.index');
+        Route::post('/unit-create', 'create')->name('unit.create');
+        Route::post('/unit-store', 'store')->name('unit.store');
+        Route::post('/unit-edit', 'edit')->name('unit.edit');
+        Route::post('/unit-update', 'update')->name('unit.update');
+        Route::get('/unit-delete/{id}', 'destroy')->name('unit.delete');
+        Route::get('/units-filter', 'filter')->name('units.filter'); 
+        Route::post('/bulk-unit-delete', 'bulk_unit_delete')->name('bulk-unit-delete');       
+
+        Route::post('/admin-ajax-add-unit/modal', 'admin_ajax_add_unit_modal')->name('admin_ajax_add_unit_modal');
+        Route::post('/admin-ajax-add-unit/store', 'admin_ajax_add_unit_store')->name('admin_ajax_add_unit_store');
+    });
 
     // Addon
     Route::resource('addons', AddonController::class);
@@ -738,8 +850,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     //Classified Products
     Route::controller(CustomerProductController::class)->group(function () {
         Route::get('/classified_products', 'customer_product_index')->name('classified_products');
+        Route::get('/classified-products-filter', 'filter')->name('classified_products.filter'); 
         Route::post('/classified_products/published', 'updatePublished')->name('classified_products.published');
         Route::get('/classified_products/destroy/{id}', 'destroy_by_admin')->name('classified_products.destroy');
+        Route::post('/bulk-classified-products-delete', 'bulk_classified_products_delete')->name('bulk-classified-products-delete');       
     });
 
     // Countries
@@ -812,6 +926,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/custom-notifications.delete/{identifier}', 'customNotificationSingleDelete')->name('custom-notifications.delete');
         Route::post('/custom-notifications.bulk_delete', 'customNotificationBulkDelete')->name('custom-notifications.bulk_delete');
         Route::post('/custom-notified-customers-list', 'customNotifiedCustomersList')->name('custom_notified_customers_list');
+        
+        Route::post('/view-all-notication/modal', 'view_all_notication_modal')->name('admin_view_all_notication_modal');
     });
 
     Route::resource('notification-type', NotificationTypeController::class);
@@ -900,6 +1016,37 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/marketing-dashboard', 'dashboard')->name('marketing_dashboard');
     });
     
+    Route::controller(GoogleMerchantCenterController::class)->prefix('google-merchant-center')->name('google_merchant_center.')->group(function () {
+        Route::get('/feed', 'productFeedGenerate')->name('feed');
+        Route::get('/gmc-products', 'get_gmc_products')->name('products.filter');
+        Route::get('/feed/xml', 'generateXMLFeed')->name('feed.xml');
+        Route::get('/feed/csv', 'generateCSVFeed')->name('feed.csv');
+        Route::get('/feed/txt', 'generateTXTFeed')->name('feed.txt');
+        Route::post('/export', 'exportProducts')->name('export_products');
+        Route::post('/gmc-products-update', 'productUpdateToGMC')->name('products.update');
+        Route::post('/gmc-products-search', 'gmc_products_search')->name('products.search');
+        Route::get('/gmc-configuration', 'gmc_configuration')->name('configuration');
+
+        Route::post('/google/sync', 'manualPushToGoogle')->name('google.sync');
+        Route::post('/google/sync-product/{id}', 'pushSingleProduct')->name('google.sync.single');
+    });
+
+    Route::controller(FacebookCatalogueController::class)->prefix('facebook-catalogue')->name('facebook_catalogue.')->group(function () {
+
+        Route::get('/feed', 'productFeedGenerate')->name('feed');
+        Route::get('/catalogue-products', 'get_catalogue_products')->name('get_products');
+        Route::get('/feed/xml', 'generateXMLFeed')->name('feed.xml');
+        Route::get('/feed/csv', 'generateCSVFeed')->name('feed.csv');
+        Route::get('/feed/txt', 'generateTXTFeed')->name('feed.txt');
+        Route::post('/export-all', 'exportProducts')->name('export_products');
+        Route::post('/catalogue-products-update', 'productUpdateToCatalog')->name('update_product');
+        Route::post('/catalogue-products-search', 'catalogue_products_search')->name('search');
+        Route::get('/catalogue-configuration', 'catalogue_configuration')->name('configuration');
+
+        Route::post('/catalogue/sync', 'manualPushToCatalog')->name('bulk_push');
+        Route::post('/catalogue/sync-product/{id}', 'pushSingleProduct')->name('push_single');
+
+    });
 
 });
 

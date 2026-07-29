@@ -192,5 +192,37 @@ class BrandController extends Controller
         return view('backend.product.brands.details', compact('brand'));
     }
 
+    public function admin_ajax_add_brand_modal(Request $request)
+    {
+        return view('backend.product.brands.ajax_add_brand_modal');
+    }
 
+    public function admin_ajax_add_brand_store(Request $request)
+    {
+        $brand = new Brand;
+        $brand->name = $request->name;
+        $brand->meta_title = $request->meta_title;
+        $brand->meta_description = $request->meta_description;
+        $brand->meta_keywords = $request->meta_keywords;
+        if ($request->slug != null) {
+            $brand->slug = str_replace(' ', '-', $request->slug);
+        }
+        else {
+            $brand->slug = preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', $request->name)).'-'.Str::random(5);
+        }
+
+        $brand->logo = $request->logo;
+        $brand->save();
+
+        $brand_translation = BrandTranslation::firstOrNew(['lang' => env('DEFAULT_LANGUAGE'), 'brand_id' => $brand->id]);
+        $brand_translation->name = $request->name;
+        $brand_translation->save();
+
+        return response()->json([
+            'success'        => true,
+            'message'        => translate('Brand has been inserted successfully'),
+            'brand_id'    => $brand->id,
+            'brand_name'  => $brand->name,
+        ]);
+    }
 }

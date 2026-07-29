@@ -7,15 +7,17 @@
             <h5 class="mb-0 h6">{{translate('Brand Bulk Upload')}}</h5>
         </div>
         <div class="card-body">
-            <div class="alert" style="color: #004085;background-color: #cce5ff;border-color: #b8daff;margin-bottom:0;margin-top:10px;">
-                <strong>{{ translate('Step 1')}}:</strong>
+            <div class="alert mb-2" style="color: #004085;background-color: #cce5ff;border-color: #b8daff;margin-bottom:0;margin-top:10px;">
                 <p>1. {{translate('Download the skeleton file and fill it with proper data')}}.</p>
                 <p>2. {{translate('You can download the example file to understand how the data must be filled')}}.</p>
-                <p>3. {{translate('Once you have downloaded and filled the skeleton file, upload it in the form below and submit')}}.</p>
+                <p class="mb-0">3. {{translate('Once you have downloaded and filled the skeleton file, upload it in the form below and submit')}}.</p>
             </div>
-            <br>
             <div class="">
-                <a href="{{ static_asset('download/brand_bulk_demo.xlsx') }}" download><button class="btn btn-info">{{ translate('Download CSV')}}</button></a>
+                <a href="{{ route('bulk_brand_demo_download') }}">
+                    <button class="btn btn-info">
+                        {{ translate('Download CSV')}}
+                    </button>
+                </a>
             </div>
         </div>
     </div>
@@ -44,4 +46,21 @@
         </div>
     </div>
 
+    @can('brand_bulk_export')
+        <a href="{{route('brand_bulk_export')}}" class="d-block">
+            <div
+                class="card border border-2 border-gray-200 card-no-shadow has-transition rounded-2 p-3 p-lg-4 overflow-hidden">
+                <div class="d-flex justify-content-between align-items-start">
+                    <img src="{{ static_asset('assets/img/product-management/bulk-export.svg') }}"
+                        class="flex-shrink-0 w-50px h-50px" alt="Icon">
+                    <div class="ml-3 flex-grow-1">
+                        <h6 class="fs-16 fw-semibold mb-2 text-dark">
+                            {{ translate('Bulk Export') }} </h6>
+                        <span
+                            class="fs-12 fw-400 text-gray">{{ translate('Download your brand database in .csv .') }}</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    @endcan
 @endsection

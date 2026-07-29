@@ -7,6 +7,7 @@ use App\Models\Review;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\MeasurementPoint;
+use App\Models\Unit;
 
 class ProductDetailCollection extends ResourceCollection
 {
@@ -24,6 +25,41 @@ class ProductDetailCollection extends ResourceCollection
                 $short_video_thumbnail_paths = $data->short_video_thumbnail ? get_images_path($data->short_video_thumbnail) : [];
                 $photos = [];
                 $videos = [];
+                $warranty = null;
+                if ($data->has_warranty == 1 && $data->warranty_id != null) {
+                    $warranty = [
+                        'warranty_logo' => uploaded_asset($data->warranty->logo),
+                        'title'          => $data->warranty->getTranslation('text'),
+                        'note'        => ($data->warranty_note_id != null && $data->show_warranty_note == 1) ? $data->warrantyNote->getTranslation('description') : null,
+                    ];
+                }
+
+                $refund = null;
+                $shipping_note = null;
+                if($data->show_shipping_note==1 && $data->shipping_note_id!=null){
+                    $shipping_note = [
+                        'note' => $data->shippingNote->getTranslation('description'),
+                    ];
+                }
+
+                $delivery_note = null;
+                if($data->show_delivery_notes==1 && $data->delivery_note_id ){
+                    $delivery_note = [
+                        'note' => $data->codNote->getTranslation('description'),
+                    ];
+                }
+
+                if (addon_is_activated('refund_request') && $data->refundable == 1) {
+                    $refund_sticker = get_setting('refund_sticker');
+
+                    $refund = [
+                        'is_refundable' => true,
+                        'sticker' => $refund_sticker ? uploaded_asset($refund_sticker) : static_asset('/assets/img/cashback-gurantee-logo.svg'),
+                        'show_notes' => (bool) $data->show_refund_notes,
+                        'note' => ($data->refund_note_id != null && $data->show_refund_notes == 1) ? $data->refundNote->getTranslation('description') : null,
+                        'policy_url' => route('returnpolicy'),
+                    ];
+                }
 
                 $size_chart = null;
 
@@ -130,6 +166,7 @@ class ProductDetailCollection extends ResourceCollection
                     ];
                 }
 
+                $unit_name = Unit::where('id', $data->unit)->value('name');
                 $whole_sale = [];
                 if (addon_is_activated('wholesale')) {
                     $whole_sale =  ProductWholesaleResource::collection($data->stocks->first()->wholesalePrices);
@@ -142,21 +179,26 @@ class ProductDetailCollection extends ResourceCollection
                     'shop_id' => $data->added_by == 'admin' ? 0 : $data->user->shop->id,
                     'shop_slug' => $data->added_by == 'admin' ? '' : $data->user->shop->slug,
                     'shop_name' => $data->added_by == 'admin' ? translate('In House Product') : $data->user->shop->name,
-                    'shop_logo' => $data->added_by == 'admin' ? uploaded_asset(get_setting('header_logo')) : uploaded_asset($data->user->shop->logo) ?? "",
-                    'photos' => $photos,
+                    'shop_logo' => $data->added_by == 'admin' ? uploaded_asset((json_decode(get_setting('business_info'), true) ?? [])['shop_logo'] ?? null) : (uploaded_asset($data->user->shop->logo) ?? ""),                    'photos' => $photos,
                     'thumbnail_image' => uploaded_asset($data->thumbnail_img),
                     'tags' => explode(',', $data->tags),
                     'price_high_low' => (float)explode('-', home_discounted_base_price($data, false))[0] == (float)explode('-', home_discounted_price($data, false))[1] ? format_price((float)explode('-', home_discounted_price($data, false))[0]) : "From " . format_price((float)explode('-', home_discounted_price($data, false))[0]) . " to " . format_price((float)explode('-', home_discounted_price($data, false))[1]),
                     'choice_options' => $this->convertToChoiceOptions(json_decode($data->choice_options)),
-                    'colors' => json_decode($data->colors) ?? [],
+                    'colors' => collect(json_decode($data->colors) ?? [])->map(function ($color) {
+                            return [
+                                'code' => $color,
+                                'name' => get_single_color_name($color),
+                            ];
+                        })->values(),
                     'has_discount' => home_base_price($data, false) != home_discounted_base_price($data, false),
                     'discount' => "-" . discount_in_percentage($data) . "%",
-                    'stroked_price' => home_base_price($data),
+                    // 'stroked_price' => home_base_price($data),
+                    'stroked_price' => home_price($data),
                     'main_price' => home_discounted_base_price($data),
                     'calculable_price' => $calculable_price,
                     'currency_symbol' => currency_symbol(),
                     'current_stock' => (int)$data->stocks->first()->qty,
-                    'unit' => $data->unit ?? "",
+                    'unit' => $unit_name,
                     'rating' => (float)$data->rating,
                     'rating_count' => (int)Review::where(['product_id' => $data->id])->count(),
                     'earn_point' => (float)$data->earn_point,
@@ -169,7 +211,16 @@ class ProductDetailCollection extends ResourceCollection
                     'est_shipping_time' => (int)$data->est_shipping_days,
                     'videos' => $videos,
                     'size_chart' => $size_chart,
-
+                    'min_viewer' => (int) get_setting('min_custom_product_visitors'),
+                    'max_viewer' => (int) get_setting('max_custom_product_visitors'),
+                    'todays_deal' => (int)$data->todays_deal,
+                    'flash_sale' =>  get_product_active_flash_deal_end_date($data->id, $data->discount_end_date),
+                    'cod'  => (int)$data->cash_on_delivery,
+                    'free_shipping' => $data->shipping_type == 'free' ? true : false,
+                    'warranty' => $warranty,
+                    'refund' => $refund,
+                    'shipping_note' => $shipping_note,
+                    'delivery_note' => $delivery_note,
                 ];
             })
         ];

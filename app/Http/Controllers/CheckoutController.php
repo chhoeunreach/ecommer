@@ -20,6 +20,7 @@ use Session;
 use Auth;
 use Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Services\FacebookConversionService;
 use Mail;
 
 class CheckoutController extends Controller
@@ -87,8 +88,7 @@ class CheckoutController extends Controller
             $carrier_list = array();
             if (get_setting('shipping_type') == 'carrier_wise_shipping') {
                 $default_shipping_type = 'carrier';
-               // $zone = $country_id != 0 ? Country::where('id', $country_id)->first()->zone_id : 0;
-               $zone = $country_id != 0 ? Country::where('id', $country_id)->where('status', 1)->first()->zone_id ?? 0 : 0;
+                $zone = $country_id != 0 ? Country::where('id', $country_id)->where('status', 1)->first()->zone_id ?? 0 : 0;
 
                 $carrier_query = Carrier::where('status', 1);
                 $carrier_query->whereIn('id',function ($query) use ($zone) {
@@ -121,6 +121,22 @@ class CheckoutController extends Controller
 
             $carts = $carts->fresh();
 
+            if(get_setting('facebook_pixel_capi') == 1) {
+                try {
+                    $fb = new FacebookConversionService();
+                    
+                    $cartData = [
+                        'total' => (float) $total,
+                        'product_ids' => $carts->pluck('product_id')->toArray()
+                    ];
+                    $eventId = 'initiate_checkout_' . (auth()->id() ?? session()->get('temp_user_id')) . '_' . time();
+                    $fb->sendInitiateCheckout($cartData, $eventId);
+                    
+                } catch (\Exception $e) {
+                    \Log::error('Facebook CAPI InitiateCheckout Error: ' . $e->getMessage());
+                }
+            }
+
             return view('frontend.checkout', compact('carts', 'address_id', 'total', 'carrier_list', 'shipping_info'));
         }
         flash(translate('Please Select cart items to Proceed'))->error();
@@ -132,7 +148,22 @@ class CheckoutController extends Controller
     {
         // if guest checkout, create user
         if(auth()->user() == null){
+
+            if (addon_is_activated('otp_system') && get_setting('guest_checkout_with_otp') == 1) {
+                $phone = $request->phone;
+
+                if (!$phone || !session()->has('guest_verified_phone') || session('guest_verified_phone') != $phone) {
+                    flash(translate('Please verify your phone number with OTP before placing the order.'))->warning();
+                    return redirect()->route('checkout');
+                }
+            }
+
             $guest_user = $this->createUser($request->except('_token', 'payment_option'));
+
+            if (addon_is_activated('otp_system') && get_setting('guest_checkout_with_otp') == 1) {
+                session()->forget('guest_verified_phone');
+            }
+            
             if(gettype($guest_user) == "object"){
                 $errors = $guest_user;
                 return redirect()->route('checkout')->withErrors($errors);

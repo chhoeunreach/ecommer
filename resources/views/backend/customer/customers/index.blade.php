@@ -49,7 +49,7 @@
                             </svg>
                         </span>
                     </a>
-                    @endif
+                    @endcan
                 </div>
             </div>
 

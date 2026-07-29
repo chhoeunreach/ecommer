@@ -4,7 +4,7 @@
 
     @php $lang = get_system_language()->code; @endphp
         <!-- Home Banner Start -->
-        <div class="aiz-carousel arrow-x-0 arrow-inactive-none hero-banner-carousel" data-items="1" data-full-hd-items="1" data-xxl-items="1"
+        <div class="aiz-carousel arrow-x-0 arrow-inactive-none hero-banner-carousel d-none  d-md-block" data-items="1" data-full-hd-items="1" data-xxl-items="1"
             data-xl-items="1" data-lg-items="1" data-md-items="1" data-sm-items="1" data-xs-items="1" data-arrows='false'
             data-autoplay="true" data-infinite="true">
             @if (get_setting('home_slider_images', null, $lang) != null)
@@ -18,10 +18,34 @@
                     $home_slider_colors = get_setting('home_slider_colors', null, $lang);
                 @endphp
                 @foreach ($sliders as $key => $slider)
-                    <a href="{{ isset(json_decode($home_slider_links, true)[$key]) ? json_decode($home_slider_links, true)[$key] : '' }}" class="d-block w-100 hero-banner-wrapper" style="background: {{ isset(json_decode($home_slider_colors, true)[$key]) ? json_decode($home_slider_colors, true)[$key] : '#f5f5f5' }}">
+                    <a href="{{ isset(json_decode($home_slider_links, true)[$key]) ? json_decode($home_slider_links, true)[$key] : '' }}" class="d-block w-100 hero-banner-wrapper">
                         <div class="hero-banner-container hov-scale-img overflow-hidden" >
                             <img class="img-fit mx-auto w-100  h-100 lazyload  has-transition" style="object-position: center;"
                                 src="{{ $slider ? my_asset($slider->file_name) : static_asset('assets/img/placeholder.jpg') }}" data-src=""
+                                alt="{{ env('APP_NAME') }} promo" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder-rect.jpg') }}';">
+                        </div>
+                    </a>
+                @endforeach
+            @endif
+        </div>
+        <div class="aiz-carousel arrow-x-0 arrow-inactive-none hero-banner-carousel d-md-none" data-items="1" data-full-hd-items="1" data-xxl-items="1"
+            data-xl-items="1" data-lg-items="1" data-md-items="1" data-sm-items="1" data-xs-items="1" data-arrows='false'
+            data-autoplay="true" data-infinite="true">
+            @if (get_setting('small_home_slider_images', null, $lang) != null)
+                @php
+                    $small_decoded_slider_images = json_decode(
+                        get_setting('small_home_slider_images', null, $lang),
+                        true,
+                    );
+                    $small_sliders = get_slider_images($small_decoded_slider_images);
+                    $home_slider_links = get_setting('home_slider_links', null, $lang);
+                    $home_slider_colors = get_setting('home_slider_colors', null, $lang);
+                @endphp
+                @foreach ($small_sliders as $key => $small_slider)
+                    <a href="{{ isset(json_decode($home_slider_links, true)[$key]) ? json_decode($home_slider_links, true)[$key] : '' }}" class="d-block w-100 hero-banner-wrapper">
+                        <div class="hero-banner-container hov-scale-img overflow-hidden" >
+                            <img class="img-fit mx-auto w-100  h-100 lazyload  has-transition" style="object-position: center;"
+                                src="{{ $small_slider ? my_asset($small_slider->file_name) : static_asset('assets/img/placeholder.jpg') }}" data-src=""
                                 alt="{{ env('APP_NAME') }} promo" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder-rect.jpg') }}';">
                         </div>
                     </a>
@@ -884,7 +908,7 @@
         @if (get_setting('enable_banner_3') == 1)
             @php $homeBanner3Images = get_setting('home_banner3_images', null, $lang);   @endphp
             @if ($homeBanner3Images != null)
-                <div class="aiz-carousel arrow-x-0 arrow-inactive-none" data-items="1" data-full-hd-items="1" data-xxl-items="1"
+                <div class="aiz-carousel arrow-x-0 arrow-inactive-none d-none d-md-block" data-items="1" data-full-hd-items="1" data-xxl-items="1"
                     data-xl-items="1" data-lg-items="1" data-md-items="1" data-sm-items="1" data-xs-items="1"
                     data-arrows='false' data-autoplay="true" data-infinite="true">
                     @php
@@ -893,7 +917,28 @@
                         $home_banner3_colors = get_setting('home_banner3_colors', null, $lang);
                     @endphp
                     @foreach ($banner_3_imags as $key => $value)
-                        <a href="{{ isset(json_decode($home_banner3_links, true)[$key]) ? json_decode($home_banner3_links, true)[$key] : '' }}" class="d-block w-100 mega-banner-wrapper" style="background-color: {{ isset(json_decode($home_banner3_colors, true)[$key]) ? json_decode($home_banner3_colors, true)[$key] : '#f5f5f5' }}">
+                        <a href="{{ isset(json_decode($home_banner3_links, true)[$key]) ? json_decode($home_banner3_links, true)[$key] : '' }}" class="d-block w-100 mega-banner-wrapper">
+                            <div class="mega-banner-container hov-scale-img overflow-hidden">
+                                <img class="img-fit mx-auto w-100  h-100 lazyload  has-transition" style="object-position: center;"
+                                    src="{{ static_asset('assets/img/placeholder-rect.jpg') }}" data-src="{{ uploaded_asset($value) }}"
+                                    alt="{{ env('APP_NAME') }} promo" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder-rect.jpg') }}';">
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            @endif
+            @php $smallHomeBanner3Images = get_setting('small_home_banner3_images', null, $lang);   @endphp
+            @if ($smallHomeBanner3Images != null)
+                <div class="aiz-carousel arrow-x-0 arrow-inactive-none d-md-none" data-items="1" data-full-hd-items="1" data-xxl-items="1"
+                    data-xl-items="1" data-lg-items="1" data-md-items="1" data-sm-items="1" data-xs-items="1"
+                    data-arrows='false' data-autoplay="true" data-infinite="true">
+                    @php
+                        $banner_3_imags_small = json_decode($smallHomeBanner3Images);
+                        $home_banner3_links = get_setting('home_banner3_links', null, $lang);
+                        $home_banner3_colors = get_setting('home_banner3_colors', null, $lang);
+                    @endphp
+                    @foreach ($banner_3_imags_small as $key => $value)
+                        <a href="{{ isset(json_decode($home_banner3_links, true)[$key]) ? json_decode($home_banner3_links, true)[$key] : '' }}" class="d-block w-100 mega-banner-wrapper">
                             <div class="mega-banner-container hov-scale-img overflow-hidden">
                                 <img class="img-fit mx-auto w-100  h-100 lazyload  has-transition" style="object-position: center;"
                                     src="{{ static_asset('assets/img/placeholder-rect.jpg') }}" data-src="{{ uploaded_asset($value) }}"

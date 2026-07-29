@@ -21,13 +21,13 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
 
 	<!-- aiz core css -->
-	<link rel="stylesheet" href="{{ static_asset('assets/css/vendors.css') }}">
+    <link rel="stylesheet" href="{{ static_asset('assets/css/vendors.css?v=') }}{{ get_setting('current_version') }}">
     @if(\App\Models\Language::where('code', Session::get('locale', Config::get('app.locale')))->first()->rtl == 1)
     <link rel="stylesheet" href="{{ static_asset('assets/css/bootstrap-rtl.min.css') }}">
     @endif
-	<link rel="stylesheet" href="{{ static_asset('assets/css/aiz-seller.css') }}">
-    <link rel="stylesheet" href="{{ static_asset('assets/css/custom-style.css') }}">
-    <link rel="stylesheet" href="{{ static_asset('assets/css/seller-custom-style.css') }}">
+	<link rel="stylesheet" href="{{ static_asset('assets/css/aiz-seller.css?v=') }}{{ get_setting('current_version') }}">
+    <link rel="stylesheet" href="{{ static_asset('assets/css/custom-style.css?v=') }}{{ get_setting('current_version') }}">
+    <link rel="stylesheet" href="{{ static_asset('assets/css/seller-custom-style.css?v=') }}{{ get_setting('current_version') }}">
 
     <style>
         body {
@@ -62,9 +62,27 @@
             box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.16);
         }
 
+        :root{
+            --navbar-text-color: {{ Auth::user()->shop->navbar_text_color == 'black' ? '#000' : '#fff' }};
+            --navbar-hover-bg: {{ Auth::user()->shop->navbar_text_color == 'black' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.13)' }};
+            --navbar-active-bg: {{ Auth::user()->shop->navbar_text_color == 'black' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.3)' }};
+            --navbar-after-bg: {{ Auth::user()->shop->navbar_text_color == 'black' ? '#4b5563' : '#cfd4e6' }};
+            --navbar-search-focus-border: {{ Auth::user()->shop->navbar_text_color == 'black' ? '#7c8191' : '#dfe3f0' }};
+        }
+
+        .seller-sidenav-search:focus-within{
+            border: 1px solid var(--navbar-search-focus-border) !important;
+        }
+
+        .seller-search-menu-placeholder::placeholder{
+            color: {{ Auth::user()->shop->navbar_text_color ?? 'white' }} !important;
+            opacity: 0.5;
+        }
+
         .login-nav-item:hover .user-icon-circle i{
             color:  {{ get_setting('top_header_text_color') }} !important;
         }
+
     </style>
 	<script>
     	var AIZ = AIZ || {};
@@ -89,6 +107,10 @@
             complete: '{{ translate('Complete') }}',
             file: '{{ translate('File') }}',
             files: '{{ translate('Files') }}',
+            saving: '{{ translate('Saving') }}',
+            something_went_wrong: '{{translate('Something went wrong!')}}',
+            error_occured_while_processing: '{{translate('An error occurred while processing')}}',
+            saving_as_draft: '{{translate('Saving As Draft')}}',
         }
 	</script>
 
@@ -103,7 +125,7 @@
 				<div class="px-15px px-lg-25px">
                     @yield('panel_content')
 				</div>
-				<div class="bg-white text-center py-3 px-15px px-lg-25px mt-auto border-sm-top ">
+				<div class="text-center py-3 px-15px px-lg-25px mt-auto border-sm-top " style="background-color: rgba(91, 52, 108, 0.1);">
 
                     <div class="d-flex justify-content-center flex-wrap">
                         <a href="{{ route('home') }}/seller-legal-notice" target="_blank" class="btn btn-link p-0 text-decoration-none mr-3 fw-700 fs-12 hov-text-info">
@@ -130,11 +152,20 @@
 	</div><!-- .aiz-main-wrapper -->
 
     @include('modals.bulk_action_modal')
+
+    <!-- Offcanvas -->
+    <div id="globalRightOffcanvas" class="global-right-offcanvas-lg position-fixed top-0 fullscreen bg-white  py-20px z-1045">
+        <!-- content will here -->
+    </div>
+    <!-- Overlay -->
+    <div id="globalRightOffcanvasOverlay" class="position-fixed top-0 left-0 h-100 w-100"></div>
+    
     @yield('modal')
 
 
 	<script src="{{ static_asset('assets/js/vendors.js') }}" ></script>
 	<script src="{{ static_asset('assets/js/aiz-core.js') }}" ></script>
+    <script src="{{ static_asset('assets/js/aiz-form-submission.js?v=') }}{{ rand(1000,9999) }}"></script>
 
     @yield('script')
 
@@ -185,16 +216,189 @@
 					for (i = 0; i < items.length; i++) {
 						const text = $(items[i]).find(".aiz-side-nav-text")[0].innerText;
 						const link = $(items[i]).attr('href');
-						 $("#search-menu").append(`<li class="aiz-side-nav-item"><a href="${link}" class="aiz-side-nav-link"><i class="las la-ellipsis-h aiz-side-nav-icon"></i><span>${text}</span></a></li`);
+						 $("#search-menu").append(`<li class="aiz-side-nav-item"><a href="${link}" class="aiz-side-nav-link"><i class="las la-ellipsis-h aiz-side-nav-icon"></i><span style="color: {{ Auth::user()->shop->navbar_text_color ?? 'white' }}">${text}</span></a></li`);
 					}
 				}else{
-					$("#search-menu").html(`<li class="aiz-side-nav-item"><span	class="text-center text-muted d-block">{{ translate('Nothing Found') }}</span></li>`);
+					$("#search-menu").html(`<li class="aiz-side-nav-item"><span	class="text-center d-block" style="color: {{ Auth::user()->shop->navbar_text_color ?? 'white' }}">{{ translate('Nothing Found') }}</span></li>`);
 				}
 			}else{
 				$("#main-menu").removeClass('d-none');
 				$("#search-menu").html('')
 			}
         }
+
+        const globalRightOffcanvas = document.getElementById('globalRightOffcanvas');
+        const globalOverlay = document.getElementById('globalRightOffcanvasOverlay');
+
+        $(document).on('click', '#add_note', function (e) {
+            e.preventDefault();
+            const noteType = $(this).data('note-type') || 'refund';
+            openGlobalRightOffcanvas('note', noteType);
+        });
+
+        function openGlobalRightOffcanvas(type = 'note', extraParam = null) {
+            globalRightOffcanvas.classList.add('active');
+            globalOverlay.classList.add('active');
+            document.body.classList.add('body-no-scroll');
+            globalRightOffcanvas.innerHTML =
+                '<div class="footable-loader mt-5"><span class="fooicon fooicon-loader"></span></div>';
+
+            const urls = {
+                note: "{{ route('seller.ajax_add_note_modal') }}",
+            };
+
+            const postData = { _token: AIZ.data.csrf };
+            if (type === 'note' && extraParam) {
+                postData.type = extraParam;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: urls[type],
+                data: postData,
+                success: function (html) {
+                    globalRightOffcanvas.innerHTML = html;
+                    AIZ.plugins.bootstrapSelect('refresh');
+
+                    $('#globalRightOffcanvas .aiz-date-range').each(function() {
+                        var $input = $(this);
+                        var separator = $input.data('separator') || ' to ';
+                        var format = $input.data('format') || 'DD-MM-Y';
+                        var timePicker = $input.data('time-picker') || false;
+                        var pastDisable = $input.data('past-disable') || false;
+
+                        if ($input.data('daterangepicker')) {
+                            $input.data('daterangepicker').remove();
+                        }
+
+                        $input.daterangepicker({
+                            timePicker: timePicker,
+                            autoUpdateInput: false,
+                            minDate: pastDisable ? moment() : false,
+                            locale: {
+                                format: format,
+                                separator: separator,
+                            }
+                        });
+
+                        $input.on('apply.daterangepicker', function(ev, picker) {
+                            $(this).val(picker.startDate.format(format) + separator + picker.endDate.format(format));
+                        });
+
+                        $input.on('cancel.daterangepicker', function() {
+                            $(this).val('');
+                        });
+                    });
+                },
+                error: function () {
+                    globalRightOffcanvas.innerHTML =
+                        '<p class="text-danger p-3">{{ translate("Failed to load") }}</p>';
+                }
+            });
+        }
+
+        function closeglobalRightOffcanvas() {
+            globalRightOffcanvas.classList.remove('active');
+            globalOverlay.classList.remove('active');
+            document.body.classList.remove('body-no-scroll');
+        }
+
+        function closeGlobalRightOffcanvas() {
+            closeglobalRightOffcanvas();
+        }
+
+        if (globalOverlay) {
+            globalOverlay.addEventListener('click', closeglobalRightOffcanvas);
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeglobalRightOffcanvas();
+            }
+        });
+
+        $(document).on('click', '#add-note', function () {
+            const btn = $(this);
+            const noteType = $('select[name="note_type"]').val();
+            const description = $('textarea[name="note_description"]').val();
+
+            if (!description || !description.trim()) {
+                AIZ.plugins.notify('warning', '{{ translate("Please fill description") }}');
+                return;
+            }
+
+            btn.prop('disabled', true);
+            if (!btn.find('.spinner-border').length) {
+                btn.append('<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>');
+            }
+
+            $.ajax({
+                url: "{{ route('seller.ajax_add_note_store') }}",
+                type: "POST",
+                data: {
+                    _token: AIZ.data.csrf,
+                    note_type: noteType,
+                    description: description
+                },
+                success: function (res) {
+                    if (!res.success) return;
+
+                    AIZ.plugins.notify('success', res.message);
+
+                    const wrapperMap = {
+                        refund:   '.refundable-notes',
+                        warranty: '.warranty-notes',
+                        shipping: '.shipping-notes',
+                        delivery: '.cash-on-delivery-notes',
+                    };
+                    const hiddenInputMap = {
+                        refund:   'refund_note_id',
+                        warranty: 'warranty_note_id',
+                        shipping: 'shipping_note_id',
+                        delivery: 'delivery_note_id',
+                    };
+
+                    const wrapperSelector = wrapperMap[noteType];
+                    const hiddenInputId   = hiddenInputMap[noteType];
+                    const $wrapper        = $(wrapperSelector);
+                    const $carousel       = $wrapper.find('.aiz-carousel');
+
+                    if ($carousel.hasClass('slick-initialized')) {
+                        $carousel.slick('unslick');
+                    }
+
+                    $carousel.html(res.html);
+
+                    AIZ.plugins.slickCarousel();
+
+                    setTimeout(function () {
+                        $wrapper.find('#' + hiddenInputId).val(res.note_id);
+
+                        $carousel.find('[data-note-id]')
+                            .removeClass('border-primary')
+                            .addClass('border-gray-300');
+
+                        $carousel.find('[data-note-id="' + res.note_id + '"]')
+                            .removeClass('border-gray-300')
+                            .addClass('border-primary');
+                    }, 300);
+
+                    closeglobalRightOffcanvas();
+                },
+                error: function (xhr) {
+                    if (xhr.status === 422) {
+                        const errors = xhr.responseJSON?.errors ?? {};
+                        const first = Object.values(errors)[0]?.[0];
+                        AIZ.plugins.notify('danger', first || '{{ translate("Validation failed") }}');
+                    } else {
+                        AIZ.plugins.notify('danger', '{{ translate("Something went wrong") }}');
+                    }
+                    btn.prop('disabled', false);
+                    btn.find('.spinner-border').remove();
+                }
+            });
+        });
+
     </script>
 
 </body>

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use App\Http\Controllers\OTPVerificationController;
+use App\Services\FacebookConversionService;
 use App\Utility\EmailUtility;
 
 class RegisterController extends Controller
@@ -199,6 +200,27 @@ class RegisterController extends Controller
                 EmailUtility::customer_registration_email('customer_reg_email_to_admin', $user, null);
             } catch (\Exception $e) {}
         }
+                
+        // Store GA4 event in session to be pushed on next page load
+        if(get_setting('google_analytics') == 1) {
+            $ga4Event = [
+                'event' => 'sign_up',
+                'method' => $request->email ? 'email' : 'phone'
+            ];
+            session()->flash('ga4_event', $ga4Event);
+        }
+        
+        // Facebook CAPI - CompleteRegistration
+        if(get_setting('facebook_pixel_capi') == 1) {
+            try {
+                $fb = new FacebookConversionService();
+                $fb->sendCompleteRegistration($user->id);
+            } catch (\Exception $e) {
+                \Log::error('Facebook CAPI Registration Error: ' . $e->getMessage());
+            }
+        }
+        
+        //  ========== END TRACKING ==========
 
         return $this->registered($request, $user)
             ?: redirect($this->redirectPath());

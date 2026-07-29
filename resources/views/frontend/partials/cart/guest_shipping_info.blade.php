@@ -142,8 +142,23 @@
                     <label>{{ translate('Phone')}} <span class="text-danger">*</span></label>
                 </div>
                 <div class="col-md-10">
-                    <input type="tel" id="phone-code" class="form-control rounded-0" placeholder="" name="phone" autocomplete="off" required>
-                    <input type="hidden" name="country_code" value="">
+                    <div class="d-flex">
+                        <input type="tel" id="phone-code" class="form-control rounded-0" placeholder="" name="phone" autocomplete="off" required>
+                        <input type="hidden" name="country_code" value="">
+
+                        @if(addon_is_activated('otp_system') && get_setting('guest_checkout_with_otp') == 1)
+                            <button type="button" id="sendGuestOtpBtn" class="btn btn-secondary-base text-white rounded-0 ml-2" onclick="sendGuestOtp(this)" style="white-space: nowrap;">
+                                {{ translate('Verify') }}
+                            </button>
+                        @endif
+                    </div>
+
+                    @if(addon_is_activated('otp_system') && get_setting('guest_checkout_with_otp') == 1)
+                        <input type="hidden" name="guest_phone_verified" id="guest_phone_verified" value="0">
+                        <div class="mt-2" id="guest_phone_verified_badge" style="display:none;">
+                            <span class="text-success fs-13"><i class="las la-check-circle"></i> {{ translate('Phone verified') }}</span>
+                        </div>
+                    @endif
                 </div>
             </div>
 

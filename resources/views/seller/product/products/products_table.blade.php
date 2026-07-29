@@ -219,7 +219,7 @@
                                 <!--Make a Clone-->
                                  @else
                                 <a
-                                    class="d-flex align-items-center px-20px py-10px hov-bg-light hov-text-blue" href="{{route('seller.products.duplicate', $product->id)}}">
+                                    class="d-flex align-items-center px-20px py-10px hov-bg-light hov-text-blue" onclick="duplicateProduct({{$product->id}})" href="#">
                                     <span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="10.2"
                                             height="12" viewBox="0 0 10.2 12">
@@ -229,7 +229,7 @@
                                         </svg>
 
                                     </span>
-                                    <span class="fs-14 text-secondary fw-500 pl-10px">{{translate('Duplicate')}}</span>
+                                    <span class="fs-14 text-secondary fw-500 pl-10px">{{translate('Make a Clone')}}</span>
                                 </a> 
                                 @endif
                                 <!--Delete-->

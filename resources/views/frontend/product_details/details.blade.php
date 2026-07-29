@@ -4,6 +4,7 @@
         $seller_logo = $detailedProduct->user->shop?->logo 
             ? $detailedProduct->user->shop->logo 
             : (json_decode(get_setting('business_info'), true) ?? [])['shop_logo'] ?? null;
+        $unit_name = \App\Models\Unit::where('id', $detailedProduct->unit)->value('name');
         @endphp
         @if ($detailedProduct->auction_product != 1)
             <div>
@@ -212,7 +213,7 @@
                 <div class="">
                     <span class="text-dark fs-20 fw-400">{{ single_price($detailedProduct->starting_bid) }}</span>
                     @if ($detailedProduct->unit != null)
-                        <span class="text-secondary fs-14 fw-400">/{{ $detailedProduct->getTranslation('unit') }}</span>
+                        <span class="text-secondary fs-14 fw-400">/{{ $unit_name }}</span>
                     @endif
                 </div>
             </div>
@@ -333,7 +334,7 @@
                         <div>
                             <h6 class="m-0 fs-20 fw-600 text-dark">{{ home_discounted_price($detailedProduct) }}
                                 @if ($detailedProduct->unit != null)
-                                    <span class="opacity-70 fs-16 fw-400">/{{ $detailedProduct->getTranslation('unit') }}</span>
+                                    <span class="opacity-70 fs-16 fw-400">/{{ $unit_name }}</span>
                                 @endif
                             </h6>
                             @if (home_price($detailedProduct) != home_discounted_price($detailedProduct))
@@ -354,7 +355,7 @@
                     <div class="d-flex flex-wrap align-items-center mb-md-0">
                         <h6 class="m-0 fs-24 fw-bold fw-700 text-dark">{{ home_discounted_price($detailedProduct) }}
                             @if ($detailedProduct->unit != null)
-                                <span class="opacity-70 fs-16 fw-400">/{{ $detailedProduct->getTranslation('unit') }}</span>
+                                <span class="opacity-70 fs-16 fw-400">/{{ $unit_name }}</span>
                             @endif
                         </h6>
                         @if (home_price($detailedProduct) != home_discounted_price($detailedProduct))
@@ -422,8 +423,9 @@
                             </span>
                         </div>
                         @php
-                            $sizeChartId = ($detailedProduct->main_category && $detailedProduct->main_category->sizeChart) ? $detailedProduct->main_category->sizeChart->id : 0;
-                            $sizeChartName = ($detailedProduct->main_category && $detailedProduct->main_category->sizeChart) ? $detailedProduct->main_category->sizeChart->name : null;
+                            $sizeChart = \App\Models\SizeChart::findForProduct($detailedProduct);
+                            $sizeChartId = $sizeChart->id ?? 0;
+                            $sizeChartName = $sizeChart->name ?? null;
                         @endphp
                         @if($sizeChartId != 0)
                             <div>

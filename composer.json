@@ -13,6 +13,7 @@
         "enshrined/svg-sanitize": "^0.15.4",
         "genealabs/laravel-sign-in-with-apple": "*",
         "genealabs/laravel-socialiter": "*",
+        "google/apiclient": "2.19",
         "guzzlehttp/guzzle": "^7.5",
         "instamojo/instamojo-php": "^0.4.0",
         "intervention/image": "^2.5",

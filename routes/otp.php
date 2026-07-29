@@ -34,6 +34,8 @@ Route::controller(OTPVerificationController::class)->group(function () {
     Route::post('/activate-otp-for-cashOnDelivery-and-wallet', 'activate_otp_for_cashOnDelivery_and_wallet')->name('activate_otp_for_cashOnDelivery_and_wallet');  
     Route::post('/checkout/send-purchase-otp',  'sendPurchaseOtp')->name('checkout.send_purchase_otp');
     Route::post('/checkout/verify-purchase-otp', 'verifyPurchaseOtp')->name('checkout.verify_purchase_otp');
+    Route::post('/checkout/send-guest-otp', 'sendGuestOtp')->name('checkout.send_guest_otp');
+    Route::post('/checkout/verify-guest-otp',  'verifyGuestOtp')->name('checkout.verify_guest_otp');
   
 });
 

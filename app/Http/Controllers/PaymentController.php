@@ -8,101 +8,110 @@ use App\Models\User;
 
 class PaymentController extends Controller
 {
-    public function __construct() {
-        // Staff Permission Check
+    public function __construct()
+    {
         $this->middleware(['permission:seller_payment_history'])->only('payment_histories');
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    // public function index()
-    // {
-    //     $payments = Payment::where('seller_id', Auth::user()->seller->id)->paginate(9);
-    //     return view('seller.payment_history', compact('payments'));
-    // }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function payment_histories(Request $request)
     {
-        $payments = Payment::orderBy('created_at', 'desc')->paginate(15);
-        return view('backend.sellers.payment_histories.index', compact('payments'));
-    }
+        $sort_search = null;
+        $payment_tabs = ['All Seller Payments'];
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+        $payments = Payment::orderBy('created_at', 'desc');
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        if ($request->has('search') && $request->search != null) {
+            $sort_search = $request->search;
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $user = User::find(decrypt($id));
-        $payments = Payment::where('seller_id', $user->id)->orderBy('created_at', 'desc')->get();
-        if($payments->count() > 0){
-            return view('backend.sellers.payment', compact('payments', 'user'));
+            $seller_ids = User::where('name', 'like', '%' . $sort_search . '%')
+                ->orWhereHas('shop', function ($q) use ($sort_search) {
+                    $q->where('name', 'like', '%' . $sort_search . '%');
+                })
+                ->pluck('id');
+
+            $payments = $payments->whereIn('seller_id', $seller_ids);
         }
+
+        $payments = $payments->paginate(15);
+        return view('backend.sellers.payment_histories.index', compact('payments', 'payment_tabs', 'sort_search'));
+    }
+
+    public function filter(Request $request)
+    {
+        $payments = Payment::orderBy('created_at', 'desc');
+        $sort_search = null;
+
+        if ($request->search != null) {
+            $sort_search = $request->search;
+
+            $seller_ids = User::where('name', 'like', '%' . $sort_search . '%')
+                ->orWhereHas('shop', function ($q) use ($sort_search) {
+                    $q->where('name', 'like', '%' . $sort_search . '%');
+                })
+                ->pluck('id');
+
+            $payments = $payments->whereIn('seller_id', $seller_ids);
+        }
+
+        $payments = $payments->paginate(15);
+        $view = view(
+            'backend.sellers.payment_histories.table',
+            compact('payments', 'sort_search')
+        )->render();
+        return response()->json(['html' => $view]);
+    }
+
+    public function create() {}
+
+    public function store(Request $request) {}
+
+    public function show(Request $request, $id)
+    {
+        $sort_search = null;
+        $payment_tabs = ['All Payment History'];
+
+        $user = User::find(decrypt($id));
+
+        $payments = Payment::where('seller_id', $user->id)->orderBy('created_at', 'desc');
+
+        if ($request->has('search') && $request->search != null) {
+            $sort_search = $request->search;
+            $payments = $payments->whereRaw("DATE_FORMAT(created_at, '%Y-%m-%d') like ?", ['%' . $sort_search . '%']);
+        }
+
+        if ($payments->count() > 0) {
+            $payments = $payments->paginate(15);
+            return view('backend.sellers.payment', compact('payments', 'user', 'payment_tabs'));
+        }
+
         flash(translate('No payment history available for this seller'))->warning();
         return back();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function history_filter(Request $request, $id)
     {
-        //
+        $sort_search = null;
+
+        $user = User::find(decrypt($id));
+
+        $payments = Payment::where('seller_id', $user->id)->orderBy('created_at', 'desc');
+
+        if ($request->has('search') && $request->search != null) {
+            $sort_search = $request->search;
+            $payments = $payments->whereRaw("DATE_FORMAT(created_at, '%Y-%m-%d') like ?", ['%' . $sort_search . '%']);
+        }
+
+        $payments = $payments->paginate(15);
+        $view = view(
+            'backend.sellers.payment_table',
+            compact('payments', 'sort_search', 'user')
+        )->render();
+        return response()->json(['html' => $view]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+    public function edit($id) {}
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+    public function update(Request $request, $id) {}
+
+    public function destroy($id) {}
 }

@@ -191,6 +191,14 @@
                             <a class="dropdown-item" href="{{ route('invoice.printer', $order->id) }}" target="_blank">
                                 <i class="las la-download mr-2"></i> {{ translate('Print Invoice') }}
                             </a>
+                            @if(Route::has('pos-connector.orders.send'))
+                                <form method="POST" action="{{ route('pos-connector.orders.send', $order->id) }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="las la-cash-register mr-2"></i> {{ translate('Send to POS') }}
+                                    </button>
+                                </form>
+                            @endif
                             @if(isset($thermal_printer['generate_invoice_for_thermal_printer']) && $thermal_printer['generate_invoice_for_thermal_printer'] == 1)
                             <a class="dropdown-item" href="{{ route('thermal_invoice.print', $order->id) }}" target="_blank">
                                 <i class="las la-download mr-2"></i> {{ translate('Print Thermal Invoice') }}

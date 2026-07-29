@@ -19,6 +19,8 @@ class ProductFlashDealService
                 );
             $flash_deal_product->flash_deal_id = $collection['flash_deal_id'];
             $flash_deal_product->product_id = $product->id;
+            $flash_deal_product->discount = $collection['flash_discount'];
+            $flash_deal_product->discount_type = $collection['flash_discount_type'];
             $flash_deal_product->save();
 
             $flash_deal = FlashDeal::findOrFail($collection['flash_deal_id']);
@@ -26,6 +28,7 @@ class ProductFlashDealService
             $product->discount_type = $collection['flash_discount_type'];
             $product->discount_start_date = $flash_deal->start_date;
             $product->discount_end_date   = $flash_deal->end_date;
+            $product->promotional   = 1;
             $product->save();
         }
 

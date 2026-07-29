@@ -79,7 +79,7 @@
                         <div class="row gutters-5 w-200px w-md-200px mw-200">
                             <div class="col">
                                 <span
-                                    class="text-dark fs-14 fw-300">{{ $category->getTranslation('name') }}</span>
+                                    class="text-dark fs-14 fw-500">{{ $category->getTranslation('name') }}</span>
                                 @if ($category->digital == 1)
                                     <span class="m-0 border border-secondary  bg-secondary text-white fs-12 py-1 px-10px rounded-pill">{{TRANSLATE('Digital')}}</span>
                                 @endif
@@ -151,7 +151,7 @@
                     <td class="text-right" data-label="Options">
                         <div class="d-flex align-items-center justify-content-end">
                             <button type="button" onclick="openRightcanvas({{ $category->id }})"
-                            class="text-nowrap d-block mr-2 text-decoration-none fs-14 fw-300 text-blue py-5px px-5px border border-gray-300 rounded-1 bg-gray-100 hov-bg-blue hov-text-white">{{ translate('View More') }}</button>
+                            class="text-nowrap d-block mr-2 text-decoration-none fs-12 fw-400 text-blue py-5px px-5px border border-gray-300 rounded-1 bg-gray-100 hov-bg-blue hov-text-white">{{ translate('View More') }}</button>
 
                             <div class="dropdown float-right">
                                 <button

@@ -58,6 +58,7 @@ use App\Models\CustomerPackagePayment;
 use App\Models\CustomLabel;
 use App\Models\CustomSaleAlert;
 use App\Models\ElementStyle;
+use Illuminate\Support\Facades\Schema;
 use App\Models\ElementType;
 use App\Models\EmailTemplate;
 use App\Models\FlashDealProduct;
@@ -108,6 +109,43 @@ if (!function_exists('default_language')) {
     function default_language()
     {
         return env("DEFAULT_LANGUAGE");
+    }
+}
+
+if (!function_exists('header_menu_url')) {
+    function header_menu_url($link)
+    {
+        if ($link == null || $link === '#') {
+            return '#';
+        }
+
+        if (filter_var($link, FILTER_VALIDATE_URL)) {
+            return $link;
+        }
+
+        return url(ltrim($link, '/'));
+    }
+}
+
+if (!function_exists('is_active_header_menu')) {
+    function is_active_header_menu($link)
+    {
+        $menuUrl = header_menu_url($link);
+
+        if ($menuUrl === '#') {
+            return false;
+        }
+
+        $menuHost = parse_url($menuUrl, PHP_URL_HOST);
+        if ($menuHost && $menuHost !== request()->getHost()) {
+            return false;
+        }
+
+        $normalize = function ($url) {
+            return rtrim(strtok($url, '?'), '/');
+        };
+
+        return $normalize(url()->full()) === $normalize($menuUrl);
     }
 }
 
@@ -1337,7 +1375,7 @@ if (!function_exists('my_asset')) {
             return Storage::disk(config('filesystems.default'))->url($path);
         }
 
-        return app('url')->asset('public/' . $path, $secure);
+        return app('url')->asset($path, $secure);
     }
 }
 
@@ -1351,7 +1389,7 @@ if (!function_exists('static_asset')) {
      */
     function static_asset($path, $secure = null)
     {
-        return app('url')->asset('public/' . $path, $secure);
+        return app('url')->asset($path, $secure);
     }
 }
 
@@ -2457,8 +2495,14 @@ if (!function_exists('get_user_last_wallet_recharge')) {
 if (!function_exists('get_user_total_club_point')) {
     function get_user_total_club_point()
     {
-        $club_point_query = ClubPoint::query();
-        return $club_point_query->where('user_id', Auth::user()->id)->where('convert_status', 0)->sum('points');
+        return ClubPoint::where('user_id', Auth::id())
+            ->where('convert_status', 0)
+            ->get()
+            ->sum(function ($clubPoint) {
+                return $clubPoint->club_point_details
+                    ->where('refunded', 0)
+                    ->sum('point');
+            });
     }
 }
 
@@ -3300,17 +3344,43 @@ if (!function_exists('get_all_sale_alert_products')) {
 //get products label
 if (!function_exists('get_custom_labels')) {
     function get_custom_labels($labels) {
+        static $hasCustomLabelStatusColumn = null;
+
         $labels_array = [];
         if($labels){
+            $hasCustomLabelStatusColumn ??= Schema::hasColumn('custom_labels', 'status');
             $labels = explode(',',$labels);
             foreach($labels as $label){
-                $label_data = CustomLabel::where('id',$label)->first();
+                $label_query = CustomLabel::where('id', $label);
+                if ($hasCustomLabelStatusColumn) {
+                    $label_query->where('status', 1);
+                }
+                $label_data = $label_query->first();
                 if($label_data){
                     $labels_array[] = $label_data;
                 }
             }
         }
         return $labels_array;
+    }
+}
+
+//get products label
+if (!function_exists('get_custom_label')) {
+    function get_custom_label($label) {
+            static $hasCustomLabelStatusColumn = null;
+
+            $hasCustomLabelStatusColumn ??= Schema::hasColumn('custom_labels', 'status');
+            $label = explode(',',$label);
+            $label_query = CustomLabel::where('id', $label);
+            if ($hasCustomLabelStatusColumn) {
+                $label_query->where('status', 1);
+            }
+            $label_data = $label_query->first();
+            if($label_data){
+                $label = $label_data;
+            }
+        return $label;
     }
 }
 

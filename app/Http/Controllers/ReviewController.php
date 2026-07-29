@@ -12,67 +12,102 @@ use App\Models\User;
 use Auth;
 use App\Models\ClubPoint;
 use App\Models\ClubPointDetail;
-use Route;
 
 class ReviewController extends Controller
 {
     public function __construct()
     {
-        // Staff Permission Check
         $this->middleware(['permission:view_product_reviews'])->only('index');
         $this->middleware(['permission:publish_product_review'])->only('updatePublished');
         $this->middleware(['permission:add_custom_review'])->only('customReviewCreate');
         $this->middleware(['permission:edit_custom_review'])->only('customReviewEdit','customReviewUpdate');
     }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+        
     public function index(Request $request)
     {
-        $sortSearch     =  $request->search != null ? $request->search : null; 
-        $sortByRating   =  $request->rating != null ? $request->rating : null; 
-        $sellerID       =  $request->seller_id != null ? $request->seller_id : 'all'; 
+        $review_tabs = ['All Reviews', 'Admin Reviews', 'Seller Reviews'];
+        $sellers = User::whereUserType('seller')->where('email_verified_at', '!=', null)->get();
 
-        $products = Product::join('reviews', 'reviews.product_id', '=', 'products.id')
-                            ->groupBy('products.id');
-        $products = $sortByRating != null ? $products->orderBy('products.rating', $sortByRating) : $products->orderBy('products.created_at', 'desc');
-
-        if ($sellerID != 'all') {
-            $products->where('products.user_id', $sellerID);
-        }  
-        if ($sortSearch != null) {
-            $products->where(function ($q) use ($sortSearch){
-                $q->where('products.name', 'like', '%'.$sortSearch.'%')
-                ->orWhereHas('product_translations', function ($q) use ($sortSearch) {
-                    $q->where('name', 'like', '%' . $sortSearch . '%');
-                });
-            });
-        }        
-        $products = $products->select("products.id","products.thumbnail_img", "products.name", "products.user_id",  "products.rating")->paginate(15);
-        $sellers = User::whereUserType('seller')->where('email_verified_at','!=', null)->get();
-        return view('backend.product.reviews.index', compact('products', 'sellers', 'sortSearch','sortByRating', 'sellerID'));
+        return view('backend.product.reviews.index', compact('review_tabs', 'sellers'));
     }
 
-    public function detailReviews(Request $request, $productId){
-        $product = Product::whereId($productId)->first();
+    public function filter(Request $request)
+    {
+        $products = Product::join('reviews', 'reviews.product_id', '=', 'products.id')->groupBy('products.id');
+
+        if ($request->review_status == 'admin_reviews') {
+            $products->where('products.user_id', get_admin()->id);
+        } elseif ($request->review_status == 'seller_reviews') {
+            $products->where('products.user_id', '!=', get_admin()->id);
+        }
+
+        if ($request->seller_id && is_array($request->seller_id) && count($request->seller_id) > 0) {
+            $products->whereIn('products.user_id', $request->seller_id);
+        }
+
+        if ($request->search != null) {
+            $search = $request->search;
+            $products->where(function ($q) use ($search) {
+                $q->where('products.name', 'like', '%'.$search.'%')
+                ->orWhereHas('product_translations', function ($q) use ($search) {
+                    $q->where('name', 'like', '%'.$search.'%');
+                });
+            });
+        }
+
+        if (in_array($request->rating, ['asc', 'desc'])) {
+            $products->orderBy('products.rating', $request->rating);
+        } else {
+            $products->orderBy('products.created_at', 'desc');
+        }
+
+        $products = $products->select('products.*')->paginate(15);
+
+        $view = view('backend.product.reviews.table', compact('products'))->render();
+        return response()->json(['html' => $view]);
+    }
+
+    public function detailReviews($product_id)
+    {
+        $review_tabs = ['All Reviews', 'Real Reviews', 'Custom Reviews'];
+        $product = Product::findOrFail($product_id);
+
         if (env('DEMO_MODE') != 'On') {
             $product->reviews()->update(['viewed' => 1]);
         }
-        $reviewType = $request->review_type == null ? 'real' :  $request->review_type;
-        $reviews = $product->reviews()->whereType($reviewType)->paginate(15);
-        $customerReviewCount = $reviewType == 'real' ? $reviews->count() : $product->reviews()->whereType('real')->count();
-        $customReviewCount = $reviewType == 'custom' ? $reviews->count() : $product->reviews()->whereType('custom')->count();
-        return view('backend.product.reviews.detail_reviews', compact('reviews', 'product','reviewType', 'customerReviewCount', 'customReviewCount'));
+
+        return view('backend.product.reviews.detail_reviews', compact('product', 'review_tabs'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function detailFilter(Request $request)
+    {
+        $product = Product::findOrFail($request->product_id);
+
+        $reviewsQuery = $product->reviews();
+
+        if ($request->review_status == 'real_reviews') {
+            $reviewsQuery->where('type', 'real');
+        } elseif ($request->review_status == 'custom_reviews') {
+            $reviewsQuery->where('type', 'custom');
+        }
+
+        if ($request->search != null) {
+            $search = $request->search;
+            $reviewsQuery->where(function ($q) use ($search) {
+                $q->where('comment', 'like', '%'.$search.'%')
+                ->orWhere('custom_reviewer_name', 'like', '%'.$search.'%')
+                ->orWhereHas('user', function ($q) use ($search) {
+                    $q->where('name', 'like', '%'.$search.'%');
+                });
+            });
+        }
+
+        $reviews = $reviewsQuery->paginate(15);
+
+        $view = view('backend.product.reviews.detail_reviews_table', compact('product', 'reviews'))->render();
+        return response()->json(['html' => $view]);
+    }
+
     public function create()
     {
         //
@@ -92,17 +127,13 @@ class ReviewController extends Controller
         return view('backend.product.reviews.create_custom_review', compact('product', 'categories'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        $request->validate([
-            'photos.*' => 'nullable|file|mimes:jpeg,jpg,webp,png',
-        ]);
+        if(auth()->user()->user_type != 'admin'){
+            $request->validate([
+                'photos.*' => 'nullable|file|mimes:jpeg,jpg,webp,png',
+            ]);
+        }
         
         $authUser = auth()->user();
         $review             = new Review;
@@ -118,18 +149,24 @@ class ReviewController extends Controller
         $review->rating     = $request->rating;
         $review->comment    = $request->comment;
 
-        $image_ids = [];
+        if(auth()->user()->user_type != 'admin'){
+            $image_ids = [];
 
-        if ($request->hasFile('photos')) {
-            foreach ($request->file('photos') as $image) {
-                $id = custom_upload_file($image);
-                if ($id) {
-                    $image_ids[] = $id;
+            if ($request->hasFile('photos')) {
+                foreach ($request->file('photos') as $image) {
+                    $id = custom_upload_file($image);
+                    if ($id) {
+                        $image_ids[] = $id;
+                    }
                 }
             }
+            
+            $review->photos = implode(',', $image_ids);
+        }
+        else {
+            $review->photos = implode(',', $request->photos);
         }
         
-        $review->photos = implode(',', $image_ids);
         
         $review->viewed     = '0';
         if(($request->review_date_type == "custom") && $request->custom_date != null){
@@ -240,46 +277,21 @@ class ReviewController extends Controller
         return back();
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         //
@@ -306,10 +318,51 @@ class ReviewController extends Controller
                 $seller->num_of_reviews += 1;
             } else {
                 $seller->rating = (($seller->rating * $seller->num_of_reviews) - $review->rating) / max(1, $seller->num_of_reviews - 1);
-                $seller->num_of_reviews -= 1;
+                $seller->num_of_reviews = max(0, $seller->num_of_reviews - 1);
             }
 
             $seller->save();
+        }
+
+        return 1;
+    }
+
+    public function updateBulkPublished(Request $request)
+    {
+        $ids = $request->ids;
+
+        if (!$ids || !is_array($ids) || count($ids) == 0) {
+            return 0;
+        }
+
+        $reviews = Review::whereIn('id', $ids)->get();
+
+        foreach ($reviews as $review) {
+            $newStatus = $review->status == 1 ? 0 : 1; 
+
+            $review->status = $newStatus;
+            $review->save();
+
+            $product = Product::findOrFail($review->product_id);
+            $publishedCount = Review::where('product_id', $product->id)->where('status', 1)->count();
+            $product->rating = $publishedCount > 0
+                ? Review::where('product_id', $product->id)->where('status', 1)->sum('rating') / $publishedCount
+                : 0;
+            $product->save();
+
+            if ($product->added_by == 'seller') {
+                $seller = $product->user->shop;
+
+                if ($newStatus == 1) {
+                    $seller->rating = (($seller->rating * $seller->num_of_reviews) + $review->rating) / ($seller->num_of_reviews + 1);
+                    $seller->num_of_reviews += 1;
+                } else {
+                    $seller->rating = (($seller->rating * $seller->num_of_reviews) - $review->rating) / max(1, $seller->num_of_reviews - 1);
+                    $seller->num_of_reviews = max(0, $seller->num_of_reviews - 1);
+                }
+
+                $seller->save();
+            }
         }
 
         return 1;

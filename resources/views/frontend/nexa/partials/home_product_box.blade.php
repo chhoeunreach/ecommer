@@ -20,17 +20,19 @@
     </a>
     @php
         $badgeIndex = 0;
+        $singleCustomLabel = get_custom_label('202');
+        $singleCustomLabelWholesale = get_custom_label('203');
     @endphp
     <!-- Badges -->
     <div class="position-absolute d-flex flex-column align-items-start badges-wrapper">
         @if (discount_in_percentage($product) > 0)
-            <span class="fs-11 fw-600 text-white text-center bg-primary rounded-pill w-auto"
-                style="padding: 2px 8px; top:{{ 25 * $badgeIndex }}px;">-{{ discount_in_percentage($product) }}%</span>
+            <span class="fs-11 fw-600 text-center rounded-pill w-auto"
+                style="padding: 2px 8px; top:{{ 25 * $badgeIndex }}px; background-color:{{ $singleCustomLabel->background_color }}; color:{{ $singleCustomLabel->text_color }};">-{{ discount_in_percentage($product) }}%</span>
             @php $badgeIndex++; @endphp        
         @endif
         @if ($product->wholesale_product)
-            <span class="fs-11 text-white fw-600 rounded-pill w-auto"
-                style="background-color:#455a64; padding: 2px 8px; top:{{ 25 * $badgeIndex }}px;">
+            <span class="fs-11 fw-600 rounded-pill w-auto"
+                style="background-color: {{ $singleCustomLabelWholesale->background_color }}; color:{{ $singleCustomLabelWholesale->text_color }}; padding: 2px 8px; top:{{ 25 * $badgeIndex }}px;">
                     {{ translate('Wholesale') }}</span>
                 @php $badgeIndex++; @endphp
         @endif

@@ -27,35 +27,82 @@ class CustomLabelController extends Controller
     public function index(Request $request)
     {
         $sort_search = null;
-        $customLabelUserType = $request->custom_label_user_type != null ? $request->custom_label_user_type : 'all';
-        $custom_labels = CustomLabel::whereHas('user');
+        $custom_label_tabs = ['All Custom Labels', 'In House', 'Seller'];
+        $lockedIds = [200, 201, 202, 203];
 
-        if ($customLabelUserType != 'all') {
-            $adminId = get_admin()->id;
-            $custom_labels = $customLabelUserType == 'in_house'
-                ? $custom_labels->where('user_id', $adminId)
-                : $custom_labels->where('user_id', '!=', $adminId);
-        }
+        $custom_labels = CustomLabel::where(function ($query) {
+                $query->whereHas('user')
+                    ->orWhere('user_id', 0);
+            })
+            ->orderByRaw('CASE WHEN id IN (' . implode(',', $lockedIds) . ') THEN 0 ELSE 1 END')
+            ->orderBy('created_at', 'desc');
+
 
         if ($request->has('search')) {
             $sort_search = $request->search;
             $custom_labels->where('text', 'like', '%' . $sort_search . '%');
         }
 
-        $custom_labels = $custom_labels->orderBy('created_at', 'desc')->paginate(15);
-
-        if ($request->ajax()) {
-            return view('backend.product.custom_label.partials.table', compact('custom_labels', 'sort_search', 'customLabelUserType'))->render();
+        if (!addon_is_activated('wholesale')) {
+            $custom_labels->where('id', '!=', 203);
         }
 
-        return view('backend.product.custom_label.custom_label_list', compact('custom_labels', 'sort_search', 'customLabelUserType'));
+        $custom_labels = $custom_labels->paginate(15);
+
+        return view('backend.product.custom_label.custom_label_list', compact('custom_labels', 'sort_search', 'custom_label_tabs'));
     }
 
+    public function filter(Request $request)
+    {
+        $lockedIds = [200, 201, 202, 203];
+
+        $custom_labels = CustomLabel::where(function ($query) {
+                $query->whereHas('user')
+                    ->orWhere('user_id', 0);
+            })
+            ->orderByRaw('CASE WHEN id IN (' . implode(',', $lockedIds) . ') THEN 0 ELSE 1 END')
+            ->orderBy('created_at', 'desc');
+
+        $sort_search = null;
+
+        $adminId = get_admin()->id;
+        if ($request->custom_label_status == "in_house") {
+
+            $custom_labels->where(function ($query) use ($adminId) {
+                $query->where('user_id', $adminId)
+                    ->orWhere('user_id', 0);
+            });
+
+        } elseif ($request->custom_label_status == 'seller') {
+
+            $custom_labels->where('user_id', '!=', $adminId)
+                        ->where('user_id', '!=', 0);
+        }
+
+        if ($request->search != null) {
+            $sort_search = $request->search;
+            $custom_labels->where('text', 'like', '%' . $sort_search . '%');
+        }
+
+        if (!addon_is_activated('wholesale')) {
+            $custom_labels->where('id', '!=', 203);
+        }
+
+        $custom_labels = $custom_labels->paginate(15);
+        $view = view(
+            'backend.product.custom_label.partials.table',
+            compact('custom_labels', 'sort_search')
+        )->render();
+        return response()->json(['html' => $view]);
+    }
 
     public function create()
     {
+        $categories = Category::where('parent_id', 0)
+            ->with('childrenCategories')
+            ->get();
         $products = Product::isApprovedPublished()->where('auction_product', 0)->orderBy('created_at', 'desc')->get();
-        return view('backend.product.custom_label.custom_label_create', compact('products'));
+        return view('backend.product.custom_label.custom_label_create', compact('products', 'categories'));
     }
 
     public function store(Request $request)
@@ -95,16 +142,14 @@ class CustomLabelController extends Controller
         return redirect()->route('custom_label.index');
     }
 
-    public function products(Request $request)
-    {
-        $product_ids = $request->product_ids;
-        return view('backend.product.custom_label.products', compact('product_ids'));
-    }
-
     public function edit(Request $request, $id)
     {
         $lang = $request->lang ?? env('DEFAULT_LANGUAGE');
         $custom_label = CustomLabel::findOrFail($id);
+
+        $categories = Category::where('parent_id', 0)
+            ->with('childrenCategories')
+            ->get();
 
         $selected_products_ids = Product::whereRaw("FIND_IN_SET(?, custom_label_id)", [$custom_label->id])
             ->pluck('id')
@@ -120,7 +165,7 @@ class CustomLabelController extends Controller
 
         $products = $selected_products->merge($unselected_products);
 
-        return view('backend.product.custom_label.custom_label_edit', compact('custom_label', 'lang', 'products', 'selected_products_ids'));
+        return view('backend.product.custom_label.custom_label_edit', compact('custom_label', 'lang', 'products', 'selected_products_ids', 'categories'));
     }
 
 
@@ -138,8 +183,9 @@ class CustomLabelController extends Controller
         }
 
         $custom_label = CustomLabel::findOrFail($id);
+        $isProtectedLabel = $request->lang == 'en' && in_array($custom_label->id, [200, 201, 202, 203]);
 
-        if ($request->lang == env("DEFAULT_LANGUAGE")) {
+        if (!$isProtectedLabel && $request->lang == env('DEFAULT_LANGUAGE')) {
             $custom_label->text = $request->text;
         }
 
@@ -147,14 +193,17 @@ class CustomLabelController extends Controller
         $custom_label->text_color = $request->text_color;
         $custom_label->save();
 
-        $custom_label_translation = CustomLabelTranslation::firstOrNew([
-            'lang' => $request->lang,
-            'custom_label_id' => $custom_label->id
-        ]);
-        $custom_label_translation->text = $request->text;
-        $custom_label_translation->save();
+        if (!$isProtectedLabel) {
+            $custom_label_translation = CustomLabelTranslation::firstOrNew([
+                'lang' => $request->lang,
+                'custom_label_id' => $custom_label->id
+            ]);
 
-         $selected_product_ids = $request->has('products') ? $request->products : [];
+            $custom_label_translation->text = $request->text;
+            $custom_label_translation->save();
+        }
+
+        $selected_product_ids = $request->has('products') ? $request->products : [];
         if (count($selected_product_ids) > 0) {
             Product::whereIn('id', $selected_product_ids)->get()->each(function ($product) use ($custom_label) {
                 $labels = $product->custom_label_id ? array_filter(array_map('trim', explode(',', $product->custom_label_id))) : [];
@@ -198,7 +247,6 @@ class CustomLabelController extends Controller
         $selected_products_ids = Product::whereRaw("FIND_IN_SET(?, custom_label_id)", [$custom_label->id])
             ->pluck('id')
             ->toArray();
-        // Also Remove Products who was associates with this label
         Product::whereIn('id', $selected_products_ids)
             ->get()
             ->each(function ($product) use ($custom_label) {
@@ -210,8 +258,33 @@ class CustomLabelController extends Controller
             });
         $custom_label->delete();
         Artisan::call('cache:clear');
-        flash(translate('Label has been deleted successfully!'))->success();
-        return back();
+        return 1;
+    }
+
+    public function bulk_custom_label_delete(Request $request) 
+    {
+        if($request->id) {
+            foreach ($request->id as $custom_label_id) {
+                $custom_label = CustomLabel::findOrFail($custom_label_id);
+                if (!$custom_label) {
+                    continue;
+                }
+                $selected_products_ids = Product::whereRaw("FIND_IN_SET(?, custom_label_id)", [$custom_label->id])
+                    ->pluck('id')
+                    ->toArray();
+                Product::whereIn('id', $selected_products_ids)
+                    ->get()
+                    ->each(function ($product) use ($custom_label) {
+                        $labels = $product->custom_label_id ? array_filter(array_map('trim', explode(',', $product->custom_label_id))) : [];
+                        $labels = array_diff($labels, [(string) $custom_label->id]);
+                        $labels = array_values($labels);
+                        $product->custom_label_id = count($labels) ? implode(',', $labels) : null;
+                        $product->save();
+                    });
+                $custom_label->delete();
+            }
+            return 1;
+        }
     }
 
     public function updateSellerAccess(Request $request)
@@ -231,4 +304,57 @@ class CustomLabelController extends Controller
         }
         return 0;
     }
+
+    public function status_update(Request $request)
+    {
+        $custom_label = CustomLabel::findOrFail($request->id);
+        $custom_label->status = $request->status;
+        
+        if ($custom_label->save()) {
+            return 1;
+        }
+        return 0;
+    }
+
+    public function custom_label_product_search(Request $request)
+    {
+        if (!$request->category && !$request->search_key) {
+            return view('backend.product.custom_label.custom_label_product_list', ['products' => collect()]);
+        }
+
+        $products = Product::isApprovedPublished()
+            ->where('auction_product', 0)
+
+            ->when($request->category, function ($q) use ($request) {
+                $q->whereHas('product_categories', function ($q2) use ($request) {
+                    $q2->where('category_id', $request->category);
+                });
+            })
+            ->when($request->search_key, function ($q) use ($request) {
+                $q->where(function ($q2) use ($request) {
+                    $q2->where('name', 'like', '%' . $request->search_key . '%')
+                    ->orWhereHas('product_translations', function ($q3) use ($request) {
+                        $q3->where('name', 'like', '%' . $request->search_key . '%');
+                    });
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('backend.product.custom_label.custom_label_product_list', compact('products'));
+    }
+
+    public function product_add(Request $request)
+    {
+        $product_ids = $request->product_ids;
+        return view('backend.product.custom_label.products', compact('product_ids'));
+    }
+
+    public function product_edit(Request $request)
+    {
+        $product_ids = $request->product_ids;
+        $custom_label_id = $request->custom_label_id;
+        return view('backend.product.custom_label.products_edit', compact('product_ids', 'custom_label_id'));
+    }
+
 }

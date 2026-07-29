@@ -155,15 +155,34 @@
                                         <span class="aiz-side-nav-arrow" style="color: {{ get_setting('navbar_text_color') }}"></span>
                                     </a>
                                     <ul class="aiz-side-nav-list level-3">
-                                        @can('view_product_categories')
+                                        @canany(['view_product_categories', 'category_bulk_upload'])
                                             <li class="aiz-side-nav-item">
-                                                <a href="{{route('categories.index')}}"
-                                                    class="aiz-side-nav-link {{ areActiveRoutes(['categories.index', 'categories.create', 'categories.edit'])}}">
+                                                <a href="javascript:void(0);" class="aiz-side-nav-link">
                                                     <span class="aiz-side-nav-text"
                                                         style="color: {{ get_setting('navbar_text_color') }}">{{translate('Category')}}</span>
+                                                    <span class="aiz-side-nav-arrow" style="color: {{ get_setting('navbar_text_color') }}"></span>
                                                 </a>
+                                                <ul class="aiz-side-nav-list level-4">
+                                                    @can('view_product_categories')
+                                                        <li class="aiz-side-nav-item">
+                                                            <a href="{{route('categories.index')}}"
+                                                                class="aiz-side-nav-link {{ areActiveRoutes(['categories.index', 'categories.create', 'categories.edit'])}}">
+                                                                <span class="aiz-side-nav-text"
+                                                                    style="color: {{ get_setting('navbar_text_color') }}">{{translate('Category')}}</span>
+                                                            </a>
+                                                        </li>
+                                                    @endcan
+                                                    @can('category_bulk_upload')
+                                                        <li class="aiz-side-nav-item">
+                                                            <a href="{{ route('category_bulk_upload.index') }}" class="aiz-side-nav-link">
+                                                                <span class="aiz-side-nav-text"
+                                                                    style="color: {{ get_setting('navbar_text_color') }}">{{translate('Bulk Import/Export')}}</span>
+                                                            </a>
+                                                        </li>
+                                                    @endcan
+                                                </ul>
                                             </li>
-                                        @endcan
+                                        @endcanany
                                         @canany(['view_all_brands', 'brand_bulk_upload'])
                                             <li class="aiz-side-nav-item">
                                                 <a href="javascript:void(0);" class="aiz-side-nav-link">
@@ -185,7 +204,7 @@
                                                         <li class="aiz-side-nav-item">
                                                             <a href="{{ route('brand_bulk_upload.index') }}" class="aiz-side-nav-link">
                                                                 <span class="aiz-side-nav-text"
-                                                                    style="color: {{ get_setting('navbar_text_color') }}">{{translate('Brand Bulk Import')}}</span>
+                                                                    style="color: {{ get_setting('navbar_text_color') }}">{{translate('Bulk Import/Export')}}</span>
                                                             </a>
                                                         </li>
                                                     @endcan
@@ -207,6 +226,15 @@
                                                     class="aiz-side-nav-link {{ areActiveRoutes(['attributes.index', 'attributes.create', 'attributes.edit', 'attributes.show'])}}">
                                                     <span class="aiz-side-nav-text"
                                                         style="color: {{ get_setting('navbar_text_color') }}">{{translate('Attribute')}}</span>
+                                                </a>
+                                            </li>
+                                        @endcan
+                                        @can('view_unit')
+                                            <li class="aiz-side-nav-item">
+                                                <a href="{{route('unit.index')}}"
+                                                    class="aiz-side-nav-link">
+                                                    <span class="aiz-side-nav-text"
+                                                        style="color: {{ get_setting('navbar_text_color') }}">{{translate('Unit')}}</span>
                                                 </a>
                                             </li>
                                         @endcan
@@ -255,14 +283,6 @@
                                                     <span class="aiz-side-nav-arrow" style="color: {{ get_setting('navbar_text_color') }}"></span>
                                                 </a>
                                                 <ul class="aiz-side-nav-list level-4">
-                                                    @can('add_note')
-                                                        <li class="aiz-side-nav-item">
-                                                            <a class="aiz-side-nav-link" href="{{route('note.create')}}">
-                                                                <span class="aiz-side-nav-text"
-                                                                    style="color: {{ get_setting('navbar_text_color') }}">{{translate('Add New Note')}}</span>
-                                                            </a>
-                                                        </li>
-                                                    @endcan
                                                     @can('view_notes')
                                                         <li class="aiz-side-nav-item">
                                                             <a class="aiz-side-nav-link" href="{{route('note.index')}}">
@@ -619,6 +639,19 @@
                                 </li>
                             @endcan
                         </ul>
+                    </li>
+                @endif
+
+                @if(Route::has('pos-connector.index'))
+                    <li class="aiz-side-nav-item">
+                        <a href="{{ route('pos-connector.index') }}"
+                            class="aiz-side-nav-link {{ areActiveRoutes(['pos-connector.index']) }}">
+                            <div class="aiz-side-nav-icon">
+                                <i class="las la-sync" style="color: {{ get_setting('navbar_text_color') }}"></i>
+                            </div>
+                            <span class="aiz-side-nav-text"
+                                style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Ultimate POS Connector') }}</span>
+                        </a>
                     </li>
                 @endif
 
@@ -1313,19 +1346,11 @@
                             @endcan
                             @can('manage_email_templates')
                                 <li class="aiz-side-nav-item">
-                                    <a href="javascript:void(0);" class="aiz-side-nav-link">
+                                    <a href="{{route('all_email_templates.index')}}"
+                                        class="aiz-side-nav-link">
                                         <span class="aiz-side-nav-text"
-                                            style="color: {{ get_setting('navbar_text_color') }}">{{translate('Email Templates')}}</span>
-                                        <span class="aiz-side-nav-arrow" style="color: {{ get_setting('navbar_text_color') }}"></span>
+                                            style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Email Templates') }}</span>
                                     </a>
-                                    <ul class="aiz-side-nav-list level-3">
-                                        <li class="aiz-side-nav-item">
-                                            <a href="{{ route('all_email_templates.index') }}" class="aiz-side-nav-link">
-                                                <span class="aiz-side-nav-text"
-                                                    style="color: {{ get_setting('navbar_text_color') }}">{{translate('All Email Templates')}}</span>
-                                            </a>
-                                        </li>
-                                    </ul>
                                 </li>
                             @endcan
                             @canany(['view_blogs', 'view_blog_categories'])
@@ -1341,7 +1366,7 @@
                                                 <a href="{{ route('blog.index') }}"
                                                     class="aiz-side-nav-link {{ areActiveRoutes(['blog.create', 'blog.edit'])}}">
                                                     <span class="aiz-side-nav-text"
-                                                        style="color: {{ get_setting('navbar_text_color') }}">{{ translate('All Posts') }}</span>
+                                                        style="color: {{ get_setting('navbar_text_color') }}">{{ translate('All Blog Posts') }}</span>
                                                 </a>
                                             </li>
                                         @endcan
@@ -1505,6 +1530,49 @@
                                     </a>
                                 </li>
                             @endcan
+                            
+                            @canany(['delete_gmc_product', 'edit_gmc_product', 'add_gmc_product'])
+                                <li class="aiz-side-nav-item">
+                                    <a href="javascript:void(0);" class="aiz-side-nav-link">
+                                        <span class="aiz-side-nav-text" style="color: {{ get_setting('navbar_text_color') }}">{{translate('Google Marchant Center')}}</span>
+                                        <span class="aiz-side-nav-arrow"></span>
+                                    </a>
+                                    <ul class="aiz-side-nav-list level-3">
+                                        <li class="aiz-side-nav-item">
+                                            <a href="{{ route('google_merchant_center.configuration') }}" class="aiz-side-nav-link">
+                                                <span class="aiz-side-nav-text" style="color: {{ get_setting('navbar_text_color') }}">{{translate('Configuration')}}</span>
+                                            </a>
+                                        </li>
+                                        <li class="aiz-side-nav-item">
+                                            <a href="{{ route('google_merchant_center.feed') }}" class="aiz-side-nav-link">
+                                                <span class="aiz-side-nav-text" style="color: {{ get_setting('navbar_text_color') }}">{{translate('Generate Feed')}}</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endcan
+
+                            @canany(['delete_gmc_product', 'edit_gmc_product', 'add_gmc_product'])
+                                <li class="aiz-side-nav-item">
+                                    <a href="javascript:void(0);" class="aiz-side-nav-link">
+                                        <span class="aiz-side-nav-text" style="color: {{ get_setting('navbar_text_color') }}">{{translate('Facebook Catalogue')}}</span>
+                                        <span class="aiz-side-nav-arrow"></span>
+                                    </a>
+                                    <ul class="aiz-side-nav-list level-3">
+                                        <li class="aiz-side-nav-item">
+                                            <a href="{{ route('facebook_catalogue.configuration') }}" class="aiz-side-nav-link ">
+                                                <span class="aiz-side-nav-text" style="color: {{ get_setting('navbar_text_color') }}">{{translate('Configuration')}}</span>
+                                            </a>
+                                        </li>
+                                        <li class="aiz-side-nav-item">
+                                            <a href="{{ route('facebook_catalogue.feed') }}" class="aiz-side-nav-link">
+                                                <span class="aiz-side-nav-text" style="color: {{ get_setting('navbar_text_color') }}">{{translate('Generate Feed')}}</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endcan
+
                             @can('manage_custom_script')
                                 <li class="aiz-side-nav-item">
                                     <a href="{{ route('custom_script') }}" class="aiz-side-nav-link">
@@ -1721,7 +1789,7 @@
                                 </svg>
                             </div>
                             <span class="aiz-side-nav-text"
-                                style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Report Ceneter') }}</span>
+                                style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Report Center') }}</span>
                             <span class="aiz-side-nav-arrow" style="color: {{ get_setting('navbar_text_color') }}"></span>
                         </a>
                         <ul class="aiz-side-nav-list level-2">
@@ -2377,7 +2445,7 @@
                                     <li class="aiz-side-nav-item">
                                         <a href="{{ route('otp.login_configuration') }}" class="aiz-side-nav-link">
                                             <span class="aiz-side-nav-text"
-                                                style="color: {{ get_setting('navbar_text_color') }}">{{translate('OTP Login Configuration')}}</span>
+                                                style="color: {{ get_setting('navbar_text_color') }}">{{translate('OTP System Settings')}}</span>
                                         </a>
                                     </li>
                                     <li class="aiz-side-nav-item">
@@ -2620,24 +2688,6 @@
                                     <a href="{{route('currency.index')}}" class="aiz-side-nav-link">
                                         <span class="aiz-side-nav-text"
                                             style="color: {{ get_setting('navbar_text_color') }}">{{translate('Currency')}}</span>
-                                    </a>
-                                </li>
-                            @endcan
-                            @can('vat_&_tax_setup')
-                                <li class="aiz-side-nav-item">
-                                    <a href="{{route('tax.index')}}"
-                                        class="aiz-side-nav-link {{ areActiveRoutes(['tax.index', 'tax.create', 'tax.store', 'tax.show', 'tax.edit'])}}">
-                                        <span class="aiz-side-nav-text"
-                                            style="color: {{ get_setting('navbar_text_color') }}">{{translate('Vat & TAX')}}</span>
-                                    </a>
-                                </li>
-                            @endcan
-                            @can('pickup_point_setup')
-                                <li class="aiz-side-nav-item">
-                                    <a href="{{route('pick_up_points.index')}}"
-                                        class="aiz-side-nav-link {{ areActiveRoutes(['pick_up_points.index', 'pick_up_points.create', 'pick_up_points.edit'])}}">
-                                        <span class="aiz-side-nav-text"
-                                            style="color: {{ get_setting('navbar_text_color') }}">{{translate('Pickup point')}}</span>
                                     </a>
                                 </li>
                             @endcan

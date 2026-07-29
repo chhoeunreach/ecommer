@@ -46,11 +46,11 @@
 							</div>
 						</div>
 						<div class="form-group d-flex justify-content-between align-items-center">
-							<input type="hidden" name="types[][{{ $lang }}]" value="enable_sub_footer">
+							<input type="hidden" name="types[][{{ $lang }}]" value="enable_sub_footer_section">
 							<div class="d-flex align-items-center">
 								<label class="aiz-switch aiz-switch-blue mb-0 pr-2">
-									<input type="checkbox" name="enable_sub_footer" value="1"
-										{{ (get_setting('enable_sub_footer') )?? 0 == 1 ? 'checked' : '' }}>
+									<input type="checkbox" name="enable_sub_footer_section" value="1"
+										{{ (get_setting('enable_sub_footer_section') )?? 0 == 1 ? 'checked' : '' }}>
 									<span></span>
 								</label>
 								<span class="d-block" style="margin-top: -6px">{{ translate('Enable Sub Footer') }}</span>
@@ -59,7 +59,7 @@
 						<!-- Background Color -->
     					<div class="form-group">
     						<label>{{ translate('Background Color') }}</label>
-    						<input type="hidden" name="types[][{{ $lang }}]" value="sub_footer_bg_color">
+    						<input type="hidden" name="types[]" value="sub_footer_bg_color">
 							<div class="input-group">
 								<input type="text" class="form-control aiz-color-input" name="sub_footer_bg_color" value="{{ get_setting('sub_footer_bg_color') }}" 
 									placeholder="Ex: #e1e1e1">
@@ -73,7 +73,7 @@
 						<!-- Text Color -->
     		            <div class="form-group">
     						<label>{{ translate('Text Color') }}</label>
-    						<input type="hidden" name="types[][{{ $lang }}]" value="sub_footer_text_color">
+    						<input type="hidden" name="types[]" value="sub_footer_text_color">
     						<div class="d-flex align-items-center">
 								<!-- Light Option -->
 								<label class="aiz-megabox d-block bg-white mb-0 mr-3" style="flex: 1;">
@@ -140,11 +140,11 @@
 							</div>
 						</div>
 						<div class="form-group d-flex justify-content-between align-items-center">
-							<input type="hidden" name="types[][{{ $lang }}]" value="enable_policy_section">
+							<input type="hidden" name="types[][{{ $lang }}]" value="enable_footer_policy_section">
 							<div class="d-flex align-items-center">
 								<label class="aiz-switch aiz-switch-blue mb-0 pr-2">
-									<input type="checkbox" name="enable_policy_section" value="1"
-										{{ (get_setting('enable_policy_section') )?? 0 == 1 ? 'checked' : '' }}>
+									<input type="checkbox" name="enable_footer_policy_section" value="1"
+										{{ (get_setting('enable_footer_policy_section') )?? 0 == 1 ? 'checked' : '' }}>
 									<span></span>
 								</label>
 								<span class="d-block" style="margin-top: -6px">{{ translate('Enable Policy Section') }}</span>
@@ -153,7 +153,7 @@
 						<!-- Background Color -->
     					<div class="form-group">
     						<label>{{ translate('Background Color') }}</label>
-    						<input type="hidden" name="types[][{{ $lang }}]" value="policy_section_bg_color">
+    						<input type="hidden" name="types[]" value="policy_section_bg_color">
 							<div class="input-group">
 								<input type="text" class="form-control aiz-color-input" name="policy_section_bg_color" value="{{ get_setting('policy_section_bg_color') }}" 
 									placeholder="Ex: #e1e1e1">
@@ -167,7 +167,7 @@
 						<!-- Text Color -->
     		            <div class="form-group">
     						<label>{{ translate('Text Color') }}</label>
-    						<input type="hidden" name="types[][{{ $lang }}]" value="policy_section_text_color">
+    						<input type="hidden" name="types[]" value="policy_section_text_color">
     						<div class="d-flex align-items-center">
 								<!-- Light Option -->
 								<label class="aiz-megabox d-block bg-white mb-0 mr-3" style="flex: 1;">
@@ -224,7 +224,7 @@
 						<!-- Background Color -->
     					<div class="form-group">
     						<label>{{ translate('Background Color') }}</label>
-    						<input type="hidden" name="types[][{{ $lang }}]" value="footer_bg_color">
+    						<input type="hidden" name="types[]" value="footer_bg_color">
 							<div class="input-group">
 								<input type="text" class="form-control aiz-color-input" name="footer_bg_color" value="{{ get_setting('footer_bg_color') }}" 
 									placeholder="Ex: #e1e1e1">
@@ -238,7 +238,7 @@
 						<!-- Text Color -->
     		            <div class="form-group">
     						<label>{{ translate('Text Color') }}</label>
-    						<input type="hidden" name="types[][{{ $lang }}]" value="footer_text_color">
+    						<input type="hidden" name="types[]" value="footer_text_color">
     						<div class="d-flex align-items-center">
 								<!-- Light Option -->
 								<label class="aiz-megabox d-block bg-white mb-0 mr-3" style="flex: 1;">
@@ -299,9 +299,7 @@
     		            <div class="form-group">
     						<label>{{ translate('About description') }} ({{ translate('Translatable') }})</label>
     						<input type="hidden" name="types[][{{ $lang }}]" value="about_us_description">
-    						<textarea class="form-control" name="about_us_description" placeholder="Type.." row="3" maxlength="240">
-                                {!! get_setting('about_us_description',null,$lang); !!}
-                            </textarea>
+    						<textarea class="form-control" name="about_us_description" placeholder="Type.." row="3" maxlength="240">{!! get_setting('about_us_description',null,$lang); !!}</textarea>
     					</div>
 						<!-- Update Button -->
 						<div class="mt-4 text-right">
@@ -625,9 +623,7 @@
 							<div class="form-group">
 								<label>{{ translate('Copyright Text') }} ({{ translate('Translatable') }})</label>
 								<input type="hidden" name="types[][{{ $lang }}]" value="frontend_copyright_text">
-								<textarea class="form-control" name="frontend_copyright_text" placeholder="Type.." row="1" maxlength="60">
-									{!! get_setting('frontend_copyright_text',null,$lang) !!}
-								</textarea>
+								<textarea class="form-control" name="frontend_copyright_text" placeholder="Type.." row="1" maxlength="60">{!! get_setting('frontend_copyright_text',null,$lang) !!}</textarea>
 							</div>
 							<div class="card-header p-0">
 								<h6 class="mb-0">{{ translate('Payment Methods') }}</h6>

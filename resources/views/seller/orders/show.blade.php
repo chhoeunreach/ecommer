@@ -13,13 +13,13 @@
                 </div>
                 @php
                     $delivery_status = $order->delivery_status;
-                    $payment_status = $order->orderDetails->where('seller_id', Auth::user()->id)->first()->payment_status;
+                    $payment_status = $order->payment_status;
 				    $first_order = $order->orderDetails->first();
                 @endphp
                 @if (get_setting('product_manage_by_admin') == 0)
                     <div class="col-md-3 ml-auto">
                         <label for="update_payment_status">{{ translate('Payment Status') }}</label>
-                        @if (($order->payment_type == 'cash_on_delivery' || (addon_is_activated('offline_payment') == 1 && $order->manual_payment == 1)) && $payment_status == 'unpaid'  && $order->payment_type != 'cash_on_delivery')
+                        @if (addon_is_activated('offline_payment') == 1 && $order->manual_payment == 1 && $payment_status == 'unpaid' && $order->payment_type != 'cash_on_delivery')
                             <select class="form-control aiz-selectpicker" data-minimum-results-for-search="Infinity"
                                 id="update_payment_status">
                                 <option value="unpaid" @if ($payment_status == 'unpaid') selected @endif>
@@ -28,7 +28,7 @@
                                     {{ translate('Paid') }}</option>
                             </select>
                         @else
-                            <input type="text" class="form-control" value="{{ translate($payment_status) }}" disabled>
+                            <input type="text" class="form-control" value="{{ ucfirst($payment_status) }}" disabled>
                         @endif
                     </div>
                     <div class="col-md-3 ml-auto">

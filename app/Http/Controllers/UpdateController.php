@@ -30,7 +30,7 @@ class UpdateController extends Controller
             return back();
         }
         $current_version= get_setting('current_version');
-        if (version_compare($current_version, '10.2.1', '<')) {
+        if (version_compare($current_version, '10.3.0', '<')) {
             flash(translate('Could not update. Please check the compatible version'))->error();
             return redirect('/');
         }
@@ -100,10 +100,10 @@ class UpdateController extends Controller
 
     public function step2()
     {
-        $versions = ['10.2.1'=>'v1021.sql','10.2.2'=>'v1022.sql','10.3.0'=>'v1030.sql','10.4.0'=>'v1040.sql','10.4.1'=>'v1041.sql','10.4.2'=>'v1042.sql','10.4.3'=>'v1043.sql','10.5.0'=>'v1050.sql','10.5.1'=>'v1051.sql','10.6.0'=>'v1060.sql','10.7.0'=>'v1070.sql','10.8.0'=>'v1080.sql','10.9.0'=>'v1090.sql','11.0.0'=>'v1100.sql'];
+        $versions = ['10.3.0'=>'v1030.sql','10.4.0'=>'v1040.sql','10.4.1'=>'v1041.sql','10.4.2'=>'v1042.sql','10.4.3'=>'v1043.sql','10.5.0'=>'v1050.sql','10.5.1'=>'v1051.sql','10.6.0'=>'v1060.sql','10.7.0'=>'v1070.sql','10.8.0'=>'v1080.sql','10.9.0'=>'v1090.sql','11.0.0'=>'v1100.sql','11.1.0'=>'v1110.sql','11.2.0'=>'v1120.sql'];
         
         $keys = array_keys($versions);
-        $current_version = (get_setting('current_version') != null) ? get_setting('current_version') : '10.2.1';
+        $current_version = (get_setting('current_version') != null) ? get_setting('current_version') : '10.3.0';
 
         if(array_search($current_version, $keys) == false){
             Artisan::call('view:clear');

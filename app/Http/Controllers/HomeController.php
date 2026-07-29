@@ -20,6 +20,7 @@ use App\Models\ProductQuery;
 use Illuminate\Http\Request;
 use App\Models\AffiliateConfig;
 use App\Models\Blog;
+use App\Models\BusinessSetting;
 use App\Models\CustomerPackage;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Route;
@@ -1238,6 +1239,23 @@ class HomeController extends Controller
 
         return response()->json([
             'status' => true
+        ]);
+    }
+
+    public function resetSellerMonthlyTokens()
+    {
+        $limit = BusinessSetting::where('type','seller_monthly_token_limit')->value('value');
+
+        $updated = User::whereRaw("DATE_ADD(seller_monthly_token_limit_setup_date, INTERVAL 1 MONTH) <= NOW()")
+            ->update([
+                'seller_monthly_token_limit' => $limit,
+                'seller_monthly_token_limit_setup_date' => now()
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Monthly token reset completed',
+            'updated_users' => $updated
         ]);
     }
 

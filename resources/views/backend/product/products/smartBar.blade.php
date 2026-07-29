@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-lg-8 mx-auto">
+        <div class="col-lg-7 mx-auto">
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0 h6">{{ translate('Smart Bar') }}</h5>  
@@ -12,25 +12,22 @@
                         enctype="multipart/form-data">
                         @csrf
 
-                        <div class="form-group row">
-                            <label class="col-xxl-3 col-from-label fs-13">{{ translate('Show Smart Bar') }}</label>
-                            <div class="col-xxl-9">
-                                <div class="input-group">
-                                    <label class="aiz-switch aiz-switch-success mb-0">
-                                        <input type="checkbox" 
-                                            id="smart_bar_status"
-                                            @if(get_setting('smart_bar_status')) checked @endif>
-                                        <span></span>
-                                    </label>
-                                </div>
-                                <span class="fs-12 mb-0">({{ translate('This bar will show a product summary at the bottom of the product detail page while scrolling.') }})</span>
+                        <div class="form-group">
+                            <div class="d-flex align-items-center mb-2">
+                                <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
+                                    <input type="checkbox" value="1" onchange="isRefundable()" id="smart_bar_status"
+                                        @if(get_setting('smart_bar_status')) checked @endif>
+                                    <span></span>
+                                </label>
+                                <span class="fs-14 fw-400 d-block" style="margin-top: -6px">{{ translate('Show Smart Bar') }}</span>
                             </div>
+                            <span class="fs-12 mb-0">({{ translate('This bar will show a product summary at the bottom of the product detail page while scrolling.') }})</span>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-xxl-3 col-from-label fs-13">
+                        <div class="form-group">
+                            <label class="col-from-label fs-13">
                                 {{ translate('Select Background Design') }}
                             </label>
-                            <div class="col-xxl-9 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
                                 <input type="hidden" name="types[]" value="smart_bar_background_design">
 
                                 <!-- Light Option -->
@@ -56,29 +53,27 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-xxl-3 col-from-label fs-13">{{ translate('Select Background Color') }}</label>
-                            <div class="col-xxl-9">
-                                <div class="input-group">
-                                    <input type="hidden" name="types[]" value="smart_bar_background_color">
-                                    <input type="text" class="form-control aiz-color-input" placeholder="Ex: #e1e1e1"
-                                        name="smart_bar_background_color"
-                                        value="{{ get_setting('smart_bar_background_color') }}">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text p-0">
-                                            <input data-target="smart_bar_background_color"
-                                                class="aiz-color-picker border-0 size-40px" type="color"
-                                                value="{{ get_setting('smart_bar_background_color') }}">
-                                        </span>
-                                    </div>
+                        <div class="form-group">
+                            <label class="col-from-label fs-13">{{ translate('Select Background Color') }}</label>
+                            <div class="input-group">
+                                <input type="hidden" name="types[]" value="smart_bar_background_color">
+                                <input type="text" class="form-control aiz-color-input" placeholder="Ex: #e1e1e1"
+                                    name="smart_bar_background_color"
+                                    value="{{ get_setting('smart_bar_background_color') }}">
+                                <div class="input-group-append">
+                                    <span class="input-group-text p-0">
+                                        <input data-target="smart_bar_background_color"
+                                            class="aiz-color-picker border-0 size-40px" type="color"
+                                            value="{{ get_setting('smart_bar_background_color') }}">
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-xxl-3 col-from-label fs-13">
+                        <div class="form-group">
+                            <label class="col-from-label fs-13">
                                 {{ translate('Select Text Color') }}
                             </label>
-                            <div class="col-xxl-9 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
                                 <input type="hidden" name="types[]" value="smart_bar_text_color">
 
                                 <!-- Light Option -->
@@ -104,29 +99,27 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-xxl-3 col-from-label fs-13">{{ translate('Select Button Color') }}</label>
-                            <div class="col-xxl-9">
-                                <div class="input-group">
-                                    <input type="hidden" name="types[]" value="smart_bar_button_color">
-                                    <input type="text" class="form-control aiz-color-input" placeholder="Ex: #e1e1e1"
-                                        name="smart_bar_button_color"
-                                        value="{{ get_setting('smart_bar_button_color') }}">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text p-0">
-                                            <input data-target="smart_bar_button_color"
-                                                class="aiz-color-picker border-0 size-40px" type="color"
-                                                value="{{ get_setting('smart_bar_button_color') }}">
-                                        </span>
-                                    </div>
+                        <div class="form-group">
+                            <label class="col-from-label fs-13">{{ translate('Select Button Color') }}</label>
+                            <div class="input-group">
+                                <input type="hidden" name="types[]" value="smart_bar_button_color">
+                                <input type="text" class="form-control aiz-color-input" placeholder="Ex: #e1e1e1"
+                                    name="smart_bar_button_color"
+                                    value="{{ get_setting('smart_bar_button_color') }}">
+                                <div class="input-group-append">
+                                    <span class="input-group-text p-0">
+                                        <input data-target="smart_bar_button_color"
+                                            class="aiz-color-picker border-0 size-40px" type="color"
+                                            value="{{ get_setting('smart_bar_button_color') }}">
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-xxl-3 col-from-label fs-13">
+                        <div class="form-group">
+                            <label class="ol-from-label fs-13">
                                 {{ translate('Select Button Text Color') }}
                             </label>
-                            <div class="col-xxl-9 d-flex align-items-center">
+                            <div class="d-flex align-items-center">
                                 <input type="hidden" name="types[]" value="smart_bar_button_text_color">
 
                                 <!-- Light Option -->

@@ -12,9 +12,54 @@ use App\Models\User;
 
 class ReviewController extends Controller
 {
-    public function index($id)
+    public function index($id, Request $request)
     {
-        return new ReviewCollection(Review::where('product_id', $id)->where('status', 1)->orderBy('updated_at', 'desc')->paginate(10));
+        // return new ReviewCollection(Review::where('product_id', $id)->where('status', 1)->orderBy('updated_at', 'desc')->paginate(10));
+
+        $query = Review::where('product_id', $id)->where('status', 1); 
+        if ($request->has('images') && $request->images != null) {
+            $query->whereNotNull('photos')
+                  ->where('photos', '!=', '')
+                  ->where('photos', '!=', '[]')
+                  ->orderByRaw("
+                      CASE 
+                          WHEN photos IS NOT NULL AND photos != '' AND photos != '[]' THEN 0 
+                          ELSE 1 
+                      END ASC")
+                  ->orderBy('created_at', 'desc');
+        } else {
+            $sortBy = $request->input('sort_by', 'newest');
+            switch ($sortBy) {
+                case 'oldest':
+                    $query->orderBy('created_at', 'asc');
+                    break;
+                case 'highest':
+                    $query->orderBy('rating', 'desc')
+                          ->orderBy('created_at', 'desc');
+                    break;
+                case 'lowest':
+                    $query->orderBy('rating', 'asc');
+                    break;
+                case 'newest':
+                default:
+                    $query->orderBy('created_at', 'desc');
+                    break;
+            }
+        }
+        if ($request->has('rating') && $request->rating != '') {
+            $ratings = explode(',', $request->rating);
+            $ratings = array_filter($ratings, function($rating) {
+                return in_array((int)$rating, [1, 2, 3, 4, 5]);
+            });
+            
+            if (!empty($ratings)) {
+                $query->whereIn('rating', $ratings);
+            }
+        }
+        $perPage = $request->input('per_page', 10);
+        $page = $request->input('page', 1);
+        $reviews = $query->paginate($perPage, ['*'], 'page', $page);
+        return new ReviewCollection($reviews);
     }
 
     public function submit(Request $request)

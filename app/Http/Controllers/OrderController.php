@@ -497,6 +497,13 @@ class OrderController extends Controller
             }
             $order->save();
         }
+
+        if (
+            $order->payment_status == 'paid' &&
+            $order->commission_calculated == 0
+        ) {
+            calculateCommissionAffilationClubPoint($order);
+        }
         
         if ($request->status == 'cancelled' && $order->payment_type == 'wallet') {
             $user = User::where('id', $order->user_id)->first();

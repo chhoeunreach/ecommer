@@ -45,6 +45,43 @@
                         </a>
                     </div>
                 @endcan
+                @canany(['delete_gmc_product', 'edit_gmc_product', 'add_gmc_product'])
+                    <div class="col-md-6 col-lg-6 col-xl-4">
+                        <a href="{{ route('google_merchant_center.configuration') }}" class="d-block">
+                            <div
+                                class="card border border-2 border-gray-200 card-no-shadow has-transition rounded-2 p-3 p-lg-4 overflow-hidden">
+                                <div class="d-flex flex-column">
+                                    <img src="{{ static_asset('assets/img/marketing-analytics/gmc.svg') }}"
+                                        class="w-50px h-50px" alt="Icon">
+                                    <div class="mt-2 pt-1">
+                                        <h6 class="fs-16 fw-semibold mb-2 text-dark">{{ translate('Google Marchant Center') }}
+                                        </h6>
+                                        <span
+                                            class="fs-12 fw-400 text-gray text-truncate-2">{{ translate('Sync products with Google Shopping and product ads. Meta Pixel') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6 col-lg-6 col-xl-4">
+                        <a href="{{ route('facebook_catalogue.configuration') }}" class="d-block">
+                            <div
+                                class="card border border-2 border-gray-200 card-no-shadow has-transition rounded-2 p-3 p-lg-4 overflow-hidden">
+                                <div class="d-flex flex-column">
+                                    <img src="{{ static_asset('assets/img/marketing-analytics/catalog.svg') }}"
+                                        class="w-50px h-50px" alt="Icon">
+                                    <div class="mt-2 pt-1">
+                                        <h6 class="fs-16 fw-semibold mb-2 text-dark">
+                                            {{ translate('Meta Shop Sync (Catalog)') }}
+                                        </h6>
+                                        <span
+                                            class="fs-12 fw-400 text-gray text-truncate-2">{{ translate('Sync your store products with Facebook and Instagram Shops') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                @endcanany
                 @can('manage_pixel_analytics')
                     <div class="col-md-6 col-lg-6 col-xl-4">
                         <a href="{{ route('pixel_analytics.index') }}" class="d-block">
@@ -63,25 +100,25 @@
                             </div>
                         </a>
                     </div>
-                @endcan
-                <div class="col-md-6 col-lg-6 col-xl-4">
-                    <a href="javascript:void(0);" class="d-block">
-                        <div
-                            class="card border border-2 border-gray-200 card-no-shadow has-transition rounded-2 p-3 p-lg-4 overflow-hidden">
-                            <div class="d-flex flex-column">
-                                <img src="{{ static_asset('assets/img/marketing-analytics/catalog.svg') }}"
-                                    class="w-50px h-50px" alt="Icon">
-                                <div class="mt-2 pt-1">
-                                    <h6 class="fs-16 fw-semibold mb-2 text-dark">
-                                        {{ translate('Meta Shop Sync (Catalog)') }}
-                                    </h6>
-                                    <span
-                                        class="fs-12 fw-400 text-gray text-truncate-2">{{ translate('Sync your store products with Facebook and Instagram Shops.') }}</span>
+                    <div class="col-md-6 col-lg-6 col-xl-4">
+                        <a href="{{ route('pixel_conversation_api.index') }}" class="d-block">
+                            <div
+                                class="card border border-2 border-gray-200 card-no-shadow has-transition rounded-2 p-3 p-lg-4 overflow-hidden">
+                                <div class="d-flex flex-column">
+                                    <img src="{{ static_asset('assets/img/marketing-analytics/capi.svg') }}"
+                                        class="w-50px h-50px" alt="Icon">
+                                    <div class="mt-2 pt-1">
+                                        <h6 class="fs-16 fw-semibold mb-2 text-dark">
+                                            {{ translate('Meta Conversion API (CAPI)') }}
+                                        </h6>
+                                        <span
+                                            class="fs-12 fw-400 text-gray text-truncate-2">{{ translate('Send server-side conversion events directly to Meta securely.') }}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
+                @endcan
                 @can('manage_sitemap_generator')
                     <div class="col-md-6 col-lg-6 col-xl-4">
                         <a href="{{ route('sitemap_generator') }}" class="d-block">

@@ -104,8 +104,9 @@
                             </span>
                         </div>
                         @php
-                            $sizeChartId = ($product->main_category && $product->main_category->sizeChart) ? $product->main_category->sizeChart->id : 0;
-                            $sizeChartName = ($product->main_category && $product->main_category->sizeChart) ? $product->main_category->sizeChart->name : null;
+                            $sizeChart = \App\Models\SizeChart::findForProduct($product);
+                            $sizeChartId = $sizeChart->id ?? 0;
+                            $sizeChartName = $sizeChart->name ?? null;
                         @endphp
                         @if($sizeChartId != 0)
                         <div>

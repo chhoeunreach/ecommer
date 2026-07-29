@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\V2;
 
+use App\Models\Review;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -48,9 +49,8 @@ class PurchaseHistoryMiniCollection extends ResourceCollection
 
                             'price' => single_price($item->price),
                             'qty' => $item->quantity,
-
-                            'is_reviewed' => $item->reviewed ?? 0,
-
+                            // 'is_reviewed' => $item->reviewed ?? 0,
+                            'is_reviewed' => Review::where('user_id', $item->order->user_id)->where('product_id', $item->product_id)->exists() ? 1 : 0,
                             'attributes' => $item->variation,
                         ];
                     })->values()

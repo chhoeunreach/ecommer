@@ -54,7 +54,15 @@ class OrderController extends Controller
 
         if($request->status == 'delivered'){
             $order->delivered_date = date("Y-m-d H:i:s");
+            
+            if($order->payment_type == 'cash_on_delivery'){
+                $order->payment_status = 'paid';
+            }
             $order->save();
+        }
+
+        if ($order->payment_status == 'paid' && $order->commission_calculated == 0) {
+            calculateCommissionAffilationClubPoint($order);
         }
 
         if ($request->status == 'cancelled' && $order->payment_type == 'wallet') {

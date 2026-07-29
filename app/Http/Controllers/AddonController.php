@@ -276,9 +276,6 @@ class AddonController extends Controller
         $addon = Addon::find($request->id);
         $addon->activated = $request->status;
         $addon->save();
-        if($addon->unique_identifier == 'gst_system'){
-            $this->removeProductVat_Unpublish();
-        }
 
         Cache::forget('addons');
 

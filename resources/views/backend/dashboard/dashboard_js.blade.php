@@ -4,11 +4,11 @@
         '<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>' +
         "</div>";
         
-    // top_category_products_tab("all");
+    top_category_products_tab("all");
     inhouse_top_brands("all");
     inhouse_top_categories("all");
     top_sellers_products_tab('all');
-    // top_brands_products_tab('all');
+    top_brands_products_tab('all');
 
     $(".top_category_products_tab").click(function () {
         top_category_products_tab($(this).data("target"));

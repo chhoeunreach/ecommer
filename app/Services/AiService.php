@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\AiPrompt;
 use App\Models\aiUsageLogs;
 use App\Models\Language;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -12,6 +13,19 @@ class AiService
 {
     public function productGenerateWithAI(array $data)
     {
+        $user = Auth::user();
+
+        if ($user && $user->user_type != 'admin') {
+
+            if ($user->seller_monthly_token_limit <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Your monthly AI generation limit has been reached.'
+                ]);
+            }
+
+        }
+
         //Log::info('asf',$data);
        try {
 
@@ -65,8 +79,8 @@ class AiService
                 ],
 
                 'product-configuration'=>[
-                    'fields'=>['unit','weight','min_qty','tags'],
-                    'prompt_fields'=>"unit, weight (kg), min_qty, tags",
+                    'fields'=>['weight','min_qty','tags'],
+                    'prompt_fields'=>"weight (kg), min_qty, tags",
                     'language_target'=>$languageName,
                 ],
             ];
@@ -236,6 +250,15 @@ class AiService
                         'total_tokens' => $totalTokens,
                         'model' => $model
                     ]);
+
+                    if ($user && $user->user_type != 'admin') {
+
+                        $user->seller_monthly_token_limit =
+                            $user->seller_monthly_token_limit - $totalTokens;
+
+                        $user->save();  
+
+                    }  
                     
                 } catch (\Exception $e) {
                     Log::error('Failed to log AI usage', ['error' => $e->getMessage()]);

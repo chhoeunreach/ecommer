@@ -3,7 +3,7 @@
     <div class="d-flex align-items-center justify-content-between">
         <div class="d-flex align-items-center">
             <h6 class="d-flex align-items-center fs-16 fw-700 text-dark mr-2 mt-0 mb-0 p-0">
-                {{translate('Add Product In POS')}}
+                {{translate('Product List')}}
             </h6>
             
         </div>

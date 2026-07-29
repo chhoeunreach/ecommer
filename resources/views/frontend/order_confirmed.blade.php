@@ -124,12 +124,6 @@
                                         <td class="w-50 fw-600 border-top-0 py-2">{{ translate('Order status')}}:</td>
                                         <td class="border-top-0 pr-0 py-2">{{ translate(ucfirst(str_replace('_', ' ', $first_order->delivery_status))) }}</td>
                                     </tr>
-                                    @if ($first_order->tracking_code != null)
-                                        <tr>
-                                            <td class="w-50 fw-600 border-top-0 py-2">{{ translate('Tracking Code')}}:</td>
-                                            <td class="border-top-0 pr-0 py-2">{{ translate(ucfirst(str_replace('_', ' ', $first_order->tracking_code))) }}</td>
-                                        </tr>
-                                    @endif
                                     <tr>
                                         <td class="w-50 fw-600 border-top-0 py-2">{{ translate('Total order amount')}}:</td>
                                         <td class="border-top-0 pr-0 py-2">{{ single_price($combined_order->grand_total) }}</td>
@@ -154,6 +148,7 @@
                                 <!-- Order Code -->
                                 <div class="text-center py-1 mb-4">
                                     <h2 class="h5 fs-20">{{ translate('Order Code:')}} <span class="fw-700 text-primary">{{ $order->code }}</span></h2>
+                                    <h2 class="h6 fs-16">{{ translate('Tracking Code:')}} <span class="fw-700 text-primary">{{ $order->tracking_code }}</span></h2>
                                     <h5 class="h5 fs-14">{{ translate('Delivery Type:')}} 
                                         <span class="fw-700">
                                             @if ($order->shipping_type != null && $order->shipping_type == 'home_delivery')

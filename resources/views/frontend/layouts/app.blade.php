@@ -232,7 +232,15 @@
     </noscript>
     <!-- End Facebook Pixel Code -->
 @endif
-
+@if(session()->has('ga4_event'))
+<script>
+    window.dataLayer = window.dataLayer || [];
+    dataLayer.push(@json(session('ga4_event')));
+</script>
+@php
+    session()->forget('ga4_event');
+@endphp
+@endif
 @php
     echo get_setting('header_script');
     echo get_setting('header_gtm_script');
@@ -469,7 +477,7 @@
 
 
 
-
+    @include('modals.size_chart_show_modal')
 
     @include('frontend.partials.modal')
 
@@ -865,9 +873,12 @@
         function addToWishList(id){
             @if (Auth::check() && Auth::user()->user_type == 'customer')
                 $.post('{{ route('wishlists.store') }}', {_token: AIZ.data.csrf, id:id}, function(data){
-                    if(data != 0){
-                        $('#wishlist').html(data);
+                    if(data.html){
+                        $('#wishlist').html(data.html);
                         AIZ.plugins.notify('success', "{{ translate('Item has been added to wishlist') }}");
+                         if(data.ga4Data && "{{ get_setting('google_analytics') }}" == 1){
+                            pushGA4Event(data.ga4Data);
+                         }
                     }
                     else{
                         AIZ.plugins.notify('warning', "{{ translate('Please login first') }}");
@@ -955,6 +966,26 @@
                 if (e.key === 'Escape') closeRightcanvas();
             });
         // Right Offcanvas JS End
+
+        
+        function showSizeChartDetail(id, name){
+            $('#size-chart-show-modal .modal-title').html('');
+            $('#size-chart-show-modal .modal-body').html('');
+            if (id == 0) {
+                AIZ.plugins.notify('warning', '{{ translate("Sorry, There is no size guide found for this product.") }}');
+                return false;
+            }
+            $.ajax({
+                type: "GET",
+                url: "{{ route('size-charts-show', '') }}/"+id,
+                data: {},
+                success: function(data) {
+                    $('#size-chart-show-modal .modal-title').html(name);
+                    $('#size-chart-show-modal .modal-body').html(data);
+                    $('#size-chart-show-modal').modal('show');
+                }
+            });
+        }
 
         function showReviewImageModal(imageUrl, imagesJson) {
             try {
@@ -1084,7 +1115,7 @@
                     url: '{{ route('cart.addToCart') }}',
                     data: $('#option-choice-form').serializeArray(),
                     success: function(data){
-                        animateAddToCartButton('#added_to_cart_btn', 'success');
+                       animateAddToCartButton('#added_to_cart_btn', 'success');
                        $('#addToCart-modal-body').html(null);
                        $('.c-preloader').hide();
                        $('#modal-size').removeClass('modal-lg');
@@ -1092,6 +1123,9 @@
                        AIZ.extra.plusMinus();
                        AIZ.plugins.slickCarousel();
                        updateNavCart(data.nav_cart_view,data.cart_count);
+                       if ("{{ get_setting('google_analytics') }}" == 1){
+                           pushGA4Event(data.ga4Data);
+                       }
                     }
                 });
 
@@ -1154,6 +1188,9 @@
                         } else {
                             $('#addToCart-modal-body').html('<div class="text-center p-5 text-danger">Product details not available.</div>');
                         }
+                        if ("{{ get_setting('google_analytics') }}" == 1){
+                           pushGA4Event(data.ga4Data);
+                        }
                     },
                     error: function() {
                         AIZ.plugins.notify('danger', "{{ translate('Something went wrong') }}");
@@ -1189,6 +1226,9 @@
                             $('#addToCart-modal-body').html(data.modal_view);
                             updateNavCart(data.nav_cart_view,data.cart_count);
                             window.location.replace("{{ route('cart') }}");
+                            if ("{{ get_setting('google_analytics') }}" == 1){
+                                pushGA4Event(data.ga4Data);
+                            }
                         }
                         else{
                             $('#addToCart-modal-body').html(null);
@@ -1527,6 +1567,11 @@
         }
         if (Array.isArray(saleAlertProducts) && saleAlertProducts.length) {
             startRandomAlerts();
+        }
+
+        function pushGA4Event(ga4Data) {
+            window.dataLayer = window.dataLayer || [];
+            dataLayer.push(ga4Data);
         }
     </script>
     @endif

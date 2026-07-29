@@ -11,9 +11,7 @@ use Validator;
 
 class NoteController extends Controller
 {
-
     public function __construct() {
-        // Staff Permission Check
         $this->middleware(['permission:view_notes'])->only('index');
         $this->middleware(['permission:add_note'])->only('create');
         $this->middleware(['permission:edit_note'])->only('edit');
@@ -29,41 +27,56 @@ class NoteController extends Controller
         ];
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $sort_search =null;
-        $noteUserType = $request->note_user_type != null ? $request->note_user_type : 'all';
-        $notes  = Note::whereHas('user');
-
-        if($noteUserType != 'all'){
-            $adminId = get_admin()->id;
-            $notes = $noteUserType == 'in_house' ? $notes->where('user_id', $adminId) : $notes->where('user_id', '!=', $adminId); 
-        }
+        $note_tabs = ['All Notes', 'Admin Notes', 'Seller Notes'];
+        $notes  = Note::whereHas('user')->orderBy('created_at', 'desc');
 
         if ($request->has('search')){
             $sort_search = $request->search;
             $notes = $notes->where('description', 'like', '%'.$sort_search.'%');
         }
-        $notes = $notes->orderBy('created_at','desc')->paginate(15);
-        return view('backend.note.index', compact('notes', 'sort_search', 'noteUserType'));
+
+        $notes = $notes->paginate(15);
+        return view('backend.note.index', compact('notes', 'sort_search', 'note_tabs'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    public function filter(Request $request)
+    {
+        $notes  = Note::whereHas('user')->orderBy('created_at', 'desc');
+        $sort_search = null;
+
+        
+        $adminId = get_admin()->id;
+
+        if ($request->note_status == "admin_notes") {
+            $notes = $notes->where('user_id', $adminId);
+        } else if ($request->note_status == 'seller_notes') {
+            $notes = $notes->where('user_id', '!=', $adminId);
+        }
+
+        if ($request->search != null) {
+            $sort_search = $request->search;
+            $notes = $notes->where(function ($query) use ($sort_search) {
+                $query->where('description', 'like', '%' . $sort_search . '%');
+            });
+        }
+
+        $notes = $notes->paginate(15);
+        $view = view(
+            'backend.note.table',
+            compact('notes', 'sort_search')
+        )->render();
+        return response()->json(['html' => $view]);
+    }
+
     public function create(Request $request)
     {
-        $note_type=$request->type;
         $types = EnumsNoteType::cases();
-        return view('backend.note.create', compact('types','note_type'));
+        return view('backend.note.create', compact('types'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $rules      = $this->note_rules;
@@ -85,33 +98,18 @@ class NoteController extends Controller
         $note_translation->description = $request->description;
         $note_translation->save();
 
-        flash(translate('Note has been created successfully!'))->success();
-        return redirect()->route('note.index');
+        return 1;
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Request $request, $id)
-    {
-        $lang   = $request->lang;
+        $lang   = $request->lang ?? env("DEFAULT_LANGUAGE");
         $types = EnumsNoteType::cases();
-        $note  = Note::findOrFail($id);
+        $note  = Note::findOrFail($request->id);
         return view('backend.note.edit', compact('note', 'types', 'lang'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         $rules      = $this->note_rules;
         $messages   = $this->note_messages;
@@ -122,7 +120,7 @@ class NoteController extends Controller
             return Redirect::back()->withErrors($validator);
         }
 
-        $note = Note::findOrFail($id);
+        $note = Note::findOrFail($request->id);
         $note->note_type = $request->note_type;
         if($request->lang == env("DEFAULT_LANGUAGE")){
             $note->description = $request->description;
@@ -133,20 +131,40 @@ class NoteController extends Controller
         $note_translation->description = $request->description;
         $note_translation->save();
 
-        flash(translate('Note has been updated successfully!'))->success();
-        return back();
+        return 1;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Note $note)
+    public function destroy($id)
     {   
-        $note = Note::findOrFail($note->id);
+        $note = Note::findOrFail($id);
         $note->note_translations()->delete();
         $note->delete();
-        flash(translate('Note has been deleted successfully!'))->success();
-        return back();
+        return 1;
+    }
+
+    public function bulk_note_delete(Request $request)
+    {
+        if ($request->id) {
+
+            foreach ($request->id as $note_id) {
+
+                $note = Note::find($note_id);
+
+                if (!$note) {
+                    continue;
+                }
+
+                foreach ($note->note_translations as $note_translation) {
+                    $note_translation->delete();
+                }
+
+                $note->delete();
+            }
+
+            return 1;
+        }
+
+        return 0;
     }
 
     public function getNotes(Request $request)
@@ -179,10 +197,78 @@ class NoteController extends Controller
     }
 
 
-    public function updateSelelrAccess(Request $request) {
+    public function updateSellerAccess(Request $request) {
         $note = Note::findOrFail($request->id);
         $note->seller_access = $request->status;
         $note->save();
         return 1;
+    }
+
+    public function admin_ajax_add_note_modal(Request $request)
+    {
+        $note_type=$request->type;
+        $types = EnumsNoteType::cases();
+        return view('backend.note.ajax_add_note_modal',
+        [
+            'note_type' => $note_type,
+            'types' => $types
+        ]);
+    }
+
+    public function admin_ajax_add_note_store(Request $request)
+    {
+        $rules      = $this->note_rules;
+        $messages   = $this->note_messages;
+        $validator  = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+        
+        $note = new Note();
+        $note->user_id = get_admin()->id;
+        $note->note_type = $request->note_type;
+        $note->description = $request->description;
+        $note->save();
+
+        $note_translation = NoteTranslation::firstOrNew(['lang' => env('DEFAULT_LANGUAGE'), 'note_id' => $note->id]);
+        $note_translation->description = $request->description;
+        $note_translation->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => translate('Note has been inserted successfully'),
+            'note_id' => $note->id,
+            'html' => view('backend.note.partials.carousel', [
+                'notes' => Note::where('note_type', $request->note_type)->orderBy('created_at', 'desc')->get(),
+                'class' => $this->getClass($request->note_type),
+                'hiddenInput' => $this->getInputId($request->note_type),
+            ])->render()
+        ]);
+    }
+
+    private function getClass(string $noteType): string
+    {
+        return match($noteType) {
+            'refund'   => 'refund-notes',
+            'warranty' => 'single-warranty-notes',
+            'shipping' => 'shp-notes',
+            'delivery' => 'delivery-notes',
+            default    => 'refund-notes',
+        };
+    }
+
+    private function getInputId(string $noteType): string
+    {
+        return match($noteType) {
+            'refund'   => 'refund_note_id',
+            'warranty' => 'warranty_note_id',
+            'shipping' => 'shipping_note_id',
+            'delivery' => 'delivery_note_id',
+            default    => 'refund_note_id',
+        };
     }
 }

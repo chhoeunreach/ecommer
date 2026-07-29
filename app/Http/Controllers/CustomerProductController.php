@@ -14,17 +14,11 @@ use App\Utility\CategoryUtility;
 class CustomerProductController extends Controller
 {
     public function __construct() {
-        // Staff Permission Check
         $this->middleware(['permission:view_classified_products'])->only('customer_product_index');
         $this->middleware(['permission:publish_classified_product'])->only('updatePublished');
         $this->middleware(['permission:delete_classified_product'])->only('destroy_by_admin');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         if(get_setting('classified_product') != 1){
@@ -34,17 +28,44 @@ class CustomerProductController extends Controller
         return view('frontend.user.customer.products', compact('products'));
     }
 
-    public function customer_product_index()
+    public function customer_product_index(Request $request)
     {
-        $products = CustomerProduct::orderBy('created_at', 'desc')->paginate(10);
-        return view('backend.customer.classified_products.index', compact('products'));
+        $sort_search = null;
+        $product_tabs = ['All Classified Products'];
+        $products = CustomerProduct::orderBy('created_at', 'desc');
+
+        if ($request->has('search')) {
+            $sort_search = $request->search;
+            $products = $products->where('name', 'like', '%' . $sort_search . '%');
+        }
+
+        $products = $products->paginate(15);
+
+        return view('backend.customer.classified_products.index', compact('sort_search', 'products', 'product_tabs'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function filter(Request $request)
+    {
+        $products = CustomerProduct::orderBy('created_at', 'desc');
+        $sort_search = null;
+
+        if ($request->search != null) {
+            $sort_search = $request->search;
+            $products = $products->where(function ($query) use ($sort_search) {
+                $query->where('name', 'like', '%' . $sort_search . '%');
+            });
+        }
+
+        $products = $products->paginate(15);
+
+        $view = view(
+            'backend.customer.classified_products.table',
+            compact('products', 'sort_search')
+        )->render();
+
+        return response()->json(['html' => $view]);
+    }
+
     public function create()
     {
         $categories = Category::where('parent_id', 0)
@@ -64,12 +85,6 @@ class CustomerProductController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $customer_product                       = new CustomerProduct;
@@ -121,23 +136,11 @@ class CustomerProductController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        //
+        
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Request $request, $id)
     {
         $categories = Category::where('parent_id', 0)
@@ -149,13 +152,6 @@ class CustomerProductController extends Controller
         return view('frontend.user.customer.product_edit', compact('categories', 'product','lang'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $customer_product                       = CustomerProduct::find($id);
@@ -205,12 +201,6 @@ class CustomerProductController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $product = CustomerProduct::findOrFail($id);
@@ -226,10 +216,22 @@ class CustomerProductController extends Controller
     {
         $product = CustomerProduct::findOrFail($id);
         $product->customer_product_translations()->delete();
-
         if (CustomerProduct::destroy($id)) {
-            return back();
+            return 1;
         }
+    }
+
+    public function bulk_classified_products_delete(Request $request)
+    {
+        if ($request->id) {
+            foreach ($request->id as $product_id) {
+                $product = CustomerProduct::findOrFail($product_id);
+                $product->customer_product_translations()->delete();
+                CustomerProduct::destroy($product_id);
+            }
+            return 1;
+        }
+        return 0;
     }
 
     public function updateStatus(Request $request)
@@ -316,7 +318,6 @@ class CustomerProductController extends Controller
                     $customer_products->where('conditon', 'used');
                     break;
                 default:
-                    // code...
                     break;
             }
         }

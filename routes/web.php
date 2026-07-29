@@ -185,6 +185,9 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/privacy-policy', 'privacypolicy')->name('privacypolicy');
 
     Route::get('/track-your-order', 'trackOrder')->name('orders.track');
+
+    Route::get('/reset-seller-monthly-tokens', 'resetSellerMonthlyTokens');
+
 });
 
 // Language Switch
@@ -542,3 +545,5 @@ Route::controller(PaymentInformationController::class)->group(function () {
     Route::get('/payment-informations/destroy/{id}', 'destroy')->name('payment_informations.destroy');
     Route::get('/payment-informations/set-default/{id}', 'set_default')->name('payment_informations.set_default');
 });
+
+Route::get('/reset-user-monthly-tokens', [AiController::class, 'resetUserMonthlyTokens']);

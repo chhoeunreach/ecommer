@@ -75,23 +75,24 @@
             <h5 class="mb-0 fs-18 fw-700 text-dark">{{ translate('OTP Activation')}}</h5>
         </div>
         <div class="card-body">
-            <form action="{{ route('user.profile.update') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <!-- Name-->
-                <div class="form-group row">
-                    <label class="col-md-6 col-form-label fs-14">{{ translate('Do you want to activate OTP for cash on delivery and wallet payment?') }}</label>
-                    <div class="col-xxl-6 mt-2">
-                        <div class="input-group">
-                            <label class="aiz-switch aiz-switch-success">
-                                <input type="checkbox"
-                                    id="activate_otp_for_cashOnDelivery_and_wallet"
-                                    @checked(Auth::user()->otp_activation_purchase_cod_wallet == 1)>
-                                <span></span>
-                            </label>
-                        </div>
+            <div class="form-group row">
+                <label class="col-md-6 col-form-label fs-14">{{ translate('Do you want to activate OTP for cash on delivery and wallet payment?') }}</label>
+                <div class="col-xxl-6 mt-2">
+                    <div class="input-group">
+                        <label class="aiz-switch aiz-switch-success">
+                            <input type="checkbox"
+                                id="activate_otp_for_cashOnDelivery_and_wallet"
+                                @if(get_setting('admin_controll_cod_and_wallet_payment_with_otp') == 1)
+                                    disabled
+                                    checked
+                                @else
+                                    @checked(Auth::user()->otp_activation_purchase_cod_wallet == 1)
+                                @endif>
+                            <span></span>
+                        </label>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 @endif
@@ -383,10 +384,10 @@
             type: type,
             value: value
         }, function(data) {
-            if (data == 1) {
-                AIZ.plugins.notify('success', '{{ translate('Settings updated successfully') }}');
+            if (data.status == 1) {
+                AIZ.plugins.notify('success', data.message);
             } else {
-                AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
+                AIZ.plugins.notify('danger', data.message);
             }
         }).fail(function() {
             AIZ.plugins.notify('danger', '{{ translate('Network error') }}');

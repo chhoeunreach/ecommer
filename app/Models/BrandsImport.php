@@ -22,9 +22,10 @@ class BrandsImport implements ToCollection, WithHeadingRow, ToModel
         foreach ($rows as $row) {
             Brand::create([
                 'name' => $row['name'],
-                'logo' => $this->downloadLogo($row['logo']),
+                'logo' => !empty($row['logo']) ? $this->downloadLogo($row['logo']) : null,
                 'slug' => preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', $row['name'])).'-'.Str::random(5),
                 'meta_title' => $row['meta_title'],
+                'meta_keywords' => $row['meta_keywords'],
                 'meta_description' => $row['meta_description'],
             ]);
         }

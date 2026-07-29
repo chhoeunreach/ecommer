@@ -153,8 +153,26 @@ class CartController extends Controller
         if(get_setting('facebook_pixel_capi') == 1){
             $eventId = 'atc_' . $cart->id . '_' . time();
             $fb = new FacebookConversionService();
-            $fb->sendAddToCart($product, $price, $eventId);
+            $fb->sendAddToCart($product, $price, $eventId, $quantity);
         }
+
+
+        $ga4Data = [
+            'event' => 'add_to_cart',
+            'ecommerce' => [
+                'currency' => get_system_currency()->code,
+                'value' => (float) ($price * $quantity),
+                'items' => [[
+                    'item_id' => (string) $product->id,
+                    'item_name' => $product->getTranslation('name'),
+                    'item_category' => optional($product->main_category)->name ?? 'General',
+                    'price' => (float) $price,
+                    'discount' => (float) ($product->discount ?? 0),
+                    'quantity' => (int) $quantity,
+                ]],
+            ],
+        ];
+
 
         if($authUser != null) {
             $user_id = $authUser->id;
@@ -169,6 +187,7 @@ class CartController extends Controller
             'cart_count' => count($carts),
             'modal_view' => view('frontend.partials.cart.addedToCart', compact('product', 'cart'))->render(),
             'nav_cart_view' => view('frontend.partials.cart.cart')->render(),
+            'ga4Data' => $ga4Data
         );
     }
 

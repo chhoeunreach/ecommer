@@ -1,48 +1,44 @@
-@extends('backend.layouts.app')
-
-@section('content')
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0 h6">{{ translate('Note Information') }}</h5>
-                </div>
-                <div class="card-body">
-                    <form class="form-horizontal" action="{{ route('note.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-
-                        <div class="form-group row">
-                            <label class="col-md-3 col-form-label">{{ translate('Type') }}</label>
-                            <div class="col-md-9">
-                                <select name="note_type" class="form-control aiz-selectpicker mb-2 mb-md-0" required>
-                                    @foreach ($types as $type)
-                                        <option value="{{ $type->value }}" class="text-uppercase"  @if(isset($note_type) && $note_type === $type->value) selected @endif>{{ translate($type->name) }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Description -->
-                        <div class="form-group row">
-                            <label class="col-md-3 col-from-label">
-                                {{ translate('Description') }}
-                                <p class="fs-10">({{ translate('Max 900 Character') }})</p>
-                            </label>
-                            <div class="col-md-9">
-                                <textarea name="description" rows="8" class="form-control">{{ old('description') }}</textarea>
-                                @error('description')
-                                    <small class="form-text text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-0 text-right">
-                            <button type="submit" class="btn btn-primary">{{ translate('Save') }}</button>
-                        </div>
-
-                    </form>
-                </div>
-            </div>
-        </div>
+<!-- Offcanvas Header -->
+<div class="border-sm-bottom pb-15px px-30px">
+    <div class="d-flex align-items-center justify-content-between">
+        <h6 class="fs-16 fw-700 text-dark mb-0">
+            {{ translate('Add New Note') }}
+        </h6>
+        <button onclick="closeOffcanvas()" class="border-0 bg-transparent">
+            ✕
+        </button>
     </div>
-@endsection
+</div>
+
+<!-- Offcanvas Body -->
+<div class="right-offcanvas-body position-absolute h-100 px-30px pt-20px">
+    <div class="form-group">
+        <label class="col-form-label">{{ translate('Type') }}</label>
+        <select name="note_type" class="form-control aiz-selectpicker mb-2 mb-md-0" required>
+            @foreach ($types as $type)
+                <option value="{{ $type->value }}" class="text-uppercase">{{ translate($type->name) }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+        <label class="col-from-label">
+            {{ translate('Description') }}
+            <p class="fs-10">({{ translate('Max 900 Character') }})</p>
+        </label>
+        <textarea name="description" rows="8" class="form-control">{{ old('description') }}</textarea>
+        @error('description')
+            <small class="form-text text-danger">{{ $message }}</small>
+        @enderror
+    </div>
+</div>
+
+<!-- Offcanvas Footer -->
+<div class="w-100 px-30px position-absolute bottom-0 bg-white right-offcavas-footer pt-20px pb-20px">
+    <div class="d-flex justify-content-end">
+        <button type="button" class="fs-14 fw-700 py-10px px-20px btn btn-primary" id="store-new-note">
+            {{ translate('Confirm') }}
+        </button>
+    </div>
+</div>

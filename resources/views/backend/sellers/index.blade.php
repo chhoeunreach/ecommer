@@ -461,14 +461,14 @@
         $('#search_input').on('keyup', function () {
             clearTimeout(searchTimer);
             searchTimer = setTimeout(function () {
-                getSellers();
+                getSellers(currentTab);
             }, 500);
         });
 
         $(document).on('click', '.pagination a', function(e) {
             e.preventDefault();
             const page = $(this).attr('href').split('page=')[1];
-            getSellers(page);
+            getSellers(currentTab, page);
         });
 
          function sort_sellers(el){

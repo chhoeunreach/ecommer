@@ -26,7 +26,7 @@ class SizeChartRequest extends FormRequest
     {
         return [
             'name'                => ['required', 'max:255'],
-            'category_id'         => ['required', 'numeric', Rule::unique('size_charts')->ignore($this->id)],
+            'category_id'         => ['nullable', 'numeric', Rule::unique('size_charts')->ignore($this->id)],
             'fit_type'            => ['nullable'],
             'stretch_type'        => ['nullable'],
             'photos'              => ['nullable'],
@@ -48,7 +48,6 @@ class SizeChartRequest extends FormRequest
         return [
             'name.required'                => translate('Chart Name is required'),
             'name.max'                     => translate('Chart Name allow max 255 characters'),
-            'category_id.required'         => translate('Category is required'),
             'category_id.numeric'          => translate('Category should be numeric type'),
             'category_id.unique'           => translate('This Category is already been taken'),
             'measurement_points.required'  => translate('Measurement points are required'),

@@ -11,37 +11,59 @@ class SellerWithdrawRequestController extends Controller
 {
     public function __construct()
     {
-        // Staff Permission Check
         $this->middleware(['permission:view_seller_payout_requests'])->only('index');
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
 
-    public function index()
+    public function index(Request $request)
     {
-        $seller_withdraw_requests = SellerWithdrawRequest::latest()->paginate(15);
-        return view('backend.sellers.seller_withdraw_requests.index', compact('seller_withdraw_requests'));
+        $sort_search = null;
+        $seller_withdraw_request_tabs = ['All Seller Withdraw Request'];
+
+        $seller_withdraw_requests = SellerWithdrawRequest::latest()->orderBy('created_at', 'desc');
+
+        if ($request->has('search') && $request->search != null) {
+            $sort_search = $request->search;
+
+            $seller_ids = User::where('name', 'like', '%' . $sort_search . '%')
+                ->orWhereHas('shop', function ($q) use ($sort_search) {
+                    $q->where('name', 'like', '%' . $sort_search . '%');
+                })
+                ->pluck('id');
+
+            $seller_withdraw_requests = $seller_withdraw_requests->whereIn('user_id', $seller_ids);
+        }
+
+        $seller_withdraw_requests = $seller_withdraw_requests->paginate(15);
+        return view('backend.sellers.seller_withdraw_requests.index', compact('seller_withdraw_requests', 'sort_search', 'seller_withdraw_request_tabs'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function filter(Request $request)
     {
-        //
+        $seller_withdraw_requests = SellerWithdrawRequest::latest()->orderBy('created_at', 'desc');
+        $sort_search = null;
+
+        if ($request->has('search') && $request->search != null) {
+            $sort_search = $request->search;
+
+            $seller_ids = User::where('name', 'like', '%' . $sort_search . '%')
+                ->orWhereHas('shop', function ($q) use ($sort_search) {
+                    $q->where('name', 'like', '%' . $sort_search . '%');
+                })
+                ->pluck('id');
+
+            $seller_withdraw_requests = $seller_withdraw_requests->whereIn('user_id', $seller_ids);
+        }
+
+        $seller_withdraw_requests = $seller_withdraw_requests->paginate(15);
+        $view = view(
+            'backend.sellers.seller_withdraw_requests.table',
+            compact('seller_withdraw_requests', 'sort_search')
+        )->render();
+        return response()->json(['html' => $view]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    public function create() {}
+
     public function store(Request $request)
     {
         $seller_withdraw_request = new SellerWithdrawRequest;
@@ -59,50 +81,13 @@ class SellerWithdrawRequestController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+    public function show($id) {}
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+    public function edit($id) {}
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+    public function update(Request $request, $id) {}
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+    public function destroy($id) {}
 
     public function payment_modal(Request $request)
     {

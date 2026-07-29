@@ -1,189 +1,284 @@
 @extends('backend.layouts.app')
+
 @section('content')
-
-<div class="aiz-titlebar text-left mt-2 mb-3">
-    <div class="row align-items-center">
-        <div class="col-auto">
-            <h1 class="h3">{{translate('Detail Reviews')}}</h1>
-        </div>
-        @can('add_custom_review')
-            <div class="col text-right">
-                <a href="{{ route('custom-review.create', $product->id) }}" class="btn btn-sm rounded-2" style="background-color: #299395; color: white;">
-                    <span>{{translate('Add Custom Reviews')}}</span>
-                </a>
+    <div class="row">
+        <div class="col-10 col-sm-10 col-lg-10 mx-auto">
+            <div class="aiz-titlebar text-left pb-5px">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <h1 class="h3 fw-bold">{{ translate('Reviews Details') }}</h1>
+                    </div>
+                </div>
             </div>
-        @endcan
-    </div>
-</div>
-<br>
-
-<div class="card">
-    <div class="d-flex justify-content-between">
-        <div class="row gutters-5 w-400px w-md-500px align-items-center ml-1">
-            <div class="col-auto">
-                <img src="{{ uploaded_asset($product->thumbnail_img)}}" alt="Image" class="size-80px img-fit">
-            </div>
-            <div class="col">
-                <span class="text-muted text-truncate-2">{{ $product->getTranslation('name') }}</span>
-            </div>
-        </div>
-        <div class="text-right m-3">
-            <p class="fs-11 fw-300 m-0">{{ strtoupper(translate('Rating')) }}</p>
-            <p class="fs-16 fw-900 m-0">{{ $product->rating }}</p>
-            <p class="rating rating-sm m-0">
-                @for ($i=0; $i < $product->rating; $i++)
-                    <i class="las la-star active"></i>
-                @endfor
-                @for ($i=0; $i < 5-$product->rating; $i++)
-                    <i class="las la-star"></i>
-                @endfor
-            </p>
-        </div>
-    </div>
-
-    <hr class="mx-4 my-0">
-
-    <div class="d-sm-flex justify-content-between mx-4">
-        <div class="mt-3">
-            <form class="" id="sort_by_review_types" action="" method="GET">
-                <input type="hidden" name="review_type" value="{{ $reviewType }}">
-                @php
-                    $activeClasss = 'btn-soft-blue';
-                    $inActiveClasses = 'text-secondary border-dashed border-soft-light';
-                @endphp
-                <a class="btn btn-sm btn-circle fs-12 fw-600 mr-2 {{ $reviewType == 'real' ? $activeClasss : $inActiveClasses}}"
-                    href="javascript:void(0);" onclick="sortByReviewType('real')">
-                    {{ translate('Reviews').' ' }}({{ $customerReviewCount }})
-                </a>
-                <a class="btn btn-sm btn-circle fs-12 fw-600 mr-2 {{ $reviewType == 'custom' ? $activeClasss : $inActiveClasses}}"
-                    href="javascript:void(0);" onclick="sortByReviewType('custom')">
-                    {{ translate('Custom Reviews').' ' }}({{ $customReviewCount }})
-                </a>
-            </form>
-        </div>
-    </div>
-    <div class="card-body">
-        <table class="table aiz-table mb-0">
-            <thead>
-                <tr class="opacity-70">
-                    <th data-breakpoints="lg">#</th>
-                    <th>{{ strtoupper(translate('Customer')) }}</th>
-                    <th>{{ strtoupper(translate('Rating')) }}</th>
-                    <th data-breakpoints="lg">{{ strtoupper(translate('Comment')) }}</th>
-                    <th @if($reviewType == 'real') class="text-right" @endif width="20%">{{ strtoupper(translate('Published')) }}</th>
-                    @if($reviewType == 'custom')
-                        <th data-breakpoints="lg" class="text-right">{{ strtoupper(translate('Options')) }}</th>
-                    @endif
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($reviews as $key => $review)
-                <tr>
-                    <td>{{ ($key+1) + ($reviews->currentPage() - 1)*$reviews->perPage() }}</td> 
-                    <td>
-                        @php
-                            $customerName = null;
-                            $customerAvatar = null;
-                            if($review->type == "real"){
-                                if($review->user != null){
-                                    $customerName = $review->user->name;
-                                    $customerAvatar = uploaded_asset($review->user->avatar_original);
-                                }
-                                else {
-                                    $customerName = translate('Customer Not Found');
-                                }
-                            }
-                            else{
-                                $customerName = $review->custom_reviewer_name;
-                                $customerAvatar = uploaded_asset($review->custom_reviewer_image);
-                            }
-                        @endphp
-                        <div class="row gutters-5 w-200px w-md-300px mw-100 align-items-center">
-                            <div class="col-auto">
-                                <img src="{{ $customerAvatar }}" class="size-50px img-fit rounded-circle" alt="Image" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
-                            </div>
-                            <div class="col">
-                                <span class="fw-700 text-truncate-2">{{ $customerName }}</span>
-                            </div>
+            <div class="card">
+                <div class="d-flex justify-content-between">
+                    <div class="row gutters-5 w-400px w-md-500px align-items-center ml-1">
+                        <div class="col-auto">
+                            <img src="{{ uploaded_asset($product->thumbnail_img)}}" alt="Image" class="size-80px img-fit">
                         </div>
-                    </td>
-                    <td class="fw-700">{{ $review->rating }}</td>
-                    <td>
-                        {{ $review->comment }}
-                        @if($review->photos != null)
-                            <div class="spotlight-group d-flex flex-wrap mt-2">
-                                @foreach (explode(',', $review->photos) as $photo)
-                                <a href="{{ uploaded_asset($photo) }}" 
-                                    class="mr-2 mr-md-3 mb-2 mb-md-3 border overflow-hidden has-transition hov-scale-img hov-border-primary"
-                                    target="_blank">
-                                    <img class="img-fit h-60px lazyload has-transition"
-                                            src="{{ static_asset('assets/img/placeholder.jpg') }}"
-                                            data-src="{{ uploaded_asset($photo) }}"
-                                            onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
-                                </a>
-                                @endforeach
-                            </div>
+                        <div class="col">
+                            <span class="text-muted text-truncate-2">{{ $product->getTranslation('name') }}</span>
+                        </div>
+                    </div>
+                    <div class="text-right m-3">
+                        <p class="fs-11 fw-300 m-0">{{ strtoupper(translate('Rating')) }}</p>
+                        <p class="fs-16 fw-900 m-0">{{ $product->rating }}</p>
+                        <p class="rating rating-sm m-0">
+                            @for ($i=0; $i < $product->rating; $i++)
+                                <i class="las la-star active"></i>
+                            @endfor
+                            @for ($i=0; $i < 5-$product->rating; $i++)
+                                <i class="las la-star"></i>
+                            @endfor
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div
+                    class="d-flex align-items-center justify-content-between flex-wrap border-bottom  border-light px-25px">
+                    <div class="table-tabs-container">
+                        <ul class="nav nav-tabs border-0 " id="myTab" role="tablist">
+                            @foreach ($review_tabs as $review_tab)
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link px-0 pb-15px fs-14 fw-500 {{ $loop->first ? 'active' : '' }}"
+                                        data-toggle="tab" role="tab" aria-selected="{{ $loop->first ? 'true' : 'false' }}"
+                                        id="{{ Str::slug($review_tab) }}-tab"
+                                        onclick="changeTab(this, '{{ Str::slug($review_tab) }}')" role="tab"
+                                        aria-controls="{{ Str::slug($review_tab) }}">
+                                        {{ translate($review_tab) }}
+                                    </button>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    <div class="">
+                        @if (auth()->user()->can('add_custom_review'))
+                            <a href="{{ route('custom-review.create', $product->id) }}" class="position-relative overflow-hidden add-new-btn">
+                                <span
+                                    class="position-relative z-2 pr-15px fs-14 fw-500 text-blue label-text">{{ translate('Add New Custom Review') }}</span>
+                                <span
+                                    class="position-absolute top-0 right-0 h-100 w-40px bg-blue d-flex align-items-center justify-content-end z-1 plus-icon-container m-0 p-0 rounded-pill">
+                                    <svg id="plus-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                        viewBox="0 0 12 12">
+                                        <path id="Path_45216" data-name="Path 45216"
+                                            d="M141.874-812.13a.706.706,0,0,1-.515-.21.7.7,0,0,1-.212-.514V-817.4h-4.553a.7.7,0,0,1-.514-.209.694.694,0,0,1-.21-.511.706.706,0,0,1,.21-.515.7.7,0,0,1,.514-.212h4.549v-4.557a.7.7,0,0,1,.209-.514.694.694,0,0,1,.511-.21.706.706,0,0,1,.515.21.7.7,0,0,1,.212.514v4.553h4.557a.7.7,0,0,1,.514.208.694.694,0,0,1,.21.511.706.706,0,0,1-.21.515.7.7,0,0,1-.514.212h-4.553v4.553a.7.7,0,0,1-.209.514A.694.694,0,0,1,141.874-812.13Z"
+                                            transform="translate(-135.87 824.13)" fill="#fff" />
+                                    </svg>
+                                </span>
+                            </a>
                         @endif
-                    </td>
-                    <td class="text-right">
-                        <div class="d-flex d-sm-flex @if($reviewType == 'real') justify-content-end @endif align-items-center">
-                            <div class="mr-3 opacity-70">
-                                {{ date("j F, Y", strtotime($review->created_at)) }}
+                    </div>
+                </div>
+
+                <div class="tab-filter-bar">
+                    <form class="" id="sort_reviews" action="" method="GET">
+                        <div class="card-header border-0 pb-0 mt-2">
+                            <div class="flex-grow-1 mr-2">
+                                <div class="input-group mb-0 border border-light px-3 bg-light rounded-1">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text border-0 bg-transparent px-0" id="search">
+                                            <svg id="Group_38844" data-name="Group 38844" xmlns="http://www.w3.org/2000/svg"
+                                                width="16.001" height="16" viewBox="0 0 16.001 16">
+                                                <path id="Path_3090" data-name="Path 3090"
+                                                    d="M8.248,14.642a6.394,6.394,0,1,1,6.394-6.394A6.4,6.4,0,0,1,8.248,14.642Zm0-11.509a5.115,5.115,0,1,0,5.115,5.115A5.121,5.121,0,0,0,8.248,3.133Z"
+                                                    transform="translate(-1.854 -1.854)" fill="#a5a5b8" />
+                                                <path id="Path_3091" data-name="Path 3091"
+                                                    d="M23.011,23.651a.637.637,0,0,1-.452-.187l-4.92-4.92a.639.639,0,0,1,.9-.9l4.92,4.92a.639.639,0,0,1-.452,1.091Z"
+                                                    transform="translate(-7.651 -7.651)" fill="#a5a5b8" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control form-control-sm border-0 px-2 bg-transparent"
+                                        id="search_input" name="search" placeholder="{{translate('Search Reviews ...')}}">
+                                </div>
                             </div>
-                            <div>
-                                <label class="aiz-switch aiz-switch-success mb-0">
-                                    <input onchange="update_published(this)" value="{{ $review->id }}" type="checkbox" <?php if ($review->status == 1) echo "checked"; ?> >
-                                    <span class="slider round"></span>
-                                </label>
+
+                            @can('can_published_reviews')
+                                <div class="dropdown mb-2 mb-md-0 bg-light mt-2 mt-md-0 rounded-1">
+                                    <button class="btn border dropdown-toggle border-light text-secondary fs-14 fw-400"
+                                        type="button" data-toggle="dropdown">
+                                        {{ translate('Bulk Action') }}
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item confirm-alert text-dark fs-14 fw-500 hov-bg-light hov-text-blue"
+                                            href="javascript:void(0)" onclick="bulkPublished()">
+                                            {{ translate('Published/Unpublished') }}
+                                        </a>
+                                    </div>
+                                </div>
+                            @endcan
+
+                        </div>
+                        <div class="tab-content filter-tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="tab-content">
                             </div>
                         </div>
-                    </td>
-                    @if($reviewType == 'custom')
-                        <td class="text-right">
-                            @can('edit_custom_review')
-                                <a class="btn btn-soft-primary btn-icon btn-circle btn-sm" href="{{route('custom-review.edit', $review->id)}}" title="{{ translate('Edit') }}">
-                                    <i class="las la-edit"></i>
-                                </a>
-                            @endcan
-                        </td>
-                    @endif
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        <div class="aiz-pagination">
-            {{ $reviews->appends(request()->input())->links() }}
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
 @endsection
 
 @section('script')
     <script type="text/javascript">
-        function sortByReviewType(value) {
-            $('input[name="review_type"]').val(value);
-            $('#sort_by_review_types').submit();
+        let currentTab = '{{ Str::slug($review_tabs[0]) }}';
+        let productId = {{ $product->id }};
+        var searchTimer;
+
+        $(document).on("change", ".check-all", function () {
+            if (this.checked) {
+                $('.check-one:checkbox').each(function () {
+                    this.checked = true;
+                });
+            } else {
+                $('.check-one:checkbox').each(function () {
+                    this.checked = false;
+                });
+            }
+
+        });
+
+        function sort_reviews(el) {
+            $('#sort_reviews').submit();
         }
 
-        function update_published(el){
-            if('{{env('DEMO_MODE')}}' == 'On'){
-                AIZ.plugins.notify('info', '{{ translate('Data can not change in demo mode.') }}');
+        function getReviews(slug, page = 1) {
+            currentTab = slug;
+            var slug = slug.replace(/-/g, '_');
+            let keyword = $('#search_input').val();
+            $('#tab-content').html('<div class="footable-loader mt-5"><span class="fooicon fooicon-loader"></span></div>');
+            $.ajax({
+                url: `{{ route('reviews-details.filter') }}?page=${page}`,
+                method: 'GET',
+                data: {
+                    product_id: productId,
+                    review_status: slug,
+                    search: keyword,
+                    rating: $('#type').val()
+                },
+                success: function (response) {
+                    $('#tab-content').html(response.html);
+                    initFooTable();
+                },
+                error: function () {
+                    $('#tab-content').html('<div class="text-danger p-4">{{ translate("Failed to load data.") }}</div>');
+                }
+            });
+        }
+
+        function changeTab(button, statusSlug) {
+            document.querySelectorAll('#myTab .nav-link').forEach(el => el.classList.remove('active'));
+            button.classList.add('active');
+            getReviews(statusSlug);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            getReviews(currentTab);
+        });
+
+        $('#search_input').on('keyup', function () {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(function () {
+                getReviews(currentTab);
+            }, 500);
+        });
+
+        $(document).on('click', '.pagination a', function (e) {
+            e.preventDefault();
+            const page = $(this).attr('href').split('page=')[1];
+            getReviews(currentTab, page);
+        });
+
+        function bulkPublished() {
+            let ids = [];
+            $('.check-one:checked').each(function () {
+                ids.push($(this).val());
+            });
+
+            if (ids.length === 0) {
+                AIZ.plugins.notify('danger', '{{ translate('Please select at least one review') }}');
                 return;
             }
 
-            if(el.checked){
-                var status = 1;
-            }
-            else{
-                var status = 0;
-            }
-            
-            $.post('{{ route('reviews.published') }}', {_token:'{{ csrf_token() }}', id:el.value, status:status}, function(data){
-                if(data == 1){
-                    AIZ.plugins.notify('success', '{{ translate('Published reviews updated successfully') }}');
+            window.bulkStatusIds = ids;
+
+            showBulkActionModal();
+            $('#confirmation-title').text('{{ translate('Update Status Confirmation') }}');
+            $('#confirmation-question').text('{{ translate('Are you sure you want to update status of the selected reviews?') }}');
+            $('#conform-yes-btn').attr("onclick", "bulk_status_update()");
+            $('.confirmation-icon').addClass('d-none');
+            $('#publish-confirm-icon').removeClass('d-none');
+        }
+
+        function bulk_status_update() {
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "{{ route('bulk-review-published') }}",
+                type: 'POST',
+                data: { ids: window.bulkStatusIds },
+                success: function (response) {
+                    if (response == 1) {
+                        AIZ.plugins.notify('success', '{{ translate('Status updated successfully') }}');
+                        hideBulkActionModal();
+                        getReviews(currentTab);
+                    } else {
+                        AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
+                    }
+                },
+                error: function () {
+                    AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
                 }
-                else{
+            });
+        }
+
+        function singlepublished(el, reviewId) {
+            let status = el.checked ? 1 : 0;
+            el.checked = !el.checked;
+
+            showBulkActionModal();
+
+            $('.confirmation-icon').addClass('d-none');   
+
+            if (status == 1) {
+                $('#confirmation-title').text('{{ translate('Publish Confirmation') }}');
+                $('#confirmation-question').text('{{ translate('Are you sure you want to publish this review?') }}');
+                $('#publish-confirm-icon').removeClass('d-none'); 
+            } else {
+                $('#confirmation-title').text('{{ translate('Unpublish Confirmation') }}');
+                $('#confirmation-question').text('{{ translate('Are you sure you want to unpublish this review?') }}');
+                $('#reject-confirm-icon').removeClass('d-none');
+            }
+
+            $('#conform-yes-btn').attr("onclick", `single_published(${reviewId}, ${status})`);
+        }
+
+        function single_published(reviewId, status) {
+            $.ajax({
+                url: "{{ route('reviews.published') }}",
+                type: 'POST',
+                data: {
+                    _token: AIZ.data.csrf,
+                    id: reviewId,
+                    status: status
+                },
+                success: function (response) {
+                    if (response == 1) {
+                        AIZ.plugins.notify('success', status == 1
+                            ? '{{ translate('Review published successfully') }}'
+                            : '{{ translate('Review unpublished successfully') }}');
+                        hideBulkActionModal();
+                        getReviews(currentTab);
+                    } else {
+                        AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
+                    }
+                },
+                error: function () {
                     AIZ.plugins.notify('danger', '{{ translate('Something went wrong') }}');
                 }
             });

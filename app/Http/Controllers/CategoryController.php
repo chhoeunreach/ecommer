@@ -433,4 +433,77 @@ class CategoryController extends Controller
             return 1;
         }
     }
+
+    public function admin_ajax_add_category_modal(Request $request)
+    {
+        $categories = Category::where('parent_id', 0)
+            ->where('digital', 0)
+            ->with('childrenCategories')
+            ->get();
+        return view('backend.product.categories.ajax_add_category_modal', ['categories' => $categories]);
+    }
+
+    public function admin_ajax_add_category_store(Request $request)
+    {
+        $category = new Category;
+        $category->name = $request->name;
+        $category->order_level = $request->order_level ?? 0;
+        $category->digital = $request->digital ?? 0;
+        $category->banner = $request->banner;
+        $category->icon = $request->icon;
+        $category->cover_image = $request->cover_image;
+        $category->meta_title = $request->meta_title;
+        $category->meta_description = $request->meta_description;
+        $category->meta_keywords = $request->meta_keywords;
+
+        if ($request->parent_id && $request->parent_id != "0") {
+            $category->parent_id = $request->parent_id;
+            $parent = Category::find($request->parent_id);
+            $category->level = $parent->level + 1;
+        }
+
+        $category->slug = preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', $request->name)) . '-' . Str::random(5);
+
+        $category->save();
+
+        $category->attributes()->sync($request->filtering_attributes ?? []);
+
+        $translation = CategoryTranslation::firstOrNew([
+            'lang' => env('DEFAULT_LANGUAGE'),
+            'category_id' => $category->id
+        ]);
+        $translation->name = $request->name;
+        $translation->save();
+
+        $categories = Category::where('parent_id', 0)
+            ->where('digital', 0)
+            ->with('childrenCategories')
+            ->get();
+
+        return response()->json([
+            'success'        => true,
+            'message'        => translate('Category has been inserted successfully'),
+            'category_id'    => $category->id,
+            'category_name'  => $category->name,
+            'single_options' => $this->buildCategoryOptions($categories, $category->id),
+            'multi_options'  => $this->buildCategoryOptions($categories, [$category->id]),
+        ]);
+    }
+
+    private function buildCategoryOptions($categories, $selectedIds = [], $level = 0): string
+    {
+        $html = '';
+        $selectedIds = (array) $selectedIds;
+        
+        foreach ($categories as $category) {
+            $indent   = str_repeat('&nbsp;&nbsp;&nbsp;', $level);
+            $selected = in_array($category->id, $selectedIds) ? 'selected' : '';
+            $html    .= "<option value=\"{$category->id}\" {$selected}>{$indent}" . e($category->getTranslation('name')) . "</option>";
+
+            if ($category->childrenCategories?->count() > 0) {
+                $html .= $this->buildCategoryOptions($category->childrenCategories, $selectedIds, $level + 1);
+            }
+        }
+        return $html;
+    }
 }

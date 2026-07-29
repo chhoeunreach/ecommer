@@ -51,9 +51,9 @@
             <!--Card Header (Search) Start-->
             <div class="tab-filter-bar">
                 <form class="" id="sort_categories" action="" method="GET">
-                    <div class="card-header row  border-0 pb-0 mt-2">
+                    <div class="card-header border-0 pb-0 mt-2">
                         
-                        <div class="col pl-0 pl-md-3">
+                        <div class="flex-grow-1 mr-2">
                             <div class="input-group mb-0 border border-light px-3 bg-light rounded-1">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text border-0 bg-transparent px-0" id="search">
@@ -74,7 +74,7 @@
                         </div>
 
                        
-                        <div class="dropdown mb-2 mb-md-0 bg-light mt-2 mt-md-0 px-md-1 rounded-1">
+                        <div class="dropdown mb-2 mb-md-0 bg-light mt-2 mt-md-0 rounded-1">
                             <button class="btn border dropdown-toggle border-light text-secondary fs-14 fw-400" type="button"
                                 data-toggle="dropdown">
                                 {{ translate('Bulk Action') }}

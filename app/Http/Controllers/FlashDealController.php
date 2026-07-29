@@ -353,4 +353,54 @@ class FlashDealController extends Controller
 
         return response()->json(['success' => false, 'message' => translate('Something went wrong')], 500);
     }
+
+    public function admin_ajax_add_flash_sale_modal(Request $request)
+    {
+        $products = Product::isApprovedPublished()
+            ->where('auction_product', 0)
+            ->where('promotional', 1)
+            ->with(['product_categories'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $categories = Category::where('parent_id', 0)
+            ->with('childrenCategories')
+            ->get();
+
+        return view('backend.marketing.flash_deals.ajax_add_flash_sale_modal',
+        [
+            'products' => $products,
+            'categories' => $categories,
+        ]);
+    }
+
+    public function admin_ajax_add_flash_sale_store(Request $request)
+    {
+        $flash_deal = new FlashDeal;
+        $flash_deal->title = $request->title;
+        $flash_deal->slug = Str::slug($request->title) . '-' . Str::random(5);
+        $flash_deal->banner = $request->fs_thumbnail_img;
+
+        $date_var = explode(" to ", $request->date_range);
+        $flash_deal->start_date = strtotime($date_var[0]);
+        $flash_deal->end_date   = strtotime($date_var[1]);
+
+        $flash_deal->save();
+
+        $flash_deal_translation = FlashDealTranslation::firstOrNew([
+            'lang' => env('DEFAULT_LANGUAGE'),
+            'flash_deal_id' => $flash_deal->id
+        ]);
+
+        $flash_deal_translation->title = $request->title;
+        $flash_deal_translation->save();
+
+        return response()->json([
+            'success'        => true,
+            'message'        => translate('Flash Deal has been inserted successfully'),
+            'flash_sale_id'    => $flash_deal->id,
+            'flash_sale_title'  => $flash_deal->title,
+        ]);
+
+    }
 }

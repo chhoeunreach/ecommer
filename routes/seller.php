@@ -4,7 +4,11 @@ use App\Http\Controllers\AizUploadController;
 use App\Http\Controllers\Seller\CustomLabelController;
 use App\Http\Controllers\Seller\DashboardController;
 use App\Http\Controllers\Seller\GSTController;
+use App\Http\Controllers\Seller\NoteController;
+use App\Http\Controllers\Seller\PaymentController;
 use App\Http\Controllers\Seller\ProductController;
+use App\Http\Controllers\Seller\ShopController;
+use App\Http\Controllers\Seller\SizeChartController;
 use Illuminate\Support\Facades\Route;
 
 //Upload
@@ -22,6 +26,8 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
     Route::controller(DashboardController::class)->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
     });
+
+    Route::get('/clear-cache', [DashboardController::class, 'clearCache'])->name('cache.clear');
 
     // Product
     Route::controller(ProductController::class)->group(function () {
@@ -48,6 +54,9 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
         Route::get('/filter-products', 'get_filter_products')->name('products.filter');
         Route::post('/bulk-product-stock-update', 'bulk_product_stock_update')->name('bulk-product-stock-update');
         Route::get('/stock/show/{id}', 'stockShow')->name('stock.show');
+        Route::post('/save-as-draft', 'store_as_draft')->name('products.store_as_draft');
+        Route::post('/products-search', 'products_search')->name('products.search');
+        Route::post('/products/generate-with-ai', 'generateWithAI')->name('products.generate-with-ai');
     });
 
 
@@ -81,7 +90,13 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
         Route::get('/custom-label-edit/{id}', 'edit')->name('custom_label.edit');
         Route::post('/custom-label-update/{id}', 'update')->name('custom_label.update');
         Route::get('/custom-label-delete/{id}', 'destroy')->name('custom_label.delete');
-        Route::post('/custom-label/products', 'products')->name('custom_label.products');
+        
+        Route::post('/bulk-custom-label-delete', 'bulk_custom_label_delete')->name('bulk-custom-label-delete');
+        Route::post('/custom-label-status-update', 'status_update')->name('custom_label.status_update');
+        Route::get('/custom-labels-filter', 'filter')->name('custom_labels.filter');  
+        Route::post('/custom-labels/product-search',  'custom_label_product_search')->name('custom_labels.product_search'); 
+        Route::post('/custom-labels/product-add', 'product_add')->name('custom_labels.product_add');
+        Route::post('/custom-labels/product-edit', 'product_edit')->name('custom_labels.product_edit');
     });
     
     // Note
@@ -89,6 +104,25 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
     Route::controller(NoteController::class)->group(function () {
         Route::get('/note/edit/{id}', 'edit')->name('note.edit');
         Route::get('note/delete/{note}', 'destroy')->name('note.delete');
+
+        Route::post('/ajax-add-note/modal', 'seller_ajax_add_note_modal')->name('ajax_add_note_modal');
+        Route::post('/ajax-add-note/store', 'seller_ajax_add_note_store')->name('ajax_add_note_store');
+    });
+
+    // Size Chart
+    Route::controller(SizeChartController::class)->group(function () {  
+        Route::get('/size-charts', 'index')->name('size-charts.index');
+        Route::get('/size-chart-create', 'create')->name('size-charts.create');
+        Route::get('/size-chart-show/{id}', 'show')->name('size-charts.show');
+        Route::post('/size-chart-store', 'store')->name('size-charts.store');
+        Route::get('/size-chart-edit/{size_chart}', 'edit')->name('size-charts.edit');
+        Route::post('/size-chart-update/{size_chart}', 'update')->name('size-charts.update');
+        Route::get('/size-charts/destroy/{id}',  'destroy')->name('size-charts.destroy');
+        Route::get('/size-charts-filter', 'filter')->name('size_charts.filter'); 
+        Route::post('/sizeChart-products-search', 'search')->name('sizeChart_products.search');  
+        Route::post('/sizeChart-category-products-update', 'updateCategoryOrProducts')->name('assignCategoryOrProducts.update');        
+        Route::post('/bulk-size-chart-delete', 'bulk_size_chart_delete')->name('bulk-size-chart-delete');  
+        Route::post('size-charts/get-combination',  'get_combination')->name('size-charts.get-combination');
     });
 
     //Coupon
@@ -124,6 +158,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
     //Shop
     Route::controller(ShopController::class)->group(function () {
         Route::get('/shop', 'index')->name('shop.index');
+        Route::get('/shop-design', 'shop_design')->name('shop.design');
         Route::post('/shop/update', 'update')->name('shop.update');
         Route::post('/shop/banner-update', 'bannerUpdate')->name('shop.banner.update');
         Route::get('/shop/apply-for-verification', 'verify_form')->name('shop.verify');

@@ -103,7 +103,7 @@ class ProductController extends Controller
         }
         else{
             $source  ='seller-all';
-            $product_types = ['All Seller Products', 'Physical Products', 'Digital Products','source'];
+            $product_types = ['All Seller Products', 'Physical Products', 'Digital Products'];
         }
         if (get_setting('product_approve_by_admin')==1){
             $product_types[] = 'Not Approved';
@@ -812,9 +812,9 @@ class ProductController extends Controller
 
         $redirrect_url = '';
         if ($request->has('type') && $request->type == 'Seller') {
-            $redirrect_url = route('products.seller.edit', ['id' => $product_new->id, 'lang' => env('DEFAULT_LANGUAGE')]);
+            $redirrect_url = route('products.seller.edit', ['id' => $product_new->id, 'lang' => env('DEFAULT_LANGUAGE'), 'source' => 'all']);
         } else {
-            $redirrect_url = route('products.admin.edit', ['id' => $product_new->id, 'lang' => env('DEFAULT_LANGUAGE')]);
+            $redirrect_url = route('products.admin.edit', ['id' => $product_new->id, 'lang' => env('DEFAULT_LANGUAGE'), 'source' => 'all']);
         }
         return response()->json([
                 'success' => true,

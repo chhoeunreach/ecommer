@@ -21,6 +21,12 @@ class ShopController extends Controller
         return view('seller.shop', compact('shop'));
     }
 
+    public function shop_design()
+    {
+        $shop = Auth::user()->shop;
+        return view('seller.shop_design', compact('shop'));
+    }
+
     public function update(Request $request)
     {
         $shop = Shop::find($request->shop_id);
@@ -37,6 +43,14 @@ class ShopController extends Controller
             $shop->meta_title       = $request->meta_title;
             $shop->meta_description = $request->meta_description;
             $shop->logo             = $request->logo;
+        }
+
+        if ($request->has('navbar_bg_color')) {
+            $shop->navbar_bg_color             = $request->navbar_bg_color;
+        }
+
+        if ($request->has('navbar_text_color')) {
+            $shop->navbar_text_color             = $request->navbar_text_color;
         }
 
         if ($request->has('delivery_pickup_longitude') && $request->has('delivery_pickup_latitude'))

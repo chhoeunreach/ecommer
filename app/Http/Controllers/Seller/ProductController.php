@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Seller;
 
 use AizPackages\CombinationGenerate\Services\CombinationService;
+use App\Http\Requests\ProductDraftRequest;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
 use App\Models\AttributeValue;
@@ -15,6 +16,7 @@ use App\Models\ProductTranslation;
 use App\Models\Wishlist;
 use App\Models\User;
 use App\Notifications\ShopProductNotification;
+use App\Services\AiService;
 use Artisan;
 use Auth;
 
@@ -24,29 +26,32 @@ use App\Services\ProductTaxService;
 use App\Services\ProductFlashDealService;
 use App\Services\ProductStockService;
 use App\Services\FrequentlyBoughtProductService;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class ProductController extends Controller
 {
     protected $productService;
-    protected $productCategoryService;
     protected $productTaxService;
     protected $productFlashDealService;
     protected $productStockService;
     protected $frequentlyBoughtProductService;
+    protected $aiService;
 
     public function __construct(
         ProductService $productService,
         ProductTaxService $productTaxService,
         ProductFlashDealService $productFlashDealService,
         ProductStockService $productStockService,
-        FrequentlyBoughtProductService $frequentlyBoughtProductService
+        FrequentlyBoughtProductService $frequentlyBoughtProductService,
+        AiService $aiService
     ) {
         $this->productService = $productService;
         $this->productTaxService = $productTaxService;
         $this->productFlashDealService = $productFlashDealService;
         $this->productStockService = $productStockService;
         $this->frequentlyBoughtProductService = $frequentlyBoughtProductService;
+        $this->aiService = $aiService;
     }
 
     public function index(Request $request)
@@ -56,7 +61,7 @@ class ProductController extends Controller
         $category_id = null;
         $back_to=null;
         $selected_type= null;
-        $product_types = ['All Products', 'Physical Products', 'Digital Products', 'Not Approved'];
+        $product_types = ['All Products', 'Physical Products', 'Digital Products', 'Not Approved', 'Drafts'];
         if ($request->has('selected_type')) {
             $selected_type = $request->selected_type;
         }
@@ -154,17 +159,148 @@ class ProductController extends Controller
             Notification::send($users, new ShopProductNotification($data));
         }
 
-        flash(translate('Product has been inserted successfully'))->success();
 
         Artisan::call('view:clear');
         Artisan::call('cache:clear');
+        $redirrect_url = route('seller.products');
+        return response()->json([
+            'success' => true,
+            'message' => translate('Product has been inserted successfully'),
+            'redirect' => $redirrect_url
+        ]);
 
-        return redirect()->route('seller.products');
+    }
+
+    public function store_as_draft(ProductDraftRequest $request)
+    {
+        if(isset($request->id)) {
+            $product = Product::find($request->id);
+            if ($product && $product->draft != 1) {
+                return response()->json([
+                'success' => false,
+                'message' => translate('Only draft products can be automatically saved as draft.'),
+                'redirect' => ''
+                ]);
+            }
+        }
+
+        try {
+            // Prepare product data
+            $productData = $request->except([
+                '_token',
+                'sku',
+                'choice',
+                'tax_id',
+                'tax',
+                'tax_type'
+            ]);
+
+            // Add draft-specific fields
+            $productData['published'] = 0;
+            $productData['draft'] = 1;
+            $productData['name'] = $productData['name'] ? $productData['name']:'Draft  Product';
+            $productData['unit_price'] = $productData['unit_price'] ?? 0.0;
+            $productData['current_stock'] = $productData['current_stock'] ?? 0;
+            $productData['qty'] = $productData['qty'] ?? 0;
+
+            // Create or update draft product
+            $product = $this->productService->storeOrUpdateDraft($productData);
+            $request->merge(['product_id' => $product->id]);
+
+            // Sync categories if present
+            if ($request->filled('category_ids')) {
+                $product->categories()->sync($request->category_ids);
+            }
+
+            // Save tax if exist
+            if ($request->filled('tax_id')) {
+                $this->productTaxService->store([
+                    'tax_id' => $request->tax_id,
+                    'tax' => $request->tax,
+                    'tax_type' => $request->tax_type,
+                    'product_id' => $product->id
+                ]);
+            }
+
+            // Product stock if present
+            if ($product->stocks()->exists()) {
+                $product->stocks()->delete();
+            }
+            $this->productStockService->store($request->only([
+                'colors_active',
+                'colors',
+                'choice_no',
+                'unit_price',
+                'sku',
+                'current_stock',
+                'product_id'
+            ]), $product);
+
+
+            // Frequently bought products if present
+            if ($request->filled('frequently_bought_selection_type')) {
+                $this->frequentlyBoughtProductService->store([
+                    'product_id' => $product->id,
+                    'frequently_bought_selection_type' => $request->frequently_bought_selection_type,
+                    'fq_bought_product_ids' => $request->fq_bought_product_ids,
+                    'fq_bought_product_category_id' => $request->fq_bought_product_category_id
+                ]);
+            }
+
+            // Product translations
+            ProductTranslation::updateOrCreate(
+                [
+                    'product_id' => $product->id, 
+                    'lang' => env('DEFAULT_LANGUAGE', 'en')
+                ],
+                [
+                    'name' => $request->name,
+                    'unit' => $request->unit,
+                    'description' => $request->description
+                ]
+            );
+
+            // Clear caches
+            Artisan::call('view:clear');
+            Artisan::call('cache:clear');
+
+            return response()->json([
+                'success' => true,
+                'product_id' => $product->id,
+                'message' => translate('Draft saved successfully'),
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Draft save failed: '.$e->getMessage(), [
+                'request' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => translate('Failed to save draft: ') . $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function edit(Request $request, $id)
     {
         $product = Product::findOrFail($id);
+
+        if ($product->digital == 1) {
+             return redirect()->route('seller.digitalproducts.edit', [
+                'id'   => $id,
+                'lang' => request('lang', env('DEFAULT_LANGUAGE'))
+            ]);
+        }
+
+        if (addon_is_activated('gst_system')) {
+            $shop = $product->user->shop;
+            if ($shop && !$shop->gst_verification) {
+                flash(translate('GST verification is pending.'))->warning();
+                return back();
+            }
+        }
 
         if (Auth::user()->id != $product->user_id) {
             flash(translate('This product is not yours.'))->warning();
@@ -184,7 +320,7 @@ class ProductController extends Controller
     {
         //Product
         $product = $this->productService->update($request->except([
-            '_token', 'sku', 'choice', 'tax_id', 'tax', 'tax_type', 'flash_deal_id', 'flash_discount', 'flash_discount_type'
+            '_token', 'sku', 'choice', 'tax_id', 'tax', 'tax_type'
         ]), $product);
 
         $request->merge(['product_id' => $product->id]);
@@ -228,13 +364,15 @@ class ProductController extends Controller
             ])
         );
 
-
-        flash(translate('Product has been updated successfully'))->success();
-
         Artisan::call('view:clear');
         Artisan::call('cache:clear');
+        $redirrect_url = route('seller.products');
 
-        return back();
+        return response()->json([
+            'success' => true,
+            'message' => translate('Product has been updated successfully'),
+            'redirect' => $redirrect_url
+        ]);
     }
 
     public function sku_combination(Request $request)
@@ -344,7 +482,7 @@ class ProductController extends Controller
         return 0;
     }
 
-    public function duplicate($id)
+    public function duplicate(Request $request, $id)
     {
         $product = Product::find($id);
 
@@ -384,9 +522,18 @@ class ProductController extends Controller
                 'category_id' => $product_category->category_id,
             ]);
         }
+
+        $this->frequentlyBoughtProductService->product_duplicate_store($product->frequently_bought_products, $product_new);
         
-        flash(translate('Product has been duplicated successfully'))->success();
-        return redirect()->route('seller.products');
+
+        $redirrect_url = route('seller.products.edit', ['id' => $product_new->id, 'lang' => env('DEFAULT_LANGUAGE')]);
+
+        return response()->json([
+                'success' => true,
+                'message' => translate('Product Copied Successfully. You can now edit and save your new product'),
+                'redirect' => $redirrect_url
+            ]);
+
     }
 
 
@@ -472,6 +619,13 @@ class ProductController extends Controller
         return view('partials.product.product_search', compact('products'));
     }
 
+    public function products_search(Request $request)
+    {
+        $products = $this->productService->products_search($request->except(['_token']));
+        $single_select = $request->single_select ?? 0;
+        return view('partials.product.products_search', compact('products', 'single_select'));
+    }
+
     public function get_selected_products(Request $request){
         $products = product::whereIn('id', $request->product_ids)->get();
         return  view('partials.product.frequently_bought_selected_product', compact('products'));
@@ -503,15 +657,22 @@ class ProductController extends Controller
         $sort_search = null;
         $products = Product::where('auction_product', 0)->where('wholesale_product', 0);  
         $products = $products->where('user_id', auth()->user()->id);
-        if ($request->product_type == 'digital_products') {
-            $products = $products->where('digital', 1);
-        } else if ($request->product_type == 'physical_products') {
-            $products = $products->where('digital', 0);
-        } else if ($request->product_type == 'not_approved') {
-            $products = $products->where('approved', 0);
-        }
-        else if ($request->product_type == 'pos_product_list') {
-            $products = $products->where('pos', 1);
+        if ($request->product_type == 'drafts') {
+            $products = $products->where('draft', 1);
+        } else {
+            $products = $products->where('draft', 0);
+            if ($request->product_type != 'drafts') {
+                if ($request->product_type == 'digital_products') {
+                    $products = $products->where('digital', 1);
+                } else if ($request->product_type == 'physical_products') {
+                    $products = $products->where('digital', 0);
+                } else if ($request->product_type == 'not_approved') {
+                    $products = $products->where('approved', 0);
+                }
+                else if ($request->product_type == 'pos_product_list') {
+                    $products = $products->where('pos', 1);
+                }
+            }
         }
 
         if ($request->search != null) {
@@ -592,5 +753,10 @@ class ProductController extends Controller
             Artisan::call('cache:clear');
             return 1;
         }
+    }
+
+    public function generateWithAI(Request $request)
+    {
+       return $products = $this->aiService->productGenerateWithAI($request->all());
     }
 }

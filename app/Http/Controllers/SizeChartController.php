@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SizeChartRequest;
 use App\Models\AttributeValue;
 use App\Models\Category;
+use App\Services\ProductService;
 use App\Models\SizeChart;
 use Illuminate\Http\Request;
 use App\Models\MeasurementPoint;
@@ -12,48 +13,71 @@ use App\Models\SizeChartDetail;
 
 class SizeChartController extends Controller
 {
-    public function __construct() {
-        // Staff Permission Check
+    protected $productService;
+    public function __construct(ProductService $productService)
+    {
         $this->middleware(['permission:view_measurement_points'])->only('index');
         $this->middleware(['permission:edit_size_charts'])->only('edit');
         $this->middleware(['permission:delete_size_charts'])->only('destroy');
+
+        $this->productService = $productService;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $sizeCharts = SizeChart::orderBy('created_at', 'desc')->paginate(15);
-        return view('backend.product.sizeCharts.index', compact('sizeCharts'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function index(Request $request)
     {
         $categories = Category::where('parent_id', 0)
-            ->where('digital', 0)
             ->with('childrenCategories')
             ->get();
-        
+        $sort_search = null;
+        $sizeChart_tabs = ['All Size Charts'];
+        $sizeCharts = SizeChart::orderBy('created_at', 'desc');
+
+        if ($request->search != null) {
+            $sort_search = $request->search;
+            $sizeCharts = $sizeCharts->where('name', 'like', '%' . $request->search . '%');
+        }
+        $sizeCharts = $sizeCharts->paginate(15);
+        return view('backend.product.sizeCharts.index', compact('sizeCharts', 'sizeChart_tabs', 'categories', 'sort_search'));
+    }
+
+    public function filter(Request $request)
+    {
+        $sizeCharts = SizeChart::orderBy('created_at', 'desc');
+        $sort_search = null;
+
+        if ($request->search != null) {
+            $sort_search = $request->search;
+            $sizeCharts = $sizeCharts->where(function ($query) use ($sort_search) {
+                $query->where('name', 'like', '%' . $sort_search . '%');
+            });
+        }
+
+        $sizeCharts = $sizeCharts->paginate(15);
+
+        $view = view(
+            'backend.product.sizeCharts.table',
+            compact('sizeCharts', 'sort_search')
+        )->render();
+
+        return response()->json(['html' => $view]);
+    }
+
+    public function search(Request $request)
+    {
+        $products = $this->productService->sizeChart_products_search($request->except(['_token']));
+        $single_select = $request->single_select ?? 0;
+        $readonly = $request->readonly ?? 0;
+        return view('backend.product.sizeCharts.products_search', compact('products', 'single_select', 'readonly'));
+    }
+
+    public function create()
+    {
         $measurementPoints = MeasurementPoint::orderBy('created_at', 'asc')->paginate(15);
         $sizeOptions = AttributeValue::selectRaw('id,value')->orderBy('created_at', 'asc')->get();
 
-        return view('backend.product.sizeCharts.create', compact('categories', 'measurementPoints', 'sizeOptions'));
+        return view('backend.product.sizeCharts.create', compact('measurementPoints', 'sizeOptions'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(SizeChartRequest $request)
     {
         $size_chart = SizeChart::create($request->except([
@@ -69,19 +93,12 @@ class SizeChartController extends Controller
 
         flash(translate('Size Chart has been created successfully'))->success();
         return redirect()->route('size-charts.index');
-
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $size_chart = SizeChart::findOrFail($id);
-        
+
         $measurement_options = json_decode($size_chart->measurement_option);
         $measurement_option_inch = in_array("inch", $measurement_options) ? 1 : 0;
         $measurement_option_cen = in_array("cen", $measurement_options) ? 1 : 0;
@@ -98,20 +115,10 @@ class SizeChartController extends Controller
         return view('backend.product.sizeCharts.show', compact('measurementPoints', 'size_options', 'measurement_option_inch', 'measurement_option_cen', 'size_chart', 'data'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit(SizeChart $size_chart)
     {
-        $categories = Category::where('parent_id', 0)
-            ->where('digital', 0)
-            ->with('childrenCategories')
-            ->get();
-        
-        $measurementPoints = MeasurementPoint::orderBy('created_at', 'asc')->paginate(15);
+
+        $measurementPoints = MeasurementPoint::orderBy('created_at', 'asc')->get();
         $sizeOptions = AttributeValue::selectRaw('id,value')->orderBy('created_at', 'asc')->get();
 
         $data = array();
@@ -120,16 +127,9 @@ class SizeChartController extends Controller
             $data['cen'][$sizeChartDetail->measurement_point_id][$sizeChartDetail->attribute_value_id] =  $sizeChartDetail->cen_value;
         }
 
-        return view('backend.product.sizeCharts.edit', compact('categories', 'measurementPoints', 'sizeOptions', 'size_chart', 'data'));
+        return view('backend.product.sizeCharts.edit', compact('measurementPoints', 'sizeOptions', 'size_chart', 'data'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(SizeChartRequest $request, SizeChart $size_chart)
     {
         $size_chart->update($request->except([
@@ -148,20 +148,33 @@ class SizeChartController extends Controller
         return redirect()->route('size-charts.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $size_chart = SizeChart::findOrFail($id);
-        $size_chart->delete();
-        $size_chart->sizeChartDetails()->delete();
-        
-        flash(translate('Size Chart has been deleted successfully'))->success();
-        return redirect()->route('size-charts.index');
+        $size_chart = SizeChart::where('id', $id)->first();
+        if (!is_null($size_chart)) {
+            $size_chart->delete();
+            $size_chart->sizeChartDetails()->delete();
+        }
+
+        return 1;
+    }
+
+    public function bulk_size_chart_delete(Request $request)
+    {
+        if ($request->id) {
+
+            foreach ($request->id as $sizeChart_id) {
+
+                $size_chart = SizeChart::find($sizeChart_id);
+                $size_chart->delete();
+                $size_chart->sizeChartDetails()->delete();
+            }
+
+            return 1;
+        }
+
+        return 0;
     }
 
     public function get_combination(Request $request)
@@ -170,7 +183,7 @@ class SizeChartController extends Controller
         $measurement_option_cen = $request->measurement_option_cen;
         $measurementPoints = MeasurementPoint::whereIn('id', $request->measurement_points)->get();
         $size_options = AttributeValue::selectRaw('id,value')->whereIn('id', $request->size_options)->get();
-        
+
         return view('backend.product.sizeCharts.size_combination', compact('measurementPoints', 'size_options', 'measurement_option_inch', 'measurement_option_cen'));
     }
 
@@ -191,5 +204,32 @@ class SizeChartController extends Controller
         }
 
         SizeChartDetail::insert($data);
+    }
+
+    public function updateCategoryOrProducts(Request $request)
+    {
+        $request->validate([
+            'size_chart_id' => 'required|exists:size_charts,id',
+        ]);
+
+        $size_chart = SizeChart::findOrFail($request->size_chart_id);
+
+        if ($request->whole_category) {
+            $size_chart->category_id = $request->category_id;
+            $size_chart->product_ids = null;
+        } else {
+            $size_chart->category_id = null;
+            $size_chart->product_ids = json_encode($request->checked_ids ?? []);
+        }
+        $size_chart->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function updateSellerAccess(Request $request) {
+        $size_chart = SizeChart::findOrFail($request->id);
+        $size_chart->seller_access = $request->status;
+        $size_chart->save();
+        return 1;
     }
 }

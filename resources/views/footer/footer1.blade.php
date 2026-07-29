@@ -92,33 +92,30 @@
                 @endif
 
                 <!-- Apps link -->
-                @if (get_setting('enable_play_store_link') == 1 || get_setting('enable_app_store_link') == 1)
-                    <div class="d-flex mt-3">
-                        @if (get_setting('play_store_link') != null)
-                            <div class="">
-                                <a href="{{ get_setting('play_store_link') }}" target="_blank"
-                                    class="mr-2 mb-2 overflow-hidden hov-scale-img">
-                                    <img class="lazyload has-transition"
-                                        src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
-                                        data-src="{{ static_asset('assets/img/play.png') }}" alt="{{ env('APP_NAME') }}"
-                                        height="44">
-                                </a>
-                            </div>
-                        @endif
-                        @if (get_setting('app_store_link') != null)
-                            <div class="">
-                                <a href="{{ get_setting('app_store_link') }}" target="_blank"
-                                    class="overflow-hidden hov-scale-img">
-                                    <img class="lazyload has-transition"
-                                        src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
-                                        data-src="{{ static_asset('assets/img/app.png') }}" alt="{{ env('APP_NAME') }}"
-                                        height="44">
-                                </a>
-                            </div>
-                        @endif
-                    </div>
-                @endif
-
+                <div class="d-flex mt-3">
+                    @if (get_setting('play_store_link') != null && get_setting('enable_play_store_link') == 1)
+                        <div class="">
+                            <a href="{{ get_setting('play_store_link') }}" target="_blank"
+                                class="mr-2 mb-2 overflow-hidden hov-scale-img">
+                                <img class="lazyload has-transition"
+                                    src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
+                                    data-src="{{ static_asset('assets/img/play.png') }}" alt="{{ env('APP_NAME') }}"
+                                    height="44">
+                            </a>
+                        </div>
+                    @endif
+                    @if (get_setting('app_store_link') != null && get_setting('enable_app_store_link') == 1)
+                        <div class="">
+                            <a href="{{ get_setting('app_store_link') }}" target="_blank"
+                                class="overflow-hidden hov-scale-img">
+                                <img class="lazyload has-transition"
+                                    src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
+                                    data-src="{{ static_asset('assets/img/app.png') }}" alt="{{ env('APP_NAME') }}"
+                                    height="44">
+                            </a>
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
@@ -316,14 +313,14 @@
     </div>
 
     <!-- Accordion Fotter widgets -->
-    <div class="d-lg-none bg-transparent">
+    <div class="d-lg-none bg-transparent" style="background-color: {{ get_setting('footer_bg_color') }}">
         <!-- Quick links -->
-        <div class="aiz-accordion-wrap bg-black">
-            <div class="aiz-accordion-heading container bg-black">
-                <button
-                    class="aiz-accordion fs-14 text-white bg-transparent">{{ translate('Quick Links')}}</button>
+        <div class="aiz-accordion-wrap">
+            <div class="aiz-accordion-heading container">
+                <button style="color: {{ get_setting('footer_text_color') }}"
+                    class="aiz-accordion fs-14 bg-transparent">{{ translate('Quick Links')}}</button>
             </div>
-            <div class="aiz-accordion-panel bg-transparent" style="background-color: #212129 !important;">
+            <div class="aiz-accordion-panel bg-transparent">
                 <div class="container">
                     <ul class="list-unstyled mt-3">
                         @if (get_setting('widget_one_labels', null, App::getLocale()) != null)
@@ -335,8 +332,8 @@
                                     }
                                 @endphp
                                 <li class="mb-2 pb-2 @if (url()->current() == $widget_one_links) active @endif">
-                                    <a href="{{ $widget_one_links }}"
-                                        class="fs-13 text-soft-light text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif ">
+                                    <a href="{{ $widget_one_links }}" style="color: {{ get_setting('footer_text_color') }}"
+                                        class="fs-13 text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif ">
                                         {{ $value }}
                                     </a>
                                 </li>
@@ -348,27 +345,27 @@
         </div>
 
         <!-- Contacts -->
-        <div class="aiz-accordion-wrap bg-black">
-            <div class="aiz-accordion-heading container bg-black">
-                <button class="aiz-accordion fs-14 text-white bg-transparent">{{ translate('Contacts') }}</button>
+        <div class="aiz-accordion-wrap">
+            <div class="aiz-accordion-heading container">
+                <button class="aiz-accordion fs-14 bg-transparent" style="color: {{ get_setting('footer_text_color') }}">{{ translate('Contacts') }}</button>
             </div>
-            <div class="aiz-accordion-panel bg-transparent" style="background-color: #212129 !important;">
+            <div class="aiz-accordion-panel bg-transparent">
                 <div class="container">
                     <ul class="list-unstyled mt-3">
                         <li class="mb-2">
-                            <p class="fs-13 text-secondary mb-1">{{ translate('Address') }}</p>
-                            <p class="fs-13 text-soft-light">
+                            <p class="fs-13 mb-1" style="color: {{ get_setting('footer_text_color') }}">{{ translate('Address') }}</p>
+                            <p class="fs-13" style="color: {{ get_setting('footer_text_color') }}">
                                 {{ get_setting('contact_address', null, App::getLocale()) }}</p>
                         </li>
                         <li class="mb-2">
-                            <p class="fs-13 text-secondary mb-1">{{ translate('Phone') }}</p>
-                            <p class="fs-13 text-soft-light">{{ get_setting('contact_phone') }}</p>
+                            <p class="fs-13 mb-1" style="color: {{ get_setting('footer_text_color') }}">{{ translate('Phone') }}</p>
+                            <p class="fs-13" style="color: {{ get_setting('footer_text_color') }}">{{ get_setting('contact_phone') }}</p>
                         </li>
                         <li class="mb-2">
-                            <p class="fs-13 text-secondary mb-1">{{ translate('Email') }}</p>
+                            <p class="fs-13 mb-1" style="color: {{ get_setting('footer_text_color') }}">{{ translate('Email') }}</p>
                             <p class="">
                                 <a href="mailto:{{ get_setting('contact_email') }}"
-                                    class="fs-13 text-soft-light hov-text-primary">{{ get_setting('contact_email') }}</a>
+                                    class="fs-13 hov-text-primary" style="color: {{ get_setting('footer_text_color') }}">{{ get_setting('contact_email') }}</a>
                             </p>
                         </li>
                     </ul>
@@ -377,50 +374,50 @@
         </div>
 
         <!-- My Account -->
-        <div class="aiz-accordion-wrap bg-black">
-            <div class="aiz-accordion-heading container bg-black">
-                <button class="aiz-accordion fs-14 text-white bg-transparent">{{ translate('My Account') }}</button>
+        <div class="aiz-accordion-wrap">
+            <div class="aiz-accordion-heading container ">
+                <button class="aiz-accordion fs-14 bg-transparent" style="color: {{ get_setting('footer_text_color') }}">{{ translate('My Account') }}</button>
             </div>
-            <div class="aiz-accordion-panel bg-transparent" style="background-color: #212129 !important;">
+            <div class="aiz-accordion-panel bg-transparent">
                 <div class="container">
                     <ul class="list-unstyled mt-3">
                         @auth
                             <li class="mb-2 pb-2">
-                                <a class="fs-13 text-soft-light text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
-                                    href="{{ route('logout') }}">
+                                <a class="fs-13 text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
+                                    href="{{ route('logout') }}" style="color: {{ get_setting('footer_text_color') }}">
                                     {{ translate('Logout') }}
                                 </a>
                             </li>
                         @else
                             <li class="mb-2 pb-2 {{ areActiveRoutes(['user.login'], ' active') }}">
-                                <a class="fs-13 text-soft-light text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
-                                    href="{{ route('user.login') }}">
+                                <a class="fs-13 text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
+                                    href="{{ route('user.login') }}" style="color: {{ get_setting('footer_text_color') }}">
                                     {{ translate('Login') }}
                                 </a>
                             </li>
                         @endauth
                         <li class="mb-2 pb-2 {{ areActiveRoutes(['purchase_history.index'], ' active') }}">
-                            <a class="fs-13 text-soft-light text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
-                                href="{{ route('purchase_history.index') }}">
+                            <a class="fs-13 text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
+                                href="{{ route('purchase_history.index') }}" style="color: {{ get_setting('footer_text_color') }}">
                                 {{ translate('Order History') }}
                             </a>
                         </li>
                         <li class="mb-2 pb-2 {{ areActiveRoutes(['wishlists.index'], ' active') }}">
-                            <a class="fs-13 text-soft-light text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
-                                href="{{ route('wishlists.index') }}">
+                            <a class="fs-13 text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
+                                href="{{ route('wishlists.index') }}" style="color: {{ get_setting('footer_text_color') }}">
                                 {{ translate('My Wishlist') }}
                             </a>
                         </li>
                         <li class="mb-2 pb-2 {{ areActiveRoutes(['orders.track'], ' active') }}">
-                            <a class="fs-13 text-soft-light text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
-                                href="{{ route('orders.track') }}">
+                            <a class="fs-13 text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
+                                href="{{ route('orders.track') }}" style="color: {{ get_setting('footer_text_color') }}">
                                 {{ translate('Track Order') }}
                             </a>
                         </li>
                         @if (addon_is_activated('affiliate_system'))
                             <li class="mb-2 pb-2 {{ areActiveRoutes(['affiliate.apply'], ' active') }}">
-                                <a class="fs-13 text-soft-light text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
-                                    href="{{ route('affiliate.apply') }}">
+                                <a class="fs-13 text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
+                                    href="{{ route('affiliate.apply') }}" style="color: {{ get_setting('footer_text_color') }}">
                                     {{ translate('Be an affiliate partner') }}
                                 </a>
                             </li>
@@ -432,30 +429,30 @@
 
         <!-- Seller -->
         @if (get_setting('vendor_system_activation') == 1)
-            <div class="aiz-accordion-wrap bg-black">
-                <div class="aiz-accordion-heading container bg-black">
+            <div class="aiz-accordion-wrap">
+                <div class="aiz-accordion-heading container">
                     <button
-                        class="aiz-accordion fs-14 text-white bg-transparent">{{ translate('Seller Zone') }}</button>
+                        class="aiz-accordion fs-14 bg-transparent" style="color: {{ get_setting('footer_text_color') }}">{{ translate('Seller Zone') }}</button>
                 </div>
-                <div class="aiz-accordion-panel bg-transparent" style="background-color: #212129 !important;">
+                <div class="aiz-accordion-panel bg-transparent">
                     <div class="container">
                         <ul class="list-unstyled mt-3">
                             <li class="mb-2 pb-2 {{ areActiveRoutes(['shops.create'], ' active') }}">
-                                <a href="{{ route(get_setting('seller_registration_verify') === '1' ? 'shop-reg.verification' : 'shops.create') }}"
-                                    class="fs-13 text-soft-light text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif ">{{ translate('Become A Seller') }}</a>
+                                <a href="{{ route(get_setting('seller_registration_verify') === '1' ? 'shop-reg.verification' : 'shops.create') }}" style="color: {{ get_setting('footer_text_color') }}"
+                                    class="fs-13 text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif ">{{ translate('Become A Seller') }}</a>
                             </li>
                             @guest
                                 <li class="mb-2 pb-2 {{ areActiveRoutes(['deliveryboy.login'], ' active') }}">
-                                    <a class="fs-13 text-soft-light text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
-                                        href="{{ route('seller.login') }}">
+                                    <a class="fs-13 text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
+                                        href="{{ route('seller.login') }}" style="color: {{ get_setting('footer_text_color') }}">
                                         {{ translate('Login to Seller Panel') }}
                                     </a>
                                 </li>
                             @endguest
                             @if (get_setting('seller_app_link') && get_setting('enable_seller_app_link') == 1)
                                 <li class="mb-2 pb-2">
-                                    <a class="fs-13 text-soft-light text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
-                                        target="_blank" href="{{ get_setting('seller_app_link') }}">
+                                    <a class="fs-13 text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
+                                        target="_blank" href="{{ get_setting('seller_app_link') }}" style="color: {{ get_setting('footer_text_color') }}">
                                         {{ translate('Download Seller App') }}
                                     </a>
                                 </li>
@@ -469,26 +466,26 @@
         <!-- Delivery Boy -->
         @if (addon_is_activated('delivery_boy'))
             @if (get_setting('delivery_boy_app_link') && get_setting('enable_delivery_app_link') == 1)
-                <div class="aiz-accordion-wrap bg-black">
-                    <div class="aiz-accordion-heading container bg-black">
+                <div class="aiz-accordion-wrap">
+                    <div class="aiz-accordion-heading container">
                         <button
-                            class="aiz-accordion fs-14 text-white bg-transparent">{{ translate('Delivery Boy') }}</button>
+                            class="aiz-accordion fs-14 bg-transparent" style="color: {{ get_setting('footer_text_color') }}">{{ translate('Delivery Boy') }}</button>
                     </div>
-                    <div class="aiz-accordion-panel bg-transparent" style="background-color: #212129 !important;">
+                    <div class="aiz-accordion-panel bg-transparent">
                         <div class="container">
                             <ul class="list-unstyled mt-3">
                                 @guest
                                     <li class="mb-2 pb-2 {{ areActiveRoutes(['deliveryboy.login'], ' active') }}">
-                                        <a class="fs-13 text-soft-light text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
-                                            href="{{ route('deliveryboy.login') }}">
+                                        <a class="fs-13 text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
+                                            href="{{ route('deliveryboy.login') }}" style="color: {{ get_setting('footer_text_color') }}">
                                             {{ translate('Login to Delivery Boy Panel') }}
                                         </a>
                                     </li>
                                 @endguest
                                 @if (get_setting('delivery_boy_app_link'))
                                     <li class="mb-2 pb-2">
-                                        <a class="fs-13 text-soft-light text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
-                                            target="_blank" href="{{ get_setting('delivery_boy_app_link') }}">
+                                        <a class="fs-13 text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
+                                            target="_blank" href="{{ get_setting('delivery_boy_app_link') }}" style="color: {{ get_setting('footer_text_color') }}">
                                             {{ translate('Download Delivery Boy App') }}
                                         </a>
                                     </li>
@@ -499,17 +496,17 @@
                 </div>
             @else   
                 @guest 
-                    <div class="aiz-accordion-wrap bg-black">
-                        <div class="aiz-accordion-heading container bg-black">
+                    <div class="aiz-accordion-wrap">
+                        <div class="aiz-accordion-heading container">
                             <button
-                                class="aiz-accordion fs-14 text-white bg-transparent">{{ translate('Delivery Boy') }}</button>
+                                class="aiz-accordion fs-14 bg-transparent" style="color: {{ get_setting('footer_text_color') }}">{{ translate('Delivery Boy') }}</button>
                         </div>
-                        <div class="aiz-accordion-panel bg-transparent" style="background-color: #212129 !important;">
+                        <div class="aiz-accordion-panel bg-transparent">
                             <div class="container">
                                 <ul class="list-unstyled mt-3">
                                     <li class="mb-2 pb-2 {{ areActiveRoutes(['deliveryboy.login'], ' active') }}">
-                                        <a class="fs-13 text-soft-light text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
-                                            href="{{ route('deliveryboy.login') }}">
+                                        <a class="fs-13 text-sm-secondary  @if(get_setting('footer_text_color') == 'black' || get_setting('footer_text_color') == '#000') animate-underline-black @else animate-underline-white @endif "
+                                            href="{{ route('deliveryboy.login') }}" style="color: {{ get_setting('footer_text_color') }}">
                                             {{ translate('Login to Delivery Boy Panel') }}
                                         </a>
                                     </li>

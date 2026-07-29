@@ -36,7 +36,7 @@
 @endif
 
 <!-- footer Description -->
-@if (get_setting('enable_sub_footer') == 1)
+@if (get_setting('enable_sub_footer_section') == 1)
     <section class="border-top border-bottom mt-auto" style="background-color: {{ get_setting('sub_footer_bg_color') }}">
         <div class="@if (get_setting('show_full_width_sub_footer') == 1) layout-container mx-auto px-3 @else container @endif py-32px">
             <h1 class="fs-18 fw-700 mb-3" style="color: {{ get_setting('sub_footer_text_color') }}">{{ get_setting('footer_title', null, $system_language->code) }}</h1>
@@ -60,7 +60,7 @@
 @endif
 
 <!-- footer top Bar -->
-@if (get_setting('enable_policy_section') == 1)
+@if (get_setting('enable_footer_policy_section') == 1)
     <section class="border-top mt-auto" style="background-color: {{ get_setting('policy_section_bg_color') }}">
         <div class="@if (get_setting('show_full_width_policy_section') == 1) layout-container mx-auto px-3 @else container @endif px-xs-0">
             <div class="row no-gutters border-left border-soft-light">

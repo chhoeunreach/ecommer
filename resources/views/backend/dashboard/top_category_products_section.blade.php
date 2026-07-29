@@ -1,5 +1,6 @@
+@if(!empty($top_categories_products))
 <!-- categories -->
-<div class="aiz-carousel dashboard-box-carousel half-outside-arrow" data-items="6.5" data-xl-items="5" data-lg-items="4.5"
+<div class="aiz-carousel dashboard-box-carousel half-outside-arrow arrow-inactive-none" data-items="6.5" data-xl-items="5" data-lg-items="4.5"
     data-md-items="7" data-sm-items="5" data-xs-items="3" data-arrows='true'>
     @php
         $top_categories_product_limit = 1;
@@ -91,3 +92,11 @@
         @endphp
     @endforeach
 </div>
+
+@else
+
+    <div class="text-center py-5">
+        <p class="mb-0 text-muted">{{ translate('Nothing Found') }}</p>
+    </div>
+
+@endif

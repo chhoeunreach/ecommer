@@ -260,4 +260,10 @@ class NotificationController extends Controller
         $link = json_decode($notifications[0]->data, true)['link'];
         return view('backend.notification.custom_notified_customers_list', compact('notifications', 'content', 'link'));
     }
+
+
+    public function view_all_notication_modal(Request $request)
+    {
+        return view('backend.notification.view_all_notication_modal');
+    }
 }

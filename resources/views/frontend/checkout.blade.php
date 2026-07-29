@@ -2,6 +2,38 @@
 
 @section('content')
 
+@php
+    /** * GA4 */
+    $user = Auth::user();
+    $email = $user ? trim($user->email) : '';
+    $phone = $user ? trim($user->phone) : '';
+    $name  = $user ? trim($user->name) : 'Guest';
+    
+    $nameParts = explode(' ', $name, 2);
+    $fName = $nameParts[0] ?? '';
+    $lName = $nameParts[1] ?? '';
+
+    if (!function_exists('gtmHash')) {
+        function gtmHash($str) {
+            return hash('sha256', strtolower(trim($str)));
+        }
+    }
+
+    $gtmItems = [];
+    foreach ($carts as $cartItem) {
+        $product = get_single_product($cartItem['product_id']);
+        if($product) {
+            $gtmItems[] = [
+                'item_id' => (string) $product->id,
+                'item_name' => $product->name,
+                'item_category' => $product->main_category ? $product->main_category->name : 'General',
+                'price' => (float) $cartItem['price'],
+                'quantity' => (int) $cartItem['quantity']
+            ];
+        }
+    }
+@endphp
+
     <section class="my-4 gry-bg">
         <div class="container">
             <div class="row cols-xs-space cols-sm-space cols-md-space">
@@ -130,6 +162,10 @@
         @include('otp_systems.frontend.modal_cod_wallet_otp')
     @endif
 
+    @if(!Auth::check() && addon_is_activated('otp_system') && get_setting('guest_checkout_with_otp') == 1)
+        @include('otp_systems.frontend.guest_phone_otp_modal')
+    @endif
+
 @endsection
 
 @section('script')
@@ -137,6 +173,7 @@
 
         var otp_addon_active = '{{ addon_is_activated('otp_system') }}';
         var otp_setting_active = {{ auth()->check() && auth()->user()->otp_activation_purchase_cod_wallet == 1 ? 1 : 0 }};
+        var guest_otp_active = {{ !Auth::check() && get_setting('guest_checkout_with_otp') == 1 ? 1 : 0 }};
 
        var carrierCount=0;
         $(document).ready(function() {
@@ -242,6 +279,13 @@
                         }
 
                         if (allIsOk) {
+
+                            if (otp_addon_active == '1' && guest_otp_active == 1 && $('#guest_phone_verified').val() != '1') {
+                                AIZ.plugins.notify('danger', '{{ translate("Please verify your phone number with OTP") }}');
+                                deactivateButtonLoader(el);
+                                return;
+                            }
+
                             if (otp_addon_active == '1' && otp_setting_active == 1) {
 
                                 let selectedPayment = $('input[name="payment_option"]:checked').val();
@@ -660,6 +704,34 @@
             stepCompletionDeliveryInfo();
             stepCompletionPaymentInfo();
             
+            // --- GA4 begin_checkout Data Layer Push ---
+            @if(get_setting('google_analytics') == 1)
+            window.dataLayer = window.dataLayer || [];
+            dataLayer.push({
+                'event': 'begin_checkout',
+                'ecommerce': {
+                    'currency': '{{ get_system_currency()->code }}',
+                    'value': {{ $total }},
+                    'items': @json($gtmItems)
+                },
+                // Real data for standard GTM use
+                'customer_info': {
+                    'email': '{{ $email }}',
+                    'phone': '{{ $phone }}',
+                    'first_name': '{{ $fName }}',
+                    'last_name': '{{ $lName }}'
+                },
+                // Hashed data for Enhanced Conversions
+                'user_data': {
+                    'email_address': '{{ gtmHash($email) }}',
+                    'phone_number': '{{ gtmHash($phone) }}',
+                    'address': {
+                        'first_name': '{{ gtmHash($fName) }}',
+                        'last_name': '{{ gtmHash($lName) }}'
+                    }
+                }
+            });
+            @endif
         });
 
         function changeShippingAddress(){
@@ -717,6 +789,61 @@
             updateBillingAddress(checkedAddress.val());
         }
 
+        if (otp_addon_active == '1' && guest_otp_active == 1 && $('#guest_phone_verified').val() != '1') {
+
+            function sendGuestOtp(el) {
+                var phone = $('input[name="phone"]').val();
+                var country_code = $('input[name="country_code"]').val();
+
+                if (!phone) {
+                    $('input[name="phone"]').focus();
+                    AIZ.plugins.notify('danger', '{{ translate("Please enter your phone number first") }}');
+                    return;
+                }
+
+                activateButtonLoader(el);
+
+                $.post("{{ route('checkout.send_guest_otp') }}", {
+                    _token: AIZ.data.csrf,
+                    phone: phone,
+                    country_code: country_code
+                }, function (response) {
+                    deactivateButtonLoader(el);
+                    if (response.status) {
+                        $('#guest_phone_otp-modal').modal('show');
+                        AIZ.plugins.notify('success', response.message);
+                    } else {
+                        AIZ.plugins.notify('danger', response.message);
+                    }
+                }).fail(function () {
+                    deactivateButtonLoader(el);
+                    AIZ.plugins.notify('danger', '{{ translate("Something went wrong, please try again") }}');
+                });
+            }
+
+            $(document).on('submit', '#guestPhoneOtpForm', function (e) {
+                e.preventDefault();
+                var otp_code = $('input[name="guest_otp_code"]').val();
+                var phone = $('input[name="phone"]').val();
+
+                $.post("{{ route('checkout.verify_guest_otp') }}", {
+                    _token: AIZ.data.csrf,
+                    phone: phone,
+                    otp_code: otp_code
+                }, function (response) {
+                    if (response.status) {
+                        $('#guest_phone_otp-modal').modal('hide');
+                        $('#guest_phone_verified').val('1');
+                        $('#guest_phone_verified_badge').show();
+                        $('#sendGuestOtpBtn').addClass('d-none');
+                        AIZ.plugins.notify('success', response.message);
+                    } else {
+                        AIZ.plugins.notify('danger', response.message);
+                    }
+                });
+            });
+        }
+
 
     </script>
 
@@ -745,6 +872,16 @@
 
     @if (get_setting('google_map') == 1)
         @include('frontend.partials.google_map')
+    @endif
+
+    @if(addon_is_activated('otp_system') && get_setting('guest_checkout_with_otp') == 1)
+        <script>
+            $(document).on('input', 'input[name="phone"]', function () {
+                $('#guest_phone_verified').val('0');
+                $('#guest_phone_verified_badge').hide();
+                $('#sendGuestOtpBtn').text('{{ translate("Verify") }}').removeClass('btn-success');
+            });
+        </script>
     @endif
 
 @endsection

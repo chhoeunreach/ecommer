@@ -49,16 +49,6 @@ class InstallController extends Controller
     }
 
     public function purchase_code(Request $request) {
-        if (\App\Utility\CategoryUtility::create_initial_category($request->purchase_code) == false) {
-            flash("Sorry! The purchase code you have provided is not valid.")->error();
-            return back();
-        }
-        if ($request->system_key == null) {
-            flash("Sorry! The System Key required")->error();
-            return back();
-        }
-        Session::put('purchase_code', $request->purchase_code);
-        $this->writeEnvironmentFile('SYSTEM_KEY', $request->system_key);
         return redirect('step3');
     }
 

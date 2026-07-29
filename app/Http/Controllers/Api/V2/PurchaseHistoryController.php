@@ -10,23 +10,71 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Utility\CartUtility;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseHistoryController extends Controller
 {
     public function index(Request $request)
     {
+        if($request->to_reviewed == 1) {
+            $reviewedProductIds = Review::where('user_id', auth()->user()->id)
+                ->pluck('product_id')
+                ->toArray();
+            
+            $orders = Order::with([
+                'shop',
+                'seller',
+                'orderDetails.product'
+            ])
+            ->where('user_id', auth()->user()->id)
+            ->latest()
+            ->get();
+            
+            $filteredOrders = $orders->filter(function($order) use ($reviewedProductIds) {
+                $hasUnreviewed = $order->orderDetails->contains(function($detail) use ($reviewedProductIds) {
+                    return $detail->delivery_status == 'delivered' 
+                        && !in_array($detail->product_id, $reviewedProductIds);
+                });
+                
+                if ($hasUnreviewed) {
+                    $order->orderDetails = $order->orderDetails->filter(function($detail) use ($reviewedProductIds) {
+                        return $detail->delivery_status == 'delivered' 
+                            && !in_array($detail->product_id, $reviewedProductIds);
+                    });
+                    return true;
+                }
+                
+                return false;
+            })->values();
+            
+            $perPage = 5;
+            $currentPage = request()->get('page', 1);
+            $paginatedOrders = new LengthAwarePaginator(
+                $filteredOrders->forPage($currentPage, $perPage)->values(),
+                $filteredOrders->count(),
+                $perPage,
+                $currentPage,
+                ['path' => request()->url()]
+            );
+            
+            return new PurchaseHistoryMiniCollection($paginatedOrders);
+        }
+        
         $order_query = Order::with([
             'shop',
             'seller',
             'orderDetails.product'
-        ]);
+        ])->where('user_id', auth()->user()->id);
+        
         if ($request->payment_status != "" || $request->payment_status != null) {
             $order_query->where('payment_status', $request->payment_status);
         }
+        
         if ($request->delivery_status != "" || $request->delivery_status != null) {
             $delivery_status = $request->delivery_status;
             $order_query->whereIn("id", function ($query) use ($delivery_status) {
@@ -35,7 +83,8 @@ class PurchaseHistoryController extends Controller
                     ->where('delivery_status', $delivery_status);
             });
         }
-        return new PurchaseHistoryMiniCollection($order_query->where('user_id', auth()->user()->id)->latest()->paginate(5));
+        
+        return new PurchaseHistoryMiniCollection($order_query->latest()->paginate(5));
     }
 
     public function details($id)

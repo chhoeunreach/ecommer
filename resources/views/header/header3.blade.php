@@ -647,7 +647,7 @@
 
     <!-- Menu Bar -->
     <div class="d-none d-lg-block position-relative h-50px bottom-background-color-visibility" style="background-color: {{ get_setting('bottom_header_bg_color') }}">
-        <div class="@if (get_setting('show_full_width_header') == 'on') layout-container mx-auto px-3 @else container @endif" h-100">
+        <div class="@if (get_setting('show_full_width_header') == 'on') layout-container mx-auto px-3 @else container @endif h-100">
             <div class="d-flex h-100">
 
                 @if (get_setting('megamenu_element') == 11)

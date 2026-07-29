@@ -117,13 +117,26 @@ class AdminController extends Controller
             ->groupBy('month')
             ->orderBy(DB::raw('MONTH(orders.created_at)'), 'asc')
             ->get();
-        $new_stat = array();
+        $sales_by_month = [];
         foreach ($sales_stat as $row) {
-            $new_stat[$row->month][] = $row;
+            $sales_by_month[$row->month] = $row;
+        }
+
+        $new_stat = array();
+        for ($m = 1; $m <= 12; $m++) {
+            $month_name = \Carbon\Carbon::create()->month($m)->format('F');
+            if (isset($sales_by_month[$month_name])) {
+                $new_stat[$month_name][] = $sales_by_month[$month_name];
+            } else {
+                $empty = new \stdClass();
+                $empty->total = 0;
+                $new_stat[$month_name][] = $empty;
+            }
         }
         $data['sales_stat'] = $new_stat;
+        $data['sales_stat'] = $new_stat;
         $data['total_sellers'] = User::where('user_type', 'seller')->where('email_verified_at', '!=', null)->count();
-        $data['status_wise_sellers'] = Shop::select('verification_status', DB::raw('COUNT(*) as total'))
+        $status_wise_sellers_raw = Shop::select('verification_status', DB::raw('COUNT(*) as total'))
             ->whereIn('user_id', function ($q){
                 $q->select('id')
                     ->from(with(new User)->getTable())
@@ -131,7 +144,10 @@ class AdminController extends Controller
                     ->where('email_verified_at', '!=', null);
             })
             ->groupBy('verification_status')
-            ->get();
+            ->pluck('total', 'verification_status');
+
+        $data['total_approved_sellers'] = $status_wise_sellers_raw[1] ?? 0;
+        $data['total_pending_sellers'] = $status_wise_sellers_raw[0] ?? 0;
         $data['top_sellers'] = Order::select('orders.seller_id', 'users.name', 'users.user_type', 'users.avatar_original', DB::raw('SUM(grand_total) as total'))
             ->leftJoin('users', 'orders.seller_id', '=', 'users.id')
             ->whereRaw('users.user_type = "seller"')
@@ -145,6 +161,8 @@ class AdminController extends Controller
         $data['total_confirmed_order'] = Order::where('delivery_status', 'confirmed')->count();
         $data['total_picked_up_order'] = Order::where('delivery_status', 'picked_up')->count();
         $data['total_shipped_order'] = Order::where('delivery_status', 'on_the_way')->count();
+        $data['total_cancelled_order'] = Order::where('delivery_status', 'cancelled')->count();
+        $data['total_delivered_order'] = Order::where('delivery_status', 'delivered')->count();
         $admin_id = User::select('id')->where('user_type', 'admin')->first()->id;
         $data['total_inhouse_sale'] = Order::where("seller_id", $admin_id)->sum('grand_total');
         $data['payment_type_wise_inhouse_sale'] = Order::select(DB::raw('case
@@ -158,43 +176,167 @@ class AdminController extends Controller
             ->get();
         $data['inhouse_product_rating'] = Product::where('added_by', 'admin')->where('rating', '!=', 0)->avg('rating');
         $data['total_inhouse_order'] = Order::where("seller_id", $admin_id)->count();
+        $data['total_inhouse_pending_order'] = Order::where("seller_id", $admin_id)->where('delivery_status', 'pending')->count();
+        $data['total_inhouse_confirmed_order'] = Order::where("seller_id", $admin_id)->where('delivery_status', 'confirmed')->count();
+        $data['total_inhouse_picked_up_order'] = Order::where("seller_id", $admin_id)->where('delivery_status', 'picked_up')->count();
+        $data['total_inhouse_shipped_order'] = Order::where("seller_id", $admin_id)->where('delivery_status', 'on_the_way')->count();
+        $data['total_inhouse_cancelled_order'] = Order::where("seller_id", $admin_id)->where('delivery_status', 'cancelled')->count();
+        $data['total_inhouse_delivered_order'] = Order::where("seller_id", $admin_id)->where('delivery_status', 'delivered')->count();
+        $data['total_seller_order'] = Order::whereHas('seller', function($q) {
+            $q->where('user_type', 'seller');
+        })->count();
+
+        $data['inhouse_order_percentage'] = $data['total_order'] > 0 
+            ? number_format(($data['total_inhouse_order'] / $data['total_order']) * 100, 1) 
+            : 0;
+
+        $data['seller_order_percentage'] = $data['total_order'] > 0 
+            ? number_format(($data['total_seller_order'] / $data['total_order']) * 100, 1) 
+            : 0;
+
+        $data['total_pending_order_percentage'] = $data['total_order'] > 0 
+            ? number_format(($data['total_pending_order'] / $data['total_order']) * 100, 1) 
+            : 0;
+
+        $data['total_confirmed_order_percentage'] = $data['total_order'] > 0 
+            ? number_format(($data['total_confirmed_order'] / $data['total_order']) * 100, 1) 
+            : 0;
+
+        $data['total_picked_up_order_percentage'] = $data['total_order'] > 0 
+            ? number_format(($data['total_picked_up_order'] / $data['total_order']) * 100, 1) 
+            : 0;
+
+        $data['total_shipped_order_percentage'] = $data['total_order'] > 0 
+            ? number_format(($data['total_shipped_order'] / $data['total_order']) * 100, 1) 
+            : 0;
+
+        $data['total_cancelled_order_percentage'] = $data['total_order'] > 0 
+            ? number_format(($data['total_cancelled_order'] / $data['total_order']) * 100, 1) 
+            : 0;
+
+        $data['total_delivered_order_percentage'] = $data['total_order'] > 0 
+            ? number_format(($data['total_delivered_order'] / $data['total_order']) * 100, 1) 
+            : 0;
+
+        $data['total_inhouse_pending_order_percentage'] = $data['total_inhouse_order'] > 0 
+            ? number_format(($data['total_inhouse_pending_order'] / $data['total_inhouse_order']) * 100, 1) 
+            : 0;
+
+        $data['total_inhouse_confirmed_order_percentage'] = $data['total_inhouse_order'] > 0 
+            ? number_format(($data['total_inhouse_confirmed_order'] / $data['total_inhouse_order']) * 100, 1) 
+            : 0;
+
+        $data['total_inhouse_picked_up_order_percentage'] = $data['total_inhouse_order'] > 0 
+            ? number_format(($data['total_inhouse_picked_up_order'] / $data['total_inhouse_order']) * 100, 1) 
+            : 0;
+
+        $data['total_inhouse_shipped_order_percentage'] = $data['total_inhouse_order'] > 0 
+            ? number_format(($data['total_inhouse_shipped_order'] / $data['total_inhouse_order']) * 100, 1) 
+            : 0;
+
+        $data['total_inhouse_cancelled_order_percentage'] = $data['total_inhouse_order'] > 0 
+            ? number_format(($data['total_inhouse_cancelled_order'] / $data['total_inhouse_order']) * 100, 1) 
+            : 0;
+
+        $data['total_inhouse_delivered_order_percentage'] = $data['total_inhouse_order'] > 0 
+            ? number_format(($data['total_inhouse_delivered_order'] / $data['total_inhouse_order']) * 100, 1) 
+            : 0;
 
         return view('backend.dashboard', $data);
     }
 
     public function top_category_products_section(Request $request)
     {
-        $top_categories_products = DB::table(DB::raw('(SELECT products.id product_id, products.name product_name, products.slug product_slug, products.auction_product, products.category_id,
-                                                        `products`.`thumbnail_img` as `product_thumbnail_img`, od.sales, od.total, od.created_at order_detail_created,
-                                                        categories.name AS category_name,
-                                                        `categories`.`cover_image`,
-                                                        ROW_NUMBER() OVER (PARTITION BY products.category_id ORDER BY od.sales DESC) rn
-                                                from products
-                                                INNER JOIN (
-                                                SELECT product_id, SUM(quantity) sales, SUM(price + tax) AS total, created_at
-                                                FROM order_details
-                                                WHERE ' . ($request->interval_type == 'all' ?: 'created_at >= DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')') . '
-                                                AND order_details.delivery_status = "delivered"
-                                                GROUP BY product_id
-                                                )  od ON od.product_id = products.id
-                                                LEFT JOIN categories ON products.category_id = categories.id
-                                                ) t'))
-            ->select(DB::raw('category_id, category_name, cover_image, product_id, product_name, product_slug, auction_product, product_thumbnail_img, sales, total, order_detail_created'))
-            ->where('rn', '<=', 3)
-            ->orderBy('sales', 'desc')
+        $categories_query = Order::query();
+
+        $categories_query->select(
+                'categories.id',
+                'categories.name',
+                'categories.cover_image',
+                DB::raw('SUM(order_details.price + order_details.tax) as total')
+            )
+            ->leftJoin('order_details', 'orders.id', '=', 'order_details.order_id')
+            ->leftJoin('products', 'order_details.product_id', '=', 'products.id')
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->where('orders.delivery_status', 'delivered')
+            ->whereNotNull('products.category_id');
+
+        if ($request->interval_type != 'all') {
+            $categories_query->where(
+                'orders.created_at',
+                '>=',
+                DB::raw('DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')')
+            );
+        }
+
+        $top_categories = $categories_query
+            ->groupBy('categories.id', 'categories.name', 'categories.cover_image')
+            ->orderByDesc('total')
             ->get();
 
-        $category_array = [];
-        $new_array = array();
-        foreach ($top_categories_products as $key => $row) {
-            $row->product_thumbnail_img = Upload::where('id', $row->product_thumbnail_img)->first();
-            $category_array[] = $row->category_id;
-            $new_array[$row->category_id][] = $row;
-        }
-        $top_categories2 = array_unique($category_array);
-        $top_categories_products = $new_array;
+        $top_categories2 = [];
+        $top_categories_products = [];
 
-        return view('backend.dashboard.top_category_products_section', compact('top_categories2', 'top_categories_products'))->render();
+        foreach ($top_categories as $category) {
+
+            $products_query = Product::query();
+
+            $products_query->select(
+                    'products.id as product_id',
+                    'products.name as product_name',
+                    'products.slug as product_slug',
+                    'products.auction_product',
+                    'products.thumbnail_img as product_thumbnail_img',
+                    DB::raw('SUM(order_details.quantity) as sales'),
+                    DB::raw('SUM(order_details.price + order_details.tax) as total')
+                )
+                ->join('order_details', 'order_details.product_id', '=', 'products.id')
+                ->where('products.category_id', $category->id)
+                ->where('products.approved', 1)
+                ->where('products.published', 1)
+                ->where('order_details.delivery_status', 'delivered');
+
+            if ($request->interval_type != 'all') {
+                $products_query->where(
+                    'order_details.created_at',
+                    '>=',
+                    DB::raw('DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')')
+                );
+            }
+
+            $products = $products_query
+                ->groupBy(
+                    'products.id',
+                    'products.name',
+                    'products.slug',
+                    'products.auction_product',
+                    'products.thumbnail_img'
+                )
+                ->orderByDesc('sales')
+                ->limit(3)
+                ->get();
+
+            foreach ($products as $product) {
+                $product->category_id = $category->id;
+                $product->category_name = $category->name;
+                $product->cover_image = $category->cover_image;
+
+                $product->product_thumbnail_img = Upload::where(
+                    'id',
+                    $product->product_thumbnail_img
+                )->first();
+            }
+
+            if ($products->count() > 0) {
+                $top_categories2[] = $category->id;
+                $top_categories_products[$category->id] = $products;
+            }
+        }
+
+        return view(
+            'backend.dashboard.top_category_products_section',
+            compact('top_categories2', 'top_categories_products')
+        )->render();
     }
 
     public function inhouse_top_categories(Request $request)
@@ -252,17 +394,16 @@ class AdminController extends Controller
 
     public function top_sellers_products_section(Request $request)
     {
-        $new_top_sellers_query = Order::query();
         $new_top_sellers_query = Order::select('shops.user_id AS shop_id', 'shops.name AS shop_name', 'shops.logo', DB::raw('SUM(grand_total) AS sale'))
             ->join('shops', 'orders.seller_id', '=', 'shops.user_id')
-            ->whereIn("seller_id", function ($query) {
+            ->whereIn('seller_id', function ($query) {
                 $query->select('id')
                     ->from('users')
                     ->where('user_type', 'seller');
             })
             ->where('orders.delivery_status', 'delivered')
-            ->groupBy('orders.seller_id')
-            ->orderBy('sale', 'desc');
+            ->groupBy('shops.user_id','shops.name','shops.logo')
+            ->orderByDesc('sale');
         if ($request->interval_type != 'all') {
             $new_top_sellers_query->where('orders.created_at', '>=', DB::raw('DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')'));
         }
@@ -312,38 +453,98 @@ class AdminController extends Controller
 
     public function top_brands_products_section(Request $request)
     {
-        $top_brands_products = DB::table(DB::raw('(SELECT products.id product_id, products.name product_name, products.slug product_slug, products.auction_product, products.brand_id,
-                                                        `products`.`thumbnail_img` as `product_thumbnail_img`, od.sales, od.total, brands.name AS brand_name,
-                                                        `brands`.`logo`,
-                                                        ROW_NUMBER() OVER (PARTITION BY products.brand_id ORDER BY od.sales DESC) rn
-                                            from products
-                                            INNER JOIN (
-                                                SELECT product_id, SUM(quantity) sales, SUM(price + tax) AS total, created_at
-                                                FROM order_details
-                                                WHERE ' . ($request->interval_type == 'all' ?: 'created_at >= DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')') . '
-                                                AND order_details.delivery_status = "delivered"
-                                                GROUP BY product_id
-                                            )  od ON od.product_id = products.id
-                                            LEFT JOIN brands ON products.brand_id = brands.id
-                                        ) t'))
-            ->select(DB::raw('brand_id, brand_name, logo, product_id, product_name, product_slug, auction_product, product_thumbnail_img, sales, total'))
-            ->where('rn', '<=', 3)
-            ->orderBy('total', 'desc')
-            ->where('brand_name', '!=', null)
-            ->get();
+        $brands_query = Order::query();
 
-        $brand_array = [];
-        $new_array = [];
-        foreach ($top_brands_products as $key => $row) {
-            $row->product_thumbnail_img = Upload::where('id', $row->product_thumbnail_img)->first();
-            $brand_array[] = $row->brand_id;
-            $new_array[$row->brand_id][] = $row;
+        $brands_query->select(
+                'brands.id',
+                'brands.name',
+                'brands.logo',
+                DB::raw('SUM(order_details.price + order_details.tax) as total')
+            )
+            ->leftJoin('order_details', 'orders.id', '=', 'order_details.order_id')
+            ->leftJoin('products', 'order_details.product_id', '=', 'products.id')
+            ->leftJoin('brands', 'products.brand_id', '=', 'brands.id')
+            ->where('orders.delivery_status', 'delivered')
+            ->whereNotNull('products.brand_id')
+            ->where('products.added_by', 'admin');
+
+        if ($request->interval_type != 'all') {
+            $brands_query->where(
+                'orders.created_at',
+                '>=',
+                DB::raw('DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')')
+            );
         }
 
-        $top_brands2 = array_unique($brand_array);
-        $top_brands_products = $new_array;
+        $top_brands = $brands_query
+            ->groupBy('brands.id', 'brands.name', 'brands.logo')
+            ->orderByDesc('total')
+            ->get();
 
-        return view('backend.dashboard.top_brands_products_section', compact('top_brands2', 'top_brands_products'))->render();
+        $top_brands2 = [];
+        $top_brands_products = [];
+
+        foreach ($top_brands as $brand) {
+
+            $products_query = Product::query();
+
+            $products_query->select(
+                    'products.id as product_id',
+                    'products.name as product_name',
+                    'products.slug as product_slug',
+                    'products.auction_product',
+                    'products.thumbnail_img as product_thumbnail_img',
+                    DB::raw('SUM(order_details.quantity) as sales'),
+                    DB::raw('SUM(order_details.price + order_details.tax) as total')
+                )
+                ->join('order_details', 'order_details.product_id', '=', 'products.id')
+                ->where('products.brand_id', $brand->id)
+                ->where('products.added_by', 'admin')
+                ->where('products.approved', 1)
+                ->where('products.published', 1)
+                ->where('order_details.delivery_status', 'delivered');
+
+            if ($request->interval_type != 'all') {
+                $products_query->where(
+                    'order_details.created_at',
+                    '>=',
+                    DB::raw('DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')')
+                );
+            }
+
+            $products = $products_query
+                ->groupBy(
+                    'products.id',
+                    'products.name',
+                    'products.slug',
+                    'products.auction_product',
+                    'products.thumbnail_img'
+                )
+                ->orderByDesc('sales')
+                ->limit(3)
+                ->get();
+
+            foreach ($products as $product) {
+                $product->brand_id = $brand->id;
+                $product->brand_name = $brand->name;
+                $product->logo = $brand->logo;
+
+                $product->product_thumbnail_img = Upload::where(
+                    'id',
+                    $product->product_thumbnail_img
+                )->first();
+            }
+
+            if ($products->count() > 0) {
+                $top_brands2[] = $brand->id;
+                $top_brands_products[$brand->id] = $products;
+            }
+        }
+
+        return view(
+            'backend.dashboard.top_brands_products_section',
+            compact('top_brands2', 'top_brands_products')
+        )->render();
     }
 
     function clearCache(Request $request)

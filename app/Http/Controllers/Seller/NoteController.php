@@ -141,4 +141,72 @@ class NoteController extends Controller
         flash(translate('Note has been deleted successfully!'))->success();
         return back();
     }
+
+    public function seller_ajax_add_note_modal(Request $request)
+    {
+        $note_type=$request->type;
+        $types = EnumsNoteType::cases();
+        return view('seller.note.ajax_add_note_modal',
+        [
+            'note_type' => $note_type,
+            'types' => $types
+        ]);
+    }
+
+    public function seller_ajax_add_note_store(Request $request)
+    {
+        $rules      = $this->note_rules;
+        $messages   = $this->note_messages;
+        $validator  = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+        
+        $note = new Note();
+        $note->user_id = auth()->id();
+        $note->note_type = $request->note_type;
+        $note->description = $request->description;
+        $note->save();
+
+        $note_translation = NoteTranslation::firstOrNew(['lang' => env('DEFAULT_LANGUAGE'), 'note_id' => $note->id]);
+        $note_translation->description = $request->description;
+        $note_translation->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => translate('Note has been inserted successfully'),
+            'note_id' => $note->id,
+            'html' => view('seller.note.partials.carousel', [
+                'notes' => Note::where('note_type', $request->note_type)->orderBy('created_at', 'desc')->get(),
+                'class' => $this->getClass($request->note_type),
+                'hiddenInput' => $this->getInputId($request->note_type),
+            ])->render()
+        ]);
+    }
+
+    private function getClass(string $noteType): string
+    {
+        return match($noteType) {
+            'refund'   => 'refund-notes',
+            'warranty' => 'single-warranty-notes',
+            'shipping' => 'shp-notes',
+            'delivery' => 'delivery-notes',
+            default    => 'refund-notes',
+        };
+    }
+
+    private function getInputId(string $noteType): string
+    {
+        return match($noteType) {
+            'refund'   => 'refund_note_id',
+            'warranty' => 'warranty_note_id',
+            'shipping' => 'shipping_note_id',
+            'delivery' => 'delivery_note_id',
+            default    => 'refund_note_id',
+        };
+    }
 }

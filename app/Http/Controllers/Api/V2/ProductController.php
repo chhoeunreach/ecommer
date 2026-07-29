@@ -17,6 +17,9 @@ use App\Http\Resources\V2\ProductDetailCollection;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Http\Resources\V2\Seller\BrandCollection;
+use App\Models\ProductQuery;
+use App\Models\Review;
+
 class ProductController extends Controller
 {
     public function index()
@@ -43,6 +46,7 @@ class ProductController extends Controller
         $str = '';
         $tax = 0;
         $quantity = 1;
+        $sku = '';
 
 
 
@@ -122,6 +126,7 @@ class ProductController extends Controller
         }
 
         $price += $tax;
+        $sku = $product_stock->sku;
 
         return response()->json(
 
@@ -134,6 +139,7 @@ class ProductController extends Controller
                     'digital' => $product->digital,
                     'variant' => $str,
                     'variation' => $str,
+                    'sku' => $sku,
                     'max_limit' => $max_limit,
                     'in_stock' => $in_stock,
                     'image' => $product_stock->image == null ? "" : uploaded_asset($product_stock->image)
@@ -365,5 +371,58 @@ class ProductController extends Controller
     public function lastViewedProducts(){
         $lastViewedProducts = getLastViewedProducts();
         return new LastViewedProductCollection( $lastViewedProducts);
+    }
+
+    public function sellerProducts($slug)
+    {
+        $product = Product::where("slug", $slug)->first();
+        $products = Product::where('user_id', $product->user_id)->where('published', 1);
+        return new ProductMiniCollection(filter_products($products)->latest()->paginate(10));
+    }
+
+    public function relatedProducts($slug)
+    {
+        $product = Product::where("slug", $slug)->first();
+        $category = Category::with('childrenCategories')->find($product->category_id);
+        $products = $category->products();
+
+        return new ProductMiniCollection(filter_products($products)->latest()->paginate(10));
+    }
+
+    public function queriesProducts($slug, Request $request)
+    {
+        $product = Product::where("slug", $slug)->first();
+        
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found'
+            ], 404);
+        }
+        
+        $total_queries = ProductQuery::where('product_id', $product->id)->count();
+        $answered_queries = ProductQuery::where('product_id', $product->id)
+            ->whereNotNull('reply')
+            ->latest('id')
+            ->paginate(10);
+        
+        return response()->json([
+            'success' => true,
+            'data' => $answered_queries->map(function($query) {
+                return [
+                    'question' => $query->question,
+                    'answer' => $query->reply,
+                    'asked_at' => $query->created_at->format('Y-m-d H:i:s'),
+                    'answered_at' => $query->updated_at->format('Y-m-d H:i:s')
+                ];
+            }),
+            'total_queries' => $total_queries, 
+            'pagination' => [
+                'current_page' => $answered_queries->currentPage(),
+                'per_page' => $answered_queries->perPage(),
+                'total' => $answered_queries->total(),
+                'last_page' => $answered_queries->lastPage()
+            ]
+        ]);
     }
 }

@@ -29,7 +29,7 @@ class ProductRequest extends FormRequest
         $rules['name']          = 'required|max:255';
         $rules['category_ids']  = 'required';
         $rules['category_id']   = ['required', Rule::in($this->category_ids)];
-        $rules['unit']         = 'sometimes|required|regex:/^[A-Za-z\s]+$/';
+        $rules['unit']         = 'sometimes|required';
         $rules['min_qty']      = 'sometimes|required|numeric';
         $rules['unit_price']    = 'sometimes|required|numeric|gt:0';
         if ($this->get('discount_type') == 'amount') {
@@ -60,7 +60,6 @@ class ProductRequest extends FormRequest
             'category_id.required'      => translate('Main Category is required'),
             'category_id.in'            => translate('Main Category must be within selected categories'),
             'unit.required'             => translate('Product unit is required'),
-            'unit.regex' => 'The unit may only contain letters and spaces.',
             'min_qty.required'          => translate('Minimum purchase quantity is required'),
             'min_qty.numeric'           => translate('Minimum purchase must be numeric'),
             'unit_price.gt'             => translate('The unit price must be greater than 0'),

@@ -12,6 +12,7 @@ use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ShippingSystem;
 use App\Models\State;
+use App\Models\User;
 use App\Models\Zone;
 use Artisan;
 use CoreComponentRepository;
@@ -111,6 +112,17 @@ class BusinessSettingsController extends Controller
         CoreComponentRepository::initializeCache();
         return view('backend.setup_configurations.facebook_configuration.facebook_comment');
     }
+    
+    public function facebook_catalogue_update(Request $request)
+    {
+        foreach ($request->types as $key => $type) {
+            $this->overWriteEnvFile($type, $request[$type]);
+        }
+        Artisan::call('cache:clear');
+        flash(translate("Facebook Catalog settings updated successfully"))->success();
+        return back();
+
+    }
 
     public function payment_method(Request $request)
     {
@@ -206,6 +218,17 @@ class BusinessSettingsController extends Controller
 
         flash(translate("Settings updated successfully"))->success();
         return back();
+    }
+
+    public function google_merchant_update(Request $request)
+    {
+        foreach ($request->types as $key => $type) {
+            $this->overWriteEnvFile($type, $request[$type]);
+        }
+        Artisan::call('cache:clear');
+        flash(translate("Google Merchant settings updated successfully"))->success();
+        return back();
+
     }
 
     public function google_recaptcha_update(Request $request)
@@ -524,6 +547,10 @@ class BusinessSettingsController extends Controller
             $business_settings->type = $request->type;
             $business_settings->value = $request->value;
             $business_settings->save();
+        }
+
+        if ($request->type == 'admin_controll_cod_and_wallet_payment_with_otp' && $request->value == '1') {
+            User::query()->update(['otp_activation_purchase_cod_wallet' => 1]);
         }
 
         Artisan::call('cache:clear');
@@ -931,6 +958,18 @@ class BusinessSettingsController extends Controller
         if ($request->has('gemini_model')) {
             $business_settings->value = $request->gemini_model;
             $business_settings->save();
+        }
+
+        $business_settings2 = BusinessSetting::where('type', 'seller_monthly_token_limit')->first();
+
+        if ($request->has('seller_monthly_token_limit')) {
+            $business_settings2->value = $request->seller_monthly_token_limit;
+            $business_settings2->save();
+
+            User::query()->update([
+                'seller_monthly_token_limit' => $request->seller_monthly_token_limit,
+                'seller_monthly_token_limit_setup_date' => now(),
+            ]);
         }
 
         Artisan::call('cache:clear');

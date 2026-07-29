@@ -94,6 +94,9 @@
                             }
                         }else{
                             $('[name="'+key+'"').prop('checked', obj[key]);
+                            if (obj[key]) {
+                                $('[name="'+key+'"').trigger('change');
+                            }
                         }			
                     }else if($('[name="'+key+'"').attr('type') == 'radio'){
                         $('#treeview input:radio[value='+obj[key]+']').prop('checked',true);	

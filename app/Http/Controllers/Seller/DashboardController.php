@@ -8,6 +8,8 @@ use App\Models\Product;
 use Auth;
 use Carbon\Carbon;
 use DB;
+use Artisan;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -47,13 +49,43 @@ class DashboardController extends Controller
                                     ->sum('grand_total');
         
         $data['products'] = filter_products(Product::where('user_id', Auth::user()->id)->orderBy('num_of_sale', 'desc'))->limit(12)->get();
-        $data['last_7_days_sales'] = Order::where('created_at', '>=', Carbon::now()->subDays(7))
-                                ->where('seller_id', '=', Auth::user()->id)
-                                ->where('delivery_status', '=', 'delivered')
-                                ->select(DB::raw("sum(grand_total) as total, DATE_FORMAT(created_at, '%d %b') as date"))
-                                ->groupBy(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d')"))
-                                ->get()->pluck('total', 'date');  
+        $last7Days = collect();
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i)->format('d M');
+            $last7Days[$date] = 0;
+        }
+        $salesData = Order::where('created_at', '>=', Carbon::now()->subDays(6)->startOfDay())
+            ->where('seller_id', '=', Auth::user()->id)
+            ->where('delivery_status', '=', 'delivered')
+            ->select(DB::raw("sum(grand_total) as total, DATE_FORMAT(created_at, '%d %b') as date"))
+            ->groupBy(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d')"))
+            ->get()->pluck('total', 'date');
+        $data['last_7_days_sales'] = $last7Days->merge($salesData);
+
+        $data['allOrder'] = Order::where('seller_id', '=', Auth::user()->id)->count();
+        $data['pendingOrder'] = Order::where('seller_id', '=', Auth::user()->id)->where('delivery_status', '=', 'pending')->count();
+        $data['confirmedOrder'] = Order::where('seller_id', '=', Auth::user()->id)->where('delivery_status', '=', 'confirmed')->count();
+        $data['processedOrder'] = Order::where('seller_id', '=', Auth::user()->id)->where('delivery_status', '=', 'on_the_way')->count();
+        $data['shippedOrder'] = Order::where('seller_id', '=', Auth::user()->id)->where('delivery_status', '=', 'picked_up')->count();
+        $data['deliveredOrder'] = Order::where('seller_id', '=', Auth::user()->id)->where('delivery_status', '=', 'delivered')->count();
+        $data['cancelledOrder'] = Order::where('seller_id', '=', Auth::user()->id)->where('delivery_status', '=', 'cancelled')->count();
+
+        $total = $data['allOrder'] > 0 ? $data['allOrder'] : 1;
+
+        $data['pendingPercent']   = round(($data['pendingOrder']   / $total) * 100, 1);
+        $data['confirmedPercent'] = round(($data['confirmedOrder'] / $total) * 100, 1);
+        $data['processedPercent'] = round(($data['processedOrder'] / $total) * 100, 1);
+        $data['shippedPercent']   = round(($data['shippedOrder']   / $total) * 100, 1);
+        $data['deliveredPercent'] = round(($data['deliveredOrder'] / $total) * 100, 1);
+        $data['cancelledPercent'] = round(($data['cancelledOrder'] / $total) * 100, 1);
 
         return view('seller.dashboard', $data);
+    }
+
+    function clearCache(Request $request)
+    {
+        Artisan::call('optimize:clear');
+        flash(translate('Cache cleared successfully'))->success();
+        return back();
     }
 }

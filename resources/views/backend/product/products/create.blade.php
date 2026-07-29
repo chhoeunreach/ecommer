@@ -105,6 +105,14 @@
                                                     renderSingleCategoryOptions($categories, $selectedCategoryId);
                                                 @endphp
                                             </select>
+                                            @can('add_product_category')
+                                                <div class="mt-1">
+                                                    <a href="#" id="add_category" class=" text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                                        <span> {{translate('New Catgeory') }}</span>
+                                                    </a>
+                                                </div>
+                                            @endcan
                                         </div>
                                     </div>
                                     <!-- Brand -->
@@ -119,6 +127,14 @@
                                                     <option value="{{ $brand->id }}" >{{ $brand->getTranslation('name') }}</option>
                                                 @endforeach
                                             </select>
+                                            @can('add_brand')
+                                                <div class="mt-1">
+                                                    <a href="#" id="add_brand" class=" text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                                        <span> {{translate('New Brand') }}</span>
+                                                    </a>
+                                                </div>
+                                            @endcan
                                         </div>
                                     </div>
                                 </div>
@@ -158,10 +174,24 @@
                                     </div>
                                     <!-- Unit -->
                                     <div class="col-md-6 col-xl-4">
-                                        <div class="form-group mb-2 mb-lg-3" id="brand">
-                                            <label for="unit" class="col-from-label fs-14 fw-500">{{ translate('Unit') }}
-                                                <span class="text-danger">*</span></label>
-                                                <input type="text" letter-only class="form-control @error('unit') is-invalid @enderror" name="unit" value="{{ old('unit') }}" placeholder="{{ translate('Unit (e.g. KG, Pc etc)') }}">
+                                        <div class="form-group mb-2 mb-lg-3" id="unit">
+                                            <label for="unit_id"
+                                                class="col-from-label fs-14 fw-500">{{ translate('Unit') }}</label>
+                                            <select class="form-control aiz-selectpicker" name="unit" id="unit_id"
+                                                data-live-search="true">
+                                                <option value="">{{ translate('Select Unit') }}</option>
+                                                @foreach (\App\Models\Unit::all() as $unit)
+                                                    <option value="{{ $unit->id }}" >{{ $unit->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @can('add_unit')
+                                                <div class="mt-1">
+                                                    <a href="#" id="add_unit" class=" text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                                        <span> {{translate('New Unit') }}</span>
+                                                    </a>
+                                                </div>
+                                            @endcan
                                         </div>
                                     </div>
 
@@ -282,12 +312,11 @@
                             <div class="form-group mb-2 mt-3">
                                 <label
                                     class="col-from-label fs-14 fw-500">{{ translate('Youtube video / shorts link') }}</label>
+                                <small class="d-block text-muted fs-12 fw-400 mb-2">{{ translate('Paste a YouTube video or Shorts URL. The video will be displayed and playable on the product page.') }}</small>
                                 <div class="video-provider-link">
                                     {{-- @if (!$product->video_link) --}}
                                     <div class="row mb-2">
                                         <div class="col-md-12">
-                                            <small
-                                                class="d-block text-muted fs-12 fw-400 mb-2">{{ translate('Add thumbnails in the same order as your videos. If you upload only one image, it will be used for all videos.') }}</small>
                                             <input type="text" class="form-control" name="video_link[]" value=""
                                                 placeholder="{{ translate('Paste url here') }}">
                                         </div>
@@ -300,7 +329,6 @@
                                         data-content='<div class="row mb-2">
                                                 <div class="col">
                                                     <input type="text" class="form-control" name="video_link[]" value="" placeholder="{{ translate('Paste url here') }}">
-                                                    <small class="text-muted fs-12 fw-400 d-block mt-1">{{ translate('Add thumbnails in the same order as your videos. If you upload only one image, it will be used for all videos.') }}</small>
                                                 </div>
                                                 <div class="col-auto d-flex justify-content-end">
                                                         <button type="button" class="my-1 pt-2 btn btn-icon btn-circle btn-sm btn-soft-danger" data-toggle="remove-parent" data-parent=".row">
@@ -477,7 +505,7 @@
                             <!-- Product Variation Configuration -->
                             <h6 class="fs-14 fw-700">{{translate('Product Variation Configuration')}}</h6>
                             <!-- Colors -->
-                            <div class="form-group row gutters-5">
+                            <div class="form-group row gutters-5 mb-0">
                                 <div class="col-md-3">
                                     <input type="text" class="form-control" value="{{translate('Colors')}}" disabled>
                                 </div>
@@ -495,8 +523,16 @@
                                     </label>
                                 </div>
                             </div>
+                            @can('add_color')
+                                <div class="mt-1 d-none" id="add_color" >
+                                    <a href="#" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                        <span> {{translate('New Color') }}</span>
+                                    </a>
+                                </div>
+                            @endcan
                             <!-- Attributes -->
-                            <div class="form-group row gutters-5">
+                            <div class="form-group row gutters-5 mt-2 mb-0">
                                 <div class="col-md-3">
                                     <input type="text" class="form-control" value="{{translate('Attributes')}}" disabled>
                                 </div>
@@ -508,6 +544,14 @@
                                     </select>
                                 </div>
                             </div>
+                            @can('add_product_attribute')
+                                <div class="mb-2 mt-1">
+                                    <a href="#" id="add_attribute" class=" text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                        <span> {{translate('New Attribute') }}</span>
+                                    </a>
+                                </div>
+                            @endcan
                             <div id="chose_options_text" class="d-none">
                                 <p>{{ translate('Choose the attributes of this product and then input values of each attribute') }}</p>
                                 <br>
@@ -655,6 +699,14 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                    @can('add_flash_deal')
+                                        <div class="mt-1">
+                                            <a href="#" id="add_flash_sale" class=" text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                                <span> {{translate('New Flash Sale') }}</span>
+                                            </a>
+                                        </div>
+                                    @endcan
                                 </div>
                                  <!-- Discount -->
                                 <div class="form-group mt-2">
@@ -704,10 +756,11 @@
                                     data-lg-items="2" data-md-items="2" data-sm-items="2" data-xs-items="2"
                                     data-arrows="false" data-dots="false" data-autoplay="false" data-infinite="true"
                                     data-center="false">
-                                    @foreach(\App\Models\Note::where("note_type", 'refund')->get() as $refund)
+                                    @foreach(\App\Models\Note::where("note_type", 'refund')->orderBy('created_at', 'desc')->get() as $refund)
                                     <div class="carousel-box">
                                         <div class="refund-notes border border-2 border-gray-300 rounded-2 p-3 overflow-hidden has-transition"
-                                            onclick="selectNote(this, 'refund_note_id', 'refund-notes', {{ $refund->id }})">
+                                            onclick="selectNote(this, 'refund_note_id', 'refund-notes', {{ $refund->id }})"
+                                            data-note-id="{{ $refund->id }}">
 
                                             <p class="fs-14 fw-400 m-0 text-truncate-3">
                                                 {{ $refund->getTranslation('description') }}
@@ -716,15 +769,16 @@
                                     </div>
                                     @endforeach
                                 </div>
-
-                                <div class="mt-4">
-                                    <a target="_blank" href="{{ route('note.create') }}?type=refund"
-                                        class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary mt-2 fs-14 rounded-2 d-flex align-items-center justify-content-center"
-                                        onclick="">
-                                        <i class="las la-plus"></i>
-                                        <span class="ml-2">{{ translate('Add New Preset') }}</span>
-                                    </a>
-                                </div>
+                                @can('add_note')
+                                    <div class="mt-4">
+                                        <a href="#" id="add_note" data-note-type="refund"
+                                            class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary mt-2 fs-14 rounded-2 d-flex align-items-center justify-content-center"
+                                            onclick="">
+                                            <i class="las la-plus"></i>
+                                            <span class="ml-2">{{ translate('Add Refund Note') }}</span>
+                                        </a>
+                                    </div>
+                                @endcan
                             </div>
                         </div>
                         <!-- Refund End -->
@@ -763,6 +817,14 @@
                                             <option value="{{ $warranty->id }}" @selected(old('warranty_id') == $warranty->id)>{{ $warranty->getTranslation('text') }}</option>
                                         @endforeach
                                     </select>
+                                    @can('add_product_warranty')
+                                        <div class="mt-1">
+                                            <a href="#" id="add_warranty" class=" text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                                <span> {{translate('New Warranty') }}</span>
+                                            </a>
+                                        </div>
+                                    @endcan
                                 </div>
 
                                 <div class="mt-3">
@@ -781,10 +843,11 @@
                                     data-lg-items="2" data-md-items="2" data-sm-items="2" data-xs-items="2"
                                     data-arrows="false" data-dots="false" data-autoplay="false" data-infinite="true"
                                     data-center="false">
-                                    @foreach(\App\Models\Note::where("note_type", 'warranty')->get() as $warranty)
+                                    @foreach(\App\Models\Note::where("note_type", 'warranty')->orderBy('created_at', 'desc')->get() as $warranty)
                                     <div class="carousel-box">
                                         <div class="single-warranty-notes border border-2 border-gray-300 rounded-2 p-3 overflow-hidden has-transition"
-                                            onclick="selectNote(this, 'warranty_note_id', 'single-warranty-notes', {{ $warranty->id }})">
+                                            onclick="selectNote(this, 'warranty_note_id', 'single-warranty-notes', {{ $warranty->id }})"
+                                            data-note-id="{{ $warranty->id }}">
 
                                             <p class="fs-14 fw-400 m-0 text-truncate-3">
                                                 {{ $warranty->getTranslation('description') }}
@@ -794,15 +857,16 @@
                                     @endforeach
                                     
                                 </div>
-
-                                <div class="mt-4">
-                                    <a target="_blank" href="{{ route('note.create') }}?type=warranty"
-                                        class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary mt-2 fs-14 rounded-2 d-flex align-items-center justify-content-center"
-                                        onclick="">
-                                        <i class="las la-plus"></i>
-                                        <span class="ml-2">{{ translate('Add New Notes') }}</span>
-                                    </a>
-                                </div>
+                                @can('add_note')
+                                    <div class="mt-4">
+                                        <a href="#" id="add_note" data-note-type="warranty"
+                                            class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary mt-2 fs-14 rounded-2 d-flex align-items-center justify-content-center"
+                                            onclick="">
+                                            <i class="las la-plus"></i>
+                                            <span class="ml-2">{{ translate('Add Warranty Note') }}</span>
+                                        </a>
+                                    </div>
+                                @endcan
                             </div>
                         </div>
                         <!-- Warranty End -->
@@ -891,10 +955,11 @@
                                     data-lg-items="2" data-md-items="2" data-sm-items="2" data-xs-items="2"
                                     data-arrows="false" data-dots="false" data-autoplay="false" data-infinite="true"
                                     data-center="false">
-                                    @foreach(\App\Models\Note::where("note_type", 'shipping')->get() as $shipping)
+                                    @foreach(\App\Models\Note::where("note_type", 'shipping')->orderBy('created_at', 'desc')->get() as $shipping)
                                     <div class="carousel-box">
                                         <div class="shp-notes border border-2 border-gray-300 rounded-2 p-3 overflow-hidden has-transition"
-                                            onclick="selectNote(this, 'shipping_note_id', 'shp-notes', {{ $shipping->id }})">
+                                            onclick="selectNote(this, 'shipping_note_id', 'shp-notes', {{ $shipping->id }})"
+                                            data-note-id="{{ $shipping->id }}">
 
                                             <p class="fs-14 fw-400 m-0 text-truncate-3">
                                                 {{ $shipping->getTranslation('description') }}
@@ -904,15 +969,16 @@
                                     @endforeach
                                     
                                 </div>
-
-                                <div class="mt-4">
-                                    <a target="_blank" href="{{ route('note.create') }}?type=shipping"
-                                        class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary mt-2 fs-14 rounded-2 d-flex align-items-center justify-content-center"
-                                        onclick="">
-                                        <i class="las la-plus"></i>
-                                        <span class="ml-2">{{ translate('Add New Notes') }}</span>
-                                    </a>
-                                </div>
+                                @can('add_note')
+                                    <div class="mt-4">
+                                        <a href="#" id="add_note" data-note-type="shipping"
+                                            class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary mt-2 fs-14 rounded-2 d-flex align-items-center justify-content-center"
+                                            onclick="">
+                                            <i class="las la-plus"></i>
+                                            <span class="ml-2">{{ translate('Add Shipping Note') }}</span>
+                                        </a>
+                                    </div>
+                                @endcan
                             </div>
                         </div>
                         <!-- Shipping End -->
@@ -946,10 +1012,11 @@
                                     data-lg-items="2" data-md-items="2" data-sm-items="2" data-xs-items="2"
                                     data-arrows="false" data-dots="false" data-autoplay="false" data-infinite="true"
                                     data-center="false">
-                                    @foreach(\App\Models\Note::where("note_type", 'delivery')->get() as $delivery)
+                                    @foreach(\App\Models\Note::where("note_type", 'delivery')->orderBy('created_at', 'desc')->get() as $delivery)
                                     <div class="carousel-box">
                                         <div class="delivery-notes border border-2 border-gray-300 rounded-2 p-3 overflow-hidden has-transition"
-                                            onclick="selectNote(this, 'delivery_note_id', 'delivery-notes', {{ $delivery->id }})">
+                                            onclick="selectNote(this, 'delivery_note_id', 'delivery-notes', {{ $delivery->id }})"
+                                            data-note-id="{{ $delivery->id }}">
 
                                             <p class="fs-14 fw-400 m-0 text-truncate-3">
                                                 {{ $delivery->getTranslation('description') }}
@@ -959,15 +1026,16 @@
                                     @endforeach
                                     
                                 </div>
-
-                                <div class="mt-4">
-                                    <a target="_blank" href="{{ route('note.create') }}?type=delivery"
-                                        class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary mt-2 fs-14 rounded-2 d-flex align-items-center justify-content-center"
-                                        onclick="">
-                                        <i class="las la-plus"></i>
-                                        <span class="ml-2">{{ translate('Add New Preset') }}</span>
-                                    </a>
-                                </div>
+                                @can('add_note')
+                                    <div class="mt-4">
+                                        <a href="#" id="add_note" data-note-type="delivery"
+                                            class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary mt-2 fs-14 rounded-2 d-flex align-items-center justify-content-center"
+                                            onclick="">
+                                            <i class="las la-plus"></i>
+                                            <span class="ml-2">{{ translate('Add Delivery Note') }}</span>
+                                        </a>
+                                    </div>
+                                @endcan
                             </div>
                              @else
                                 <p>
@@ -1237,10 +1305,12 @@
     $('input[name="colors_active"]').on('change', function() {
         if(!$('input[name="colors_active"]').is(':checked')) {
             $('#colors').prop('disabled', true);
+            $('#add_color').addClass('d-none');
             AIZ.plugins.bootstrapSelect('refresh');
         }
         else {
             $('#colors').prop('disabled', false);
+            $('#add_color').removeClass('d-none');
             AIZ.plugins.bootstrapSelect('refresh');
         }
         update_sku();

@@ -1,14 +1,13 @@
 @extends('backend.layouts.app')
 @section('content')
 
-<div class="aiz-titlebar text-left mt-2 mb-3">
-	<div class="align-items-center">
-			<h1 class="h3">{{translate('Update Package Information')}}</h1>
-	</div>
-</div>
-
 <div class="row">
     <div class="col-lg-8 mx-auto">
+        <div class="aiz-titlebar text-left mt-2 mb-3">
+            <div class="align-items-center">
+                    <h1 class="h3">{{translate('Update Package Information')}}</h1>
+            </div>
+        </div>
         <div class="card">
             <div class="card-body p-0">
                 <!-- Error Meassages -->
@@ -36,49 +35,41 @@
                     <input type="hidden" name="_method" value="PATCH">
                     <input type="hidden" name="lang" value="{{ $lang }}">
                   	@csrf
-                    <div class="form-group row">
-                        <label class="col-sm-3 col-from-label">
+                    <div class="form-group">
+                        <label class="col-from-label">
                             {{translate('Package Name')}}
                             <span class="text-danger">*</span> 
                             <i class="las la-language text-danger" title="{{translate('Translatable')}}"></i>
                         </label>
-                        <div class="col-sm-9">
-                            <input type="text" placeholder="{{translate('Name')}}" id="name" name="name" value="{{ $customer_package->getTranslation('name', $lang) }}" class="form-control" required>
-                        </div>
+                        <input type="text" placeholder="{{translate('Name')}}" id="name" name="name" value="{{ $customer_package->getTranslation('name', $lang) }}" class="form-control" required>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-sm-3 col-from-label">
+                    <div class="form-group">
+                        <label class="col-from-label">
                             {{translate('Amount')}}
                             <span class="text-danger">*</span> 
                         </label>
-                        <div class="col-sm-9">
-                            <input type="number" lang="en" min="0" step="0.01" placeholder="{{translate('Amount')}}" value="{{ $customer_package->amount }}" id="amount" name="amount" class="form-control" required>
-                        </div>
+                        <input type="number" lang="en" min="0" step="0.01" placeholder="{{translate('Amount')}}" value="{{ $customer_package->amount }}" id="amount" name="amount" class="form-control" required>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-sm-3 col-from-label">
+                    <div class="form-group">
+                        <label class="col-from-label">
                             {{translate('Product Upload')}}
                             <span class="text-danger">*</span> 
                         </label>
-                        <div class="col-sm-9">
-                            <input type="number" lang="en" min="0" step="1" placeholder="{{translate('Product Upload')}}" value="{{ $customer_package->product_upload }}" id="product_upload" name="product_upload" class="form-control" required>
-                        </div>
+                        <input type="number" lang="en" min="0" step="1" placeholder="{{translate('Product Upload')}}" value="{{ $customer_package->product_upload }}" id="product_upload" name="product_upload" class="form-control" required>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-md-3 col-form-label" for="signinSrEmail">
+                    <div class="form-group">
+                        <label class="col-form-label" for="signinSrEmail">
                             {{translate('Package logo')}}
                             <span class="text-danger">*</span> 
                         </label>
-                        <div class="col-md-9">
-                            <div class="input-group" data-toggle="aizuploader" data-type="image">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
-                                </div>
-                                <div class="form-control file-amount">{{ translate('Choose File') }}</div>
-                                <input type="hidden" name="logo" value="{{$customer_package->logo}}" class="selected-files">
+                        <div class="input-group" data-toggle="aizuploader" data-type="image">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
                             </div>
-                            <div class="file-preview box sm">
-                            </div>
+                            <div class="form-control file-amount">{{ translate('Choose File') }}</div>
+                            <input type="hidden" name="logo" value="{{$customer_package->logo}}" class="selected-files">
+                        </div>
+                        <div class="file-preview box sm">
                         </div>
                     </div>
                     <div class="form-group mb-0 text-right">

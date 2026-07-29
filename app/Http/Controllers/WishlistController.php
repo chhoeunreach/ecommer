@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Auth;
 use App\Models\Wishlist;
@@ -40,22 +41,45 @@ class WishlistController extends Controller
     {
         if(Auth::check()){
             $wishlist = Wishlist::where('user_id', Auth::user()->id)->where('product_id', $request->id)->first();
+            $ga4Data = null;
             if($wishlist == null){
                 $wishlist = new Wishlist;
                 $wishlist->user_id = Auth::user()->id;
                 $wishlist->product_id = $request->id;
                 $wishlist->save();
+                $product = Product::find($request->id);
+                $ga4Data = [
+                    'event' => 'add_to_wishlist',
+                    'ecommerce' => [
+                        'currency' => get_system_currency()->code,
+                        'value' => (float) ($product->unit_price - ($product->discount ?? 0)),
+                        'items' => [[
+                            'item_id' => (string) $product->id,
+                            'item_name' => $product->getTranslation('name'),
+                            'item_category' => optional($product->main_category)->name ?? 'General',
+                            'price' => (float) $product->unit_price,
+                            'discount' => (float) ($product->discount ?? 0),
+                        ]],
+                    ],
+                ];
+            
                 if(get_setting('facebook_pixel_capi') == 1){
                     $eventId = 'wishlist_' . $wishlist->id . '_' . time();
                     $fb = new FacebookConversionService();
                     $fb->sendAddToWishlist($wishlist->product_id, $eventId);
                 }
             }
-            if(get_setting('header_element') ==5){
-                return view('frontend.partials.wishlistText');
-            }else{
-                return view('frontend.partials.wishlist');
+            $responseData = [
+                'ga4Data' => $ga4Data
+            ];
+            
+            if(get_setting('header_element') == 5){
+                $responseData['html'] = view('frontend.partials.wishlistText')->render();
+            } else {
+                $responseData['html'] = view('frontend.partials.wishlist')->render();
             }
+            
+            return response()->json($responseData);
         }
         return 0;
     }

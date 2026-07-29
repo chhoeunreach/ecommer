@@ -12,7 +12,7 @@
         <div class="carousel-box">
             <div
                 class="img h-90px w-90px h-sm-100px w-sm-100px h-md-150px w-md-150px h-lg-170px w-lg-170px h-xxl-190px w-xxl-190px rounded-2 overflow-hidden position-relative image-hover-effect">
-                <a href="#" title="">
+                <a href="{{ route('product', $related_product->slug) }}" title="">
                     <img class="lazyload img-fit m-auto has-transition product-main-image"
                         src="{{ static_asset('assets/img/placeholder.jpg') }}" data-src="{{ uploaded_asset($related_product->thumbnail_img) }}"
                         alt="{{ $related_product->getTranslation('name') }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">

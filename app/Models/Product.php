@@ -53,6 +53,11 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -184,11 +189,20 @@ class Product extends Model
             get: fn($value) => json_decode($value, true), 
 
          
-             set: function ($value) {
+            set: function ($value) {
+                if (is_string($value)) {
+                    $decoded = json_decode($value, true);
+                    if (is_array($decoded)) {
+                        $value = $decoded;
+                    } else {
+                        $value = array_filter(explode(',', $value));
+                    }
+                }
+
                 if (!is_array($value)) {
                     return null;
                 }
-            
+
                 $filtered = array_filter($value, function ($item) {
                     return trim($item) !== '';
                 });
@@ -198,5 +212,21 @@ class Product extends Model
         );
     }
 
-
+    public function getGoogleFeedData()
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->getTranslation('name'),
+            'description' => strip_tags($this->getTranslation('description')),
+            'link' => route('product', $this->slug),
+            'image_link' => uploaded_asset($this->thumbnail_img),
+            'price' => $this->unit_price . ' ' . get_setting('currency_symbol'),
+            'availability' => $this->stock_quantity > 0 ? 'in stock' : 'out of stock',
+            'brand' => $this->brand->name ?? 'No Brand',
+            'condition' => 'new',
+            'mpn' => $this->sku ?? $this->id,
+            'product_type' => $this->main_category->name ?? '',
+            'gtin' => $this->gtin ?? '',
+        ];
+    }
 }

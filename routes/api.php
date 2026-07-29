@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V2;
 
+use App\Http\Controllers\GoogleMerchantCenterController;
 use App\Http\Middleware\EnsureSystemKey;
 use Illuminate\Support\Facades\Route;
 
@@ -298,13 +299,15 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
     Route::get('products/frequently-bought/{slug}', 'App\Http\Controllers\Api\V2\ProductController@frequentlyBought')->name('products.frequently_bought');
 
     Route::get('products/featured-from-seller/{id}', 'App\Http\Controllers\Api\V2\ProductController@newFromSeller')->name('products.featuredromSeller');
+    Route::get('products/from-seller/{slug}', 'App\Http\Controllers\Api\V2\ProductController@sellerProducts')->name('products.fromSeller');
+    Route::get('products/related/{slug}', 'App\Http\Controllers\Api\V2\ProductController@relatedProducts')->name('api.products.related');
+    Route::get('products/queries/{slug}', 'App\Http\Controllers\Api\V2\ProductController@queriesProducts')->name('api.products.queries');
     Route::get('products/search', 'App\Http\Controllers\Api\V2\ProductController@search');
     Route::post('products/variant/price', 'App\Http\Controllers\Api\V2\ProductController@getPrice');
     Route::get('products/digital', 'App\Http\Controllers\Api\V2\ProductController@digital')->name('products.digital');
     Route::apiResource('products', 'App\Http\Controllers\Api\V2\ProductController')->except(['store', 'update', 'destroy']);
 
     Route::get('products/{slug}/{user_id}',  'App\Http\Controllers\Api\V2\ProductController@product_details');
-
 
     //Use this route outside of auth because initialy we created outside of auth we do not need auth initialy
     //We can't change it now because we didn't send token in header from mobile app.
@@ -482,6 +485,8 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
     Route::controller(PageController::class)->group(function () {
         Route::get('get-page', 'get_page_data');
     });
+
+    Route::get('/google-feed', [GoogleMerchantCenterController::class, 'xmlFeed']);
 });
 
 Route::fallback(function () {

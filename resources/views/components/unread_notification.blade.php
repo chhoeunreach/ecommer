@@ -13,7 +13,7 @@
     }
 @endphp
 @forelse($notifications as $notification)
-    <li class="list-group-item d-flex justify-content-between align-items- py-3">
+    <li class="list-group-item d-flex justify-content-between align-items- py-3  px-30px">
         <div class="media text-inherit">
             <div class="media-body">
                 @php

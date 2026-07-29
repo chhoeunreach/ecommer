@@ -270,7 +270,7 @@
                                 @can('product_duplicate')
                                 <!--Make a Clone-->
                                 <a
-                                    class="d-flex align-items-center px-20px py-10px hov-bg-light hov-text-blue" onclick="duplicateProduct({{$product->id}},'{{ $type }}')">
+                                    class="d-flex align-items-center px-20px py-10px hov-bg-light hov-text-blue" onclick="duplicateProduct({{$product->id}},'{{ $type }}')" href="#">
                                     <span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="10.2"
                                             height="12" viewBox="0 0 10.2 12">

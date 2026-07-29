@@ -63,7 +63,7 @@
                         <div class="row gutters-5 w-100px w-md-100px mw-100">
                             <div class="col">
                                 <span
-                                    class="text-dark text-truncate-2 fs-14 fw-300">{{ $brand->getTranslation('name') }}
+                                    class="text-dark text-truncate-2 fs-14 fw-600">{{ $brand->getTranslation('name') }}
                                 </span>
                             </div>
                         </div>
@@ -80,7 +80,7 @@
                     <td class="align-middle hide-sm" data-label="Created">
                         <div class="row gutters-5 w-100px w-md-100px mw-100">
                             <div class="col">
-                                <span class="text-dark fs-14 fw-300">
+                                <span class="text-dark fs-14 fw-400">
                                     {{ $brand->created_at->format('d M, Y') }}
                                 </span>
                             </div>
@@ -97,13 +97,13 @@
                             <div class="col">
                                 @if (strlen($displayText) > $charLimit)
                                     <span
-                                        class="text-dark text-truncate-1 fs-14 fw-300">{{ Str::limit($displayText, $charLimit) }}</span>
+                                        class="text-dark text-truncate-1 fs-14 fw-400">{{ Str::limit($displayText, $charLimit) }}</span>
                                     <a href="javascript:void(0)"
                                         onclick='openRightcanvas({{ $brand->id }})'
-                                        class="fs-14 fw-300 text-blue td-see-more">{{ translate('See More') }}</a>
+                                        class="fs-14 fw-400 text-blue td-see-more">{{ translate('See More') }}</a>
                                 @else
                                     <span
-                                        class="text-dark text-truncate-1 fs-14 fw-300">{{ $displayText }}</span>
+                                        class="text-dark text-truncate-1 fs-14 fw-400">{{ $displayText }}</span>
                                 @endif
                             </div>
                         </div>

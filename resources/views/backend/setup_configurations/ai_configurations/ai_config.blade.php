@@ -43,6 +43,11 @@
                             <input type="text" class="form-control" name="GEMINI_API_KEY" value="{{ env('GEMINI_API_KEY') }}" placeholder="AIzaSy..." required>
                         </div>
 
+                        <div class="form-group">
+                            <label class="col-from-label">{{translate('Seller Monthly Token Limit')}}</label>
+                            <input type="number" class="form-control" name="seller_monthly_token_limit" value="{{ get_setting('seller_monthly_token_limit') }}" placeholder="eg. 10 , 20" required>
+                        </div>
+
                         <div class="form-group mb-0 text-right">
                             <button type="submit" class="btn btn-sm btn-primary">{{translate('Save Settings')}}</button>
                         </div>

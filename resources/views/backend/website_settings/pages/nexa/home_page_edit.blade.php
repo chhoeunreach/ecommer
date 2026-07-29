@@ -140,8 +140,8 @@
 							@csrf
 							<input type="hidden" name="tab" value="home_slider">
 							<input type="hidden" name="types[][{{ $lang }}]" value="home_slider_images">
+							<input type="hidden" name="types[][{{ $lang }}]" value="small_home_slider_images">
 							<input type="hidden" name="types[][{{ $lang }}]" value="home_slider_links">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_slider_colors">
 
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="w-100">
@@ -176,8 +176,8 @@
 									<div class="home-slider-target">
 										@php
 											$home_slider_images = get_setting('home_slider_images', null, $lang);
+											$small_home_slider_images = get_setting('small_home_slider_images', null, $lang);
 											$home_slider_links = get_setting('home_slider_links', null, $lang);
-											$home_slider_colors = get_setting('home_slider_colors', null, $lang);
 										@endphp
 										@if ($home_slider_images != null)
 											@foreach (json_decode($home_slider_images, true) as $key => $value)
@@ -185,6 +185,8 @@
 													style="border: 1px dashed #e4e5eb;">
 													<div class="row gutters-5">
 														<div class="col-md">
+															<label
+																class="col-from-label fs-13 fw-500 mb-2">{{translate('Slider')}}</label>
 															<div class="form-group mb-md-0">
 																<div class="input-group" data-toggle="aizuploader"
 																	data-type="image">
@@ -206,24 +208,35 @@
 															</div>
 														</div>
 														<div class="col-md">
+															<label
+																class="col-from-label fs-13 fw-500 mb-2">{{translate('Slider')}} ({{translate('Small Device')}})</label>
+															<div class="form-group mb-md-0">
+																<div class="input-group" data-toggle="aizuploader"
+																	data-type="image">
+																	<div class="input-group-prepend">
+																		<div
+																			class="input-group-text bg-soft-secondary font-weight-medium">
+																			{{ translate('Browse')}}
+																		</div>
+																	</div>
+																	<div class="form-control file-amount">
+																		{{ translate('Choose File') }}
+																	</div>
+																	<input type="hidden" name="small_home_slider_images[]"
+																		class="selected-files"
+																		value="{{ json_decode($small_home_slider_images, true)[$key] ?? ''}}">
+																</div>
+																<div class="file-preview box sm">
+																</div>
+															</div>
+														</div>
+														<div class="col-md">
+															<label
+																class="col-from-label fs-13 fw-500 mb-2">{{translate('Link')}}</label>
 															<div class="form-group mb-md-0">
 																<input type="text" class="form-control" placeholder="http://"
 																	name="home_slider_links[]"
 																	value="{{ isset(json_decode($home_slider_links, true)[$key]) ? json_decode($home_slider_links, true)[$key] : '' }}">
-															</div>
-														</div>
-														<div class="col-md">
-															<div class="form-group mb-md-0">
-																<div class="input-group">
-																	<input type="text" class="form-control aiz-color-input" placeholder="Ex: #e1e1e1"
-																		name="home_slider_colors[]"
-																		value="{{ isset(json_decode($home_slider_colors, true)[$key]) ? json_decode($home_slider_colors, true)[$key] : '' }}">
-																	<div class="input-group-append">
-																		<span class="input-group-text p-0">
-																			<input class="aiz-color-picker border-0 size-40px" type="color" value="{{ isset(json_decode($home_slider_colors, true)[$key]) ? json_decode($home_slider_colors, true)[$key] : '' }}">
-																		</span>
-																	</div>
-																</div>
 															</div>
 														</div>
 														<div class="col-md-auto">
@@ -248,6 +261,8 @@
 														<div class="row gutters-5">
 															<!-- Image -->
 															<div class="col-md">
+																<label
+																	class="col-from-label fs-13 fw-500 mb-2">{{translate('Slider')}}</label>
 																<div class="form-group mb-md-0">
 																	<div class="input-group" data-toggle="aizuploader" data-type="image">
 																		<div class="input-group-prepend">
@@ -260,23 +275,27 @@
 																	</div>
 																</div>
 															</div>
-															<!-- link -->
 															<div class="col-md">
+																<label
+																	class="col-from-label fs-13 fw-500 mb-2">{{translate('Slider')}} ({{translate('Small Device')}})</label>
 																<div class="form-group mb-md-0">
-																	<input type="text" class="form-control" placeholder="http://" name="home_slider_links[]" value="">
+																	<div class="input-group" data-toggle="aizuploader" data-type="image">
+																		<div class="input-group-prepend">
+																			<div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
+																		</div>
+																		<div class="form-control file-amount">{{ translate('Choose File') }}</div>
+																		<input type="hidden" name="small_home_slider_images[]" class="selected-files" value="">
+																	</div>
+																	<div class="file-preview box sm">
+																	</div>
 																</div>
 															</div>
-															<!-- color -->
+															<!-- link -->
 															<div class="col-md">
+																<label
+																	class="col-from-label fs-13 fw-500 mb-2">{{translate('Link')}}</label>
 																<div class="form-group mb-md-0">
-																	<div class="input-group">
-																		<input type="text" class="form-control aiz-color-input" placeholder="Ex: #e1e1e1" name="home_slider_colors[]" value="">
-																		<div class="input-group-append">
-																			<span class="input-group-text p-0">
-																				<input class="aiz-color-picker border-0 size-40px" type="color">
-																			</span>
-																		</div>
-																	</div>
+																	<input type="text" class="form-control" placeholder="http://" name="home_slider_links[]" value="">
 																</div>
 															</div>
 															<!-- remove parent button -->
@@ -1314,8 +1333,8 @@
 							@csrf
 							<input type="hidden" name="tab" value="banner_3">
 							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner3_images">
+							<input type="hidden" name="types[][{{ $lang }}]" value="small_home_banner3_images">
 							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner3_links">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner3_colors">
 
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="row gutters-16">
@@ -1346,9 +1365,8 @@
 									<div class="home-banner3-target">
 										@php
 											$home_banner3_images = get_setting('home_banner3_images', null, $lang);
-											$home_banner3_sm_images = get_setting('home_banner3_sm_images', null, $lang);
+											$small_home_banner3_images = get_setting('small_home_banner3_images', null, $lang);
 											$home_banner3_links = get_setting('home_banner3_links', null, $lang);
-											$home_banner3_colors = get_setting('home_banner3_colors', null, $lang);
 										@endphp
 										@if ($home_banner3_images != null)
 											@foreach (json_decode($home_banner3_images, true) as $key => $value)
@@ -1379,6 +1397,29 @@
 																</div>
 															</div>
 														</div>
+														<div class="col-md">
+															<label
+																class="col-from-label fs-13 fw-500 mb-2">{{translate('Banner')}} ({{translate('Small Device')}})</label>
+															<div class="form-group mb-md-0">
+																<div class="input-group" data-toggle="aizuploader"
+																	data-type="image">
+																	<div class="input-group-prepend">
+																		<div
+																			class="input-group-text bg-soft-secondary font-weight-medium">
+																			{{ translate('Browse')}}
+																		</div>
+																	</div>
+																	<div class="form-control file-amount">
+																		{{ translate('Choose File') }}
+																	</div>
+																	<input type="hidden" name="small_home_banner3_images[]"
+																		class="selected-files"
+																		value="{{ json_decode($small_home_banner3_images, true)[$key] ?? ''}}">
+																</div>
+																<div class="file-preview box sm">
+																</div>
+															</div>
+														</div>
 
 														<!-- link -->
 														<div class="col-md">
@@ -1389,23 +1430,6 @@
 																	value="{{ isset(json_decode($home_banner3_links, true)[$key]) ? json_decode($home_banner3_links, true)[$key] : '' }}">
 															</div>
 														</div>
-
-														<div class="col-md">
-															<label class="col-from-label fs-13 fw-500 mb-2">{{('Background Color')}}</label>
-															<div class="form-group mb-md-0">
-																<div class="input-group">
-																	<input type="text" class="form-control aiz-color-input" placeholder="Ex: #e1e1e1"
-																		name="home_banner3_colors[]"
-																		value="{{ isset(json_decode($home_banner3_colors, true)[$key]) ? json_decode($home_banner3_colors, true)[$key] : '' }}">
-																	<div class="input-group-append">
-																		<span class="input-group-text p-0">
-																			<input class="aiz-color-picker border-0 size-40px" type="color" value="{{ isset(json_decode($home_banner3_colors, true)[$key]) ? json_decode($home_banner3_colors, true)[$key] : '' }}">
-																		</span>
-																	</div>
-																</div>
-															</div>
-														</div>
-
 														<!-- remove parent button -->
 														<div class="col-md-auto">
 															<div class="form-group mb-md-0">
@@ -1431,6 +1455,8 @@
 														<div class="row gutters-5">
 															<!-- Image -->
 															<div class="col-md">
+																<label
+																class="col-from-label fs-13 fw-500 mb-2">{{translate('Banner')}}</label>
 																<div class="form-group mb-md-0">
 																	<div class="input-group" data-toggle="aizuploader" data-type="image">
 																		<div class="input-group-prepend">
@@ -1443,9 +1469,26 @@
 																	</div>
 																</div>
 															</div>
+															<!-- Image -->
+															<div class="col-md">
+																<label
+																class="col-from-label fs-13 fw-500 mb-2">{{translate('Banner')}} ({{translate('Small Device')}})</label>
+																<div class="form-group mb-md-0">
+																	<div class="input-group" data-toggle="aizuploader" data-type="image">
+																		<div class="input-group-prepend">
+																			<div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
+																		</div>
+																		<div class="form-control file-amount">{{ translate('Choose File') }}</div>
+																		<input type="hidden" name="small_home_banner3_images[]" class="selected-files" value="">
+																	</div>
+																	<div class="file-preview box sm">
+																	</div>
+																</div>
+															</div>
 
 															<!-- link -->
 															<div class="col-md">
+																<label class="col-from-label fs-13 fw-500 mb-2">{{('Links')}}</label>
 																<div class="form-group mb-md-0 mb-0">
 																	<input type="text" class="form-control" placeholder="http://" name="home_banner3_links[]" value="">
 																</div>

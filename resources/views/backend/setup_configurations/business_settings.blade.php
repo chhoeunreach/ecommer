@@ -43,6 +43,42 @@
                         </div>
                     </a>
                 </div>
+                @can('vat_&_tax_setup')
+                    <div class="col-md-6 col-lg-6 col-xl-4">
+                        <a href="{{ route('tax.index') }}" class="d-block">
+                            <div
+                                class="card border border-2 border-gray-200 card-no-shadow has-transition rounded-2 p-3 p-lg-4 overflow-hidden">
+                                <div class="d-flex flex-column">
+                                    <img src="{{ static_asset('assets/img/business-settings/vat-tax.svg') }}"
+                                        class="w-50px h-50px" alt="Setting Icon">
+                                    <div class="mt-2 pt-1">
+                                        <h6 class="fw-semibold text-dark">{{translate('Vat, TAX & Other Charges')}}</h6>
+                                        <span
+                                            class="fs-12 fw-400 d-block text-gray">{{translate('Configure Vat & Tax rates & additional charges')}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                @endcan
+                @can('pickup_point_setup')
+                    <div class="col-md-6 col-lg-6 col-xl-4">
+                        <a href="{{ route('pick_up_points.index') }}" class="d-block">
+                            <div
+                                class="card border border-2 border-gray-200 card-no-shadow has-transition rounded-2 p-3 p-lg-4 overflow-hidden">
+                                <div class="d-flex flex-column">
+                                    <img src="{{ static_asset('assets/img/business-settings/pickup-points.svg') }}"
+                                        class="w-50px h-50px" alt="Setting Icon">
+                                    <div class="mt-2 pt-1">
+                                        <h6 class="fw-semibold text-dark">{{translate('Pickup Points')}}</h6>
+                                        <span
+                                            class="fs-12 fw-400 d-block text-gray">{{translate('Manage pickup locations where customers can collect their orders')}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                @endcan
                 <!-- Single -->
                 <div class="col-md-6 col-lg-6 col-xl-4">
                     <a href="{{ route('invoice.config') }}" class="d-block">

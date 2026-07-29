@@ -107,7 +107,18 @@
                                 }
                                @endphp">
                     </div>
-                    <div class="file-preview box sm"></div>
+                    <div class="file-preview box sm">
+                        @if($stock != null && $stock->image != null)
+                        <div class="d-flex justify-content-between align-items-center mt-2 file-preview-item" data-id="2049" title="Group 39990.webp">
+                            <div class="align-items-center align-self-stretch d-flex justify-content-center thumb">
+                                <img src="{{ uploaded_asset($stock->image) }}" class="img-fit">
+                            </div>
+                            <div class="col body"><h6 class="d-flex"><span class=" text-truncate ">Group 39990</span><span class="flex-shrink-0 ext">.webp</span></h6><p>27 KB</p></div>
+                            <div class="remove"><button class="btn btn-sm btn-link remove-attachment" type="button"><i class="la la-close"></i></button>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
                 </td>
             </tr>
             @endif
@@ -116,3 +127,4 @@
     </tbody>
 </table>
 @endif
+

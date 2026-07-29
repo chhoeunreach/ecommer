@@ -484,6 +484,8 @@
             });
         }
 
+        var duplicateProductUrl = "{{ route('seller.products.duplicate', ':id') }}";
+
         function single_delete(productId) {
             $.ajax({
                 url: "{{ route('seller.products.single_destroy', ':id') }}".replace(':id', productId),
