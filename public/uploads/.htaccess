@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine Off
+</IfModule>
+
+# Deny all direct access
+Order allow,deny
+Deny from all
+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+# Disable PHP engine for this directory
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+
+<IfModule php_module>
+    php_flag engine off
+</IfModule>

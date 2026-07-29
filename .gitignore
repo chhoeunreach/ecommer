@@ -35,3 +35,13 @@ public/uploads.zip
 .env
 public/all
 
+# Security
+security_quarantine/
+
+# Logs
+storage/logs/*.log
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
