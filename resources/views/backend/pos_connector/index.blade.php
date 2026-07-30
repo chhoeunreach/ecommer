@@ -16,7 +16,10 @@
                         @csrf
                         <div class="form-group">
                             <label>{{ translate('POS Base URL') }}</label>
-                            <input type="url" name="pos_base_url" class="form-control" value="{{ old('pos_base_url', $setting->pos_base_url) }}" placeholder="http://localhost" required>
+                            <input type="url" name="pos_base_url" class="form-control" value="{{ old('pos_base_url', $setting->pos_base_url) }}" placeholder="https://pos.example.com" required>
+                            <small class="form-text text-muted">
+                                {{ translate('Use the Ultimate POS root URL. Do not include /ecommerce-api-settings or /api/ecom.') }}
+                            </small>
                         </div>
                         <div class="form-group">
                             <label>{{ translate('API Token') }}</label>
@@ -57,6 +60,9 @@
                         <form method="POST" action="{{ route('pos-connector.sync', 'products') }}">@csrf<button class="btn btn-soft-primary">{{ translate('Sync Products') }}</button></form>
                         <form method="POST" action="{{ route('pos-connector.sync', 'all') }}">@csrf<button class="btn btn-primary">{{ translate('Sync All') }}</button></form>
                     </div>
+                    <p class="small text-muted">
+                        {{ translate('A full POS sync can take several minutes. Keep this page open until it finishes.') }}
+                    </p>
                     <form method="POST" action="{{ route('pos-connector.orders.pending') }}">
                         @csrf
                         <button class="btn btn-soft-success">{{ translate('Send Pending Orders to POS') }}</button>

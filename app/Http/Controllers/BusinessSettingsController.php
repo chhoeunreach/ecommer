@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Zone;
 use Artisan;
 use CoreComponentRepository;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
 use Str;
@@ -510,6 +511,7 @@ class BusinessSettingsController extends Controller
                 'value' => null,
             ]);
         }
+        Cache::forget('business_settings');
         Artisan::call('cache:clear');
 
         flash(translate("Settings updated successfully"))->success();

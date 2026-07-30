@@ -75,6 +75,9 @@
     @if(get_setting('homepage_select') == 'thecore')
     <link rel="stylesheet" href="{{ static_asset('assets/css/thecore.css') }}">
     @endif
+    @if(get_setting('homepage_select') == 'kystor')
+    <link rel="stylesheet" href="{{ static_asset('assets/css/kystor.css?v=') }}{{ filemtime(public_path('assets/css/kystor.css')) }}">
+    @endif
 
     <script>
         var AIZ = AIZ || {};
@@ -577,6 +580,36 @@
         let cardIds = [];
         let timer;
 
+        function showCurrentCard() {
+            cardIds.forEach(function (id, i) {
+                $('#' + id).toggleClass('d-none', i !== currentIdx);
+            });
+        }
+
+        function startTimer() {
+            clearTimeout(timer);
+            if (currentIdx >= cardIds.length) return;
+            showCurrentCard();
+            timer = setTimeout(function () {
+                currentIdx++;
+                if (currentIdx >= cardIds.length) {
+                    $('#stack-popup-main-wrapper').addClass('d-none');
+                } else {
+                    startTimer();
+                }
+            }, window.POPUP_DURATION * 1000);
+        }
+
+        function removeTopCard(id) {
+            clearTimeout(timer);
+            currentIdx = cardIds.indexOf(id) + 1;
+            if (currentIdx >= cardIds.length) {
+                $('#stack-popup-main-wrapper').addClass('d-none');
+            } else {
+                startTimer();
+            }
+        }
+
         $(document).ready(function () {
 
             $('.card-wrapper:visible').each(function () {
@@ -689,7 +722,7 @@
             }, function(data) {
                 $('#section_newest').html(data);
                 AIZ.plugins.slickCarousel();
-                @if (get_setting('homepage_select') == 'thecore')
+                @if (get_setting('homepage_select') == 'thecore' || get_setting('homepage_select') == 'kystor')
                  toggleViewMoreButton();
                 @endif
             });

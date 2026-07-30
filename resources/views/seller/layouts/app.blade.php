@@ -84,7 +84,8 @@
         }
 
     </style>
-	<script>
+    @include('partials.global_right_offcanvas_styles')
+    <script>
     	var AIZ = AIZ || {};
         AIZ.local = {
             nothing_selected: '{!! translate('Nothing selected', null, true) !!}',
