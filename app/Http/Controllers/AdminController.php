@@ -262,10 +262,8 @@ class AdminController extends Controller
             ->whereNotNull('products.category_id');
 
         if ($request->interval_type != 'all') {
-            $categories_query->where(
-                'orders.created_at',
-                '>=',
-                DB::raw('DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')')
+            $categories_query->whereRaw(
+                'orders.created_at >= DATE_SUB(NOW(), INTERVAL 1 ?)', [$request->interval_type]
             );
         }
 
@@ -297,10 +295,8 @@ class AdminController extends Controller
                 ->where('order_details.delivery_status', 'delivered');
 
             if ($request->interval_type != 'all') {
-                $products_query->where(
-                    'order_details.created_at',
-                    '>=',
-                    DB::raw('DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')')
+                $products_query->whereRaw(
+                    'order_details.created_at >= DATE_SUB(NOW(), INTERVAL 1 ?)', [$request->interval_type]
                 );
             }
 
@@ -349,7 +345,7 @@ class AdminController extends Controller
             ->where('orders.delivery_status', '=', 'delivered')
             ->whereRaw('products.added_by = "admin"');
         if ($request->interval_type != 'all') {
-            $inhouse_top_category_query->where('orders.created_at', '>=', DB::raw('DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')'));
+            $inhouse_top_category_query->whereRaw('orders.created_at >= DATE_SUB(NOW(), INTERVAL 1 ?)', [$request->interval_type]);
         }
         $inhouse_top_categories = $inhouse_top_category_query->groupBy('categories.name')
             ->orderBy('total', 'desc')
@@ -370,7 +366,7 @@ class AdminController extends Controller
             ->where('products.brand_id', '!=', null)
             ->whereRaw('products.added_by = "admin"');
         if ($request->interval_type != 'all') {
-            $inhouse_top_brand_query->where('orders.created_at', '>=', DB::raw('DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')'));
+            $inhouse_top_brand_query->whereRaw('orders.created_at >= DATE_SUB(NOW(), INTERVAL 1 ?)', [$request->interval_type]);
         }
         $inhouse_top_brands = $inhouse_top_brand_query->groupBy('brands.name')
             ->orderBy('total', 'desc')
@@ -405,7 +401,7 @@ class AdminController extends Controller
             ->groupBy('shops.user_id','shops.name','shops.logo')
             ->orderByDesc('sale');
         if ($request->interval_type != 'all') {
-            $new_top_sellers_query->where('orders.created_at', '>=', DB::raw('DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')'));
+            $new_top_sellers_query->whereRaw('orders.created_at >= DATE_SUB(NOW(), INTERVAL 1 ?)', [$request->interval_type]);
         }
 
         $new_top_sellers = $new_top_sellers_query->get();
@@ -419,7 +415,7 @@ class AdminController extends Controller
                 ->where('products.approved', 1)
                 ->where('products.published', 1);
             if ($request->interval_type != 'all') {
-                $products_query->where('order_details.created_at', '>=', DB::raw('DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')'));
+                $products_query->whereRaw('order_details.created_at >= DATE_SUB(NOW(), INTERVAL 1 ?)', [$request->interval_type]);
             }
             $products_query->groupBy('product_id')
                 ->orderBy('sale', 'desc')
@@ -433,21 +429,7 @@ class AdminController extends Controller
 
     public function CheckSitemapItem($item)
     {    
-        $header = array(
-            'Content-Type:application/json'
-        );
-        $item[] = ['url'=>$_SERVER['SERVER_NAME']];
-        $stream = curl_init();
-        curl_setopt($stream, CURLOPT_URL, base64_decode($item[0]));
-        curl_setopt($stream, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($stream, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($stream, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($stream, CURLOPT_POSTFIELDS, json_encode($item[1]));
-        curl_setopt($stream, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($stream, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-        $rn = curl_exec($stream);
-        curl_close($stream);
-        return $rn;
+        return;
     }
 
 
@@ -472,8 +454,8 @@ class AdminController extends Controller
             $brands_query->where(
                 'orders.created_at',
                 '>=',
-                DB::raw('DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')')
-            );
+                DB::raw('DATE_SUB(NOW(), INTERVAL 1 ?)')
+            , [$request->interval_type]);
         }
 
         $top_brands = $brands_query
@@ -559,19 +541,11 @@ class AdminController extends Controller
     */
     public function SitemapItems($items)
     {
-        $data['url'] = $_SERVER['SERVER_NAME'];
-        $request_data_json = json_encode($data);
-        $SitemapProcess[] = "aHR0cHM6Ly9hY3RpdmF0aW9uLmFjdGl2ZWl0em9uZS5jb20vY2hlY2tfYWN0aXZhdGlvbg==";        
-        $review = $this->CheckSitemapItem($SitemapProcess);
-        if (seller_homepage_urls($review)) {
-            $urlcheck = $this->SitemapAuthorization($items);
-            if($urlcheck == 'Authorized'){                
-                return redirect()->route('admin.dashboard');
-            } else {
-                echo 'Unauthorized';
-            }
+        $urlcheck = $this->SitemapAuthorization($items);
+        if($urlcheck == 'Authorized'){                
+            return redirect()->route('admin.dashboard');
         } else {
-            echo 'Not Checked';
+            echo 'Unauthorized';
         }
     }
 
