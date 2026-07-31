@@ -58,6 +58,7 @@ use App\Models\CustomerPackagePayment;
 use App\Models\CustomLabel;
 use App\Models\CustomSaleAlert;
 use App\Models\ElementStyle;
+use Illuminate\Support\Facades\Schema;
 use App\Models\ElementType;
 use App\Models\EmailTemplate;
 use App\Models\FlashDealProduct;
@@ -710,16 +711,7 @@ if (!function_exists('home_price')) {
     }
 }
 
-//Shows Bad Results in Seller Hompapage Retruns
-if (!function_exists('seller_homepage_urls')) {
-    function seller_homepage_urls($slug)
-    {
-        if ($slug == "bad" && env('DEMO_MODE') != 'On') {
-            return false;
-        }
-        return true;
-    }
-}
+
 
 //Shows Price on page based on low to high with discount
 if (!function_exists('home_discounted_price')) {
@@ -1023,27 +1015,6 @@ function remove_invalid_charcaters($str)
 if (!function_exists('translation_tables')) {
     function translation_tables($uniqueIdentifier)
     {
-        $noTableAddons =  ['african_pg', 'paytm', 'pos_system'];
-        if (!in_array($uniqueIdentifier, $noTableAddons)) {
-            $addons = [];
-            $addons['affiliate'] = ['affiliate_options', 'affiliate_configs', 'affiliate_users', 'affiliate_payments', 'affiliate_withdraw_requests', 'affiliate_logs', 'affiliate_stats'];
-            $addons['auction'] = ['auction_product_bids'];
-            $addons['club_point'] = ['club_points', 'club_point_details'];
-            $addons['delivery_boy'] = ['delivery_boys', 'delivery_histories', 'delivery_boy_payments', 'delivery_boy_collections'];
-            $addons['offline_payment'] = ['manual_payment_methods'];
-            $addons['otp_system'] = ['otp_configurations', 'sms_templates'];
-            $addons['refund_request'] = ['refund_requests'];
-            $addons['seller_subscription'] = ['seller_packages', 'seller_package_translations', 'seller_package_payments'];
-            $addons['wholesale'] = ['wholesale_prices'];
-
-            foreach ($addons as $key => $addon_tables) {
-                if ($key == $uniqueIdentifier) {
-                    foreach ($addon_tables as $table) {
-                        Schema::dropIfExists($table);
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -1406,7 +1377,7 @@ if (!function_exists('getBaseURL')) {
         $root = '//' . $_SERVER['HTTP_HOST'];
         $root .= str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
 
-        return $root;
+        return rtrim($root, '/');
     }
 }
 
@@ -3343,11 +3314,18 @@ if (!function_exists('get_all_sale_alert_products')) {
 //get products label
 if (!function_exists('get_custom_labels')) {
     function get_custom_labels($labels) {
+        static $hasCustomLabelStatusColumn = null;
+
         $labels_array = [];
         if($labels){
+            $hasCustomLabelStatusColumn ??= Schema::hasColumn('custom_labels', 'status');
             $labels = explode(',',$labels);
             foreach($labels as $label){
-                $label_data = CustomLabel::where('id',$label)->where('status', 1)->first();
+                $label_query = CustomLabel::where('id', $label);
+                if ($hasCustomLabelStatusColumn) {
+                    $label_query->where('status', 1);
+                }
+                $label_data = $label_query->first();
                 if($label_data){
                     $labels_array[] = $label_data;
                 }
@@ -3360,8 +3338,15 @@ if (!function_exists('get_custom_labels')) {
 //get products label
 if (!function_exists('get_custom_label')) {
     function get_custom_label($label) {
+            static $hasCustomLabelStatusColumn = null;
+
+            $hasCustomLabelStatusColumn ??= Schema::hasColumn('custom_labels', 'status');
             $label = explode(',',$label);
-            $label_data = CustomLabel::where('id',$label)->where('status', 1)->first();
+            $label_query = CustomLabel::where('id', $label);
+            if ($hasCustomLabelStatusColumn) {
+                $label_query->where('status', 1);
+            }
+            $label_data = $label_query->first();
             if($label_data){
                 $label = $label_data;
             }
@@ -3740,6 +3725,11 @@ if (!function_exists('upload_avatar_from_url')) {
     function upload_avatar_from_url($avatarUrl, $userId = null, $provider = 'social')
     {
         if (empty($avatarUrl)) {
+            return null;
+        }
+
+        $scheme = parse_url($avatarUrl, PHP_URL_SCHEME);
+        if (!in_array($scheme, ['http', 'https'])) {
             return null;
         }
 
