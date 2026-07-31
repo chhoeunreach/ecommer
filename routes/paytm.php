@@ -4,7 +4,7 @@
 
 use App\Http\Controllers\Payment\PaytmController;
 use App\Http\Controllers\Payment\ToyyibpayController;
-use App\Http\Controllers\Payment\MyfatoorahController;
+use App\Http\Controllers\Api\V2\MyfatoorahController;
 use App\Http\Controllers\Payment\KhaltiController;
 use App\Http\Controllers\Payment\PhonepeController;
 

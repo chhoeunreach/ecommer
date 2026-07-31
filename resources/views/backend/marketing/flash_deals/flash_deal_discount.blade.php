@@ -17,7 +17,7 @@
         <tbody>
             @foreach ($product_ids as $key => $id)
                 @php
-                    $product = \App\Models\Product::where('promotional', 1)->findOrFail($id);
+                    $product = \App\Models\Product::findOrFail($id);
                 @endphp
                 <tr id="discount-row-{{ $id }}">
                     <td style="vertical-align: middle;">

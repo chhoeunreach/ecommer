@@ -16,7 +16,7 @@
                                 <input type="radio" hidden id="element_type_{{ $key }}" name="footer_element"
                                     value="{{ $element_type->id }}" @if(get_setting('footer_element') == $element_type->id) checked @endif>
 
-                                <img src="{{ static_asset('assets/img/footers/footer' . ($key + 1) . '.webp') }}"
+                                <img src="{{ static_asset('assets/img/footers/footer' . ($key + 1) . '.svg') }}"
                                     class="card-img-top mx-auto" alt="footer layout">
 
                                 <p class="mt-2 mb-0 font-weight-bold">

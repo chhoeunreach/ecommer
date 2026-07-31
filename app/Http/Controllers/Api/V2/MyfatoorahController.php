@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V2;
 
 use App\Http\Controllers\CheckoutController;
-use MyFatoorah\Library\PaymentMyfatoorahApiV2;
+use MyFatoorah\Library\API\Payment\MyFatoorahPaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\CustomerPackageController;
 use App\Http\Controllers\WalletController;
@@ -27,7 +27,11 @@ class MyfatoorahController extends Controller
     {
 
         // If you want to set the credentials and the mode manually.
-        $this->mfObj = new PaymentMyfatoorahApiV2(env('MYFATOORAH_TOKEN'), env('MYFATOORAH_COUNTRY_ISO'), get_setting('myfatoorah_sandbox') == 1 ? true : false);
+        $this->mfObj = new MyFatoorahPaymentStatus([
+            'apiKey' => env('MYFATOORAH_TOKEN'),
+            'vcCode' => env('MYFATOORAH_COUNTRY_ISO'),
+            'isTest' => get_setting('myfatoorah_sandbox') == 1,
+        ]);
     }
 
     /**

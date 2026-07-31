@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Zone;
 use Artisan;
 use CoreComponentRepository;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
 use Str;
@@ -48,6 +49,7 @@ class BusinessSettingsController extends Controller
         $this->middleware(['permission:business_settings'])->only('invoice_config');
         $this->middleware(['permission:business_settings'])->only('order_tracking_config');
         $this->middleware(['permission:business_settings'])->only('shipping_label_config');
+        $this->middleware(['permission:edit_website_page'])->only('featuredProductSearch');
     }
 
     public function general_setting(Request $request)
@@ -450,8 +452,22 @@ class BusinessSettingsController extends Controller
        // dd($request->all());
         $types = $request->types ?? [];
         $resetRefundData = in_array('refund_type', $types);
+        $featuredProductIds = [];
 
-        foreach ($request->types as $key => $type) {
+        if ($request->input('tab') === 'featured_products') {
+            $validated = $request->validate([
+                'featured_product_ids' => ['nullable', 'array', 'max:12'],
+                'featured_product_ids.*' => ['integer', 'distinct', 'exists:products,id'],
+            ]);
+
+            $featuredProductIds = collect($validated['featured_product_ids'] ?? [])
+                ->map(fn ($id) => (int) $id)
+                ->unique()
+                ->values()
+                ->all();
+        }
+
+        foreach ($types as $key => $type) {
             if ($type == 'site_name') {
                 $this->overWriteEnvFile('APP_NAME', $request[$type]);
             }
@@ -510,6 +526,18 @@ class BusinessSettingsController extends Controller
                 'value' => null,
             ]);
         }
+
+        if ($request->input('tab') === 'featured_products') {
+            Product::where('featured', 1)
+                ->when(count($featuredProductIds) > 0, fn ($query) => $query->whereNotIn('id', $featuredProductIds))
+                ->update(['featured' => 0]);
+
+            if (count($featuredProductIds) > 0) {
+                Product::whereIn('id', $featuredProductIds)->update(['featured' => 1]);
+            }
+        }
+
+        Cache::forget('business_settings');
         Artisan::call('cache:clear');
 
         flash(translate("Settings updated successfully"))->success();
@@ -518,6 +546,27 @@ class BusinessSettingsController extends Controller
             return Redirect::to(URL::previous() . "#" . $request->tab);
         }
         return redirect()->back();
+    }
+
+    public function featuredProductSearch(Request $request)
+    {
+        $validated = $request->validate([
+            'search_key' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $products = Product::isApprovedPublished()
+            ->where('auction_product', 0)
+            ->when($validated['search_key'] ?? null, function ($query, $searchKey) {
+                $query->where('name', 'like', '%' . $searchKey . '%');
+            })
+            ->latest()
+            ->limit(20)
+            ->get();
+
+        return view('partials.product.products_search', [
+            'products' => $products,
+            'single_select' => 0,
+        ]);
     }
 
 

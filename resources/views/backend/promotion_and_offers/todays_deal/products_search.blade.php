@@ -8,7 +8,7 @@
       $todays_deal_check = $todays_deal == 1 ? 1 : 0;
       @endphp
         @foreach ($products as $key => $product)
-            <tr @if($todays_deal_check == 1 && $product->todays_deal == 1) class="todays_deal-selected-tr" @endif>
+            <tr class="product-select-row @if($todays_deal_check == 1 && $product->todays_deal == 1) todays_deal-selected-tr @endif" style="cursor: pointer;">
               <td class="py-2">
                 <div class="from-group row align-items-center">
                   <div class="col-auto">

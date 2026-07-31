@@ -1389,7 +1389,7 @@ if (!function_exists('getFileBaseURL')) {
             return env(Str::upper(env('FILESYSTEM_DRIVER')) . '_URL') . '/';
         }
 
-        return getBaseURL() . '/public/';
+        return getBaseURL();
     }
 }
 

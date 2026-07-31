@@ -100,9 +100,9 @@
             @if (get_setting('header_menu_labels') != null)
                 @foreach (json_decode(get_setting('header_menu_labels'), true) as $key => $value)
                     <li class="mr-0">
-                        <a href="{{ json_decode(get_setting('header_menu_links'), true)[$key] }}"
+                        <a href="{{ header_menu_url(json_decode(get_setting('header_menu_links'), true)[$key]) }}"
                             class="fs-13 px-3 py-3 w-100 d-inline-block fw-700 text-dark header_menu_links
-                                    @if (url()->current() == json_decode(get_setting('header_menu_links'), true)[$key]) active @endif">
+                                    @if (is_active_header_menu(json_decode(get_setting('header_menu_links'), true)[$key])) active @endif">
                             {{ translate($value) }}
                         </a>
                     </li>

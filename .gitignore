@@ -35,13 +35,10 @@ public/uploads.zip
 .env
 public/all
 
-# Security
-security_quarantine/
-
-# Logs
-storage/logs/*.log
-
-# OS metadata
-.DS_Store
-Thumbs.db
-
+# Footer layout previews are source assets required by the admin selector.
+!/public/assets/
+/public/assets/*
+!/public/assets/img/
+/public/assets/img/*
+!/public/assets/img/footers/
+!/public/assets/img/footers/*.svg

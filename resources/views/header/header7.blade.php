@@ -142,9 +142,9 @@
                             @foreach ($labels as $key => $value)
                                 @if ($key < 3)
                                     <li class="nav-item">
-                                        <a class="nav-link fs-13 fw-semibold top-text-color-visibility @if (url()->current() == $links[$key]) active @endif"
+                                        <a class="nav-link fs-13 fw-semibold top-text-color-visibility @if (is_active_header_menu($links[$key])) active @endif"
                                             style="color: {{ $topHeaderTextColor }}"
-                                            href="{{ $links[$key] }}">
+                                            href="{{ header_menu_url($links[$key]) }}">
                                             {{ translate($value) }}
                                         </a>
                                     </li>
@@ -865,7 +865,7 @@
             @if (get_setting('header_menu_labels') != null)
                 @foreach (json_decode(get_setting('header_menu_labels'), true) as $key => $value)
                     <li>
-                        <a href="{{ json_decode(get_setting('header_menu_links'), true)[$key] }}" class="d-block py-2 fs-14 fw-500 text-reset hov-text-blue has-transition">{{ translate($value) }}</a>
+                        <a href="{{ header_menu_url(json_decode(get_setting('header_menu_links'), true)[$key]) }}" class="d-block py-2 fs-14 fw-500 text-reset hov-text-blue has-transition">{{ translate($value) }}</a>
                     </li>
                 @endforeach    
             @endif

@@ -131,6 +131,7 @@
             border-bottom-right-radius: 4px !important;
         }
     </style>
+    @include('partials.global_right_offcanvas_styles')
     <script>
         var AIZ = AIZ || {};
         AIZ.local = {

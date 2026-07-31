@@ -88,25 +88,15 @@
                                                 @endphp
                                                 {{-- general category list  --}}
                                                 <div class="px-20px pb-10px display-none" id="general_cagegories_box">
-                                                    <div id="category_filter" class="h-300px overflow-auto no-scrollbar">
-                                                        <ul class="hummingbird-treeview-converter2 list-unstyled"
-                                                            data-checkbox-name="categories[]">
+                                                    <div id="category_filter" class="product-category-tree-wrap">
+                                                        <ul class="product-category-tree list-unstyled">
                                                             @foreach ($categories as $category)
-                                                                {{-- @if ($category->products_count > 0) --}}
-                                                                <li d-item="{{ $category->products_count }}"
-                                                                    id="generel_{{ $category->id }}">
-                                                                    {{ $category->getTranslation('name') }}
-                                                                    @if ($category->products_count > 0)
-                                                                        {{ '   (' . $category->products_count . ')' }}
-                                                                    @endif
-                                                                </li>
-                                                                {{-- @endif --}}
-                                                                @foreach ($category->childrenCategories as $childCategory)
-                                                                    @include(
-                                                                        'frontend.product_listing_page_child_category',
-                                                                        ['child_category' => $childCategory]
-                                                                    )
-                                                                @endforeach
+                                                                @include('frontend.partials.product_listing_category_tree_item', [
+                                                                    'categoryItem' => $category,
+                                                                    'inputName' => 'categories[]',
+                                                                    'idPrefix' => 'generel_',
+                                                                    'selectedIds' => $old_categories,
+                                                                ])
                                                             @endforeach
                                                         </ul>
                                                     </div>
@@ -115,22 +105,15 @@
                                                 {{-- preorder category list  --}}
                                                 <div class="px-20px pb-10px display-none" id="preorder_cagegories_box">
                                                     <div id="category_filter_preorder"
-                                                        class="h-300px overflow-auto no-scrollbar">
-                                                        <ul class="hummingbird-treeview-converter2 list-unstyled"
-                                                            data-checkbox-name="categories_preorder[]">
+                                                        class="product-category-tree-wrap">
+                                                        <ul class="product-category-tree list-unstyled">
                                                             @foreach ($preorder_categories as $category)
-                                                                @if ($category->products_count > 0)
-                                                                    <li d-item="{{ $category->products_count }}"
-                                                                        id="preorder_{{ $category->id }}">
-                                                                        {{ $category->getTranslation('name') }}{{ '   (' . $category->products_count . ')' }}
-                                                                    </li>
-                                                                @endif
-                                                                @foreach ($category->childrenCategories as $childCategory)
-                                                                    @include(
-                                                                        'frontend.product_listing_page_child_category_preorder',
-                                                                        ['child_category' => $childCategory]
-                                                                    )
-                                                                @endforeach
+                                                                @include('frontend.partials.product_listing_category_tree_item', [
+                                                                    'categoryItem' => $category,
+                                                                    'inputName' => 'categories_preorder[]',
+                                                                    'idPrefix' => 'preorder_',
+                                                                    'selectedIds' => [],
+                                                                ])
                                                             @endforeach
                                                         </ul>
                                                     </div>
@@ -588,18 +571,11 @@
             const target = e ? e.target : null;
 
             if (target && target.type === 'checkbox') {
-                const parent = target.parentElement;
-                if (parent) {
-                    const children = parent.children;
-                    if (children.length > 0) {
-                        const lastSibling = children[children.length - 1];
+                const label = target.closest('.product-category-tree__label');
+                const categoryName = label ? label.querySelector('.product-category-tree__name') : null;
 
-                        if (target.checked) {
-                            lastSibling.classList.add('fw-bold');
-                        } else {
-                            lastSibling.classList.remove('fw-bold');
-                        }
-                    }
+                if (categoryName) {
+                    categoryName.classList.toggle('fw-bold', target.checked);
                 }
             }
 
@@ -836,50 +812,17 @@
 
         });
     </script>
-    <!-- Treeview js -->
-    <script src="{{ static_asset('assets/js/hummingbird-treeview2.js') }}"></script>
-
     <script>
         $(document).ready(function() {
+            $(document).on('click', '.product-category-tree__toggle', function() {
+                const $button = $(this);
+                const $children = $button.closest('.product-category-tree__item')
+                    .children('.product-category-tree__children');
+                const isExpanded = $button.attr('aria-expanded') === 'true';
 
-            // $("#treeview2").hummingbird();
-            var $tree = $('#treeview2');
-
-            var oldShow = $.fn.show;
-            var oldHide = $.fn.hide;
-
-            // Override show for smooth animation
-            $.fn.show = function(speed, oldCallback) {
-                if ($(this).closest($tree).length) {
-                    return this.stop(true, true).slideDown(400, oldCallback);
-                } else {
-                    return oldShow.apply(this, arguments);
-                }
-            };
-
-            // Override hide for smooth animation
-            $.fn.hide = function(speed, oldCallback) {
-                if ($(this).closest($tree).length) {
-                    return this.stop(true, true).slideUp(400, oldCallback);
-                } else {
-                    return oldHide.apply(this, arguments);
-                }
-            };
-
-            // Initialize Hummingbird treeview2
-            $tree.hummingbird();
-
-            var selected_ids = '{{ implode(',', $old_categories) }}';
-            if (selected_ids != '') {
-                const myArray = selected_ids.split(",");
-                for (let i = 0; i < myArray.length; i++) {
-                    const element = myArray[i];
-
-                    $('#category_checkidgenerel_' + element).prop('checked', true);
-                    $('#category_checkid_textgenerel_' + element).addClass('fw-bold');
-                    $('#category_checkidgenerel_' + element).parents("ul").css("display", "block");
-                }
-            }
+                $button.attr('aria-expanded', String(!isExpanded));
+                $children.prop('hidden', isExpanded);
+            });
         });
 
 
@@ -921,111 +864,4 @@
             }, 2000);
         });
     </script>
-
-
-
-    <script>
-        window.onload = function() {
-            setTimeout(function() {
-
-                const mainUl = $('#category_filter div ul');
-
-                if (mainUl.length === 0) {
-                    return alert("Main UL not found!");
-                }
-
-
-                function processUl($ul) {
-                    $ul.addClass('ul_is_empty');
-
-                    $ul.children('li').each(function() {
-                        const $li = $(this);
-
-
-                        const $nestedUl = $li.children('ul');
-                        if ($nestedUl.length > 0) {
-
-                            processUl($nestedUl);
-
-
-
-                            if ($nestedUl.children('li').length === 0) {
-                                $nestedUl.prev('i.las.pt-3px.la-angle-right').remove();
-                                $nestedUl.remove();
-                            }
-                        } else {
-                            const countAttr = $li.attr('count');
-                            if (countAttr === "0") {
-                                $li.remove();
-                            }
-                        }
-                    });
-                }
-
-                processUl(mainUl);
-
-                $('.ul_is_empty').each(function() {
-                    const $ul = $(this);
-
-                    if ($ul.children('li').length === 0) {
-                        $ul.prev('i.las.pt-3px.la-angle-right').remove();
-                        $ul.remove();
-                    }
-                });
-
-            }, 0000);
-
-            setTimeout(function() {
-
-                const mainUl = $('#category_filter_preorder div ul');
-
-                if (mainUl.length === 0) {
-                    return alert("Main UL not found!");
-                }
-
-
-                function processUl($ul) {
-                    $ul.addClass('ul_is_empty');
-
-
-                    $ul.children('li').each(function() {
-                        const $li = $(this);
-
-
-                        const $nestedUl = $li.children('ul');
-                        if ($nestedUl.length > 0) {
-
-                            processUl($nestedUl);
-
-
-
-                            if ($nestedUl.children('li').length === 0) {
-                                $nestedUl.prev('i.las.pt-3px.la-angle-down').remove();
-                                $nestedUl.remove();
-                            }
-                        } else {
-                            const countAttr = $li.attr('count');
-                            if (countAttr === "0") {
-                                $li.remove();
-                            }
-                        }
-                    });
-                }
-
-                processUl(mainUl);
-
-                $('.ul_is_empty').each(function() {
-                    const $ul = $(this);
-
-                    if ($ul.children('li').length === 0) {
-                        $ul.prev('i.las.pt-3px.la-angle-right').remove();
-                        $ul.remove();
-                    }
-                });
-
-            }, 0000);
-
-        };
-    </script>
-
 @endsection

@@ -33,7 +33,7 @@
                                     <span class="fs-12 text-secondary fw-400">{{ translate('(Best within 50 character)') }}</span>
                                 </label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control" name="title" placeholder="{{ translate('Type your text here') }}" required>
+                                    <input type="text" class="form-control" name="title" maxlength="50" placeholder="{{ translate('Type your text here') }}" value="{{ old('title') }}" required>
                                 </div>
                             </div>
                             <!-- Summary -->
@@ -43,7 +43,7 @@
                                     <span class="fs-12 text-secondary fw-400">{{ translate('(Best within 200 character)') }}</span>
                                 </label>
                                 <div class="col-md-8">
-                                    <textarea class="form-control" name="summary" rows="2" placeholder="{{ translate('Type your text here') }}" required></textarea>
+                                    <textarea class="form-control" name="summary" maxlength="200" rows="2" placeholder="{{ translate('Type your text here') }}" required>{{ old('summary') }}</textarea>
                                 </div>
                             </div>
                             <!-- Image -->
@@ -58,7 +58,7 @@
                                             <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
                                         </div>
                                         <div class="form-control file-amount">{{ translate('Choose File') }}</div>
-                                        <input type="hidden" name="banner" class="selected-files">
+                                        <input type="hidden" name="banner" value="{{ old('banner') }}" class="selected-files">
                                     </div>
                                     <div class="file-preview box sm">
                                     </div>
@@ -71,7 +71,7 @@
                                     <span class="fs-12 text-secondary fw-400">{{ translate('(Best within 30 character)') }}</span>
                                 </label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control" name="btn_text" placeholder="{{ translate('Type your text here') }}" required>
+                                    <input type="text" class="form-control" name="btn_text" maxlength="30" value="{{ old('btn_text') }}" placeholder="{{ translate('Type your text here') }}" required>
                                 </div>
                             </div>
                             <!-- Select Button Color -->
@@ -81,10 +81,10 @@
                                 </label>
                                 <div class="col-md-8">
                                     <div class="input-group">
-                                        <input type="text" class="form-control aiz-color-input" placeholder="#000000" name="btn_background_color" required>
+                                        <input type="text" class="form-control aiz-color-input" value="{{ old('btn_background_color', '#000000') }}" pattern="^#[0-9a-fA-F]{6}$" placeholder="#000000" name="btn_background_color" required>
                                         <div class="input-group-append">
                                             <span class="input-group-text p-0">
-                                                <input class="aiz-color-picker border-0 size-40px" type="color">
+                                                <input class="aiz-color-picker border-0 size-40px" type="color" value="{{ old('btn_background_color', '#000000') }}">
                                             </span>
                                         </div>
                                     </div>
@@ -97,11 +97,11 @@
                                 </label>
                                 <div class="col-md-8 row">
                                     <div class="col radio mar-btm mr-3 d-flex align-items-center">
-                                        <input id="btn_text_color_light" class="magic-radio" type="radio" name="btn_text_color" value="white" checked>
+                                        <input id="btn_text_color_light" class="magic-radio" type="radio" name="btn_text_color" value="white" @checked(old('btn_text_color', 'white') === 'white')>
                                         <label for="btn_text_color_light" class="mb-0 ml-2">{{translate('Light')}}</label>
                                     </div>
                                     <div class="col radio mar-btm mr-3 d-flex align-items-center">
-                                        <input id="btn_text_color_dark" class="magic-radio" type="radio" name="btn_text_color" value="dark">
+                                        <input id="btn_text_color_dark" class="magic-radio" type="radio" name="btn_text_color" value="dark" @checked(old('btn_text_color') === 'dark')>
                                         <label for="btn_text_color_dark" class="mb-0 ml-2">{{translate('Dark')}}</label>
                                     </div>
                                 </div>
@@ -112,12 +112,12 @@
                                     {{translate('Link')}} <span class="text-danger">*</span>
                                 </label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control" name="btn_link" placeholder="{{ translate('Type your text here') }}" required>
+                                    <input type="text" class="form-control" name="btn_link" maxlength="191" value="{{ old('btn_link') }}" placeholder="{{ translate('Type your text here') }}" required>
                                 </div>
                             </div>
                             <!-- Button -->
                             <div class="float-right mb-3">
-                                <button type="submit" class="btn btn-primary w-230px btn-md rounded-2 fs-14 fw-700 shadow-primary" onclick="var e=this;setTimeout(function(){e.disabled=true;},0);return true;">{{ translate('Save') }}</button>
+                                <button type="submit" class="btn btn-primary w-230px btn-md rounded-2 fs-14 fw-700 shadow-primary">{{ translate('Save') }}</button>
                             </div>
                         </div>
                         <div class="col-lg-4">

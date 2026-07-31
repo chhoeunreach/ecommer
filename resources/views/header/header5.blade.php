@@ -475,8 +475,8 @@ $middleHeaderTextColor = get_setting('middle_header_text_color');
                             @foreach ($menuLabels as $key => $value)
                                 @if ($loop->index < 5)
                                     <li class="list-inline-item mr-0 animate-underline-white">
-                                    <a href="{{ $menuLinks[$key] }}" class="fs-13 px-3 py-3 d-inline-block middle-text-color-visibility fw-700 header_menu_links hov-bg-black-10
-                                            @if (url()->current() == $menuLinks[$key]) active @endif" style="color: {{ $middleHeaderTextColor }}">
+                                    <a href="{{ header_menu_url($menuLinks[$key]) }}" class="fs-13 px-3 py-3 d-inline-block middle-text-color-visibility fw-700 header_menu_links hov-bg-black-10
+                                            @if (is_active_header_menu($menuLinks[$key])) active @endif" style="color: {{ $middleHeaderTextColor }}">
                                         {{ translate($value) }}
                                     </a>
                                     </li>
@@ -491,8 +491,8 @@ $middleHeaderTextColor = get_setting('middle_header_text_color');
                                     </a>
                                     <div class="dropdown-menu py-0 header-drop">
                                         @for ($i = 5; $i < $totalMenus; $i++)
-                                            <a href="{{ $menuLinks[$i] }}" class="dropdown-item fs-13 py-2 px-3 violet-dropdown text-dark 
-                                                       @if (url()->current() == $menuLinks[$i]) active @endif
+                                            <a href="{{ header_menu_url($menuLinks[$i]) }}" class="dropdown-item fs-13 py-2 px-3 violet-dropdown text-dark
+                                                       @if (is_active_header_menu($menuLinks[$i])) active @endif
                                                        {{ $i < $totalMenus - 1 ? 'border-bottom border-soft-light' : '' }}">
                                             {{ translate($menuLabels[$i]) }}
                                             </a>
