@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Blog;
 use Illuminate\Http\Request;
+use App\Models\BusinessSetting;
 use App\Models\Page;
 use App\Models\PageTranslation;
 use App\Models\SellerPackage;
+use Illuminate\Support\Facades\Cache;
 
 class PageController extends Controller
 {
@@ -136,6 +138,53 @@ class PageController extends Controller
     {
         $page = Page::findOrFail($id);
         $content = $request->content;
+
+        if ($page->type == 'terms_conditions_page') {
+            $validated = $request->validate([
+                'terms_cards' => ['nullable', 'array', 'max:12'],
+                'terms_cards.*.image' => ['nullable', 'string', 'max:191'],
+                'terms_cards.*.title' => ['nullable', 'string', 'max:100'],
+                'terms_cards.*.description' => ['nullable', 'string', 'max:500'],
+                'terms_cards.*.link' => ['nullable', 'string', 'max:191', 'not_regex:/^\s*(?:javascript|data|vbscript):/i'],
+                'terms_colors' => ['required', 'array:hero_start,hero_end,hero_text,accent,card_background,heading,text'],
+                'terms_colors.hero_start' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'terms_colors.hero_end' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'terms_colors.hero_text' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'terms_colors.accent' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'terms_colors.card_background' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'terms_colors.heading' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'terms_colors.text' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            ]);
+
+            $termsCards = collect($validated['terms_cards'] ?? [])
+                ->map(function ($card) {
+                    return [
+                        'image' => trim($card['image'] ?? ''),
+                        'title' => trim($card['title'] ?? ''),
+                        'description' => trim($card['description'] ?? ''),
+                        'link' => trim($card['link'] ?? ''),
+                    ];
+                })
+                ->filter(fn ($card) => collect($card)->contains(fn ($value) => $value !== ''))
+                ->values()
+                ->all();
+
+            $termsCardsSetting = BusinessSetting::where('type', 'terms_page_cards')
+                ->where('lang', $request->lang)
+                ->first() ?? new BusinessSetting;
+            $termsCardsSetting->type = 'terms_page_cards';
+            $termsCardsSetting->lang = $request->lang;
+            $termsCardsSetting->value = json_encode($termsCards);
+            $termsCardsSetting->save();
+
+            $termsColorsSetting = BusinessSetting::where('type', 'terms_page_colors')->first() ?? new BusinessSetting;
+            $termsColorsSetting->type = 'terms_page_colors';
+            $termsColorsSetting->lang = null;
+            $termsColorsSetting->value = json_encode($validated['terms_colors']);
+            $termsColorsSetting->save();
+            Cache::forget('business_settings');
+        }
+
         if($page->type == 'contact_us_page'){
             $data['description'] = $request->description;
             $data['address'] = $request->address;
