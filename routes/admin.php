@@ -34,6 +34,7 @@ use App\Http\Controllers\DigitalProductController;
 use App\Http\Controllers\DynamicPopupController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\FlashDealController;
+use App\Http\Controllers\FeaturedProductController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\MeasurementPointsController;
 use App\Http\Controllers\NewsletterController;
@@ -395,6 +396,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     // Business Settings
     Route::controller(BusinessSettingsController::class)->group(function () {
         Route::post('/business-settings/update', 'update')->name('business_settings.update');
+        Route::post('/website/featured-products/search', 'featuredProductSearch')->name('website.featured-products.search');
         Route::post('/business-settings/update/activation', 'updateActivationSettings')->name('business_settings.update.activation');
         Route::post('/payment-activation', 'updatePaymentActivationSettings')->name('payment.activation');
         Route::post('/shipping-activation', 'updateShippingActivationSettings')->name('shipping.activation');
@@ -602,6 +604,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/promotional-products-filter', 'filter')->name('promotional_products.filter');     
         Route::get('/promotion-and-offers-dashboard', 'dashboard')->name('promotion_and_offers_dashboard');     
 
+    });
+
+    // Featured Products
+    Route::controller(FeaturedProductController::class)->group(function () {
+        Route::get('/featured-products-index', 'index')->name('featured_products.index');
+        Route::post('/featured-products-search', 'search')->name('featured_products.search');
+        Route::post('/featured-products-store', 'store')->name('featured_products.store');
+        Route::post('/featured-products-remove', 'remove')->name('featured_products.remove');
+        Route::post('/featured-products-bulk-remove', 'bulkRemove')->name('featured_products.bulk-remove');
     });
 
     // Todays Deal Products

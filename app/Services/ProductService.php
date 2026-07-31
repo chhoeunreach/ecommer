@@ -840,7 +840,7 @@ class ProductService
         }
         
         $products = in_array($auth_user->user_type, ['admin', 'staff']) ? $products->where('products.added_by', 'admin') : $products->where('products.user_id', $auth_user->id);
-        $products->where('published', '1')->where('auction_product', 0)->where('approved', '1')->where('promotional', '1');
+        $products->where('published', '1')->where('auction_product', 0)->where('approved', '1');
 
         if($productType == 'physical'){
             $products->where('digital', 0)->where('wholesale_product', 0);
@@ -858,11 +858,11 @@ class ProductService
         if($collection['product_id'] != null){
             $products->where('id', '!=' , $collection['product_id']);
         }
-        
+
         if ($collection['search_key'] != null) {
             $products->where('name','like', '%' . $collection['search_key'] . '%');
-        }   
-        
+        }
+
         return $products->get();
     }
 

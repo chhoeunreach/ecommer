@@ -34,7 +34,7 @@
                                     <span class="fs-12 text-secondary fw-400">{{ translate('(Best within 50 character)') }}</span>
                                 </label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control" name="title" placeholder="{{ translate('Type your text here') }}" value="{{ $dynamic_popup->title }}" required>
+                                    <input type="text" class="form-control" name="title" maxlength="50" placeholder="{{ translate('Type your text here') }}" value="{{ old('title', $dynamic_popup->title) }}" required>
                                 </div>
                             </div>
                             <!-- Summary -->
@@ -44,7 +44,7 @@
                                     <span class="fs-12 text-secondary fw-400">{{ translate('(Best within 200 character)') }}</span>
                                 </label>
                                 <div class="col-md-8">
-                                    <textarea class="form-control" name="summary" rows="2" placeholder="{{ translate('Type your text here') }}" required>{{ $dynamic_popup->summary }}</textarea>
+                                    <textarea class="form-control" name="summary" maxlength="200" rows="2" placeholder="{{ translate('Type your text here') }}" required>{{ old('summary', $dynamic_popup->summary) }}</textarea>
                                 </div>
                             </div>
                             <!-- Image -->
@@ -59,7 +59,7 @@
                                             <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
                                         </div>
                                         <div class="form-control file-amount">{{ translate('Choose File') }}</div>
-                                        <input type="hidden" value="{{ $dynamic_popup->banner }}" name="banner" class="selected-files">
+                                        <input type="hidden" value="{{ old('banner', $dynamic_popup->banner) }}" name="banner" class="selected-files">
                                     </div>
                                     <div class="file-preview box sm">
                                     </div>
@@ -72,7 +72,7 @@
                                     <span class="fs-12 text-secondary fw-400">{{ translate('(Best within 30 character)') }}</span>
                                 </label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control" name="btn_text" value="{{ $dynamic_popup->btn_text }}" placeholder="{{ translate('Type your text here') }}" required>
+                                    <input type="text" class="form-control" name="btn_text" maxlength="30" value="{{ old('btn_text', $dynamic_popup->btn_text) }}" placeholder="{{ translate('Type your text here') }}" required>
                                 </div>
                             </div>
                             <!-- Select Button Color -->
@@ -82,10 +82,10 @@
                                 </label>
                                 <div class="col-md-8">
                                     <div class="input-group">
-                                        <input type="text" class="form-control aiz-color-input" value="{{ $dynamic_popup->btn_background_color }}" placeholder="#000000" name="btn_background_color" required>
+                                        <input type="text" class="form-control aiz-color-input" value="{{ old('btn_background_color', $dynamic_popup->btn_background_color) }}" pattern="^#[0-9a-fA-F]{6}$" placeholder="#000000" name="btn_background_color" required>
                                         <div class="input-group-append">
                                             <span class="input-group-text p-0">
-                                                <input class="aiz-color-picker border-0 size-40px" type="color" value="{{ $dynamic_popup->btn_background_color }}">
+                                                <input class="aiz-color-picker border-0 size-40px" type="color" value="{{ old('btn_background_color', $dynamic_popup->btn_background_color) }}">
                                             </span>
                                         </div>
                                     </div>
@@ -98,11 +98,11 @@
                                 </label>
                                 <div class="col-md-8 row">
                                     <div class="col radio mar-btm mr-3 d-flex align-items-center">
-                                        <input id="btn_text_color_light" class="magic-radio" type="radio" name="btn_text_color" value="white" @if($dynamic_popup->btn_text_color == 'white') checked @endif>
+                                        <input id="btn_text_color_light" class="magic-radio" type="radio" name="btn_text_color" value="white" @checked(old('btn_text_color', $dynamic_popup->btn_text_color) === 'white')>
                                         <label for="btn_text_color_light" class="mb-0 ml-2">{{translate('Light')}}</label>
                                     </div>
                                     <div class="col radio mar-btm mr-3 d-flex align-items-center">
-                                        <input id="btn_text_color_dark" class="magic-radio" type="radio" name="btn_text_color" value="dark" @if($dynamic_popup->btn_text_color == 'dark') checked @endif>
+                                        <input id="btn_text_color_dark" class="magic-radio" type="radio" name="btn_text_color" value="dark" @checked(old('btn_text_color', $dynamic_popup->btn_text_color) === 'dark')>
                                         <label for="btn_text_color_dark" class="mb-0 ml-2">{{translate('Dark')}}</label>
                                     </div>
                                 </div>
@@ -114,7 +114,7 @@
                                         {{translate('Link')}} <span class="text-danger">*</span>
                                     </label>
                                     <div class="col-md-8">
-                                        <input type="text" class="form-control" name="btn_link" value="{{ $dynamic_popup->btn_link }}" placeholder="{{ translate('Type your text here') }}" required>
+                                        <input type="text" class="form-control" name="btn_link" maxlength="191" value="{{ old('btn_link', $dynamic_popup->btn_link) }}" placeholder="{{ translate('Type your text here') }}" required>
                                     </div>
                                 </div>
                             @endif
@@ -126,7 +126,8 @@
                                     <label class="col-md-4 col-from-label fw-700">{{translate('Show Subscriber form?')}}</label>
                                     <div class="col-md-8">
                                         <label class="aiz-switch aiz-switch-success mb-0">
-                                            <input type="checkbox" name="show_subscribe_form" @if( $dynamic_popup->show_subscribe_form == 'on') checked @endif>
+                                            <input type="hidden" name="show_subscribe_form" value="">
+                                            <input type="checkbox" name="show_subscribe_form" @checked(old('show_subscribe_form', $dynamic_popup->show_subscribe_form) === 'on')>
                                             <span></span>
                                         </label>
                                     </div>

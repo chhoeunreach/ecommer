@@ -429,7 +429,8 @@
                     <div class="mirror-card">
 
                         <img src="{{ uploaded_asset($dynamic_popup->banner) }}"
-                            class="card-img">
+                            class="card-img"
+                            alt="{{ $dynamic_popup->title }}">
 
                         <div class="p-4 text-center">
                             <h5 class="font-weight-bold">
@@ -450,7 +451,8 @@
                                             name="email" required>
                                     </div>
                                     <button type="submit" class="vote-btn w-100 set-session"
-                                            data-key="stack-popup-{{ $dynamic_popup->id }}"
+                                            style="background-color: {{ $dynamic_popup->btn_background_color }}; color: {{ $dynamic_popup->btn_text_color === 'dark' ? '#1b1b28' : '#ffffff' }};"
+                                            data-key="stack-popup-main"
                                             data-value="removed">
                                         {{ $dynamic_popup->btn_text }}
                                     </button>
@@ -459,7 +461,8 @@
                                 <!-- Regular button for other popups -->
                                 <a href="{{ $dynamic_popup->btn_link }}"
                                 class="vote-btn d-block set-session w-100"
-                                data-key="stack-popup-{{ $dynamic_popup->id }}"
+                                style="background-color: {{ $dynamic_popup->btn_background_color }}; color: {{ $dynamic_popup->btn_text_color === 'dark' ? '#1b1b28' : '#ffffff' }};"
+                                data-key="stack-popup-main"
                                 data-value="removed">
                                     {{ $dynamic_popup->btn_text }}
                                 </a>
@@ -580,42 +583,14 @@
         let cardIds = [];
         let timer;
 
-        function showCurrentCard() {
-            cardIds.forEach(function (id, i) {
-                $('#' + id).toggleClass('d-none', i !== currentIdx);
-            });
-        }
-
-        function startTimer() {
-            clearTimeout(timer);
-            if (currentIdx >= cardIds.length) return;
-            showCurrentCard();
-            timer = setTimeout(function () {
-                currentIdx++;
-                if (currentIdx >= cardIds.length) {
-                    $('#stack-popup-main-wrapper').addClass('d-none');
-                } else {
-                    startTimer();
-                }
-            }, window.POPUP_DURATION * 1000);
-        }
-
-        function removeTopCard(id) {
-            clearTimeout(timer);
-            currentIdx = cardIds.indexOf(id) + 1;
-            if (currentIdx >= cardIds.length) {
-                $('#stack-popup-main-wrapper').addClass('d-none');
-            } else {
-                startTimer();
-            }
-        }
-
         $(document).ready(function () {
-
             $('.card-wrapper:visible').each(function () {
                 cardIds.push($(this).attr('id'));
             });
-            startTimer();
+
+            if (cardIds.length > 0) {
+                startTimer();
+            }
         });
 
     </script>
@@ -708,7 +683,7 @@
 
             let dynamicLimit = 12;
 
-            @if (get_setting('homepage_select') == 'nexa')
+            @if (in_array(get_setting('homepage_select'), ['nexa', 'kneayerng_v1']))
 
                 let perRow = parseInt($('#nexa-product-wrapper').attr('data-products-per-row')) || 4;
 

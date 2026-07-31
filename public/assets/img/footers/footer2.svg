@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" role="img" aria-labelledby="title desc">
+  <title id="title">Footer layout 2 preview</title>
+  <desc id="desc">A compact footer with a wide brand column, three navigation columns, social links, and copyright.</desc>
+  <rect width="1200" height="260" rx="12" fill="#f1f3f7"/>
+  <rect x="16" y="16" width="1168" height="192" rx="8" fill="#1c273b"/>
+  <rect x="44" y="43" width="128" height="22" rx="5" fill="#fff"/>
+  <rect x="44" y="82" width="350" height="8" rx="4" fill="#8c98ab"/>
+  <rect x="44" y="103" width="310" height="8" rx="4" fill="#8c98ab"/>
+  <rect x="44" y="124" width="330" height="8" rx="4" fill="#8c98ab"/>
+  <g fill="#fff">
+    <rect x="500" y="43" width="82" height="11" rx="3"/>
+    <rect x="722" y="43" width="96" height="11" rx="3"/>
+    <rect x="944" y="43" width="104" height="11" rx="3"/>
+  </g>
+  <g fill="#778399">
+    <rect x="500" y="78" width="138" height="7" rx="3"/>
+    <rect x="500" y="101" width="110" height="7" rx="3"/>
+    <rect x="500" y="124" width="124" height="7" rx="3"/>
+    <rect x="722" y="78" width="142" height="7" rx="3"/>
+    <rect x="722" y="101" width="116" height="7" rx="3"/>
+    <rect x="722" y="124" width="132" height="7" rx="3"/>
+    <rect x="944" y="78" width="162" height="7" rx="3"/>
+    <rect x="944" y="101" width="140" height="7" rx="3"/>
+    <rect x="944" y="124" width="150" height="7" rx="3"/>
+  </g>
+  <circle cx="52" cy="170" r="12" fill="#51617b"/>
+  <circle cx="88" cy="170" r="12" fill="#51617b"/>
+  <circle cx="124" cy="170" r="12" fill="#51617b"/>
+  <circle cx="160" cy="170" r="12" fill="#51617b"/>
+  <rect x="16" y="216" width="1168" height="28" rx="7" fill="#101727"/>
+  <rect x="44" y="227" width="238" height="7" rx="3" fill="#66738a"/>
+  <rect x="994" y="227" width="162" height="7" rx="3" fill="#66738a"/>
+</svg>

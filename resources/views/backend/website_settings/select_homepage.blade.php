@@ -153,7 +153,7 @@
 						</div>
 					</div>
 
-					<!-- Home KY-Stor -->
+					<!-- Home KY-Store -->
 					<div class="col-xxl-3 col-lg-4 col-sm-6 my-3">
 						<label class="aiz-megabox d-block mb-3">
 							<input value="kystor" type="radio" name="homepage_select" @if(get_setting('homepage_select') == 'kystor') checked @endif>
@@ -164,10 +164,29 @@
 							</span>
 						</label>
 						<div class="d-flex flex-wrap justify-content-between align-items-center">
-							<span class="fs-14 fw-500 text-dark">{{ translate('Homepage 8 - KY-Stor') }}</span>
+							<span class="fs-14 fw-500 text-dark">{{ translate('Homepage 8 - KY-Store') }}</span>
 							<span>
 								<button type="button" class="btn btn-xs btn-danger rounded-0 homepage-preview-btn"
 									data-preview-src="{{ static_asset('assets/img/pages/home-kystor.png') }}">{{ translate('View') }}</button>
+							</span>
+						</div>
+					</div>
+
+					<!-- Home Kneayerng V1 -->
+					<div class="col-xxl-3 col-lg-4 col-sm-6 my-3">
+						<label class="aiz-megabox d-block mb-3">
+							<input value="kneayerng_v1" type="radio" name="homepage_select" @if(get_setting('homepage_select') == 'kneayerng_v1') checked @endif>
+							<span class="d-block aiz-megabox-elem rounded-0 img-overlay">
+								<div class="h-350px w-100 overflow-hidden">
+									<img src="{{ static_asset('assets/img/pages/home-kneayerng-v1.webp') }}" class="w-100" alt="home-page-9">
+								</div>
+							</span>
+						</label>
+						<div class="d-flex flex-wrap justify-content-between align-items-center">
+							<span class="fs-14 fw-500 text-dark">{{ translate('Homepage 9 - Kneayerng V1') }}</span>
+							<span>
+								<button type="button" class="btn btn-xs btn-danger rounded-0 homepage-preview-btn"
+									data-preview-src="{{ static_asset('assets/img/pages/home-kneayerng-v1.webp') }}">{{ translate('View') }}</button>
 							</span>
 						</div>
 					</div>

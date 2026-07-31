@@ -36,18 +36,11 @@ class FlashDealController extends Controller
 
     public function create()
     {
-        $products = Product::isApprovedPublished()
-            ->where('auction_product', 0)
-            ->where('promotional', 1)
-            ->with(['product_categories'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
         $categories = Category::where('parent_id', 0)
             ->with('childrenCategories')
             ->get();
 
-        return view('backend.marketing.flash_deals.create', compact('products', 'categories'));
+        return view('backend.marketing.flash_deals.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -103,18 +96,11 @@ class FlashDealController extends Controller
         $lang           = $request->lang;
         $flash_deal = FlashDeal::findOrFail($id);
 
-        $products = Product::isApprovedPublished()
-            ->where('auction_product', 0)
-            ->where('promotional', 1)
-            ->with(['product_categories'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
         $categories = Category::where('parent_id', 0)
             ->with('childrenCategories')
             ->get();
 
-        return view('backend.marketing.flash_deals.edit', compact('flash_deal', 'lang', 'products', 'categories'));
+        return view('backend.marketing.flash_deals.edit', compact('flash_deal', 'lang', 'categories'));
     }
 
     public function update(Request $request, $id)
@@ -297,7 +283,6 @@ class FlashDealController extends Controller
 
         $products = Product::isApprovedPublished()
             ->where('auction_product', 0)
-            ->where('promotional', 1)
             ->where(function ($q) use ($now) {
                 $q->where('discount', 0)
                 ->orWhere(function ($q2) use ($now) {
@@ -356,20 +341,12 @@ class FlashDealController extends Controller
 
     public function admin_ajax_add_flash_sale_modal(Request $request)
     {
-        $products = Product::isApprovedPublished()
-            ->where('auction_product', 0)
-            ->where('promotional', 1)
-            ->with(['product_categories'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
         $categories = Category::where('parent_id', 0)
             ->with('childrenCategories')
             ->get();
 
         return view('backend.marketing.flash_deals.ajax_add_flash_sale_modal',
         [
-            'products' => $products,
             'categories' => $categories,
         ]);
     }
