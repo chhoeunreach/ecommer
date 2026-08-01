@@ -9,5 +9,9 @@ php artisan config:cache
 # earlier one for name-based lookups), but route:cache's serialization step
 # rejects any duplicate name outright. Production's k8s deployment command
 # already only runs config:cache for the same reason -- kept in sync here.
-php-fpm -D
-nginx -g 'daemon off;'
+php artisan octane:start --server=roadrunner --host=127.0.0.1 --port=8000 --workers=4 &
+OCTANE_PID=$!
+nginx -g 'daemon off;' &
+NGINX_PID=$!
+trap 'kill $OCTANE_PID $NGINX_PID 2>/dev/null' TERM INT
+wait $OCTANE_PID $NGINX_PID

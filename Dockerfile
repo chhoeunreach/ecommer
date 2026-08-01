@@ -5,7 +5,7 @@ FROM php:8.2-fpm-bookworm
 # at "~8.1.0 || ~8.2.0" and fails `composer install` on 8.3.
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev nginx \
-    && docker-php-ext-install pdo_mysql mysqli mbstring exif pcntl bcmath gd zip \
+    && docker-php-ext-install pdo_mysql mysqli mbstring exif pcntl bcmath gd zip sockets \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && apt-get clean \
@@ -20,7 +20,8 @@ WORKDIR /var/www
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/testing storage/framework/views storage/logs storage/debugbar bootstrap/cache public/uploads public/logs && \
     chmod -R 775 storage bootstrap/cache public/uploads public/logs && \
-    composer install --no-dev --no-interaction --optimize-autoloader
+    composer install --no-dev --no-interaction --optimize-autoloader && \
+    ./vendor/bin/rr get-binary --no-interaction
 
 RUN printf "# Managed by Kubernetes env vars - see deployment-active-commerce.yaml. Do not put secrets here.\n" > /var/www/.env && \
     chown www-data:www-data /var/www/.env && \
