@@ -73,11 +73,11 @@ return [
         RequestReceived::class => [
             ...Octane::prepareApplicationForNextOperation(),
             ...Octane::prepareApplicationForNextRequest(),
-            //
+            \App\Listeners\DiagnosticTiming::received(...),
         ],
 
         RequestHandled::class => [
-            //
+            \App\Listeners\DiagnosticTiming::handled(...),
         ],
 
         RequestTerminated::class => [
