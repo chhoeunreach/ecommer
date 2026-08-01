@@ -28,6 +28,10 @@ class EnsureServerGlobals
             $_SERVER['REQUEST_TIME'] = (int) $_SERVER['REQUEST_TIME_FLOAT'];
         }
 
-        return $next($request);
+        $t0 = microtime(true);
+        $response = $next($request);
+        \Illuminate\Support\Facades\Log::info("REQTIME " . $request->getMethod() . " " . $request->path() . " " . round((microtime(true) - $t0) * 1000) . "ms");
+
+        return $response;
     }
 }
