@@ -961,9 +961,13 @@ function translate($key, $lang = null, $addslashes = false)
 
     $lang_key = preg_replace('/[^A-Za-z0-9\_]/', '', str_replace(' ', '_', strtolower($key)));
 
-    $translations_en = Cache::rememberForever('translations-en', function () {
-        return Translation::where('lang', 'en')->pluck('lang_value', 'lang_key')->toArray();
-    });
+    static $translations_cached = [];
+    if (!array_key_exists('translations-en', $translations_cached)) {
+        $translations_cached['translations-en'] = Cache::rememberForever('translations-en', function () {
+            return Translation::where('lang', 'en')->pluck('lang_value', 'lang_key')->toArray();
+        });
+    }
+    $translations_en = $translations_cached['translations-en'];
 
     if (!isset($translations_en[$lang_key])) {
         $translation_def = new Translation;
@@ -981,20 +985,28 @@ function translate($key, $lang = null, $addslashes = false)
             }
 
         Cache::forget('translations-en');
+        unset($translations_cached['translations-en']);
     }
 
     // return user session lang
-    $translation_locale = Cache::rememberForever("translations-{$lang}", function () use ($lang) {
-        return Translation::where('lang', $lang)->pluck('lang_value', 'lang_key')->toArray();
-    });
+    if (!array_key_exists("translations-{$lang}", $translations_cached)) {
+        $translations_cached["translations-{$lang}"] = Cache::rememberForever("translations-{$lang}", function () use ($lang) {
+            return Translation::where('lang', $lang)->pluck('lang_value', 'lang_key')->toArray();
+        });
+    }
+    $translation_locale = $translations_cached["translations-{$lang}"];
     if (isset($translation_locale[$lang_key])) {
         return $addslashes ? addslashes(trim($translation_locale[$lang_key])) : trim($translation_locale[$lang_key]);
     }
 
     // return default lang if session lang not found
-    $translations_default = Cache::rememberForever('translations-' . env('DEFAULT_LANGUAGE', 'en'), function () {
-        return Translation::where('lang', env('DEFAULT_LANGUAGE', 'en'))->pluck('lang_value', 'lang_key')->toArray();
-    });
+    $default_lang = env('DEFAULT_LANGUAGE', 'en');
+    if (!array_key_exists("translations-{$default_lang}", $translations_cached)) {
+        $translations_cached["translations-{$default_lang}"] = Cache::rememberForever("translations-{$default_lang}", function () use ($default_lang) {
+            return Translation::where('lang', $default_lang)->pluck('lang_value', 'lang_key')->toArray();
+        });
+    }
+    $translations_default = $translations_cached["translations-{$default_lang}"];
     if (isset($translations_default[$lang_key])) {
         return $addslashes ? addslashes(trim($translations_default[$lang_key])) : trim($translations_default[$lang_key]);
     }
@@ -1420,9 +1432,13 @@ if (!function_exists('isUnique')) {
 if (!function_exists('get_setting')) {
     function get_setting($key, $default = null, $lang = false)
     {
-        $settings = Cache::remember('business_settings', 86400, function () {
-            return BusinessSetting::all();
-        });
+        static $settings_cache = null;
+        if ($settings_cache === null) {
+            $settings_cache = Cache::remember('business_settings', 86400, function () {
+                return BusinessSetting::all();
+            });
+        }
+        $settings = $settings_cache;
 
         if ($lang == false) {
             $setting = $settings->where('type', $key)->first();
