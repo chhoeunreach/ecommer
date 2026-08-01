@@ -757,8 +757,8 @@ $bottomHeaderTextColor = get_setting('bottom_header_text_color');
                             @if (get_setting('header_menu_labels') != null)
                             @foreach (json_decode(get_setting('header_menu_labels'), true) as $key => $value)
                             <li class="list-inline-item mr-0 animate-underline-white">
-                                <a href="{{ json_decode(get_setting('header_menu_links'), true)[$key] }}"
-                                    class="fs-13 px-3 py-3 d-inline-block fw-700 header_menu_links hov-bg-black-10 bottom-text-color-visibility @if (url()->current() == json_decode(get_setting('header_menu_links'), true)[$key]) active @endif" style="color: {{ $bottomHeaderTextColor }}">
+                                <a href="{{ header_menu_url(json_decode(get_setting('header_menu_links'), true)[$key]) }}"
+                                    class="fs-13 px-3 py-3 d-inline-block fw-700 header_menu_links hov-bg-black-10 bottom-text-color-visibility @if (is_active_header_menu(json_decode(get_setting('header_menu_links'), true)[$key])) active @endif" style="color: {{ $bottomHeaderTextColor }}">
                                     {{ translate($value) }}
                                 </a>
                             </li>

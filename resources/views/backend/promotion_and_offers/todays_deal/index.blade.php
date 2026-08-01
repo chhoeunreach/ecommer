@@ -205,6 +205,24 @@
         $(document).ready(function(){
         });
 
+        // Allow selecting a product by clicking anywhere on its row, not just the checkbox
+        $(document).on('click', '#products-list .product-select-row', function(e) {
+            if ($(e.target).closest('.aiz-checkbox').length) {
+                return;
+            }
+
+            var checkbox = $(this).find('.product-select');
+            if (checkbox.prop('disabled')) {
+                return;
+            }
+
+            if (checkbox.attr('type') === 'radio') {
+                checkbox.prop('checked', true).trigger('change');
+            } else {
+                checkbox.prop('checked', !checkbox.prop('checked')).trigger('change');
+            }
+        });
+
         function filterProductByCategory() {
             var searchKey = $('input[name=search_product_keyword]').val();
             var selectedCategory = $('select[name=selected_Products_category]').val();

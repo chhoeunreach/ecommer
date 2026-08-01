@@ -711,16 +711,7 @@ if (!function_exists('home_price')) {
     }
 }
 
-//Shows Bad Results in Seller Hompapage Retruns
-if (!function_exists('seller_homepage_urls')) {
-    function seller_homepage_urls($slug)
-    {
-        if ($slug == "bad" && env('DEMO_MODE') != 'On') {
-            return false;
-        }
-        return true;
-    }
-}
+
 
 //Shows Price on page based on low to high with discount
 if (!function_exists('home_discounted_price')) {
@@ -1024,27 +1015,6 @@ function remove_invalid_charcaters($str)
 if (!function_exists('translation_tables')) {
     function translation_tables($uniqueIdentifier)
     {
-        $noTableAddons =  ['african_pg', 'paytm', 'pos_system'];
-        if (!in_array($uniqueIdentifier, $noTableAddons)) {
-            $addons = [];
-            $addons['affiliate'] = ['affiliate_options', 'affiliate_configs', 'affiliate_users', 'affiliate_payments', 'affiliate_withdraw_requests', 'affiliate_logs', 'affiliate_stats'];
-            $addons['auction'] = ['auction_product_bids'];
-            $addons['club_point'] = ['club_points', 'club_point_details'];
-            $addons['delivery_boy'] = ['delivery_boys', 'delivery_histories', 'delivery_boy_payments', 'delivery_boy_collections'];
-            $addons['offline_payment'] = ['manual_payment_methods'];
-            $addons['otp_system'] = ['otp_configurations', 'sms_templates'];
-            $addons['refund_request'] = ['refund_requests'];
-            $addons['seller_subscription'] = ['seller_packages', 'seller_package_translations', 'seller_package_payments'];
-            $addons['wholesale'] = ['wholesale_prices'];
-
-            foreach ($addons as $key => $addon_tables) {
-                if ($key == $uniqueIdentifier) {
-                    foreach ($addon_tables as $table) {
-                        Schema::dropIfExists($table);
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -1410,7 +1380,7 @@ if (!function_exists('getBaseURL')) {
         $root = '//' . $_SERVER['HTTP_HOST'];
         $root .= str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
 
-        return $root;
+        return rtrim($root, '/');
     }
 }
 
@@ -1422,7 +1392,7 @@ if (!function_exists('getFileBaseURL')) {
             return env(Str::upper(env('FILESYSTEM_DRIVER')) . '_URL') . '/';
         }
 
-        return getBaseURL() . 'public/';
+        return getBaseURL();
     }
 }
 
@@ -3758,6 +3728,11 @@ if (!function_exists('upload_avatar_from_url')) {
     function upload_avatar_from_url($avatarUrl, $userId = null, $provider = 'social')
     {
         if (empty($avatarUrl)) {
+            return null;
+        }
+
+        $scheme = parse_url($avatarUrl, PHP_URL_SCHEME);
+        if (!in_array($scheme, ['http', 'https'])) {
             return null;
         }
 

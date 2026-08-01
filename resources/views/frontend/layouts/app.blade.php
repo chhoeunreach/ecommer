@@ -75,6 +75,9 @@
     @if(get_setting('homepage_select') == 'thecore')
     <link rel="stylesheet" href="{{ static_asset('assets/css/thecore.css') }}">
     @endif
+    @if(get_setting('homepage_select') == 'kystor')
+    <link rel="stylesheet" href="{{ static_asset('assets/css/kystor.css?v=') }}{{ filemtime(public_path('assets/css/kystor.css')) }}">
+    @endif
 
     <script>
         var AIZ = AIZ || {};
@@ -426,7 +429,8 @@
                     <div class="mirror-card">
 
                         <img src="{{ uploaded_asset($dynamic_popup->banner) }}"
-                            class="card-img">
+                            class="card-img"
+                            alt="{{ $dynamic_popup->title }}">
 
                         <div class="p-4 text-center">
                             <h5 class="font-weight-bold">
@@ -447,7 +451,8 @@
                                             name="email" required>
                                     </div>
                                     <button type="submit" class="vote-btn w-100 set-session"
-                                            data-key="stack-popup-{{ $dynamic_popup->id }}"
+                                            style="background-color: {{ $dynamic_popup->btn_background_color }}; color: {{ $dynamic_popup->btn_text_color === 'dark' ? '#1b1b28' : '#ffffff' }};"
+                                            data-key="stack-popup-main"
                                             data-value="removed">
                                         {{ $dynamic_popup->btn_text }}
                                     </button>
@@ -456,7 +461,8 @@
                                 <!-- Regular button for other popups -->
                                 <a href="{{ $dynamic_popup->btn_link }}"
                                 class="vote-btn d-block set-session w-100"
-                                data-key="stack-popup-{{ $dynamic_popup->id }}"
+                                style="background-color: {{ $dynamic_popup->btn_background_color }}; color: {{ $dynamic_popup->btn_text_color === 'dark' ? '#1b1b28' : '#ffffff' }};"
+                                data-key="stack-popup-main"
                                 data-value="removed">
                                     {{ $dynamic_popup->btn_text }}
                                 </a>
@@ -578,11 +584,13 @@
         let timer;
 
         $(document).ready(function () {
-
             $('.card-wrapper:visible').each(function () {
                 cardIds.push($(this).attr('id'));
             });
-            startTimer();
+
+            if (cardIds.length > 0) {
+                startTimer();
+            }
         });
 
     </script>
@@ -675,7 +683,7 @@
 
             let dynamicLimit = 12;
 
-            @if (get_setting('homepage_select') == 'nexa')
+            @if (in_array(get_setting('homepage_select'), ['nexa', 'kneayerng_v1']))
 
                 let perRow = parseInt($('#nexa-product-wrapper').attr('data-products-per-row')) || 4;
 
@@ -689,7 +697,7 @@
             }, function(data) {
                 $('#section_newest').html(data);
                 AIZ.plugins.slickCarousel();
-                @if (get_setting('homepage_select') == 'thecore')
+                @if (get_setting('homepage_select') == 'thecore' || get_setting('homepage_select') == 'kystor')
                  toggleViewMoreButton();
                 @endif
             });

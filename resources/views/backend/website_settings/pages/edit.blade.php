@@ -24,6 +24,34 @@
 		@csrf
 		<input type="hidden" name="_method" value="PATCH">
 		<input type="hidden" name="lang" value="{{ $lang }}">
+		@php
+			$termsCards = $page->type == 'terms_conditions_page'
+				? json_decode(get_setting('terms_page_cards', '[]', $lang), true)
+				: [];
+			$termsCards = is_array($termsCards) ? $termsCards : [];
+			$baseColor = get_setting('base_color', '#1b74e4');
+			$baseColor = preg_match('/^#[0-9a-fA-F]{6}$/', (string) $baseColor) ? $baseColor : '#1b74e4';
+			$termsColorDefaults = [
+				'hero_start' => $baseColor,
+				'hero_end' => '#111723',
+				'hero_text' => '#ffffff',
+				'accent' => '#ffc519',
+				'card_background' => '#ffffff',
+				'heading' => '#111723',
+				'text' => '#4e5561',
+			];
+			$storedTermsColors = $page->type == 'terms_conditions_page'
+				? json_decode(get_setting('terms_page_colors', '{}'), true)
+				: [];
+			$storedTermsColors = is_array($storedTermsColors) ? $storedTermsColors : [];
+			$termsColors = [];
+			foreach ($termsColorDefaults as $colorKey => $defaultColor) {
+				$colorValue = $storedTermsColors[$colorKey] ?? $defaultColor;
+				$termsColors[$colorKey] = preg_match('/^#[0-9a-fA-F]{6}$/', (string) $colorValue)
+					? $colorValue
+					: $defaultColor;
+			}
+		@endphp
 
 		<div class="card-header px-0">
 			<h6 class="fw-600 mb-0">{{ translate('Page Content') }}</h6>
@@ -61,10 +89,93 @@
 						data-buttons='[["font", ["bold", "underline", "italic", "clear"]],["para", ["ul", "ol", "paragraph"]],["style", ["style"]],["color", ["color"]],["table", ["table"]],["insert", ["link", "picture", "video"]],["view", ["fullscreen", "codeview", "undo", "redo"]],["custom", ["clearText"]]]'
 						data-min-height="300"
 						name="content"
-						required
+						@if($page->type != 'terms_conditions_page') required @endif
 					>{!! $page->getTranslation('content',$lang) !!}</textarea>
 				</div>
 			</div>
+
+			@if($page->type == 'terms_conditions_page')
+				<div class="border-top pt-4 mt-4">
+					<div class="d-flex justify-content-between align-items-center mb-3">
+						<div>
+							<h6 class="fw-600 mb-1">{{ translate('Terms Link Cards') }}</h6>
+							<p class="text-muted fs-12 mb-0">{{ translate('Add up to 12 cards with an image, title, description and link.') }}</p>
+						</div>
+					</div>
+
+					<div class="terms-cards-target">
+						@foreach($termsCards as $index => $card)
+							<div class="terms-card-row remove-parent border border-dashed rounded p-3 mb-3 position-relative">
+								<div class="row gutters-10">
+									<div class="col-md-4">
+										<label class="fs-12 fw-600">{{ translate('Image') }}</label>
+										<div class="input-group" data-toggle="aizuploader" data-type="image" data-multiple="false">
+											<div class="input-group-prepend">
+												<div class="input-group-text bg-soft-secondary">{{ translate('Browse') }}</div>
+											</div>
+											<div class="form-control file-amount">{{ translate('Choose File') }}</div>
+											<input type="hidden" name="terms_cards[{{ $index }}][image]" class="selected-files" value="{{ $card['image'] ?? '' }}">
+										</div>
+										<div class="file-preview box sm"></div>
+									</div>
+									<div class="col-md-8">
+										<div class="form-group">
+											<label class="fs-12 fw-600">{{ translate('Title') }}</label>
+											<input type="text" class="form-control" maxlength="100" name="terms_cards[{{ $index }}][title]" value="{{ $card['title'] ?? '' }}">
+										</div>
+										<div class="form-group">
+											<label class="fs-12 fw-600">{{ translate('Description') }}</label>
+											<textarea class="form-control" maxlength="500" rows="3" name="terms_cards[{{ $index }}][description]">{{ $card['description'] ?? '' }}</textarea>
+										</div>
+										<div class="form-group mb-0">
+											<label class="fs-12 fw-600">{{ translate('Link') }}</label>
+											<input type="text" class="form-control" maxlength="191" placeholder="https://" name="terms_cards[{{ $index }}][link]" value="{{ $card['link'] ?? '' }}">
+										</div>
+									</div>
+								</div>
+								<button type="button" class="btn btn-icon btn-circle btn-sm btn-soft-danger position-absolute" style="right: 10px; top: 10px;" data-toggle="remove-parent" data-parent=".terms-card-row">
+									<i class="las la-times"></i>
+								</button>
+							</div>
+						@endforeach
+					</div>
+
+					<button type="button" id="add-terms-card" class="btn btn-soft-secondary btn-sm">
+						<i class="las la-plus mr-1"></i>{{ translate('Add Card') }}
+					</button>
+				</div>
+
+				<div class="border-top pt-4 mt-4">
+					<h6 class="fw-600 mb-1">{{ translate('Terms Page Colors') }}</h6>
+					<p class="text-muted fs-12 mb-3">{{ translate('Customize the Terms page without changing the colors of other pages.') }}</p>
+					<div class="row gutters-10">
+						@foreach([
+							'hero_start' => translate('Hero Gradient Start'),
+							'hero_end' => translate('Hero Gradient End'),
+							'hero_text' => translate('Hero Text'),
+							'accent' => translate('Accent'),
+							'card_background' => translate('Card Background'),
+							'heading' => translate('Heading'),
+							'text' => translate('Body Text'),
+						] as $colorKey => $colorLabel)
+							<div class="col-md-6 col-lg-4">
+								<div class="form-group">
+									<label class="fs-12 fw-600">{{ $colorLabel }}</label>
+									<div class="input-group">
+										<input type="text" class="form-control aiz-color-input" name="terms_colors[{{ $colorKey }}]"
+											value="{{ $termsColors[$colorKey] }}" pattern="^#[0-9a-fA-F]{6}$" required>
+										<div class="input-group-append">
+											<span class="input-group-text p-0">
+												<input class="aiz-color-picker border-0 size-40px" type="color" value="{{ $termsColors[$colorKey] }}">
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						@endforeach
+					</div>
+				</div>
+			@endif
 		</div>
 
 		<div class="card-header px-0">
@@ -116,3 +227,44 @@
 	</form>
 </div>
 @endsection
+
+@if($page->type == 'terms_conditions_page')
+	@section('script')
+		<script>
+			(function () {
+				var nextTermsCardIndex = {{ count($termsCards) }};
+
+				$('#add-terms-card').on('click', function () {
+					if ($('.terms-card-row').length >= 12) {
+						AIZ.plugins.notify('warning', '{{ translate('You can add a maximum of 12 cards.') }}');
+						return;
+					}
+
+					var index = nextTermsCardIndex++;
+					var row = `
+						<div class="terms-card-row remove-parent border border-dashed rounded p-3 mb-3 position-relative">
+							<div class="row gutters-10">
+								<div class="col-md-4">
+									<label class="fs-12 fw-600">{{ translate('Image') }}</label>
+									<div class="input-group" data-toggle="aizuploader" data-type="image" data-multiple="false">
+										<div class="input-group-prepend"><div class="input-group-text bg-soft-secondary">{{ translate('Browse') }}</div></div>
+										<div class="form-control file-amount">{{ translate('Choose File') }}</div>
+										<input type="hidden" name="terms_cards[${index}][image]" class="selected-files">
+									</div>
+									<div class="file-preview box sm"></div>
+								</div>
+								<div class="col-md-8">
+									<div class="form-group"><label class="fs-12 fw-600">{{ translate('Title') }}</label><input type="text" class="form-control" maxlength="100" name="terms_cards[${index}][title]"></div>
+									<div class="form-group"><label class="fs-12 fw-600">{{ translate('Description') }}</label><textarea class="form-control" maxlength="500" rows="3" name="terms_cards[${index}][description]"></textarea></div>
+									<div class="form-group mb-0"><label class="fs-12 fw-600">{{ translate('Link') }}</label><input type="text" class="form-control" maxlength="191" placeholder="https://" name="terms_cards[${index}][link]"></div>
+								</div>
+							</div>
+							<button type="button" class="btn btn-icon btn-circle btn-sm btn-soft-danger position-absolute" style="right: 10px; top: 10px;" data-toggle="remove-parent" data-parent=".terms-card-row"><i class="las la-times"></i></button>
+						</div>`;
+
+					$('.terms-cards-target').append(row);
+				});
+			})();
+		</script>
+	@endsection
+@endif

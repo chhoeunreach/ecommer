@@ -230,6 +230,39 @@
         </div>
     </div>
 </div>
+<style>
+    #collapseQuickMenu {
+        top: 55px;
+        left: 0;
+        right: 0;
+        z-index: 100;
+    }
+
+    @media (min-width: 992px) {
+        #collapseQuickMenu {
+            top: 65px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        #collapseQuickMenu {
+            left: 280px;
+        }
+
+        [dir="rtl"] #collapseQuickMenu {
+            left: auto;
+            right: 280px;
+        }
+
+        .side-menu-closed #collapseQuickMenu {
+            left: 0;
+        }
+
+        [dir="rtl"] .side-menu-closed #collapseQuickMenu {
+            right: 0;
+        }
+    }
+</style>
 <div class="collapse position-fixed" id="collapseQuickMenu">
     <div class="card mb-0 rounded-0 c-scrollbar-light" style="max-height: 50vh; overflow-y: auto;">
         <div class="card-body p-xl-5">

@@ -37,8 +37,8 @@
 						<div class="d-flex flex-wrap justify-content-between align-items-center">
 							<span class="fs-14 fw-500 text-dark">{{ translate('Homepage 1 - Classic') }}</span>
 							<span>
-								<a href="javascript:void(0);" class="btn btn-xs btn-danger rounded-0"
-									onclick="imageShowOverlay('{{ static_asset('assets/img/pages/home-classic.webp') }}')">{{ translate('View') }}</a>
+								<button type="button" class="btn btn-xs btn-danger rounded-0 homepage-preview-btn"
+									data-preview-src="{{ static_asset('assets/img/pages/home-classic.webp') }}">{{ translate('View') }}</button>
 							</span>
 						</div>
 					</div>
@@ -55,8 +55,8 @@
 						<div class="d-flex flex-wrap justify-content-between align-items-center">
 							<span class="fs-14 fw-500 text-dark">{{ translate('Homepage 2 - Metro') }}</span>
 							<span>
-								<a href="javascript:void(0);" class="btn btn-xs btn-danger rounded-0"
-									onclick="imageShowOverlay('{{ static_asset('assets/img/pages/home-metro.webp') }}')">{{ translate('View') }}</a>
+								<button type="button" class="btn btn-xs btn-danger rounded-0 homepage-preview-btn"
+									data-preview-src="{{ static_asset('assets/img/pages/home-metro.webp') }}">{{ translate('View') }}</button>
 							</span>
 						</div>
 					</div>
@@ -73,8 +73,8 @@
 						<div class="d-flex flex-wrap justify-content-between align-items-center">
 							<span class="fs-14 fw-500 text-dark">{{ translate('Homepage 3 - Minima') }}</span>
 							<span>
-								<a href="javascript:void(0);" class="btn btn-xs btn-danger rounded-0"
-									onclick="imageShowOverlay('{{ static_asset('assets/img/pages/home-minima.webp') }}')">{{ translate('View') }}</a>
+								<button type="button" class="btn btn-xs btn-danger rounded-0 homepage-preview-btn"
+									data-preview-src="{{ static_asset('assets/img/pages/home-minima.webp') }}">{{ translate('View') }}</button>
 							</span>
 						</div>
 					</div>
@@ -91,8 +91,8 @@
 						<div class="d-flex flex-wrap justify-content-between align-items-center">
 							<span class="fs-14 fw-500 text-dark">{{ translate('Homepage 4 - Megamart') }}</span>
 							<span>
-								<a href="javascript:void(0);" class="btn btn-xs btn-danger rounded-0"
-									onclick="imageShowOverlay('{{ static_asset('assets/img/pages/home-megamart.webp') }}')">{{ translate('View') }}</a>
+								<button type="button" class="btn btn-xs btn-danger rounded-0 homepage-preview-btn"
+									data-preview-src="{{ static_asset('assets/img/pages/home-megamart.webp') }}">{{ translate('View') }}</button>
 							</span>
 						</div>
 					</div>
@@ -109,8 +109,8 @@
 						<div class="d-flex flex-wrap justify-content-between align-items-center">
 							<span class="fs-14 fw-500 text-dark">{{ translate('Homepage 5 - Re-Classic') }}</span>
 							<span>
-								<a href="javascript:void(0);" class="btn btn-xs btn-danger rounded-0"
-									onclick="imageShowOverlay('{{ static_asset('assets/img/pages/home-reclassic.webp') }}')">{{ translate('View') }}</a>
+								<button type="button" class="btn btn-xs btn-danger rounded-0 homepage-preview-btn"
+									data-preview-src="{{ static_asset('assets/img/pages/home-reclassic.webp') }}">{{ translate('View') }}</button>
 							</span>
 						</div>
 					</div>
@@ -128,8 +128,8 @@
 						<div class="d-flex flex-wrap justify-content-between align-items-center">
 							<span class="fs-14 fw-500 text-dark">{{ translate('Homepage 6 - The-Core') }}</span>
 							<span>
-								<a href="javascript:void(0);" class="btn btn-xs btn-danger rounded-0"
-									onclick="imageShowOverlay('{{ static_asset('assets/img/pages/home-thecore.png') }}')">{{ translate('View') }}</a>
+								<button type="button" class="btn btn-xs btn-danger rounded-0 homepage-preview-btn"
+									data-preview-src="{{ static_asset('assets/img/pages/home-thecore.png') }}">{{ translate('View') }}</button>
 							</span>
 						</div>
 					</div>
@@ -147,8 +147,46 @@
 						<div class="d-flex flex-wrap justify-content-between align-items-center">
 							<span class="fs-14 fw-500 text-dark">{{ translate('Homepage 7 - Nexa') }}</span>
 							<span>
-								<a href="javascript:void(0);" class="btn btn-xs btn-danger rounded-0"
-									onclick="imageShowOverlay('{{ static_asset('assets/img/pages/home-nexa.webp') }}')">{{ translate('View') }}</a>
+								<button type="button" class="btn btn-xs btn-danger rounded-0 homepage-preview-btn"
+									data-preview-src="{{ static_asset('assets/img/pages/home-nexa.webp') }}">{{ translate('View') }}</button>
+							</span>
+						</div>
+					</div>
+
+					<!-- Home KY-Store -->
+					<div class="col-xxl-3 col-lg-4 col-sm-6 my-3">
+						<label class="aiz-megabox d-block mb-3">
+							<input value="kystor" type="radio" name="homepage_select" @if(get_setting('homepage_select') == 'kystor') checked @endif>
+							<span class="d-block aiz-megabox-elem rounded-0 img-overlay">
+								<div class="h-350px w-100 overflow-hidden">
+									<img src="{{ static_asset('assets/img/pages/home-kystor.png') }}" class="w-100" alt="home-page-8">
+								</div>
+							</span>
+						</label>
+						<div class="d-flex flex-wrap justify-content-between align-items-center">
+							<span class="fs-14 fw-500 text-dark">{{ translate('Homepage 8 - KY-Store') }}</span>
+							<span>
+								<button type="button" class="btn btn-xs btn-danger rounded-0 homepage-preview-btn"
+									data-preview-src="{{ static_asset('assets/img/pages/home-kystor.png') }}">{{ translate('View') }}</button>
+							</span>
+						</div>
+					</div>
+
+					<!-- Home Kneayerng V1 -->
+					<div class="col-xxl-3 col-lg-4 col-sm-6 my-3">
+						<label class="aiz-megabox d-block mb-3">
+							<input value="kneayerng_v1" type="radio" name="homepage_select" @if(get_setting('homepage_select') == 'kneayerng_v1') checked @endif>
+							<span class="d-block aiz-megabox-elem rounded-0 img-overlay">
+								<div class="h-350px w-100 overflow-hidden">
+									<img src="{{ static_asset('assets/img/pages/home-kneayerng-v1.webp') }}" class="w-100" alt="home-page-9">
+								</div>
+							</span>
+						</label>
+						<div class="d-flex flex-wrap justify-content-between align-items-center">
+							<span class="fs-14 fw-500 text-dark">{{ translate('Homepage 9 - Kneayerng V1') }}</span>
+							<span>
+								<button type="button" class="btn btn-xs btn-danger rounded-0 homepage-preview-btn"
+									data-preview-src="{{ static_asset('assets/img/pages/home-kneayerng-v1.webp') }}">{{ translate('View') }}</button>
 							</span>
 						</div>
 					</div>
@@ -175,43 +213,80 @@
 @endsection
 
 @section('modal')
-	<div class="image-show-overlay" id="image-show-overlay">
+	<div class="image-show-overlay" id="image-show-overlay" role="dialog" aria-modal="true" aria-hidden="true">
 		<div class="d-flex justify-content-end my-3 mr-3">
-			<button type="button" class="btn text-white d-flex align-items-center justify-content-center"><i class="las la-2x la-times"></i></button>
+			<button type="button" class="btn text-white d-flex align-items-center justify-content-center homepage-preview-close"
+				aria-label="{{ translate('Close') }}"><i class="las la-2x la-times"></i></button>
 		</div>
 		<div class="overlay-img">
-			<img src="{{ static_asset('assets/img/pages/home-metro.png') }}" class="w-100" alt="img-show">
+			<img src="{{ static_asset('assets/img/pages/home-metro.webp') }}" class="w-100" alt="img-show">
 		</div>
 	</div>
 @endsection
 
 @section('script')
+	<style>
+		#image-show-overlay {
+			position: fixed;
+			inset: 0;
+			width: 100vw;
+			height: 100vh;
+		}
+
+		body.homepage-preview-open {
+			overflow: hidden;
+		}
+	</style>
 	<script>
-		function imageShowOverlay(img){
-			$('#image-show-overlay .overlay-img img').attr('src', '').prop('src', img);
-			$('#image-show-overlay').addClass('show');
-			$('.aiz-main-wrapper').css('height', '100vh');
-			$('.aiz-main-wrapper').css('overflow-y', 'hidden');
+		function imageShowOverlay(img) {
+			var overlay = document.getElementById('image-show-overlay');
+			var previewImage = overlay ? overlay.querySelector('.overlay-img img') : null;
+
+			if (!overlay || !previewImage || !img) {
+				return;
+			}
+
+			previewImage.src = img;
+			overlay.classList.add('show');
+			overlay.setAttribute('aria-hidden', 'false');
+			document.body.classList.add('homepage-preview-open');
 		}
 
-		$('#image-show-overlay .btn').click(function(){
-			imageHideOverlay();
-		});
+		function imageHideOverlay() {
+			var overlay = document.getElementById('image-show-overlay');
 
-		$('.overlay-img').click(function(e){
-			if (e.target.closest('.overlay-img img')) {
-				e.stopPropagation();
-				return false;
+			if (overlay) {
+				overlay.classList.remove('show');
+				overlay.setAttribute('aria-hidden', 'true');
 			}
-			imageHideOverlay();
-		});
 
-		function imageHideOverlay(){
-			if($('#image-show-overlay').hasClass('show')){
-				$('#image-show-overlay').removeClass('show');
-			}
-			$('.aiz-main-wrapper').css('height', '100%');
-			$('.aiz-main-wrapper').css('overflow-y', 'auto');
+			document.body.classList.remove('homepage-preview-open');
 		}
+
+		document.addEventListener('click', function (event) {
+			var previewButton = event.target.closest('.homepage-preview-btn');
+
+			if (previewButton) {
+				event.preventDefault();
+				imageShowOverlay(previewButton.getAttribute('data-preview-src'));
+				return;
+			}
+
+			if (event.target.closest('.homepage-preview-close')) {
+				imageHideOverlay();
+				return;
+			}
+
+			var overlay = document.getElementById('image-show-overlay');
+			if (overlay && event.target === overlay) {
+				imageHideOverlay();
+			}
+		});
+
+		document.addEventListener('keydown', function (event) {
+			if (event.key === 'Escape') {
+				imageHideOverlay();
+			}
+		});
 	</script>
 @endsection

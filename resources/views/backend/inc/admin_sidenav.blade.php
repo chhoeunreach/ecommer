@@ -1216,7 +1216,7 @@
                     </span>
                 </li>
 
-                @canany(['view_promotion_and_offers_dashboard', 'view_all_flash_deals', 'todays_deal_products.index', 'view_all_coupons', 'set_category_wise_discount', 'view_promotional_product'])
+                @canany(['view_promotion_and_offers_dashboard', 'view_all_flash_deals', 'todays_deal_products.index', 'view_all_coupons', 'set_category_wise_discount', 'view_promotional_product', 'edit_website_page'])
                     <li class="aiz-side-nav-item">
                         <a href="#" class="aiz-side-nav-link">
                             <div class="aiz-side-nav-icon">
@@ -1244,6 +1244,15 @@
                                     <a href="{{ route('promotional_products.index') }}" class="aiz-side-nav-link">
                                         <span class="aiz-side-nav-text"
                                             style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Promotional Product') }}</span>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('edit_website_page')
+                                <li class="aiz-side-nav-item">
+                                    <a href="{{ route('featured_products.index') }}"
+                                        class="aiz-side-nav-link {{ areActiveRoutes(['featured_products.index']) }}">
+                                        <span class="aiz-side-nav-text"
+                                            style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Featured Products') }}</span>
                                     </a>
                                 </li>
                             @endcan

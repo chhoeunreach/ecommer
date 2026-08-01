@@ -37,7 +37,7 @@ class TodaysDealController extends Controller
 
         if (!empty($checkedIds)) {
             Product::whereIn('id', $checkedIds)
-                ->update(['todays_deal' => 1]);
+                ->update(['todays_deal' => 1, 'promotional' => 1]);
         }
 
         $uncheckedIds = array_diff($allIds, $checkedIds);
