@@ -74,7 +74,11 @@ class HomeController extends Controller
         }
 
 
-        return view('frontend.' . get_setting('homepage_select') . '.index', compact('featured_categories','hot_categories', 'lang'));
+        $t0 = microtime(true);
+        $view = view('frontend.' . get_setting('homepage_select') . '.index', compact('featured_categories','hot_categories', 'lang'));
+        $html = $view->render();
+        \Illuminate\Support\Facades\Log::info('HOMETIME controller ' . round((microtime(true) - $t0) * 1000) . 'ms render ' . strlen($html) . 'B');
+        return $html;
     }
 
     public function load_todays_deal_section()
