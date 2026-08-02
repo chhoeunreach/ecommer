@@ -16,10 +16,7 @@
                         @csrf
                         <div class="form-group">
                             <label>{{ translate('POS Base URL') }}</label>
-                            <input type="url" name="pos_base_url" class="form-control" value="{{ old('pos_base_url', $setting->pos_base_url) }}" placeholder="https://pos.example.com" required>
-                            <small class="form-text text-muted">
-                                {{ translate('Use the Ultimate POS root URL. Do not include /ecommerce-api-settings or /api/ecom.') }}
-                            </small>
+                            <input type="url" name="pos_base_url" class="form-control" value="{{ old('pos_base_url', $setting->pos_base_url) }}" placeholder="http://localhost" required>
                         </div>
                         <div class="form-group">
                             <label>{{ translate('API Token') }}</label>
@@ -60,9 +57,6 @@
                         <form method="POST" action="{{ route('pos-connector.sync', 'products') }}">@csrf<button class="btn btn-soft-primary">{{ translate('Sync Products') }}</button></form>
                         <form method="POST" action="{{ route('pos-connector.sync', 'all') }}">@csrf<button class="btn btn-primary">{{ translate('Sync All') }}</button></form>
                     </div>
-                    <p class="small text-muted">
-                        {{ translate('A full POS sync can take several minutes. Keep this page open until it finishes.') }}
-                    </p>
                     <form method="POST" action="{{ route('pos-connector.orders.pending') }}">
                         @csrf
                         <button class="btn btn-soft-success">{{ translate('Send Pending Orders to POS') }}</button>
@@ -82,19 +76,15 @@
                 <div class="card-body">
                     @if($productManager)
                         <form method="GET" action="{{ route('pos-connector.index') }}" class="mb-3">
-                            <div class="input-group">
-                                <input type="search" name="search" class="form-control"
-                                    value="{{ $productManager['search'] }}"
-                                    placeholder="{{ translate('Search POS products by name or SKU') }}"
-                                    aria-label="{{ translate('Search POS products') }}">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="submit">
-                                        <i class="las la-search"></i> {{ translate('Search') }}
-                                    </button>
-                                    @if($productManager['search'] !== '')
-                                        <a class="btn btn-soft-secondary" href="{{ route('pos-connector.index') }}">
-                                            {{ translate('Clear') }}
-                                        </a>
+                            <div class="row gutters-10 align-items-end">
+                                <div class="col-md-8">
+                                    <label>{{ translate('Search Product') }}</label>
+                                    <input type="text" name="search" class="form-control" value="{{ request('search') }}" placeholder="{{ translate('Search by product, SKU, color, print, category or brand') }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-primary">{{ translate('Search') }}</button>
+                                    @if(request('search'))
+                                        <a href="{{ route('pos-connector.index') }}" class="btn btn-soft-secondary">{{ translate('Clear') }}</a>
                                     @endif
                                 </div>
                             </div>
@@ -129,6 +119,8 @@
                                             <th>{{ translate('POS ID') }}</th>
                                             <th>{{ translate('Product') }}</th>
                                             <th>{{ translate('SKU') }}</th>
+                                            <th>{{ translate('Color') }}</th>
+                                            <th>{{ translate('Print') }}</th>
                                             <th>{{ translate('Category') }}</th>
                                             <th>{{ translate('Brand') }}</th>
                                             <th>{{ translate('Price') }}</th>
@@ -153,6 +145,8 @@
                                                     @endif
                                                 </td>
                                                 <td>{{ $row['sku'] ?: '-' }}</td>
+                                                <td>{{ $row['color'] ?: '-' }}</td>
+                                                <td>{{ $row['print'] ?: '-' }}</td>
                                                 <td>{{ $row['category'] ?: '-' }}</td>
                                                 <td>{{ $row['brand'] ?: '-' }}</td>
                                                 <td>{{ single_price($row['price']) }}</td>
@@ -167,7 +161,7 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="9" class="text-center">{{ translate('No POS products found') }}</td>
+                                                <td colspan="11" class="text-center">{{ translate('No POS products found') }}</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -181,12 +175,12 @@
                             </span>
                             <div>
                                 @if($productManager['page'] > 1)
-                                    <a class="btn btn-sm btn-soft-secondary" href="{{ request()->fullUrlWithQuery(['page' => $productManager['page'] - 1]) }}">
+                                    <a class="btn btn-sm btn-soft-secondary" href="{{ request()->fullUrlWithQuery(['page' => $productManager['page'] - 1, 'search' => $productManager['search']]) }}">
                                         {{ translate('Previous') }}
                                     </a>
                                 @endif
                                 @if($productManager['page'] < $productManager['last_page'])
-                                    <a class="btn btn-sm btn-soft-secondary" href="{{ request()->fullUrlWithQuery(['page' => $productManager['page'] + 1]) }}">
+                                    <a class="btn btn-sm btn-soft-secondary" href="{{ request()->fullUrlWithQuery(['page' => $productManager['page'] + 1, 'search' => $productManager['search']]) }}">
                                         {{ translate('Next') }}
                                     </a>
                                 @endif

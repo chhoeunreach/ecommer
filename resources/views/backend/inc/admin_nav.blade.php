@@ -214,7 +214,7 @@
                                 <i class="las la-angle-right custom-submenu-arrow"></i>
                             </a>
                             <div class="dropdown-menu custom-submenu-nested" id="lang-change">
-                                @foreach (\App\Models\Language::where('status', 1)->get() as $key => $language)
+                                @foreach (get_all_active_language() as $key => $language)
                                     <a class="dropdown-item d-flex align-items-center @if ($locale == $language->code) active @endif"
                                         href="javascript:void(0);" data-flag="{{ $language->code }}">
                                         <img src="{{ static_asset('assets/img/flags/' . $language->code . '.png') }}"

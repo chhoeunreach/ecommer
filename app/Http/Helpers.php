@@ -1912,6 +1912,18 @@ if (!function_exists('get_active_taxes')) {
 if (!function_exists('get_system_language')) {
     function get_system_language()
     {
+        $fallback_language = (object) [
+            'name' => 'English',
+            'code' => env('DEFAULT_LANGUAGE', 'en'),
+            'app_lang_code' => 'en',
+            'rtl' => 0,
+            'status' => 1,
+        ];
+
+        if (!Schema::hasTable('languages')) {
+            return $fallback_language;
+        }
+
         $language_query = Language::query();
 
         $locale = 'en';
@@ -1921,13 +1933,25 @@ if (!function_exists('get_system_language')) {
 
         $language_query->where('code',  $locale);
 
-        return $language_query->first();
+        return $language_query->first() ?: $fallback_language;
     }
 }
 
 if (!function_exists('get_all_active_language')) {
     function get_all_active_language()
     {
+        if (!Schema::hasTable('languages')) {
+            return collect([
+                (object) [
+                    'name' => 'English',
+                    'code' => env('DEFAULT_LANGUAGE', 'en'),
+                    'app_lang_code' => 'en',
+                    'rtl' => 0,
+                    'status' => 1,
+                ],
+            ]);
+        }
+
         $language_query = Language::query();
         $language_query->where('status', 1);
 
@@ -1939,8 +1963,28 @@ if (!function_exists('get_all_active_language')) {
 if (!function_exists('get_session_language')) {
     function get_session_language()
     {
+        $fallback_language = (object) [
+            'name' => 'English',
+            'code' => Session::get('locale', Config::get('app.locale')),
+            'app_lang_code' => 'en',
+            'rtl' => 0,
+            'status' => 1,
+        ];
+
+        if (!Schema::hasTable('languages')) {
+            return $fallback_language;
+        }
+
         $language_query = Language::query();
-        return $language_query->where('code', Session::get('locale', Config::get('app.locale')))->first();
+        return $language_query->where('code', Session::get('locale', Config::get('app.locale')))->first() ?: $fallback_language;
+    }
+}
+
+if (!function_exists('is_rtl_language')) {
+    function is_rtl_language()
+    {
+        $language = get_session_language();
+        return $language && $language->rtl == 1;
     }
 }
 

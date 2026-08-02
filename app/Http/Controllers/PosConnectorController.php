@@ -9,9 +9,9 @@ use App\Services\Pos\PosApiClient;
 use App\Services\Pos\PosSyncService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Validation\ValidationException;
 
 class PosConnectorController extends Controller
 {
@@ -28,7 +28,7 @@ class PosConnectorController extends Controller
                 $productManager = (new PosSyncService())->productManagerPage(
                     (int) request('limit', 50),
                     (int) request('page', 1),
-                    trim((string) request('search', ''))
+                    request('search')
                 );
             } catch (\Throwable $e) {
                 Log::warning('POS product manager failed to load', ['error' => $e->getMessage()]);
@@ -49,17 +49,6 @@ class PosConnectorController extends Controller
             'shop_domain' => ['nullable', 'string', 'max:255'],
             'is_active' => ['nullable', 'boolean'],
         ]);
-
-        $data['pos_base_url'] = rtrim($data['pos_base_url'], '/');
-        $posPath = trim((string) parse_url($data['pos_base_url'], PHP_URL_PATH), '/');
-
-        if (str_ends_with($posPath, 'ecommerce-api-settings')) {
-            throw ValidationException::withMessages([
-                'pos_base_url' => translate(
-                    'Enter the Ultimate POS root URL only, without /ecommerce-api-settings.'
-                ),
-            ]);
-        }
 
         if ($this->sameHostAndPort($data['pos_base_url'], $request->getSchemeAndHttpHost())) {
             flash(translate('POS Base URL must point to Ultimate POS, not this Active eCommerce URL.'))->error();
@@ -101,7 +90,6 @@ class PosConnectorController extends Controller
     public function sync(Request $request, string $type)
     {
         $this->ensureConnectorTables();
-        $this->allowLongRunningSync();
 
         try {
             $service = new PosSyncService();
@@ -125,17 +113,6 @@ class PosConnectorController extends Controller
         }
 
         return back();
-    }
-
-    protected function allowLongRunningSync(): void
-    {
-        $seconds = 600;
-
-        if (function_exists('set_time_limit')) {
-            @set_time_limit($seconds);
-        }
-
-        @ini_set('max_execution_time', (string) $seconds);
     }
 
     public function productsAction(Request $request)
@@ -225,6 +202,22 @@ class PosConnectorController extends Controller
 
     protected function ensureConnectorTables(): void
     {
+        if (!Schema::hasTable('units')) {
+            Schema::create('units', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->timestamps();
+            });
+        }
+
+        if (Schema::hasTable('units') && DB::table('units')->count() === 0) {
+            DB::table('units')->insert([
+                'name' => 'Pc',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         if (!Schema::hasTable('pos_api_settings')) {
             Schema::create('pos_api_settings', function (Blueprint $table) {
                 $table->id();

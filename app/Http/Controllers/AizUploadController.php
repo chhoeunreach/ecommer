@@ -156,7 +156,7 @@ class AizUploadController extends Controller
                     $upload->file_size = $fileSizeKB . ' kb';
                     $upload->save();
 
-                    return '{}';
+                    return response()->json($upload);
                 } elseif ($extension == 'gif') {
                     $img = $request->file('aiz_file');
 
@@ -181,7 +181,7 @@ class AizUploadController extends Controller
                     $upload->file_size = $fileSizeKB . ' kb';
                     $upload->save();
 
-                    return '{}';
+                    return response()->json($upload);
                 } elseif ($extension == 'svg') {
                     $sanitizer = new Sanitizer();
                     // Load the dirty svg
@@ -321,8 +321,11 @@ class AizUploadController extends Controller
                 $upload->type = $type[$upload->extension];
                 $upload->file_size = $size;
                 $upload->save();
+
+                return response()->json($upload);
             }
-            return '{}';
+
+            return response()->json([]);
         }
     }
 

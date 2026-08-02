@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\BrandTranslation;
 use App\Models\Category;
 use App\Models\CategoryTranslation;
+use App\Models\Color;
 use App\Models\Order;
 use App\Models\PosApiSetting;
 use App\Models\PosOrderExport;
@@ -14,10 +15,12 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductStock;
 use App\Models\ProductTranslation;
+use App\Models\Unit;
 use App\Models\Upload;
 use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class PosSyncService
@@ -220,10 +223,25 @@ class PosSyncService
         return ['count' => $count];
     }
 
-    public function productManagerPage(int $limit = 50, int $page = 1, string $search = ''): array
+    public function productManagerPage(int $limit = 50, int $page = 1, ?string $search = null): array
     {
-        $response = $this->client->products($limit, $page, $search);
-        $items = $this->collection($response);
+        $limit = max(1, $limit);
+        $page = max(1, $page);
+        $search = trim((string) $search);
+
+        if ($search !== '') {
+            $pageData = $this->searchedProductManagerPage($limit, $page, $search);
+            $items = $pageData['items'];
+            $page = $pageData['page'];
+            $lastPage = $pageData['last_page'];
+            $total = $pageData['total'];
+        } else {
+            $response = $this->client->products($limit, $page);
+            $items = $this->collection($response);
+            $lastPage = $this->lastPage($response, $page);
+            $total = (int) data_get($response, 'total', data_get($response, 'data.total', count($items)));
+        }
+
         $posIds = array_values(array_filter(array_map(fn ($item) => (string) $this->value($item, ['id', 'product_id']), $items)));
         $mappings = PosSyncMapping::where('entity_type', 'product')
             ->whereIn('pos_id', $posIds)
@@ -239,6 +257,8 @@ class PosSyncService
                 'pos_id' => $posId,
                 'name' => $this->value($item, ['name', 'product_name'], ''),
                 'sku' => $this->value($item, ['sku', 'sub_sku', 'product_variations.0.variations.0.sub_sku'], ''),
+                'color' => implode(', ', $this->productColors($item, $variations)),
+                'print' => implode(', ', $this->productPrints($item, $variations)),
                 'category' => $this->value($item, ['category.name', 'sub_category.name'], ''),
                 'brand' => $this->value($item, ['brand.name'], ''),
                 'price' => $this->productPrice($item, $variations),
@@ -254,8 +274,8 @@ class PosSyncService
             'page' => $page,
             'limit' => $limit,
             'search' => $search,
-            'last_page' => $this->lastPage($response, $page),
-            'total' => (int) data_get($response, 'total', data_get($response, 'data.total', count($rows))),
+            'last_page' => $lastPage,
+            'total' => $total,
             'imported_total' => PosSyncMapping::where('entity_type', 'product')->count(),
         ];
     }
@@ -359,6 +379,11 @@ class PosSyncService
         $stockQty = $this->productQty($item, $variations);
         $description = $this->value($item, ['product_description', 'description'], '');
         $imageId = $this->externalUploadId($this->imageUrl($item), $name);
+        $unit = $this->unitValue($this->value($item, ['unit.short_name', 'unit.actual_name', 'unit'], 'Pc'));
+        $colorNames = $this->productColors($item, $variations);
+        $printNames = $this->productPrints($item, $variations);
+        $colors = $this->productColorCodes($item, $variations);
+        $choiceOptions = $this->productChoiceOptions($item, $variations);
 
         $productId = PosSyncMapping::ecommerceId('product', $posId);
         $product = $productId ? Product::find($productId) : null;
@@ -373,13 +398,13 @@ class PosSyncService
         $product->unit_price = $price;
         $product->purchase_price = $purchasePrice;
         $product->current_stock = $stockQty;
-        $product->unit = $this->value($item, ['unit.short_name', 'unit.actual_name', 'unit'], 'Pc');
-        $product->variant_product = count($variations) > 1 ? 1 : 0;
+        $product->unit = $unit;
+        $product->variant_product = count($variations) > 1 || !empty($colorNames) || !empty($colors) || !empty($printNames) ? 1 : 0;
         $product->published = (int) !$this->value($item, ['is_inactive'], 0);
         $product->approved = 1;
-        $product->attributes = $product->attributes ?: '[]';
-        $product->choice_options = $product->choice_options ?: '[]';
-        $product->colors = $product->colors ?: '[]';
+        $product->attributes = $this->attributeIdsJson($choiceOptions, $product->attributes);
+        $product->choice_options = $choiceOptions ? json_encode($choiceOptions, JSON_UNESCAPED_UNICODE) : ($product->choice_options ?: '[]');
+        $product->colors = $colors ? json_encode($colors) : ($product->colors ?: '[]');
         $product->slug = $product->slug ?: $this->uniqueSlug(Product::class, $name);
         $product->thumbnail_img = $imageId ?: $product->thumbnail_img;
         $product->photos = $imageId ? (string) $imageId : $product->photos;
@@ -394,7 +419,7 @@ class PosSyncService
 
         ProductTranslation::updateOrCreate(
             ['product_id' => $product->id, 'lang' => env('DEFAULT_LANGUAGE', 'en')],
-            ['name' => $product->name, 'unit' => $product->unit, 'description' => $description]
+            ['name' => $product->name, 'unit' => $unit, 'description' => $description]
         );
 
         PosSyncMapping::remember('product', $posId, $product->id);
@@ -406,10 +431,10 @@ class PosSyncService
     protected function syncProductStocks(Product $product, array $item, array $variations, float $fallbackPrice, int $fallbackQty): void
     {
         if (empty($variations)) {
-            $stock = $this->findOrNewStock($product, $this->value($item, ['sku', 'sub_sku', 'id']), '');
+            $stock = $this->findOrNewStock($product, $this->value($item, ['sku', 'sub_sku', 'product_sku', 'id']), '');
             $stock->product_id = $product->id;
             $stock->variant = '';
-            $stock->sku = $this->value($item, ['sku', 'sub_sku']);
+            $stock->sku = $this->value($item, ['sku', 'sub_sku', 'product_sku']);
             $stock->price = $fallbackPrice;
             $stock->qty = $fallbackQty;
             $stock->image = $this->externalUploadId($this->imageUrl($item), $product->name) ?: $stock->image;
@@ -420,7 +445,7 @@ class PosSyncService
 
         foreach ($variations as $variation) {
             $posVariationId = $this->value($variation, ['id', 'variation_id']);
-            $sku = $this->value($variation, ['sub_sku', 'sku']);
+            $sku = $this->value($variation, ['sub_sku', 'sku', 'product_sku']);
             $variantName = $this->variationName($variation);
             $stock = $this->findOrNewStock($product, $sku, $variantName, $posVariationId);
             $stock->product_id = $product->id;
@@ -545,6 +570,12 @@ class PosSyncService
     {
         $variations = [];
 
+        foreach ((array) data_get($item, 'variations', []) as $variation) {
+            if (is_array($variation)) {
+                $variations[] = $variation;
+            }
+        }
+
         foreach ((array) data_get($item, 'product_variations', []) as $productVariation) {
             foreach ((array) data_get($productVariation, 'variations', []) as $variation) {
                 if (is_array($variation)) {
@@ -554,7 +585,86 @@ class PosSyncService
             }
         }
 
-        return $variations;
+        return $this->uniqueVariations($variations);
+    }
+
+    protected function searchedProductManagerPage(int $limit, int $page, string $search): array
+    {
+        $scanLimit = max($limit, 100);
+        $scanPage = 1;
+        $maxScanPages = 100;
+        $items = [];
+
+        do {
+            $response = $this->client->products($scanLimit, $scanPage);
+            $pageItems = $this->collection($response);
+            $items = array_merge($items, $pageItems);
+            $lastScanPage = $this->lastPage($response, $scanPage);
+            $scanPage++;
+        } while ($scanPage <= $lastScanPage && $scanPage <= $maxScanPages && count($pageItems) > 0);
+
+        $filtered = $this->filterProducts($items, $search);
+        $total = count($filtered);
+        $lastPage = max(1, (int) ceil($total / max($limit, 1)));
+        $page = min(max($page, 1), $lastPage);
+        $offset = ($page - 1) * $limit;
+
+        return [
+            'items' => array_slice($filtered, $offset, $limit),
+            'page' => $page,
+            'last_page' => $lastPage,
+            'total' => $total,
+        ];
+    }
+
+    protected function filterProducts(array $items, string $search): array
+    {
+        $tokens = $this->searchTokens($search);
+
+        if (empty($tokens)) {
+            return $items;
+        }
+
+        return array_values(array_filter($items, function ($item) use ($tokens) {
+            $variations = $this->productVariations($item);
+            $haystack = implode(' ', array_filter([
+                $this->value($item, ['id', 'product_id']),
+                $this->value($item, ['name', 'product_name']),
+                $this->value($item, ['sku', 'sub_sku', 'product_sku', 'product_variations.0.variations.0.sub_sku']),
+                implode(' ', array_map(fn ($variation) => $this->value($variation, ['sub_sku', 'sku', 'product_sku']), $variations)),
+                implode(' ', array_map(fn ($variation) => $this->variationName($variation), $variations)),
+                implode(' ', $this->productColors($item, $variations)),
+                implode(' ', $this->productPrints($item, $variations)),
+                $this->value($item, ['category.name', 'sub_category.name']),
+                $this->value($item, ['brand.name']),
+            ]));
+
+            $haystack = $this->normalizeSearchText($haystack);
+
+            foreach ($tokens as $token) {
+                if (!Str::contains($haystack, $token)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }));
+    }
+
+    protected function searchTokens(string $search): array
+    {
+        $search = $this->normalizeSearchText($search);
+        $tokens = preg_split('/\s+/', $search, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+        return array_values(array_unique($tokens));
+    }
+
+    protected function normalizeSearchText(string $text): string
+    {
+        $text = Str::lower($text);
+        $text = preg_replace('/[^a-z0-9#]+/i', ' ', $text);
+
+        return trim(preg_replace('/\s+/', ' ', $text));
     }
 
     protected function productPrice(array $item, array $variations): float
@@ -574,7 +684,7 @@ class PosSyncService
     protected function productQty(array $item, array $variations): int
     {
         if (empty($variations)) {
-            return (int) $this->value($item, ['current_stock', 'qty_available'], 0);
+            return (int) $this->value($item, ['current_stock', 'qty_available', 'qty', 'quantity', 'stock'], 0);
         }
 
         return array_sum(array_map(fn ($variation) => $this->variationQty($variation, 0), $variations));
@@ -582,13 +692,30 @@ class PosSyncService
 
     protected function variationName(array $variation): string
     {
-        $name = (string) $this->value($variation, ['name'], '');
-        if ($name === '' || strtoupper($name) === 'DUMMY') {
-            return '';
+        $parts = $this->uniqueValues([
+            $this->variationColor($variation),
+            $this->variationPrint($variation),
+        ]);
+
+        $name = $this->cleanVariantPart($this->value($variation, [
+            'name',
+            'value',
+            'variation_value',
+            'variation_template_value.name',
+            'variation_value.name',
+            'option_name',
+        ]));
+
+        if ($name) {
+            $parts[] = $name;
         }
 
-        $group = (string) $this->value($variation, ['_product_variation_name'], '');
-        return $group && strtoupper($group) !== 'DUMMY' ? trim($group . ': ' . $name) : $name;
+        $group = $this->cleanVariantPart($this->value($variation, ['_product_variation_name']));
+        if ($group && empty($parts)) {
+            $parts[] = $group;
+        }
+
+        return implode('-', $this->uniqueValues($parts));
     }
 
     protected function variationPrice(array $variation, $fallback): ?float
@@ -602,17 +729,284 @@ class PosSyncService
     {
         $details = (array) data_get($variation, 'variation_location_details', []);
         if (empty($details)) {
-            return (int) $this->value($variation, ['qty_available', 'current_stock'], $fallback);
+            return (int) $this->value($variation, ['qty_available', 'current_stock', 'qty', 'quantity', 'stock'], $fallback);
         }
 
         return (int) array_sum(array_map(fn ($detail) => (float) data_get($detail, 'qty_available', 0), $details));
     }
 
+    protected function productColors(array $item, array $variations): array
+    {
+        return $this->uniqueValues(array_merge(
+            [$this->variationColor($item)],
+            array_map(fn ($variation) => $this->variationColor($variation), $variations)
+        ));
+    }
+
+    protected function productPrints(array $item, array $variations): array
+    {
+        return $this->uniqueValues(array_merge(
+            [$this->variationPrint($item)],
+            array_map(fn ($variation) => $this->variationPrint($variation), $variations)
+        ));
+    }
+
+    protected function productColorCodes(array $item, array $variations): array
+    {
+        $codes = [];
+
+        foreach (array_merge([$item], $variations) as $source) {
+            if (is_array($source)) {
+                $code = $this->colorCodeForSource($source);
+                if ($code) {
+                    $codes[] = $code;
+                }
+            }
+        }
+
+        if (!empty($codes)) {
+            return $this->uniqueValues($codes);
+        }
+
+        return $this->uniqueValues(array_map(fn ($color) => $this->colorCodeForName($color), $this->productColors($item, $variations)));
+    }
+
+    protected function productChoiceOptions(array $item, array $variations): array
+    {
+        $prints = $this->productPrints($item, $variations);
+
+        if (empty($prints)) {
+            return [];
+        }
+
+        $attributeId = $this->attributeIdForName('Print');
+        if (!$attributeId) {
+            return [];
+        }
+
+        return [[
+            'attribute_id' => (string) $attributeId,
+            'values' => $prints,
+        ]];
+    }
+
+    protected function unitValue($unit)
+    {
+        $unit = trim((string) $unit) ?: 'Pc';
+
+        if (!Schema::hasTable('units')) {
+            return $unit;
+        }
+
+        $record = Unit::where('name', $unit)->first();
+        if (!$record) {
+            $record = new Unit();
+            $record->name = $unit;
+            $record->save();
+        }
+
+        return $record->id;
+    }
+
+    protected function attributeIdsJson(array $choiceOptions, ?string $existing): string
+    {
+        if (empty($choiceOptions)) {
+            return $existing ?: '[]';
+        }
+
+        return json_encode(array_values(array_map(fn ($option) => (string) $option['attribute_id'], $choiceOptions)));
+    }
+
+    protected function attributeIdForName(string $name): ?int
+    {
+        if (!class_exists(\App\Models\Attribute::class) || !Schema::hasTable('attributes')) {
+            return null;
+        }
+
+        $attribute = \App\Models\Attribute::where('name', $name)->first();
+        if (!$attribute) {
+            $attribute = new \App\Models\Attribute();
+            $attribute->name = $name;
+            $attribute->save();
+        }
+
+        return $attribute ? (int) $attribute->id : null;
+    }
+
+    protected function colorCodeForName(?string $name): ?string
+    {
+        if (!$name) {
+            return null;
+        }
+
+        $color = Schema::hasTable('colors')
+            ? Color::where('name', $name)->orWhere('code', $name)->first()
+            : null;
+
+        if ($color) {
+            return $color->code;
+        }
+
+        $code = $this->commonColorCode($name);
+        if ($code) {
+            $this->ensureColor($name, $code);
+        }
+
+        return $code;
+    }
+
+    protected function colorCodeForSource(array $source): ?string
+    {
+        $explicitCode = $this->value($source, [
+            'color.code',
+            'colour.code',
+            'color_code',
+            'colour_code',
+            'hex_color',
+            'hex',
+        ]);
+
+        if ($explicitCode && preg_match('/^#?[0-9a-fA-F]{6}$/', (string) $explicitCode)) {
+            $explicitCode = (string) $explicitCode;
+            $code = Str::startsWith($explicitCode, '#') ? strtoupper($explicitCode) : '#' . strtoupper($explicitCode);
+            $this->ensureColor($this->variationColor($source) ?: $code, $code);
+
+            return $code;
+        }
+
+        return $this->colorCodeForName($this->variationColor($source));
+    }
+
+    protected function ensureColor(string $name, string $code): void
+    {
+        if (!Schema::hasTable('colors')) {
+            return;
+        }
+
+        $color = Color::where('code', $code)->first();
+        if (!$color) {
+            $color = new Color();
+            $color->code = $code;
+        }
+
+        if (empty($color->name)) {
+            $color->name = $name;
+        }
+
+        $color->save();
+    }
+
+    protected function commonColorCode(string $name): ?string
+    {
+        $colors = [
+            'black' => '#000000',
+            'white' => '#FFFFFF',
+            'red' => '#FF0000',
+            'green' => '#008000',
+            'blue' => '#0000FF',
+            'yellow' => '#FFFF00',
+            'orange' => '#FFA500',
+            'purple' => '#800080',
+            'pink' => '#FFC0CB',
+            'brown' => '#A52A2A',
+            'gray' => '#808080',
+            'grey' => '#808080',
+            'silver' => '#C0C0C0',
+            'gold' => '#FFD700',
+            'beige' => '#F5F5DC',
+            'navy' => '#000080',
+            'teal' => '#008080',
+            'maroon' => '#800000',
+            'lime' => '#00FF00',
+            'cyan' => '#00FFFF',
+        ];
+
+        return $colors[Str::lower(trim($name))] ?? null;
+    }
+
+    protected function variationColor(array $variation): ?string
+    {
+        return $this->cleanVariantPart($this->value($variation, [
+            'color.name',
+            'colour.name',
+            'color',
+            'colour',
+            'color_name',
+            'colour_name',
+            'variation_color',
+            'attributes.color',
+            'attributes.colour',
+        ]));
+    }
+
+    protected function variationPrint(array $variation): ?string
+    {
+        return $this->cleanVariantPart($this->value($variation, [
+            'print.name',
+            'print',
+            'print_name',
+            'printing',
+            'printing_name',
+            'design',
+            'design_name',
+            'attributes.print',
+            'attributes.printing',
+            'attributes.design',
+        ]));
+    }
+
+    protected function cleanVariantPart($value): ?string
+    {
+        if (is_array($value)) {
+            $value = $this->value($value, ['name', 'value', 'label']);
+        }
+
+        $value = trim((string) $value);
+
+        return $value === '' || strtoupper($value) === 'DUMMY' ? null : $value;
+    }
+
+    protected function uniqueValues(array $values): array
+    {
+        $unique = [];
+        foreach ($values as $value) {
+            $value = $this->cleanVariantPart($value);
+            if ($value && !in_array($value, $unique, true)) {
+                $unique[] = $value;
+            }
+        }
+
+        return $unique;
+    }
+
+    protected function uniqueVariations(array $variations): array
+    {
+        $unique = [];
+        $seen = [];
+
+        foreach ($variations as $variation) {
+            $key = implode('|', array_filter([
+                $this->value($variation, ['id', 'variation_id']),
+                $this->value($variation, ['sub_sku', 'sku', 'product_sku']),
+                $this->variationName($variation),
+            ]));
+
+            $key = $key ?: md5(json_encode($variation));
+
+            if (!isset($seen[$key])) {
+                $seen[$key] = true;
+                $unique[] = $variation;
+            }
+        }
+
+        return $unique;
+    }
+
     protected function findProductByImportedSku(array $item, array $variations): ?Product
     {
-        $sku = $this->value($item, ['sku', 'sub_sku']);
+        $sku = $this->value($item, ['sku', 'sub_sku', 'product_sku']);
         if (!$sku && !empty($variations)) {
-            $sku = $this->value($variations[0], ['sub_sku', 'sku']);
+            $sku = $this->value($variations[0], ['sub_sku', 'sku', 'product_sku']);
         }
 
         $stock = $sku ? ProductStock::where('sku', $sku)->first() : null;

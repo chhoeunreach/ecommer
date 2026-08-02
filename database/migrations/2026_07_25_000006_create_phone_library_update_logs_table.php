@@ -17,11 +17,7 @@ return new class extends Migration
 
         Schema::create('phone_library_update_logs', function (Blueprint $table) {
             $table->id();
-            // This app's users.id is `int unsigned` (not Laravel's default
-            // bigint), so foreignId() (always bigint) fails FK creation with
-            // "incompatible" column types on MySQL 8/MariaDB. Match the real type.
-            $table->unsignedInteger('user_id')->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
+            $table->unsignedInteger('user_id')->nullable()->index();
             $table->string('source')->nullable();
             $table->string('status')->default('pending')->index();
             $table->unsignedInteger('brands_count')->default(0);
