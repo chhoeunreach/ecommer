@@ -1406,7 +1406,9 @@ if (!function_exists('getFileBaseURL')) {
             return env(Str::upper(env('FILESYSTEM_DRIVER')) . '_URL') . '/';
         }
 
-        return rtrim(getBaseURL(), '/') . '/';
+        // Local files live below public/, while this application's web root is
+        // the project root (see nginx/default.conf).
+        return rtrim(getBaseURL(), '/') . '/public/';
     }
 }
 
@@ -1434,9 +1436,23 @@ if (!function_exists('isUnique')) {
 if (!function_exists('get_setting')) {
     function get_setting($key, $default = null, $lang = false)
     {
-        $settings = Cache::remember('business_settings', 86400, function () {
-            return BusinessSetting::all();
-        });
+        $request = app()->bound('request') ? app('request') : null;
+        $requestCacheKey = '_business_settings_collection';
+
+        if ($request && $request->attributes->has($requestCacheKey)) {
+            $settings = $request->attributes->get($requestCacheKey);
+        } else {
+            $settings = Cache::remember('business_settings', 86400, function () {
+                return BusinessSetting::all();
+            });
+
+            // Octane workers persist between requests, so a function-static
+            // cache becomes stale. The request attribute gives us one Redis
+            // lookup per render and is discarded with the request sandbox.
+            if ($request) {
+                $request->attributes->set($requestCacheKey, $settings);
+            }
+        }
 
         if ($lang == false) {
             $setting = $settings->where('type', $key)->first();

@@ -188,6 +188,21 @@ $.fn.toggleAttr = function (attr, attr1, attr2) {
             }
             return array.length + " " + fileText;
         },
+        fileUrl: function (file) {
+            if (file.external_link) {
+                return file.external_link;
+            }
+
+            if (!file.file_name) {
+                return AIZ.data.fileBaseUrl + "assets/img/placeholder.jpg";
+            }
+
+            if (/^(https?:)?\/\//i.test(file.file_name)) {
+                return file.file_name;
+            }
+
+            return AIZ.data.fileBaseUrl + file.file_name.replace(/^\/+/, "");
+        },
         updateUploaderSelected: function () {
             $(".aiz-uploader-selected").html(
                 AIZ.uploader.updateFileHtml(AIZ.uploader.data.selectedFiles)
@@ -406,11 +421,10 @@ $.fn.toggleAttr = function (attr, attr1, attr2) {
                         if (data[i].type === "image") {
                             thumb =
                                 '<img src="' +
-                                AIZ.data.fileBaseUrl +
-                                data[i].file_name +
+                                AIZ.uploader.fileUrl(data[i]) +
                                 '" class="img-fit">';
                         } else if(data[i].type === 'video') {
-                            thumb = '<video width="100%" height="100%" controls><source src="'+AIZ.data.fileBaseUrl +  data[i].file_name +'" type="video/mp4">Your browser does not support the video tag.</video>'
+                            thumb = '<video width="100%" height="100%" controls><source src="'+AIZ.uploader.fileUrl(data[i])+'" type="video/mp4">Your browser does not support the video tag.</video>'
                         } else {
                             thumb = '<i class="la la-file-text"></i>';
                         }
@@ -627,8 +641,7 @@ $.fn.toggleAttr = function (attr, attr1, attr2) {
                     if (AIZ.uploader.data.allFiles[index].type === "image") {
                         thumb =
                             '<img src="' +
-                            AIZ.data.fileBaseUrl +
-                            AIZ.uploader.data.allFiles[index].file_name +
+                            AIZ.uploader.fileUrl(AIZ.uploader.data.allFiles[index]) +
                             '">';
                         elem[0].insertHTML(thumb);
                         // console.log(elem);
@@ -728,6 +741,13 @@ $.fn.toggleAttr = function (attr, attr1, attr2) {
                                 AIZ.uploader.inputSelectPreviewGenerate(elem);
                             } else if (from === "direct") {
                                 callback(AIZ.uploader.data.selectedFiles);
+                            }
+                            if (
+                                document.activeElement &&
+                                document.activeElement.closest &&
+                                document.activeElement.closest("#aizUploaderModal")
+                            ) {
+                                document.activeElement.blur();
                             }
                             $("#aizUploaderModal").modal("hide");
                         }

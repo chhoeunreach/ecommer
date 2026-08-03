@@ -51,7 +51,7 @@ class FooterSocialLinksTest extends TestCase
         $_SERVER['SCRIPT_NAME'] = '/index.php';
 
         try {
-            $this->assertSame('//localhost:8000/', getFileBaseURL());
+            $this->assertSame('//localhost:8000/public/', getFileBaseURL());
         } finally {
             if ($originalHost === null) {
                 unset($_SERVER['HTTP_HOST']);

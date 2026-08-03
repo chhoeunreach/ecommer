@@ -285,7 +285,11 @@ class AizUploadController extends Controller
                         clearstatcache();
                         $size = $img->filesize();
                     } catch (\Exception $e) {
-                        //dd($e);
+                        report($e);
+
+                        return response()->json([
+                            'error' => translate('File could not be uploaded'),
+                        ], 422);
                     }
                 } else {
                     $path = $request->file('aiz_file')->store('uploads/all', 'local');
