@@ -20,7 +20,6 @@ services:
       DB_PASSWORD: secret
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PASSWORD: null
       QUEUE_CONNECTION: redis
       CACHE_DRIVER: redis
       SESSION_DRIVER: redis
@@ -49,7 +48,6 @@ services:
       DB_PASSWORD: secret
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PASSWORD: null
       QUEUE_CONNECTION: redis
       CACHE_DRIVER: redis
       SESSION_DRIVER: redis
@@ -84,9 +82,14 @@ services:
   redis:
     image: redis:7-alpine
     container_name: active_commerce_redis
-    command: redis-server --appendonly yes
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
 volumes:

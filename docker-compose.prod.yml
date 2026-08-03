@@ -1,0 +1,70 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8083:80"
+    env_file:
+      - .env
+    environment:
+      REDIS_HOST: redis
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./.env:/var/www/.env:ro
+      - ./data/uploads:/var/www/public/uploads
+      - ./data/logs:/var/www/storage/logs
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost/healthz -o /dev/null && bash -c 'exec 3<>/dev/tcp/127.0.0.1/8000' 2>/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    restart: unless-stopped
+
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: php artisan queue:work redis --queue=default --sleep=3 --tries=3 --timeout=900
+    env_file:
+      - .env
+    environment:
+      REDIS_HOST: redis
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./.env:/var/www/.env:ro
+      - ./data/uploads:/var/www/public/uploads
+      - ./data/logs:/var/www/storage/logs
+    depends_on:
+      - app
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+
+networks:
+  default:
+    name: active-commerce_default
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.100.0/24
