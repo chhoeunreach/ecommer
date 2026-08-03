@@ -42,7 +42,7 @@
 !/public/logs/.gitignore
 
 # Local dev/demo data dumps — not app code, don't ship in the image
-/shop.sql
+# /shop.sql
 /sqlupdates/
 /temp/
 /docker/mysql/init/
