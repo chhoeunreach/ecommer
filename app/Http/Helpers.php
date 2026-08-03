@@ -961,9 +961,13 @@ function translate($key, $lang = null, $addslashes = false)
 
     $lang_key = preg_replace('/[^A-Za-z0-9\_]/', '', str_replace(' ', '_', strtolower($key)));
 
-    $translations_en = Cache::rememberForever('translations-en', function () {
-        return Translation::where('lang', 'en')->pluck('lang_value', 'lang_key')->toArray();
-    });
+    static $translations_cached = [];
+    if (!array_key_exists('translations-en', $translations_cached)) {
+        $translations_cached['translations-en'] = Cache::rememberForever('translations-en', function () {
+            return Translation::where('lang', 'en')->pluck('lang_value', 'lang_key')->toArray();
+        });
+    }
+    $translations_en = $translations_cached['translations-en'];
 
     if (!isset($translations_en[$lang_key])) {
         $translation_def = new Translation;
@@ -981,20 +985,28 @@ function translate($key, $lang = null, $addslashes = false)
             }
 
         Cache::forget('translations-en');
+        unset($translations_cached['translations-en']);
     }
 
     // return user session lang
-    $translation_locale = Cache::rememberForever("translations-{$lang}", function () use ($lang) {
-        return Translation::where('lang', $lang)->pluck('lang_value', 'lang_key')->toArray();
-    });
+    if (!array_key_exists("translations-{$lang}", $translations_cached)) {
+        $translations_cached["translations-{$lang}"] = Cache::rememberForever("translations-{$lang}", function () use ($lang) {
+            return Translation::where('lang', $lang)->pluck('lang_value', 'lang_key')->toArray();
+        });
+    }
+    $translation_locale = $translations_cached["translations-{$lang}"];
     if (isset($translation_locale[$lang_key])) {
         return $addslashes ? addslashes(trim($translation_locale[$lang_key])) : trim($translation_locale[$lang_key]);
     }
 
     // return default lang if session lang not found
-    $translations_default = Cache::rememberForever('translations-' . env('DEFAULT_LANGUAGE', 'en'), function () {
-        return Translation::where('lang', env('DEFAULT_LANGUAGE', 'en'))->pluck('lang_value', 'lang_key')->toArray();
-    });
+    $default_lang = env('DEFAULT_LANGUAGE', 'en');
+    if (!array_key_exists("translations-{$default_lang}", $translations_cached)) {
+        $translations_cached["translations-{$default_lang}"] = Cache::rememberForever("translations-{$default_lang}", function () use ($default_lang) {
+            return Translation::where('lang', $default_lang)->pluck('lang_value', 'lang_key')->toArray();
+        });
+    }
+    $translations_default = $translations_cached["translations-{$default_lang}"];
     if (isset($translations_default[$lang_key])) {
         return $addslashes ? addslashes(trim($translations_default[$lang_key])) : trim($translations_default[$lang_key]);
     }
@@ -1345,7 +1357,10 @@ if (!function_exists('my_asset')) {
             return Storage::disk(config('filesystems.default'))->url($path);
         }
 
-        return app('url')->asset($path, $secure);
+        // This app's docroot is the project root, not /public (see
+        // nginx/default.conf) -- asset() must be prefixed with 'public/' to
+        // resolve correctly. Without it, every asset URL 404s.
+        return app('url')->asset('public/' . $path, $secure);
     }
 }
 
@@ -1359,7 +1374,7 @@ if (!function_exists('static_asset')) {
      */
     function static_asset($path, $secure = null)
     {
-        return app('url')->asset($path, $secure);
+        return app('url')->asset('public/' . $path, $secure);
     }
 }
 
@@ -1374,8 +1389,10 @@ if (!function_exists('static_asset')) {
 if (!function_exists('getBaseURL')) {
     function getBaseURL()
     {
-        $root = '//' . $_SERVER['HTTP_HOST'];
-        $root .= str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
+        $request = request();
+        $host = $_SERVER['HTTP_HOST'] ?? $request->getHost();
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? $request->getScriptName() ?? '';
+        $root = '//' . $host . str_replace(basename($scriptName), '', $scriptName);
 
         return rtrim($root, '/');
     }
@@ -1417,9 +1434,13 @@ if (!function_exists('isUnique')) {
 if (!function_exists('get_setting')) {
     function get_setting($key, $default = null, $lang = false)
     {
-        $settings = Cache::remember('business_settings', 86400, function () {
-            return BusinessSetting::all();
-        });
+        static $settings_cache = null;
+        if ($settings_cache === null) {
+            $settings_cache = Cache::remember('business_settings', 86400, function () {
+                return BusinessSetting::all();
+            });
+        }
+        $settings = $settings_cache;
 
         if ($lang == false) {
             $setting = $settings->where('type', $key)->first();
@@ -2001,11 +2022,14 @@ if (!function_exists('get_featured_products')) {
 if (!function_exists('get_best_selling_products')) {
     function get_best_selling_products($limit, $user_id = null)
     {
-        $product_query = Product::query();
-        if ($user_id) {
-            $product_query = $product_query->where('user_id', $user_id);
-        }
-        return filter_products($product_query->orderBy('num_of_sale', 'desc'))->limit($limit)->get();
+        $cache_key = 'best_selling_products_' . $limit . '_' . ($user_id ?? 'all');
+        return Cache::remember($cache_key, 600, function () use ($limit, $user_id) {
+            $product_query = Product::query();
+            if ($user_id) {
+                $product_query = $product_query->where('user_id', $user_id);
+            }
+            return filter_products($product_query->orderBy('num_of_sale', 'desc'))->limit($limit)->get();
+        });
     }
 }
 
@@ -2247,7 +2271,13 @@ if (!function_exists('get_single_category')) {
 if (!function_exists('get_level_zero_categories')) {
     function get_level_zero_categories()
     {
-        $categories_query = Category::query()->with(['coverImage', 'catIcon']);
+        $categories_query = Category::query()->with([
+            'coverImage',
+            'catIcon',
+            'category_translations',
+            'childrenCategories.category_translations',
+            'childrenCategories.childrenCategories.category_translations',
+        ]);
         return $categories_query->where('level', 0)->orderBy('order_level', 'desc')->get();
     }
 }
