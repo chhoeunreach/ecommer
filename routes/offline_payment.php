@@ -1,13 +1,26 @@
 <?php
 
-use App\Http\Controllers\OfflinePayoutMethodController;
+// App\Http\Controllers\OfflinePayoutMethodController, SellerPackageController,
+// and SellerPackagePaymentController (root namespace) were never implemented
+// anywhere in this codebase (confirmed absent from git history) - only
+// unrelated Api\V2 namesakes exist for the Seller Package ones. Aliased to
+// the DisabledAddonController stub so every route name below stays
+// resolvable (referenced from admin/seller sidebars and the frontend
+// checkout/purchase-history flows) while actually visiting one 404s instead
+// of fatally erroring.
+//
+// ManualPaymentMethodController now exists (app/Http/Controllers) and
+// implements the manual-payment-method admin CRUD; the other actions
+// aliased to it below (wallet recharge, package purchase, order re-payment)
+// remain unimplemented there and 404 via its own __call fallback.
+use App\Http\Controllers\DisabledAddonController as OfflinePayoutMethodController;
 use App\Http\Controllers\CustomerPackageController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\CustomerPackagePaymentController;
 use App\Http\Controllers\ManualPaymentMethodController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\SellerPackageController;
-use App\Http\Controllers\SellerPackagePaymentController;
+use App\Http\Controllers\DisabledAddonController as SellerPackageController;
+use App\Http\Controllers\DisabledAddonController as SellerPackagePaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,7 +38,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' =>'admin', 'middleware' => ['auth', 'admin']], function(){
     Route::resource('manual_payment_methods', ManualPaymentMethodController::class);
     Route::get('/manual_payment_methods/destroy/{id}', [ManualPaymentMethodController::class, 'destroy'])->name('manual_payment_methods.destroy');
-    
+
     // Offile Orders
     Route::get('/offline-payment-orders', [OrderController::class, 'all_orders'])->name('offline_payment_orders.index');
 
@@ -79,4 +92,3 @@ Route::group(['prefix' => 'seller', 'middleware' => ['seller', 'verified', 'user
     Route::post('/offline-seller-package-purchase-modal', [ManualPaymentMethodController::class, 'offline_seller_package_purchase_modal'])->name('offline_seller_package_purchase_modal');
     Route::post('/offline-seller-package-paymnet',[SellerPackageController::class, 'purchase_package_offline'])->name('make_offline_payment');
 });
-

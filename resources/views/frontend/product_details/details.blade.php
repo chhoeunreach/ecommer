@@ -600,15 +600,31 @@
                                     }} - <span id="selected_variant"></span></span>
                         </div>
                     @endif
+                    @if ($detailedProduct->free_accessory_enabled && $detailedProduct->freeAccessories->isNotEmpty())
+                        <div class="border border-success rounded-2 bg-soft-success p-3 mb-3">
+                            <span class="badge badge-success mb-2">{{ translate('FREE ACCESSORIES') }}</span>
+                            <div class="row gutters-8">
+                                @foreach ($detailedProduct->freeAccessories as $accessory)
+                                    <div class="col-12 col-sm-6 mb-2">
+                                        <div class="d-flex align-items-center bg-white rounded-2 p-2 h-100">
+                                            @if ($accessory->image)
+                                                <img src="{{ uploaded_asset($accessory->image) }}" class="size-60px rounded-1 img-fit flex-shrink-0 mr-3" alt="{{ $accessory->getTranslation('title') }}">
+                                            @endif
+                                            <div>
+                                                <p class="fs-14 fw-700 text-dark mb-0">{{ $accessory->getTranslation('title') }}</p>
+                                                @if ($accessory->getTranslation('description'))
+                                                    <p class="fs-12 text-gray mb-0 mt-1">{{ $accessory->getTranslation('description') }}</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                     <!--Buttons Start-->
                     <div class="d-flex flex-wrap flex-md-nowrap align-items-center">
-                        <button type="button" @if (Auth::check() || get_Setting('guest_checkout_activation')==1) onclick="buyNow()" @else onclick="showLoginModal()" @endif
-                            class="text-white border-0 rounded-1 fs-14 fw-bold bg-black hov-opacity-70 has-transition py-20px px-20px w-100 mb-2 mb-md-0 mr-0 mr-md-2 buy-now">{{ translate('Buy Now') }}
-                        </button>
-                        <button type="button" id="added_to_cart_btn" @if (Auth::check() || get_Setting('guest_checkout_activation')==1) onclick="addToCart()" @else onclick="showLoginModal()" @endif
-                            class="text-blue border-0 rounded-1 fs-14 fw-bold bg-soft-blue hov-bg-blue hov-text-white py-20px px-20px w-100 add-to-cart">{{translate('Add to Cart')}} <span id="add_to_cart_count">(01)</span>
-                        </button>
-                        
+                        @include('frontend.product_details.partials.action_buttons', ['cartCount' => '(01)'])
                     </div>
                     <div class="">
                         <button type="button" class="out-of-stock fw-600 d-none text-white bg-light bg-soft-white border-0 rounded-1 fs-14 fw-bold hov-opacity-70 has-transition py-20px px-20px w-100" disabled>

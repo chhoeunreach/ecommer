@@ -411,7 +411,7 @@
                                 $selectedChildren = \App\Models\Category::whereIn('id', $selectedChildIds)->get();
                             @endphp
 
-                            <div class="col-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3">
+                            <div class="col-6 col-md-6 col-lg-6 col-xl-4 col-xxl-3">
 
                                 <!-- Main Category Name -->
                                 <h5 class="fs-20 fs-md-20 fw-bold mb-3">
@@ -421,7 +421,7 @@
                                 <div class="row gutters-16 d-flex">
 
                                     <!-- Big Image -->
-                                    <div class="col-6 col-md-12 col-lg-6 col-xl-6 pr-lg-0 img-container-col-6">
+                                    <div class="col-12 col-md-12 col-lg-6 col-xl-6 pr-lg-0 img-container-col-6">
 
                                         <a href="{{ route('products.category', $mainCategory->slug) }}"
                                             class="d-block w-100 h-100 overflow-hidden hov-scale-img rounded-2 align-items-stretch img-container-lg  border border-gray-300">
@@ -435,7 +435,7 @@
                                     </div>
 
                                     <!-- Child Categories -->
-                                    <div class="col-6 col-md-12 col-lg-6 col-xl-6 mt-md-3 mt-lg-0">
+                                    <div class="col-12 col-md-12 col-lg-6 col-xl-6 mt-3 mt-lg-0">
 
                                         <div class="row">
 

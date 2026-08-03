@@ -81,5 +81,5 @@ yarn-error.log*
 /public/assets/img/*
 !/public/assets/img/footers/
 !/public/assets/img/footers/*.svg
-rr
-.rr.yaml
+!/public/assets/img/social/
+!/public/assets/img/social/tiktok.png

@@ -531,37 +531,6 @@
                                     </a>
                                 </div>
                             @endcan
-                            <!-- Attributes -->
-                            <div class="form-group row gutters-5 mt-2 mb-0">
-                                <div class="col-md-3">
-                                    <input type="text" class="form-control" value="{{translate('Attributes')}}" disabled>
-                                </div>
-                                <div class="col-md-9">
-                                    <select name="choice_attributes[]" id="choice_attributes" class="form-control aiz-selectpicker" data-selected-text-format="count" data-live-search="true" multiple data-placeholder="{{ translate('Choose Attributes') }}">
-                                        @foreach (\App\Models\Attribute::all() as $key => $attribute)
-                                        <option value="{{ $attribute->id }}">{{ $attribute->getTranslation('name') }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            @can('add_product_attribute')
-                                <div class="mb-2 mt-1">
-                                    <a href="#" id="add_attribute" class=" text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
-                                        <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
-                                        <span> {{translate('New Attribute') }}</span>
-                                    </a>
-                                </div>
-                            @endcan
-                            <div id="chose_options_text" class="d-none">
-                                <p>{{ translate('Choose the attributes of this product and then input values of each attribute') }}</p>
-                                <br>
-                            </div>
-                            <!-- choice options -->
-                            <div class="customer_choice_options mb-4" id="customer_choice_options">
-
-                            </div>
-                                
-
                             <div class="row gutters-5 mt-3">
                                 <div class="col-12">
                                     <div class="form-group mb-2 mb-lg-3">
@@ -649,8 +618,27 @@
 
 
                         <!-- Product Variants Start -->
-                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4 mb-4 mb-xl-0" id="variant-div-show-hide" style="display: none;">
-                            <h5 class="fs-16 fw-700">{{ translate('Product Variants') }}</h5>
+                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4 mb-4 mb-xl-0" id="variant-div-show-hide">
+                            <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Product Variants') }}</h5>
+                            <div class="form-group row gutters-5 mb-2">
+                                <label class="col-md-3 col-from-label fs-14 fw-500">{{ translate('Choose Attributes') }}</label>
+                                <div class="col-md-9">
+                                    <select name="choice_attributes[]" id="choice_attributes" class="form-control aiz-selectpicker" data-selected-text-format="count" data-live-search="true" multiple data-placeholder="{{ translate('Choose Attributes') }}">
+                                        @foreach (\App\Models\Attribute::all() as $attribute)
+                                            <option value="{{ $attribute->id }}">{{ $attribute->getTranslation('name') }}</option>
+                                        @endforeach
+                                    </select>
+                                    @can('add_product_attribute')
+                                        <a href="#" id="add_attribute" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center mt-1">
+                                            <i class="las la-plus fs-16 mr-1"></i><span>{{ translate('New Attribute') }}</span>
+                                        </a>
+                                    @endcan
+                                </div>
+                            </div>
+                            <div id="chose_options_text" class="d-none">
+                                <p class="fs-12 text-muted mb-2">{{ translate('Choose the attributes and select the values used to build product variants.') }}</p>
+                            </div>
+                            <div class="customer_choice_options mb-3" id="customer_choice_options"></div>
                             <!-- sku combination -->
                             <div class="sku_combination" id="sku_combination">
 
@@ -1224,7 +1212,6 @@
 @section('script')
 
 <!-- Treeview js -->
-<script src="{{ static_asset('assets/js/hummingbird-treeview.js') }}"></script>
 
 <script type="text/javascript">
 
@@ -1357,7 +1344,7 @@
                 }
                 else {
                     $('#show-hide-div').show();
-                    $('#variant-div-show-hide').hide();
+                    $('#variant-div-show-hide').show();
                     $('input[name="current_stock"]').attr('integer-only', 'true');
                 }
            }

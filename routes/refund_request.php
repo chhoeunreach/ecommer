@@ -13,8 +13,8 @@
 
 //Admin Panel
 
-use App\Http\Controllers\RefundReasonController;
-use App\Http\Controllers\RefundRequestController;
+use App\Http\Controllers\DisabledAddonController as RefundReasonController;
+use App\Http\Controllers\DisabledAddonController as RefundRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {

@@ -11,7 +11,7 @@
 |
 */
 
-use App\Http\Controllers\RedxController;
+use App\Http\Controllers\DisabledAddonController as RedxController;
 
 //Admin
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {

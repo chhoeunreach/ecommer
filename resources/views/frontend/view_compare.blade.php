@@ -9,8 +9,8 @@
                     <div class="fs-16 fs-md-20 fw-700 text-dark">{{ translate('Compare Products')}}</div>
                     <a href="{{ route('compare.reset') }}" style="text-decoration: none;border-radius: 25px;" class="btn btn-soft-primary btn-sm fs-12 fw-600">{{ translate('Reset Compare List')}}</a>
                 </div>
-                @if(Session::has('compare'))
-                    @if(count(Session::get('compare')) > 0)
+                @if(Session::has('compare') && count(Session::get('compare')) > 0)
+                    @if(count(Session::get('compare')) >= 2)
                         <div class="py-3">
                             <div class="row gutters-16 mb-4">
                                 @foreach (Session::get('compare') as $key => $item)
@@ -73,6 +73,10 @@
                                     </div>
                                 @endforeach
                             </div>
+                        </div>
+                    @else
+                        <div class="text-center p-4">
+                            <p class="fs-17">{{ translate('Add at least one more product to compare. You need a minimum of 2 products.') }}</p>
                         </div>
                     @endif
                 @else

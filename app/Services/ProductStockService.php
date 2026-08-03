@@ -25,13 +25,14 @@ class ProductStockService
             $product->save();
             foreach ($combinations as $key => $combination) {
                 $str = ProductUtility::get_combination_string($combination, $collection);
+                $fieldKey = md5($str);
                 $product_stock = new ProductStock();
                 $product_stock->product_id = $product->id;
                 $product_stock->variant = $str;
-                $product_stock->price = request()['price_' . str_replace('.', '_', $str)];
-                $product_stock->sku = request()['sku_' . str_replace('.', '_', $str)];
-                $product_stock->qty = request()['qty_' . str_replace('.', '_', $str)];
-                $product_stock->image = request()['img_' . str_replace('.', '_', $str)];
+                $product_stock->price = request()->input('price_' . $fieldKey, $collection['unit_price']);
+                $product_stock->sku = request()->input('sku_' . $fieldKey, $str);
+                $product_stock->qty = request()->input('qty_' . $fieldKey, 0);
+                $product_stock->image = request()->input('img_' . $fieldKey);
                 $product_stock->save();
             }
         } else {

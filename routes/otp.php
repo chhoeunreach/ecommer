@@ -11,10 +11,10 @@
 |
 */
 
-use App\Http\Controllers\OTPVerificationController;
-use App\Http\Controllers\OTPController;
-use App\Http\Controllers\SmsController;
-use App\Http\Controllers\SmsTemplateController;
+use App\Http\Controllers\DisabledAddonController as OTPVerificationController;
+use App\Http\Controllers\DisabledAddonController as OTPController;
+use App\Http\Controllers\DisabledAddonController as SmsController;
+use App\Http\Controllers\DisabledAddonController as SmsTemplateController;
 
 //Verofocation phone
 Route::controller(OTPVerificationController::class)->group(function () {

@@ -48,48 +48,41 @@ class RouteServiceProvider extends ServiceProvider
 
     $this->mapSellerRoutes();
 
+    // The following addon route files point at controllers that were never
+    // actually delivered to this codebase (confirmed absent from git
+    // history for every one of them). Each file's `use` imports now alias
+    // App\Http\Controllers\DisabledAddonController (a stub that 404s on any
+    // method call) instead of the missing class, so route names stay
+    // resolvable everywhere they're referenced (admin/seller sidebars,
+    // theme product cards, etc.) and route:list/route:cache stay healthy,
+    // while actually visiting one of these URLs returns a clean 404 instead
+    // of a fatal error. Swap the alias back to the real controller once
+    // each addon is installed.
     $this->mapAffiliateRoutes();
-
     $this->mapRefundRoutes();
-
     $this->mapClubPointsRoutes();
-
     $this->mapOtpRoutes();
+    $this->mapAfricanPaymentGatewayRoutes();
+    $this->mapPosRoutes();
+    $this->mapSellerPackageRoutes();
+    $this->mapWholesaleRoutes();
+    $this->mapPreorderRoutes();
+    $this->mapGstRoutes();
+    $this->mapShiprocketRoutes();
+    $this->mapSteadfastRoutes();
+    $this->mapPathaoRoutes();
+    $this->mapKnetRoutes();
+    $this->mapUddoktapayRoutes();
+    $this->mapRedxRoutes();
 
     $this->mapOfflinePaymentRoutes();
 
-    $this->mapAfricanPaymentGatewayRoutes();
-
     $this->mapPaytmRoutes();
-
-    $this->mapPosRoutes();
-
-    $this->mapSellerPackageRoutes();
 
     $this->mapDeliveryBoyRoutes();
 
     $this->mapAuctionRoutes();
 
-    $this->mapWholesaleRoutes();
-
-    $this->mapPreorderRoutes();
-
-    $this->mapCybersourceRoutes();
-
-    $this->mapGstRoutes();
-
-    $this->mapShiprocketRoutes();
-
-    $this->mapSteadfastRoutes();
-
-    $this->mapPathaoRoutes();
-
-    $this->mapKnetRoutes();
-
-    $this->mapUddoktapayRoutes();
-
-    $this->mapRedxRoutes();
-    
     $this->mapWebRoutes();
 
     // $this->mapInstallRoutes();
@@ -388,13 +381,6 @@ class RouteServiceProvider extends ServiceProvider
    *
    * @return void
    */
-  protected function mapCybersourceRoutes()
-  {
-    Route::middleware('web')
-       ->namespace($this->namespace)
-       ->group(base_path('routes/cybersource.php'));
-  }
-
   /**
      * Configure the rate limiters for the application.
      *

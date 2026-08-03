@@ -619,7 +619,7 @@ class SearchController extends Controller
     {
         $keywords = array();
         $query = $request->search;
-        $preorder_products = null;
+        $preorder_products = collect();
         $products = Product::where('published', 1)->where('tags', 'like', '%' . $query . '%')->get();
         foreach ($products as $key => $product) {
             foreach (explode(',', $product->tags) as $key => $tag) {

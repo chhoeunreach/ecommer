@@ -25,13 +25,16 @@ class MyfatoorahController extends Controller
      */
     public function __construct()
     {
-
-        // If you want to set the credentials and the mode manually.
-        $this->mfObj = new MyFatoorahPaymentStatus([
-            'apiKey' => env('MYFATOORAH_TOKEN'),
-            'vcCode' => env('MYFATOORAH_COUNTRY_ISO'),
-            'isTest' => get_setting('myfatoorah_sandbox') == 1,
-        ]);
+        // Only construct the SDK client when credentials are configured,
+        // otherwise instantiating this controller (e.g. during route
+        // registration) throws and breaks unrelated routes.
+        if (env('MYFATOORAH_TOKEN')) {
+            $this->mfObj = new MyFatoorahPaymentStatus([
+                'apiKey' => env('MYFATOORAH_TOKEN'),
+                'vcCode' => env('MYFATOORAH_COUNTRY_ISO'),
+                'isTest' => get_setting('myfatoorah_sandbox') == 1,
+            ]);
+        }
     }
 
     /**

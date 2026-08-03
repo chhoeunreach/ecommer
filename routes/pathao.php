@@ -11,7 +11,7 @@
 |
 */
 
-use App\Http\Controllers\PathaoController;
+use App\Http\Controllers\DisabledAddonController as PathaoController;
 
 //Admin
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {

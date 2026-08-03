@@ -13,7 +13,7 @@
 
 //Admin
 
-use App\Http\Controllers\AffiliateController;
+use App\Http\Controllers\DisabledAddonController as AffiliateController;
 
 Route::group(['prefix' =>'admin', 'middleware' => ['auth', 'admin']], function(){
     Route::controller(AffiliateController::class)->group(function () {

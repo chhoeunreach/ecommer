@@ -13,7 +13,7 @@
 
 //Admin
 
-use App\Http\Controllers\ClubPointController;
+use App\Http\Controllers\DisabledAddonController as ClubPointController;
 
 Route::group(['prefix' =>'admin', 'middleware' => ['auth', 'admin']], function(){
     Route::controller(ClubPointController::class)->group(function () {

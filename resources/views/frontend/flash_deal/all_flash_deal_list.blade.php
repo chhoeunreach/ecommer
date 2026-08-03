@@ -46,12 +46,12 @@
                     @foreach($all_flash_deals as $single)
                     <div class="col py-3 h-400px h-xl-475px">
                         <a href="{{ route('flash-deal-details', $single->slug) }}" target="_blank" rel="noopener noreferrer">
-                            <div class="h-100 w-100 position-relative hov-scale-img">
+                            <div class="h-100 w-100 position-relative overflow-hidden hov-scale-img">
                                 <div class="position-absolute overflow-hidden h-100 w-100">
-                                    <img src="{{ uploaded_asset($single->banner) }}" class="img-fit h-100 has-transition"  
+                                    <img src="{{ uploaded_asset($single->banner) }}" class="img-fit h-100 has-transition"
                                                         onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
                                 </div>
-                                <div class="py-5 px-2 px-lg-3 px-xl-5 absolute-top-left w-100">
+                                <div class="py-3 py-md-5 px-2 absolute-top-left w-100">
                                     <div class="bg-white">
                                         <div class="aiz-count-down-circle" end-date="{{ date('Y/m/d H:i:s', $single->end_date) }}"></div>
                                     </div>

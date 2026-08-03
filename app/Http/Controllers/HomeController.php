@@ -727,6 +727,19 @@ class HomeController extends Controller
 
         $product_stock = $product->stocks->where('variant', $str)->first();
 
+        if (!$product_stock) {
+            return array(
+                'price' => single_price(0),
+                'quantity' => 0,
+                'digital' => $product->digital,
+                'variation' => $str,
+                'max_limit' => 0,
+                'in_stock' => 0,
+                'sku' => 'N/A',
+                'image' => ''
+            );
+        }
+
         $price = $product_stock->price;
         $image = $product_stock->image ?? '';
 

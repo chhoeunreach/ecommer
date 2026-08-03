@@ -9,6 +9,7 @@ use App\Models\BusinessSetting;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\ProductTranslation;
+use App\Models\ProductFreeAccessory;
 use App\Models\Category;
 use App\Models\AttributeValue;
 use App\Models\Cart;
@@ -32,6 +33,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\DB;
 use Str;
 
 class ProductController extends Controller
@@ -67,6 +69,7 @@ class ProductController extends Controller
         $this->middleware(['permission:product_duplicate'])->only('duplicate');
         $this->middleware(['permission:product_delete'])->only('destroy');
         $this->middleware(['permission:set_category_wise_discount'])->only('categoriesWiseProductDiscount');
+        $this->middleware(['permission:smart-bar'])->only('smartBar', 'productDetailButtons');
     }
     /**
      * Display a listing of the resource.
@@ -181,11 +184,12 @@ class ProductController extends Controller
 
         if ($request->search != null) {
             $sort_search = $request->search;
-            $products = $products
-                ->where('name', 'like', '%' . $sort_search . '%')
-                ->orWhereHas('stocks', function ($q) use ($sort_search) {
-                    $q->where('sku', 'like', '%' . $sort_search . '%');
-                });
+            $products = $products->where(function ($query) use ($sort_search) {
+                $query->where('name', 'like', '%' . $sort_search . '%')
+                    ->orWhereHas('stocks', function ($q) use ($sort_search) {
+                        $q->where('sku', 'like', '%' . $sort_search . '%');
+                    });
+            });
         }
         if ($request->type != null) {
             $var = explode(",", $request->type);
@@ -329,7 +333,10 @@ class ProductController extends Controller
         $this->productFlashDealService->store($request->only([
             'flash_deal_id',
             'flash_discount',
-            'flash_discount_type'
+            'flash_discount_type',
+            'free_accessory_title',
+            'free_accessory_description',
+            'free_accessories'
         ]), $product);
 
         //Product Stock
@@ -643,16 +650,18 @@ class ProductController extends Controller
 
 
         //Product Stock
-        $product->stocks()->delete();
-        $this->productStockService->store($request->only([
-            'colors_active',
-            'colors',
-            'choice_no',
-            'unit_price',
-            'sku',
-            'current_stock',
-            'product_id'
-        ]), $product);
+        DB::transaction(function () use ($request, $product) {
+            $product->stocks()->delete();
+            $this->productStockService->store($request->only([
+                'colors_active',
+                'colors',
+                'choice_no',
+                'unit_price',
+                'sku',
+                'current_stock',
+                'product_id'
+            ]), $product);
+        });
 
         //Flash Deal
         $this->productFlashDealService->store($request->only([
@@ -695,9 +704,47 @@ class ProductController extends Controller
             $request->only([
                 'name',
                 'unit',
-                'description'
+                'description',
+                'free_accessory_title',
+                'free_accessory_description'
             ])
         );
+
+        if ($request->lang == env('DEFAULT_LANGUAGE')) {
+            $product->update($request->only([
+                'free_accessory_title',
+                'free_accessory_description',
+            ]));
+        }
+
+        $keptAccessoryIds = [];
+        foreach ($request->input('free_accessories', []) as $index => $accessoryData) {
+            if (empty($accessoryData['id']) && empty($accessoryData['title']) && empty($accessoryData['description']) && empty($accessoryData['image'])) {
+                continue;
+            }
+            $accessory = $product->freeAccessories()
+                ->whereKey($accessoryData['id'] ?? null)
+                ->first() ?: new ProductFreeAccessory(['product_id' => $product->id]);
+
+            if (!$accessory->exists || $request->lang == env('DEFAULT_LANGUAGE')) {
+                $accessory->title = $accessoryData['title'];
+                $accessory->description = $accessoryData['description'] ?? null;
+            }
+            $accessory->image = $accessoryData['image'] ?? null;
+            $accessory->sort_order = $index;
+            $accessory->save();
+
+            $accessory->translations()->updateOrCreate(
+                ['lang' => $request->lang],
+                [
+                    'title' => $accessoryData['title'],
+                    'description' => $accessoryData['description'] ?? null,
+                ]
+            );
+            $keptAccessoryIds[] = $accessory->id;
+        }
+
+        $product->freeAccessories()->whereNotIn('id', $keptAccessoryIds)->delete();
 
         // flash(translate('Product has been updated successfully'))->success();
         Artisan::call('view:clear');
@@ -809,6 +856,19 @@ class ProductController extends Controller
 
         // Frequently Bought Products
         $this->frequentlyBoughtProductService->product_duplicate_store($product->frequently_bought_products, $product_new);
+
+        // Free Accessories
+        foreach ($product->freeAccessories as $accessory) {
+            $newAccessory = $accessory->replicate();
+            $newAccessory->product_id = $product_new->id;
+            $newAccessory->save();
+
+            foreach ($accessory->translations as $translation) {
+                $newTranslation = $translation->replicate();
+                $newTranslation->product_free_accessory_id = $newAccessory->id;
+                $newTranslation->save();
+            }
+        }
 
         $redirrect_url = '';
         if ($request->has('type') && $request->type == 'Seller') {
@@ -1104,6 +1164,11 @@ class ProductController extends Controller
     public function smartBar()
     {
         return view('backend.product.products.smartBar');
+    }
+
+    public function productDetailButtons()
+    {
+        return view('backend.product.products.detailButtons');
     }
 
     public function updateBusinessSettings(Request $request)
