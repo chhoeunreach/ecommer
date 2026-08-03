@@ -564,53 +564,6 @@
                                     </a>
                                 </div>
                             @endcan
-                            <!-- Attributes -->
-                            <div class="form-group row gutters-5 mb-0 mt-2">
-                                <div class="col-md-3">
-                                    <input type="text" class="form-control" value="{{translate('Attributes')}}" disabled>
-                                </div>
-                                <div class="col-md-9">
-                                    <select name="choice_attributes[]" id="choice_attributes" class="form-control aiz-selectpicker" data-selected-text-format="count" data-live-search="true" multiple data-placeholder="{{ translate('Choose Attributes') }}">
-                                        @foreach (\App\Models\Attribute::all() as $key => $attribute)
-                                        <option value="{{ $attribute->id }}" @if($product->attributes != null && in_array($attribute->id, json_decode($product->attributes, true))) selected @endif>{{ $attribute->getTranslation('name') }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            @can('add_product_attribute')
-                                <div class="mb-2 mt-1">
-                                    <a href="#" id="add_attribute" class=" text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
-                                        <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
-                                        <span> {{translate('New Attribute') }}</span>
-                                    </a>
-                                </div>
-                            @endcan
-                            <div id="chose_options_text" class="{{ count(json_decode($product->choice_options ?? '[]')) == 0 ? 'd-none' : '' }}">
-                                <p>{{ translate('Choose the attributes of this product and then input values of each attribute') }}</p>
-                                <br>
-                            </div>
-
-                            <!-- choice options -->
-                            <div class="customer_choice_options mb-4" id="customer_choice_options">
-                                @foreach (json_decode($product->choice_options) as $key => $choice_option)
-                                <div class="form-group row">
-                                    <div class="col-md-3">
-                                        <input type="hidden" name="choice_no[]" value="{{ $choice_option->attribute_id }}">
-                                        <input type="text" class="form-control" name="choice[]" value="{{ optional(\App\Models\Attribute::find($choice_option->attribute_id))->getTranslation('name') }}" placeholder="{{ translate('Choice Title') }}" readonly>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <select class="form-control aiz-selectpicker attribute_choice" data-live-search="true" name="choice_options_{{ $choice_option->attribute_id }}[]" data-selected-text-format="count" multiple required>
-                                            @foreach (\App\Models\AttributeValue::where('attribute_id', $choice_option->attribute_id)->get() as $row)
-                                            <option value="{{ $row->value }}" @if(in_array($row->value, $choice_option->values)) selected @endif>
-                                                {{ $row->value }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-
                             <div class="row gutters-5 mt-3">
                                 <div class="col-12">
                                     <div class="form-group mb-2 mb-lg-3">
@@ -702,7 +655,42 @@
 
                         <!-- Product Variants Start -->
                         <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4 mb-4 mb-xl-0" id="variant-div-show-hide">
-                            <h5 class="fs-16 fw-700">{{ translate('Product Variants') }}</h5>
+                            <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Product Variants') }}</h5>
+                            <div class="form-group row gutters-5 mb-2">
+                                <label class="col-md-3 col-from-label fs-14 fw-500">{{ translate('Choose Attributes') }}</label>
+                                <div class="col-md-9">
+                                    <select name="choice_attributes[]" id="choice_attributes" class="form-control aiz-selectpicker" data-selected-text-format="count" data-live-search="true" multiple data-placeholder="{{ translate('Choose Attributes') }}">
+                                        @foreach (\App\Models\Attribute::all() as $attribute)
+                                            <option value="{{ $attribute->id }}" @if($product->attributes != null && in_array($attribute->id, json_decode($product->attributes, true) ?? [])) selected @endif>{{ $attribute->getTranslation('name') }}</option>
+                                        @endforeach
+                                    </select>
+                                    @can('add_product_attribute')
+                                        <a href="#" id="add_attribute" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center mt-1">
+                                            <i class="las la-plus fs-16 mr-1"></i><span>{{ translate('New Attribute') }}</span>
+                                        </a>
+                                    @endcan
+                                </div>
+                            </div>
+                            <div id="chose_options_text" class="{{ count(json_decode($product->choice_options ?? '[]')) == 0 ? 'd-none' : '' }}">
+                                <p class="fs-12 text-muted mb-2">{{ translate('Choose the attributes and select the values used to build product variants.') }}</p>
+                            </div>
+                            <div class="customer_choice_options mb-3" id="customer_choice_options">
+                                @foreach (json_decode($product->choice_options) as $choice_option)
+                                    <div class="form-group row">
+                                        <div class="col-md-3">
+                                            <input type="hidden" name="choice_no[]" value="{{ $choice_option->attribute_id }}">
+                                            <input type="text" class="form-control" name="choice[]" value="{{ optional(\App\Models\Attribute::find($choice_option->attribute_id))->getTranslation('name') }}" readonly>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-control aiz-selectpicker attribute_choice" data-live-search="true" name="choice_options_{{ $choice_option->attribute_id }}[]" data-selected-text-format="count" multiple required>
+                                                @foreach (\App\Models\AttributeValue::where('attribute_id', $choice_option->attribute_id)->get() as $row)
+                                                    <option value="{{ $row->value }}" @if(in_array($row->value, $choice_option->values)) selected @endif>{{ $row->value }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
                             <!-- sku combination -->
                             <div class="sku_combination" id="sku_combination">
 
@@ -1210,6 +1198,101 @@
                             
                         </div>
                         <!-- Stock & Order Display Settings End -->
+
+                        <!-- Free Accessory Start -->
+                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
+                            <div class="d-flex align-items-center justify-content-between border-bottom-dashed mb-3 pb-2">
+                                <div>
+                                    <h5 class="fs-16 fw-700 mb-1">{{ translate('Free Accessory') }}</h5>
+                                    <p class="fs-12 fw-400 text-gray mb-0">{{ translate('Show a customizable free accessory offer on this product page.') }}</p>
+                                </div>
+                                <label class="aiz-switch aiz-switch-blue mb-0">
+                                    <input type="checkbox" name="free_accessory_enabled" id="free_accessory_enabled" value="1"
+                                        @checked(old('free_accessory_enabled', $product->free_accessory_enabled))>
+                                    <span></span>
+                                </label>
+                            </div>
+
+                            @php
+                                $freeAccessories = old('free_accessories');
+                                if ($freeAccessories === null) {
+                                    $freeAccessories = $product->freeAccessories->map(fn ($accessory) => [
+                                        'id' => $accessory->id,
+                                        'title' => $accessory->getTranslation('title', $lang),
+                                        'description' => $accessory->getTranslation('description', $lang),
+                                        'image' => $accessory->image,
+                                    ])->values()->all();
+                                }
+                                $freeAccessories = array_values($freeAccessories ?: [['title' => '', 'description' => '', 'image' => '']]);
+
+                                $existingFreeAccessories = \App\Models\ProductFreeAccessory::where('product_id', '!=', $product->id)
+                                    ->whereNotNull('title')
+                                    ->where('title', '!=', '')
+                                    ->with('translations')
+                                    ->orderBy('title')
+                                    ->limit(200)
+                                    ->get();
+                            @endphp
+                            <div id="free-accessory-fields" @class(['d-none' => !old('free_accessory_enabled', $product->free_accessory_enabled)])>
+                                @if ($existingFreeAccessories->isNotEmpty())
+                                    <div class="form-group mb-3">
+                                        <label class="col-from-label fs-14 fw-500">{{ translate('Reuse an Existing Accessory') }}</label>
+                                        <select class="form-control aiz-selectpicker" id="existing-free-accessory-picker" data-live-search="true" data-placeholder="{{ translate('Select an existing accessory to copy...') }}">
+                                            <option value=""></option>
+                                            @foreach ($existingFreeAccessories as $existing)
+                                                <option value="{{ $existing->id }}"
+                                                    data-title="{{ $existing->getTranslation('title', $lang) }}"
+                                                    data-description="{{ $existing->getTranslation('description', $lang) }}"
+                                                    data-image="{{ $existing->image }}">
+                                                    {{ $existing->getTranslation('title', $lang) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <small class="text-gray">{{ translate('Picking one adds a new accessory below, pre-filled with its name, description and image. You can still edit it freely for this product.') }}</small>
+                                    </div>
+                                @endif
+                                <div id="free-accessory-list">
+                                    @foreach ($freeAccessories as $index => $accessory)
+                                        <div class="free-accessory-item border rounded-2 p-3 mb-3">
+                                            <input type="hidden" name="free_accessories[{{ $index }}][id]" value="{{ $accessory['id'] ?? '' }}">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h6 class="fs-14 fw-700 mb-0">{{ translate('Accessory') }} <span class="free-accessory-number">{{ $index + 1 }}</span></h6>
+                                                <button type="button" class="btn btn-sm btn-soft-danger remove-free-accessory">
+                                                    <i class="las la-trash"></i> {{ translate('Remove') }}
+                                                </button>
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label class="col-from-label fs-14 fw-500">{{ translate('Accessory Name') }} <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control free-accessory-title @error("free_accessories.$index.title") is-invalid @enderror"
+                                                    name="free_accessories[{{ $index }}][title]" maxlength="255"
+                                                    value="{{ $accessory['title'] ?? '' }}" placeholder="{{ translate('Example: Free protective case') }}">
+                                                @error("free_accessories.$index.title")<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                            </div>
+                                            <div class="form-group mb-3">
+                                                <label class="col-from-label fs-14 fw-500">{{ translate('Description') }}</label>
+                                                <textarea class="form-control" name="free_accessories[{{ $index }}][description]" rows="2" maxlength="2000"
+                                                    placeholder="{{ translate('Describe what the customer receives for free.') }}">{{ $accessory['description'] ?? '' }}</textarea>
+                                            </div>
+                                            <div class="form-group mb-0">
+                                                <label class="col-from-label fs-14 fw-500">{{ translate('Accessory Image') }}</label>
+                                                <div class="input-group file-upload-input border border-dashed border-gray-400 rounded-1 w-120px h-120px d-flex align-items-center justify-content-center"
+                                                    data-toggle="aizuploader" data-type="image">
+                                                    <div class="form-control p-0 border-0 d-flex align-items-center justify-content-center">
+                                                        <img src="{{ static_asset('assets/img/plus-lg.svg') }}" class="w-40px h-40px w-md-64px h-md-64px" alt="{{ translate('Upload') }}">
+                                                    </div>
+                                                    <input type="hidden" name="free_accessories[{{ $index }}][image]" class="selected-files" value="{{ $accessory['image'] ?? '' }}">
+                                                </div>
+                                                <div class="file-preview box sm"></div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <button type="button" id="add-free-accessory" class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary fs-14 rounded-2">
+                                    <i class="las la-plus mr-1"></i>{{ translate('Add Another Free Accessory') }}
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Free Accessory End -->
                         
                         <!-- Frequently Bought Product -->
                         <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
@@ -1361,8 +1444,90 @@
 
 @section('script')
 
-<!-- Treeview js -->
-<script src="{{ static_asset('assets/js/hummingbird-treeview.js') }}"></script>
+<script type="text/template" id="free-accessory-template">
+    <div class="free-accessory-item border rounded-2 p-3 mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fs-14 fw-700 mb-0">{{ translate('Accessory') }} <span class="free-accessory-number"></span></h6>
+            <button type="button" class="btn btn-sm btn-soft-danger remove-free-accessory"><i class="las la-trash"></i> {{ translate('Remove') }}</button>
+        </div>
+        <div class="form-group mb-3">
+            <label class="col-from-label fs-14 fw-500">{{ translate('Accessory Name') }} <span class="text-danger">*</span></label>
+            <input type="text" class="form-control free-accessory-title" name="free_accessories[__INDEX__][title]" maxlength="255" placeholder="{{ translate('Example: Free protective case') }}">
+        </div>
+        <div class="form-group mb-3">
+            <label class="col-from-label fs-14 fw-500">{{ translate('Description') }}</label>
+            <textarea class="form-control" name="free_accessories[__INDEX__][description]" rows="2" maxlength="2000" placeholder="{{ translate('Describe what the customer receives for free.') }}"></textarea>
+        </div>
+        <div class="form-group mb-0">
+            <label class="col-from-label fs-14 fw-500">{{ translate('Accessory Image') }}</label>
+            <div class="input-group file-upload-input border border-dashed border-gray-400 rounded-1 w-120px h-120px d-flex align-items-center justify-content-center" data-toggle="aizuploader" data-type="image">
+                <div class="form-control p-0 border-0 d-flex align-items-center justify-content-center">
+                    <img src="{{ static_asset('assets/img/plus-lg.svg') }}" class="w-40px h-40px w-md-64px h-md-64px" alt="{{ translate('Upload') }}">
+                </div>
+                <input type="hidden" name="free_accessories[__INDEX__][image]" class="selected-files">
+            </div>
+            <div class="file-preview box sm"></div>
+        </div>
+    </div>
+</script>
+<script>
+    let freeAccessoryIndex = {{ count($freeAccessories) }};
+
+    function refreshFreeAccessoryNumbers() {
+        $('.free-accessory-item').each(function (index) {
+            $(this).find('.free-accessory-number').text(index + 1);
+        });
+    }
+
+    $(document).on('change', '#free_accessory_enabled', function () {
+        $('#free-accessory-fields').toggleClass('d-none', !this.checked);
+        $('.free-accessory-title').prop('required', this.checked);
+    });
+
+    $(document).on('click', '#add-free-accessory', function () {
+        const template = $('#free-accessory-template').html().split('__INDEX__').join(freeAccessoryIndex++);
+        $('#free-accessory-list').append(template);
+        refreshFreeAccessoryNumbers();
+        $('#free_accessory_enabled').trigger('change');
+    });
+
+    $(document).on('click', '.remove-free-accessory', function () {
+        const items = $('.free-accessory-item');
+        if (items.length === 1) {
+            $(this).closest('.free-accessory-item').find('input, textarea').val('');
+        } else {
+            $(this).closest('.free-accessory-item').remove();
+        }
+        refreshFreeAccessoryNumbers();
+    });
+
+    $(document).on('change', '#existing-free-accessory-picker', function () {
+        const id = $(this).val();
+        if (!id) return;
+
+        const selected = $(this).find('option:selected');
+        const template = $('#free-accessory-template').html().split('__INDEX__').join(freeAccessoryIndex++);
+        $('#free-accessory-list').append(template);
+        refreshFreeAccessoryNumbers();
+        $('#free_accessory_enabled').trigger('change');
+
+        const $newItem = $('#free-accessory-list .free-accessory-item').last();
+        $newItem.find('.free-accessory-title').val(selected.data('title'));
+        $newItem.find('textarea').val(selected.data('description'));
+        const imageId = selected.data('image');
+        if (imageId) {
+            $newItem.find('.selected-files').val(imageId);
+            AIZ.uploader.previewGenerate();
+        }
+
+        $(this).val('');
+        AIZ.plugins.bootstrapSelect('refresh');
+    });
+
+    $(function () {
+        $('#free_accessory_enabled').trigger('change');
+    });
+</script>
 
 <script type="text/javascript">
 
@@ -1507,7 +1672,7 @@
                 }
                 else {
                     $('#show-hide-div').show();
-                    $('#variant-div-show-hide').hide();
+                    $('#variant-div-show-hide').show();
                     $('input[name="current_stock"]').attr('integer-only', 'true');
                 }
            }

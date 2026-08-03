@@ -342,7 +342,7 @@ if (!function_exists('cart_product_price')) {
                 $price = $product_stock->price;
             }
 
-            if ($product->wholesale_product) {
+            if ($product_stock && $product->wholesale_product) {
                 $wholesalePrice = $product_stock->wholesalePrices->where('min_qty', '<=', $cart_product['quantity'])->where('max_qty', '>=', $cart_product['quantity'])->first();
                 if ($wholesalePrice) {
                     $price = $wholesalePrice->price;
@@ -400,7 +400,7 @@ if (!function_exists('cart_product_tax')) {
             $str = $cart_product['variation'];
         }
         $product_stock = $product->stocks->where('variant', $str)->first();
-        $price = $product_stock->price;
+        $price = $product_stock->price ?? 0;
 
         //discount calculation
         $discount_applicable = false;
@@ -459,7 +459,7 @@ if (!function_exists('cart_product_gst')) {
             $price = $product_stock->price * $cart_product['quantity'];
         }
 
-        if ($product->wholesale_product) {
+        if ($product_stock && $product->wholesale_product) {
             $wholesalePrice = $product_stock->wholesalePrices->where('min_qty', '<=', $cart_product['quantity'])->where('max_qty', '>=', $cart_product['quantity'])->first();
             if ($wholesalePrice) {
                 $price = $wholesalePrice->price * $cart_product['quantity'];
@@ -515,7 +515,7 @@ if (!function_exists('cart_product_discount')) {
             $str = $cart_product['variation'];
         }
         $product_stock = $product->stocks->where('variant', $str)->first();
-        $price = $product_stock->price;
+        $price = $product_stock->price ?? 0;
 
         //discount calculation
         $discount_applicable = false;
@@ -558,7 +558,7 @@ if (!function_exists('carts_product_discount')) {
                 $str = $cart_product['variation'];
             }
             $product_stock = $product->stocks->where('variant', $str)->first();
-            $price = $product_stock->price;
+            $price = $product_stock->price ?? 0;
 
             //discount calculation
             $discount_applicable = false;
@@ -1389,7 +1389,7 @@ if (!function_exists('getFileBaseURL')) {
             return env(Str::upper(env('FILESYSTEM_DRIVER')) . '_URL') . '/';
         }
 
-        return getBaseURL();
+        return rtrim(getBaseURL(), '/') . '/';
     }
 }
 
@@ -1428,6 +1428,47 @@ if (!function_exists('get_setting')) {
             $setting = !$setting ? $settings->where('type', $key)->first() : $setting;
         }
         return $setting == null ? $default : $setting->value;
+    }
+}
+
+if (!function_exists('footer_social_links')) {
+    /**
+     * Return the repeatable footer social links, falling back to the legacy
+     * fixed social settings until the new widget is saved for the first time.
+     */
+    function footer_social_links()
+    {
+        $platformsSetting = get_setting('social_link_platforms');
+        $urlsSetting = get_setting('social_link_urls');
+        $iconsSetting = get_setting('social_link_icons');
+        $platforms = json_decode($platformsSetting ?: '[]', true);
+        $urls = json_decode($urlsSetting ?: '[]', true);
+        $icons = json_decode($iconsSetting ?: '[]', true);
+
+        if (is_array($platforms) && is_array($urls) && ($platformsSetting !== null || $urlsSetting !== null)) {
+            return collect($platforms)
+                ->map(function ($platform, $index) use ($urls, $icons) {
+                    return [
+                        'platform' => strtolower(trim((string) $platform)),
+                        'url' => trim((string) ($urls[$index] ?? '')),
+                        'icon' => trim((string) ($icons[$index] ?? '')),
+                    ];
+                })
+                ->filter(fn ($link) => $link['platform'] !== '' && $link['url'] !== '')
+                ->values()
+                ->all();
+        }
+
+        return collect([
+            'facebook' => get_setting('facebook_link'),
+            'twitter' => get_setting('twitter_link'),
+            'instagram' => get_setting('instagram_link'),
+            'youtube' => get_setting('youtube_link'),
+            'linkedin' => get_setting('linkedin_link'),
+        ])->filter()
+            ->map(fn ($url, $platform) => ['platform' => $platform, 'url' => $url, 'icon' => ''])
+            ->values()
+            ->all();
     }
 }
 
@@ -3607,7 +3648,7 @@ if (!function_exists('pos_cart_product_gst')) {
             $price = $product_stock->price * $cart_product['quantity'];
         }
 
-        if ($product->wholesale_product) {
+        if ($product_stock && $product->wholesale_product) {
             $wholesalePrice = $product_stock->wholesalePrices->where('min_qty', '<=', $cart_product['quantity'])->where('max_qty', '>=', $cart_product['quantity'])->first();
             if ($wholesalePrice) {
                 $price = $wholesalePrice->price * $cart_product['quantity'];

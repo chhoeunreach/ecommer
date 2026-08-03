@@ -11,7 +11,7 @@
 |
 */
 
-use App\Http\Controllers\Payment\UddoktapayController;
+use App\Http\Controllers\DisabledAddonController as UddoktapayController;
 
 //Admin
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {

@@ -69,7 +69,6 @@ use App\Http\Controllers\UpdateController;
 use App\Http\Controllers\WarrantyController;
 use App\Http\Controllers\WebsiteController;
 use App\Http\Controllers\ZoneController;
-use App\Http\Controllers\Cybersource\CybersourceSettingController;
 use App\Http\Controllers\ElementController;
 use App\Http\Controllers\FacebookCatalogueController;
 use App\Http\Controllers\FinalUpdateController;
@@ -116,7 +115,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // cyber sources
-    Route::controller(CybersourceSettingController::class)->group(function () {
+    Route::controller(\App\Http\Controllers\DisabledAddonController::class)->group(function () {
         Route::get('/cybersource-configuration', 'configuration')->name('cybersource_configuration');
     });
     
@@ -248,6 +247,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::post('/get-selected-products', 'get_selected_products')->name('get-selected-products');
         Route::post('/set-product-discount', 'setProductDiscount')->name('set_product_discount');
         Route::get('/smart/bar', 'smartBar')->name('smart.bar');
+        Route::get('/product-detail-buttons', 'productDetailButtons')->name('product.detail.buttons');
         Route::post('business-settings/smart-bar-status', 'updateBusinessSettings')->name('business_settings.smart_bar_status');
         Route::post('/products-search', 'products_search')->name('products.search');
         Route::post('/products-by-cat', 'get_products_byCategory')->name('get_products_byCategory');
@@ -638,11 +638,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/seller_orders', 'all_orders')->name('seller_orders.index');
         Route::get('/orders_by_pickup_point', 'all_orders')->name('pick_up_point.index');
         Route::get('/unpaid_orders', 'all_orders')->name('unpaid_orders.index');
+        Route::get('/customer_orders', 'all_orders')->name('customer_orders.index');
 
         Route::get('/orders/{id}/show', 'show')->name('all_orders.show');
         Route::get('/inhouse-orders/{id}/show', 'show')->name('inhouse_orders.show');
         Route::get('/seller_orders/{id}/show', 'show')->name('seller_orders.show');
         Route::get('/orders_by_pickup_point/{id}/show', 'show')->name('pick_up_point.order_show');
+        Route::get('/customer_orders/{id}/show', 'show')->name('customer_orders.show');
 
         Route::post('/bulk-order-status', 'bulk_order_status')->name('bulk-order-status');
 

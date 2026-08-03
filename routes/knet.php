@@ -11,7 +11,7 @@
 |
 */
 
-use App\Http\Controllers\Payment\KnetController;
+use App\Http\Controllers\DisabledAddonController as KnetController;
 
 //Admin
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {

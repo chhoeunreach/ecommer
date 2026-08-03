@@ -51,6 +51,31 @@
 					? $colorValue
 					: $defaultColor;
 			}
+
+			$privacyCards = $page->type == 'privacy_policy_page'
+				? json_decode(get_setting('privacy_page_cards', '[]', $lang), true)
+				: [];
+			$privacyCards = is_array($privacyCards) ? $privacyCards : [];
+			$privacyColorDefaults = [
+				'hero_start' => $baseColor,
+				'hero_end' => '#0f172a',
+				'hero_text' => '#ffffff',
+				'accent' => '#10b981',
+				'card_background' => '#ffffff',
+				'heading' => '#111723',
+				'text' => '#4e5561',
+			];
+			$storedPrivacyColors = $page->type == 'privacy_policy_page'
+				? json_decode(get_setting('privacy_page_colors', '{}'), true)
+				: [];
+			$storedPrivacyColors = is_array($storedPrivacyColors) ? $storedPrivacyColors : [];
+			$privacyColors = [];
+			foreach ($privacyColorDefaults as $colorKey => $defaultColor) {
+				$colorValue = $storedPrivacyColors[$colorKey] ?? $defaultColor;
+				$privacyColors[$colorKey] = preg_match('/^#[0-9a-fA-F]{6}$/', (string) $colorValue)
+					? $colorValue
+					: $defaultColor;
+			}
 		@endphp
 
 		<div class="card-header px-0">
@@ -176,6 +201,89 @@
 					</div>
 				</div>
 			@endif
+
+			@if($page->type == 'privacy_policy_page')
+				<div class="border-top pt-4 mt-4">
+					<div class="d-flex justify-content-between align-items-center mb-3">
+						<div>
+							<h6 class="fw-600 mb-1">{{ translate('Privacy Highlight Cards') }}</h6>
+							<p class="text-muted fs-12 mb-0">{{ translate('Add up to 12 trust cards (e.g. Data Encryption, Your Rights, GDPR) with an image, title, description and link.') }}</p>
+						</div>
+					</div>
+
+					<div class="privacy-cards-target">
+						@foreach($privacyCards as $index => $card)
+							<div class="privacy-card-row remove-parent border border-dashed rounded p-3 mb-3 position-relative">
+								<div class="row gutters-10">
+									<div class="col-md-4">
+										<label class="fs-12 fw-600">{{ translate('Image') }}</label>
+										<div class="input-group" data-toggle="aizuploader" data-type="image" data-multiple="false">
+											<div class="input-group-prepend">
+												<div class="input-group-text bg-soft-secondary">{{ translate('Browse') }}</div>
+											</div>
+											<div class="form-control file-amount">{{ translate('Choose File') }}</div>
+											<input type="hidden" name="privacy_cards[{{ $index }}][image]" class="selected-files" value="{{ $card['image'] ?? '' }}">
+										</div>
+										<div class="file-preview box sm"></div>
+									</div>
+									<div class="col-md-8">
+										<div class="form-group">
+											<label class="fs-12 fw-600">{{ translate('Title') }}</label>
+											<input type="text" class="form-control" maxlength="100" name="privacy_cards[{{ $index }}][title]" value="{{ $card['title'] ?? '' }}">
+										</div>
+										<div class="form-group">
+											<label class="fs-12 fw-600">{{ translate('Description') }}</label>
+											<textarea class="form-control" maxlength="500" rows="3" name="privacy_cards[{{ $index }}][description]">{{ $card['description'] ?? '' }}</textarea>
+										</div>
+										<div class="form-group mb-0">
+											<label class="fs-12 fw-600">{{ translate('Link') }}</label>
+											<input type="text" class="form-control" maxlength="191" placeholder="https://" name="privacy_cards[{{ $index }}][link]" value="{{ $card['link'] ?? '' }}">
+										</div>
+									</div>
+								</div>
+								<button type="button" class="btn btn-icon btn-circle btn-sm btn-soft-danger position-absolute" style="right: 10px; top: 10px;" data-toggle="remove-parent" data-parent=".privacy-card-row">
+									<i class="las la-times"></i>
+								</button>
+							</div>
+						@endforeach
+					</div>
+
+					<button type="button" id="add-privacy-card" class="btn btn-soft-secondary btn-sm">
+						<i class="las la-plus mr-1"></i>{{ translate('Add Card') }}
+					</button>
+				</div>
+
+				<div class="border-top pt-4 mt-4">
+					<h6 class="fw-600 mb-1">{{ translate('Privacy Page Colors') }}</h6>
+					<p class="text-muted fs-12 mb-3">{{ translate('Customize the Privacy Policy page without changing the colors of other pages.') }}</p>
+					<div class="row gutters-10">
+						@foreach([
+							'hero_start' => translate('Hero Gradient Start'),
+							'hero_end' => translate('Hero Gradient End'),
+							'hero_text' => translate('Hero Text'),
+							'accent' => translate('Accent'),
+							'card_background' => translate('Card Background'),
+							'heading' => translate('Heading'),
+							'text' => translate('Body Text'),
+						] as $colorKey => $colorLabel)
+							<div class="col-md-6 col-lg-4">
+								<div class="form-group">
+									<label class="fs-12 fw-600">{{ $colorLabel }}</label>
+									<div class="input-group">
+										<input type="text" class="form-control aiz-color-input" name="privacy_colors[{{ $colorKey }}]"
+											value="{{ $privacyColors[$colorKey] }}" pattern="^#[0-9a-fA-F]{6}$" required>
+										<div class="input-group-append">
+											<span class="input-group-text p-0">
+												<input class="aiz-color-picker border-0 size-40px" type="color" value="{{ $privacyColors[$colorKey] }}">
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						@endforeach
+					</div>
+				</div>
+			@endif
 		</div>
 
 		<div class="card-header px-0">
@@ -263,6 +371,47 @@
 						</div>`;
 
 					$('.terms-cards-target').append(row);
+				});
+			})();
+		</script>
+	@endsection
+@endif
+
+@if($page->type == 'privacy_policy_page')
+	@section('script')
+		<script>
+			(function () {
+				var nextPrivacyCardIndex = {{ count($privacyCards) }};
+
+				$('#add-privacy-card').on('click', function () {
+					if ($('.privacy-card-row').length >= 12) {
+						AIZ.plugins.notify('warning', '{{ translate('You can add a maximum of 12 cards.') }}');
+						return;
+					}
+
+					var index = nextPrivacyCardIndex++;
+					var row = `
+						<div class="privacy-card-row remove-parent border border-dashed rounded p-3 mb-3 position-relative">
+							<div class="row gutters-10">
+								<div class="col-md-4">
+									<label class="fs-12 fw-600">{{ translate('Image') }}</label>
+									<div class="input-group" data-toggle="aizuploader" data-type="image" data-multiple="false">
+										<div class="input-group-prepend"><div class="input-group-text bg-soft-secondary">{{ translate('Browse') }}</div></div>
+										<div class="form-control file-amount">{{ translate('Choose File') }}</div>
+										<input type="hidden" name="privacy_cards[${index}][image]" class="selected-files">
+									</div>
+									<div class="file-preview box sm"></div>
+								</div>
+								<div class="col-md-8">
+									<div class="form-group"><label class="fs-12 fw-600">{{ translate('Title') }}</label><input type="text" class="form-control" maxlength="100" name="privacy_cards[${index}][title]"></div>
+									<div class="form-group"><label class="fs-12 fw-600">{{ translate('Description') }}</label><textarea class="form-control" maxlength="500" rows="3" name="privacy_cards[${index}][description]"></textarea></div>
+									<div class="form-group mb-0"><label class="fs-12 fw-600">{{ translate('Link') }}</label><input type="text" class="form-control" maxlength="191" placeholder="https://" name="privacy_cards[${index}][link]"></div>
+								</div>
+							</div>
+							<button type="button" class="btn btn-icon btn-circle btn-sm btn-soft-danger position-absolute" style="right: 10px; top: 10px;" data-toggle="remove-parent" data-parent=".privacy-card-row"><i class="las la-times"></i></button>
+						</div>`;
+
+					$('.privacy-cards-target').append(row);
 				});
 			})();
 		</script>

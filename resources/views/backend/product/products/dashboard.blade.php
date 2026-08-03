@@ -14,7 +14,7 @@
 
                 @can('show_all_products')
                 <div class="col-md-6 col-lg-6 col-xl-4">
-                    <a href="{{route('products.all')}}" class="d-block">
+                    <a href="{{ url('admin/products/all') }}" class="d-block">
                         <div
                             class="card border border-2 border-gray-200 card-no-shadow has-transition rounded-2 p-3 p-lg-4 overflow-hidden">
                             <div class="d-flex justify-content-between align-items-start">
@@ -308,6 +308,21 @@
                                         {{ translate('Smart Bar') }} </h6>
                                     <span
                                         class="fs-12 fw-400 text-gray">{{ translate('Configure product details bar across description page.') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-6 col-xl-4">
+                    <a href="{{ route('product.detail.buttons') }}" class="d-block">
+                        <div class="card border border-2 border-gray-200 card-no-shadow has-transition rounded-2 p-3 p-lg-4 overflow-hidden">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <img src="{{ static_asset('assets/img/product-management/smart-bar.svg') }}"
+                                    class="flex-shrink-0 w-50px h-50px" alt="Icon">
+                                <div class="ml-3 flex-grow-1">
+                                    <h6 class="fs-16 fw-semibold mb-2 text-dark">{{ translate('Product Detail Buttons') }}</h6>
+                                    <span class="fs-12 fw-400 text-gray">{{ translate('Choose and customize buttons shown on product detail pages.') }}</span>
                                 </div>
                             </div>
                         </div>

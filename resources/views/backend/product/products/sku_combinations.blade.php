@@ -47,18 +47,19 @@
 			}
 		@endphp
 		@if(strlen($str) > 0)
+			@php($fieldKey = md5($str))
 			<tr class="variant">
 				<td>
 					<label for="" class="control-label">{{ $str }}</label>
 				</td>
 				<td>
-					<input type="number" lang="en" name="price_{{ $str }}" value="{{ $unit_price }}" min="0" step="0.01" class="form-control" required>
+					<input type="number" lang="en" name="price_{{ $fieldKey }}" value="{{ $unit_price }}" min="0" step="0.01" class="form-control" required>
 				</td>
 				<td>
-					<input type="text" name="sku_{{ $str }}" value="{{ $str }}" class="form-control">
+					<input type="text" name="sku_{{ $fieldKey }}" value="{{ $str }}" class="form-control">
 				</td>
 				<td>
-					<input type="number" lang="en" name="qty_{{ $str }}" value="10" min="0" step="1" class="form-control" required>
+					<input type="number" lang="en" name="qty_{{ $fieldKey }}" value="10" min="0" step="1" class="form-control" required>
 				</td>
 				<td>
 					<div class=" input-group " data-toggle="aizuploader" data-type="image">
@@ -66,7 +67,7 @@
 							<div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse') }}</div>
 						</div>
 						<div class="form-control file-amount text-truncate">{{ translate('Choose File') }}</div>
-						<input type="hidden" name="img_{{ $str }}" class="selected-files">
+						<input type="hidden" name="img_{{ $fieldKey }}" class="selected-files">
 					</div>
 					<div class="file-preview box sm"></div>
 				</td>

@@ -14,13 +14,20 @@
 
 //Admin
 
-use App\Http\Controllers\DeliveryBoyController;
+// App\Http\Controllers\DeliveryBoyController (root namespace) was never
+// implemented anywhere in this codebase (confirmed absent from git
+// history) - only the unrelated Api\V2 namesake (mobile delivery-boy API,
+// different methods) exists. Aliased to the DisabledAddonController stub so
+// every route name below stays resolvable (referenced from the admin
+// sidebar and user-facing delivery-boy nav) while actually visiting one
+// 404s instead of fatally erroring.
+use App\Http\Controllers\DisabledAddonController as DeliveryBoyController;
 use App\Http\Controllers\OrderController;
 
 Route::group(['prefix' =>'admin', 'middleware' => ['auth', 'admin', 'prevent-back-history']], function(){
     //Delivery Boy
     Route::resource('delivery-boys', DeliveryBoyController::class);
-    
+
     Route::controller(DeliveryBoyController::class)->group(function () {
         Route::get('/delivery-boy/ban/{id}', 'ban')->name('delivery-boy.ban');
         Route::get('/delivery-boy-configuration', 'delivery_boy_configure')->name('delivery-boy-configuration');
@@ -31,7 +38,7 @@ Route::group(['prefix' =>'admin', 'middleware' => ['auth', 'admin', 'prevent-bac
         Route::get('/delivery-boys-payment-histories', 'delivery_boys_payment_histories')->name('delivery-boys-payment-histories');
         Route::get('/delivery-boys-collection-histories', 'delivery_boys_collection_histories')->name('delivery-boys-collection-histories');
         Route::get('/delivery-boy/cancel-request', 'cancel_request_list')->name('delivery-boy.cancel-request');
-        
+
     });
 });
 
@@ -56,5 +63,5 @@ Route::group(['middleware' => ['user', 'verified', 'unbanned', 'prevent-back-his
     Route::controller(DeliveryBoyController::class)->group(function () {
         Route::get('/delivery-boy/order-detail/{id}', 'order_detail')->name('delivery-boy.order-detail');
     });
-    
+
 });

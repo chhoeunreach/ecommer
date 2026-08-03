@@ -53,12 +53,13 @@
                 }
             @endphp
             @if(strlen($str) > 0)
+            @php($fieldKey = md5($str))
             <tr class="variant">
                 <td>
                     <label for="" class="control-label">{{ $str }}</label>
                 </td>
                 <td>
-                    <input type="number" lang="en" name="price_{{ $str }}" value="@php
+                    <input type="number" lang="en" name="price_{{ $fieldKey }}" value="@php
                             if ($product->unit_price == $unit_price) {
                                 if($stock != null){
                                     echo $stock->price;
@@ -73,7 +74,7 @@
                            @endphp" min="0" step="0.01" class="form-control" required>
                 </td>
                 <td>
-                    <input type="text" name="sku_{{ $str }}" value="@php
+                    <input type="text" name="sku_{{ $fieldKey }}" value="@php
                             if($stock != null) {
                                 echo $stock->sku;
                             }
@@ -83,7 +84,7 @@
                            @endphp" class="form-control">
                 </td>
                 <td>
-                    <input type="number" lang="en" name="qty_{{ $str }}" value="@php
+                    <input type="number" lang="en" name="qty_{{ $fieldKey }}" value="@php
                             if($stock != null){
                                 echo $stock->qty;
                             }
@@ -98,7 +99,7 @@
                             <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse') }}</div>
                         </div>
                         <div class="form-control file-amount text-truncate">{{ translate('Choose File') }}</div>
-                        <input type="hidden" name="img_{{ $str }}" class="selected-files" value="@php
+                        <input type="hidden" name="img_{{ $fieldKey }}" class="selected-files" value="@php
                                 if($stock != null){
                                     echo $stock->image;
                                 }
@@ -127,4 +128,3 @@
     </tbody>
 </table>
 @endif
-

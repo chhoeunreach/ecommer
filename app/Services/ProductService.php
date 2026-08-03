@@ -120,10 +120,11 @@ class ProductService
             foreach ($combinations as $key => $combination) {
                 $str = ProductUtility::get_combination_string($combination, $collection);
 
-                unset($collection['price_' . str_replace('.', '_', $str)]);
-                unset($collection['sku_' . str_replace('.', '_', $str)]);
-                unset($collection['qty_' . str_replace('.', '_', $str)]);
-                unset($collection['img_' . str_replace('.', '_', $str)]);
+                $fieldKey = md5($str);
+                unset($collection['price_' . $fieldKey]);
+                unset($collection['sku_' . $fieldKey]);
+                unset($collection['qty_' . $fieldKey]);
+                unset($collection['img_' . $fieldKey]);
             }
         }
 
@@ -223,6 +224,7 @@ class ProductService
         if(!isset($collection['featured'])){
             $collection['featured'] = 0;
         }
+        $collection['free_accessory_enabled'] = !empty($collection['free_accessory_enabled']) ? 1 : 0;
         if(!isset($collection['todays_deal'])){
             $collection['todays_deal'] = 0;
         }
@@ -309,10 +311,11 @@ class ProductService
             foreach ($combinations as $key => $combination) {
                 $str = ProductUtility::get_combination_string($combination, $collection);
 
-                unset($collection['price_' . str_replace('.', '_', $str)]);
-                unset($collection['sku_' . str_replace('.', '_', $str)]);
-                unset($collection['qty_' . str_replace('.', '_', $str)]);
-                unset($collection['img_' . str_replace('.', '_', $str)]);
+                $fieldKey = md5($str);
+                unset($collection['price_' . $fieldKey]);
+                unset($collection['sku_' . $fieldKey]);
+                unset($collection['qty_' . $fieldKey]);
+                unset($collection['img_' . $fieldKey]);
             }
         }
 

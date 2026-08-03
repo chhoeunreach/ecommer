@@ -11,7 +11,7 @@
 |
 */
 
-use App\Http\Controllers\GSTController;
+use App\Http\Controllers\DisabledAddonController as GSTController;
 
 //Admin
 Route::group(['prefix' =>'admin', 'middleware' => ['auth', 'admin']], function(){

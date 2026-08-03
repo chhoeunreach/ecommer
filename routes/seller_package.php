@@ -11,7 +11,7 @@
 |
 */
 
-use App\Http\Controllers\SellerPackageController;
+use App\Http\Controllers\DisabledAddonController as SellerPackageController;
 
 //Admin
 Route::group(['prefix' =>'admin', 'middleware' => ['auth', 'admin']], function(){

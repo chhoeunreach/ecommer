@@ -11,9 +11,9 @@
 |
 */
 
-use App\Http\Controllers\PosController;
+use App\Http\Controllers\DisabledAddonController as PosController;
 use App\Http\Controllers\BusinessSettingsController;
-use App\Http\Controllers\Seller\PosController as SellerPosController;
+use App\Http\Controllers\DisabledAddonController as SellerPosController;
 
 Route::controller(PosController::class)->group(function () {
     

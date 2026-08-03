@@ -185,6 +185,52 @@ class PageController extends Controller
             Cache::forget('business_settings');
         }
 
+        if ($page->type == 'privacy_policy_page') {
+            $validated = $request->validate([
+                'privacy_cards' => ['nullable', 'array', 'max:12'],
+                'privacy_cards.*.image' => ['nullable', 'string', 'max:191'],
+                'privacy_cards.*.title' => ['nullable', 'string', 'max:100'],
+                'privacy_cards.*.description' => ['nullable', 'string', 'max:500'],
+                'privacy_cards.*.link' => ['nullable', 'string', 'max:191', 'not_regex:/^\s*(?:javascript|data|vbscript):/i'],
+                'privacy_colors' => ['required', 'array:hero_start,hero_end,hero_text,accent,card_background,heading,text'],
+                'privacy_colors.hero_start' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'privacy_colors.hero_end' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'privacy_colors.hero_text' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'privacy_colors.accent' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'privacy_colors.card_background' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'privacy_colors.heading' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'privacy_colors.text' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            ]);
+
+            $privacyCards = collect($validated['privacy_cards'] ?? [])
+                ->map(function ($card) {
+                    return [
+                        'image' => trim($card['image'] ?? ''),
+                        'title' => trim($card['title'] ?? ''),
+                        'description' => trim($card['description'] ?? ''),
+                        'link' => trim($card['link'] ?? ''),
+                    ];
+                })
+                ->filter(fn ($card) => collect($card)->contains(fn ($value) => $value !== ''))
+                ->values()
+                ->all();
+
+            $privacyCardsSetting = BusinessSetting::where('type', 'privacy_page_cards')
+                ->where('lang', $request->lang)
+                ->first() ?? new BusinessSetting;
+            $privacyCardsSetting->type = 'privacy_page_cards';
+            $privacyCardsSetting->lang = $request->lang;
+            $privacyCardsSetting->value = json_encode($privacyCards);
+            $privacyCardsSetting->save();
+
+            $privacyColorsSetting = BusinessSetting::where('type', 'privacy_page_colors')->first() ?? new BusinessSetting;
+            $privacyColorsSetting->type = 'privacy_page_colors';
+            $privacyColorsSetting->lang = null;
+            $privacyColorsSetting->value = json_encode($validated['privacy_colors']);
+            $privacyColorsSetting->save();
+            Cache::forget('business_settings');
+        }
+
         if($page->type == 'contact_us_page'){
             $data['description'] = $request->description;
             $data['address'] = $request->address;

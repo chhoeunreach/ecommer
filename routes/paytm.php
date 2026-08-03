@@ -2,11 +2,18 @@
 
 //Paytm
 
-use App\Http\Controllers\Payment\PaytmController;
-use App\Http\Controllers\Payment\ToyyibpayController;
+use App\Http\Controllers\Api\V2\PaytmController;
 use App\Http\Controllers\Api\V2\MyfatoorahController;
-use App\Http\Controllers\Payment\KhaltiController;
-use App\Http\Controllers\Payment\PhonepeController;
+use App\Http\Controllers\Api\V2\KhaltiController;
+use App\Http\Controllers\Api\V2\PhonepeController;
+// No controller anywhere implements Paytm's credentials_index()/
+// update_credentials() (admin config screen), and
+// App\Http\Controllers\Payment\ToyyibpayController was never implemented
+// (confirmed absent from git history). Aliased to the DisabledAddonController
+// stub so these route names stay resolvable (referenced from the admin
+// sidebar) while actually visiting one 404s instead of fatally erroring.
+use App\Http\Controllers\DisabledAddonController as PaytmAdminController;
+use App\Http\Controllers\DisabledAddonController as ToyyibpayController;
 
 Route::controller(PaytmController::class)->group(function () {
     Route::get('/paytm/index', 'pay');
@@ -15,7 +22,7 @@ Route::controller(PaytmController::class)->group(function () {
 
 //Admin
 Route::group(['prefix' =>'admin', 'middleware' => ['auth', 'admin']], function(){
-    Route::controller(PaytmController::class)->group(function () {
+    Route::controller(PaytmAdminController::class)->group(function () {
         Route::get('/paytm_configuration', 'credentials_index')->name('paytm.index');
         Route::post('/paytm_configuration_update', 'update_credentials')->name('paytm.update_credentials');
     });

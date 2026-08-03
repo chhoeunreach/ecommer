@@ -11,25 +11,25 @@
 |
 */
 
-use App\Http\Controllers\Preorder\DashboardController;
-use App\Http\Controllers\Preorder\FaqController;
-use App\Http\Controllers\Preorder\NotificationTypeController;
-use App\Http\Controllers\Preorder\OrderController;
-use App\Http\Controllers\Preorder\PreorderCommissionHistoryController;
-use App\Http\Controllers\Preorder\PreorderController;
-use App\Http\Controllers\Preorder\PreorderConversationController;
-use App\Http\Controllers\Preorder\PreorderProductController;
-use App\Http\Controllers\Preorder\PreorderProductQueryController;
-use App\Http\Controllers\Preorder\PreorderProductReviewController;
-use App\Http\Controllers\Preorder\ProductController;
-use App\Http\Controllers\Preorder\seller\DashboardController as SellerDashboardController;
-use App\Http\Controllers\Preorder\seller\OrderController as SellerOrderController;
-use App\Http\Controllers\Preorder\seller\PreorderCommissionHistoryController as SellerPreorderCommissionHistoryController;
-use App\Http\Controllers\Preorder\seller\PreorderController as SellerPreorderController;
-use App\Http\Controllers\Preorder\seller\PreorderConversationController as SellerPreorderConversationController;
-use App\Http\Controllers\Preorder\seller\PreorderProductController as SellerPreorderProductController;
-use App\Http\Controllers\Preorder\seller\PreorderProductQueryController as SellerPreorderProductQueryController;
-use App\Http\Controllers\Preorder\seller\PreorderProductReviewController as SellerPreorderProductReviewController;
+use App\Http\Controllers\DisabledAddonController as DashboardController;
+use App\Http\Controllers\DisabledAddonController as FaqController;
+use App\Http\Controllers\DisabledAddonController as NotificationTypeController;
+use App\Http\Controllers\DisabledAddonController as OrderController;
+use App\Http\Controllers\DisabledAddonController as PreorderCommissionHistoryController;
+use App\Http\Controllers\DisabledAddonController as PreorderController;
+use App\Http\Controllers\DisabledAddonController as PreorderConversationController;
+use App\Http\Controllers\DisabledAddonController as PreorderProductController;
+use App\Http\Controllers\DisabledAddonController as PreorderProductQueryController;
+use App\Http\Controllers\DisabledAddonController as PreorderProductReviewController;
+use App\Http\Controllers\DisabledAddonController as ProductController;
+use App\Http\Controllers\DisabledAddonController as SellerDashboardController;
+use App\Http\Controllers\DisabledAddonController as SellerOrderController;
+use App\Http\Controllers\DisabledAddonController as SellerPreorderCommissionHistoryController;
+use App\Http\Controllers\DisabledAddonController as SellerPreorderController;
+use App\Http\Controllers\DisabledAddonController as SellerPreorderConversationController;
+use App\Http\Controllers\DisabledAddonController as SellerPreorderProductController;
+use App\Http\Controllers\DisabledAddonController as SellerPreorderProductQueryController;
+use App\Http\Controllers\DisabledAddonController as SellerPreorderProductReviewController;
 
 
 Route::group([ 'middleware' => ['isPreorder', ]], function () {
@@ -223,7 +223,7 @@ Route::group([ 'middleware' => ['isPreorder', ]], function () {
     });
 
     // guest routes for preorder
-    Route::get('/all-preorder-products', [PreorderProductController::class,'all_preorder_products'])->name('all_preorder_products');
-    Route::get('/preorder/category/{category_slug}', [PreorderProductController::class,'listingByCategory'])->name('preorder.category');
+    Route::get('/all-preorder-products', [\App\Http\Controllers\PreorderProductController::class,'all_preorder_products'])->name('all_preorder_products');
+    Route::get('/preorder/category/{category_slug}', [\App\Http\Controllers\PreorderProductController::class,'listingByCategory'])->name('preorder.category');
     Route::get('/how-to-preorder', [PreorderProductController::class,'how_to_preorder'])->name('how_to_preorder');
 });

@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\AfricanPaymentGatewayController;
-use App\Http\Controllers\Payment\FlutterwaveController;
-use App\Http\Controllers\Payment\MpesaController;
-use App\Http\Controllers\Payment\PayfastController;
+use App\Http\Controllers\DisabledAddonController as AfricanPaymentGatewayController;
+use App\Http\Controllers\DisabledAddonController as FlutterwaveController;
+use App\Http\Controllers\DisabledAddonController as MpesaController;
+use App\Http\Controllers\DisabledAddonController as PayfastController;
 
 Route::controller(AfricanPaymentGatewayController::class)->group(function () {
   Route::get('/african/credentials_index', 'credentials_index')->name('african_credentials.index');

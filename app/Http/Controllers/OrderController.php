@@ -95,6 +95,15 @@ class OrderController extends Controller
             $col = 'payment_status';
             $status = 'unpaid';
         }
+        elseif (Route::currentRouteName() == 'customer_orders.index' && Auth::user()->can('view_customer_orders')) {
+            $seller_types = ['All', 'Inhouse', 'Seller'];
+            $order_types = 'Customer Orders';
+            $col = 'order_from';
+            $status = 'exclude_pos';
+            if (get_setting('vendor_system_activation') != 1) {
+                $seller_types = ['Inhouse'];
+            }
+        }
         else {
             abort(403);
         }
@@ -246,7 +255,7 @@ class OrderController extends Controller
                 $product_variation = $cartItem['variation'];
 
                 $product_stock = $product->stocks->where('variant', $product_variation)->first();
-                if ($product->digital != 1 && $cartItem['quantity'] > $product_stock->qty) {
+                if ($product->digital != 1 && (!$product_stock || $cartItem['quantity'] > $product_stock->qty)) {
                     flash(translate('The requested quantity is not available for ') . $product->getTranslation('name'))->warning();
                     $order->delete();
                     return redirect()->route('cart')->send();
@@ -788,7 +797,10 @@ class OrderController extends Controller
             $orders= $orders->where('order_from','pos');
         }
 
-        if($request->col && $request->status){
+        if ($request->col == 'order_from' && $request->status == 'exclude_pos') {
+            $orders = $orders->where('order_from', '!=', 'pos');
+        }
+        elseif($request->col && $request->status){
             $orders= $orders->where($request->col,$request->status);
             if($request->status == 'pickup_point'){
                 if (Auth::user()->user_type == 'staff' && Auth::user()->staff->pick_up_point != null ) {

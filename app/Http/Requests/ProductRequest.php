@@ -40,6 +40,12 @@ class ProductRequest extends FormRequest
         $rules['current_stock'] = 'sometimes|required|numeric';
         $rules['starting_bid']  = 'sometimes|required|numeric|min:1';
         $rules['auction_date_range']  = 'sometimes|required';
+        $rules['free_accessory_enabled'] = 'nullable|boolean';
+        $rules['free_accessories'] = 'nullable|required_if:free_accessory_enabled,1|array|min:1';
+        $rules['free_accessories.*.id'] = 'nullable|integer';
+        $rules['free_accessories.*.title'] = 'nullable|required_if:free_accessory_enabled,1|max:255';
+        $rules['free_accessories.*.description'] = 'nullable|max:2000';
+        $rules['free_accessories.*.image'] = 'nullable|integer';
 
         return $rules;
     }
@@ -74,6 +80,8 @@ class ProductRequest extends FormRequest
             'starting_bid.numeric'      => translate('Starting Bid must be numeric'),
             'starting_bid.required'     => translate('Minimum Starting Bid is 1'),
             'auction_date_range.required' => translate('Auction Date Range is required'),
+            'free_accessories.required_if' => translate('Add at least one free accessory when the offer is enabled'),
+            'free_accessories.*.title.required_if' => translate('Each free accessory needs a name'),
         ];
 
         return $messages;

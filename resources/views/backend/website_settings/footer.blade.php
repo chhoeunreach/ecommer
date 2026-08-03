@@ -335,51 +335,58 @@
 						</div>
 						<div class="form-group">
 							<label>{{ translate('Social Links') }}</label>
-							<!-- Facebook Link -->
-							<div class="input-group form-group">
-								<div class="input-group-prepend">
-									<span class="input-group-text"><i class="lab la-facebook-f"></i></span>
-								</div>
-								<input type="hidden" name="types[]" value="facebook_link">
-								<input type="text" class="form-control" placeholder="http://" name="facebook_link" value="{{ get_setting('facebook_link')}}">
+							<input type="hidden" name="types[]" value="social_link_platforms">
+							<input type="hidden" name="types[]" value="social_link_urls">
+							<input type="hidden" name="types[]" value="social_link_icons">
+							<input type="hidden" name="social_link_platforms[]" value="">
+							<input type="hidden" name="social_link_urls[]" value="">
+							<input type="hidden" name="social_link_icons[]" value="">
+							<div class="footer-social-links-target">
+								@foreach (footer_social_links() as $socialLink)
+									<div class="row gutters-5">
+										<div class="col-md-3">
+											<div class="form-group">
+												<select class="form-control" name="social_link_platforms[]">
+													@foreach (['facebook' => 'Facebook', 'twitter' => 'X (Twitter)', 'instagram' => 'Instagram', 'youtube' => 'YouTube', 'linkedin' => 'LinkedIn', 'tiktok' => 'TikTok', 'telegram' => 'Telegram', 'whatsapp' => 'WhatsApp', 'pinterest' => 'Pinterest', 'website' => 'Website'] as $value => $label)
+														<option value="{{ $value }}" @selected($socialLink['platform'] === $value)>{{ $label }}</option>
+													@endforeach
+												</select>
+											</div>
+										</div>
+										<div class="col-md-5">
+											<div class="form-group">
+												<input type="url" class="form-control" placeholder="https://" name="social_link_urls[]" value="{{ $socialLink['url'] }}">
+											</div>
+										</div>
+										<div class="col-md-3">
+											<div class="form-group">
+												<div class="input-group" data-toggle="aizuploader" data-type="image">
+													<div class="input-group-prepend">
+														<div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse') }}</div>
+													</div>
+													<div class="form-control file-amount">{{ translate('Choose File') }}</div>
+													<input type="hidden" name="social_link_icons[]" class="selected-files" value="{{ $socialLink['icon'] }}">
+												</div>
+												<div class="file-preview box sm"></div>
+											</div>
+										</div>
+										<div class="col-auto">
+											<button type="button" class="mt-1 btn btn-icon btn-circle btn-sm btn-soft-danger" data-toggle="remove-parent" data-parent=".row" aria-label="{{ translate('Remove') }}">
+												<i class="las la-times"></i>
+											</button>
+										</div>
+									</div>
+								@endforeach
 							</div>
-							<!-- Twitter Link -->
-							<div class="input-group form-group">
-								<div class="input-group-prepend">
-									<span class="input-group-text">
-										<svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" fill="#5d6161" viewBox="0 0 16 16" class="ml-1">
-											<path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 
-											.75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
-										</svg>
-									</span>
-								</div>
-								<input type="hidden" name="types[]" value="twitter_link">
-								<input type="text" class="form-control" placeholder="http://" name="twitter_link" value="{{ get_setting('twitter_link')}}">
-							</div>
-							<!-- Instagram Link -->
-							<div class="input-group form-group">
-								<div class="input-group-prepend">
-									<span class="input-group-text"><i class="lab la-instagram"></i></span>
-								</div>
-								<input type="hidden" name="types[]" value="instagram_link">
-								<input type="text" class="form-control" placeholder="http://" name="instagram_link" value="{{ get_setting('instagram_link')}}">
-							</div>
-							<!-- Youtube Link -->
-							<div class="input-group form-group">
-								<div class="input-group-prepend">
-									<span class="input-group-text"><i class="lab la-youtube"></i></span>
-								</div>
-								<input type="hidden" name="types[]" value="youtube_link">
-								<input type="text" class="form-control" placeholder="http://" name="youtube_link" value="{{ get_setting('youtube_link')}}">
-							</div>
-							<!-- Linkedin Link -->
-							<div class="input-group form-group">
-								<div class="input-group-prepend">
-									<span class="input-group-text"><i class="lab la-linkedin-in"></i></span>
-								</div>
-								<input type="hidden" name="types[]" value="linkedin_link">
-								<input type="text" class="form-control" placeholder="http://" name="linkedin_link" value="{{ get_setting('linkedin_link')}}">
-							</div>
+							<button type="button" class="btn btn-soft-secondary btn-sm" data-toggle="add-more"
+								data-content='<div class="row gutters-5">
+									<div class="col-md-3"><div class="form-group"><select class="form-control" name="social_link_platforms[]"><option value="facebook">Facebook</option><option value="twitter">X (Twitter)</option><option value="instagram">Instagram</option><option value="youtube">YouTube</option><option value="linkedin">LinkedIn</option><option value="tiktok">TikTok</option><option value="telegram">Telegram</option><option value="whatsapp">WhatsApp</option><option value="pinterest">Pinterest</option><option value="website">Website</option></select></div></div>
+									<div class="col-md-5"><div class="form-group"><input type="url" class="form-control" placeholder="https://" name="social_link_urls[]"></div></div>
+									<div class="col-md-3"><div class="form-group"><div class="input-group" data-toggle="aizuploader" data-type="image"><div class="input-group-prepend"><div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse') }}</div></div><div class="form-control file-amount">{{ translate('Choose File') }}</div><input type="hidden" name="social_link_icons[]" class="selected-files"></div><div class="file-preview box sm"></div></div></div>
+									<div class="col-auto"><button type="button" class="mt-1 btn btn-icon btn-circle btn-sm btn-soft-danger" data-toggle="remove-parent" data-parent=".row"><i class="las la-times"></i></button></div>
+								</div>' data-target=".footer-social-links-target">
+								<i class="las la-plus mr-1"></i>{{ translate('Add New') }}
+							</button>
 						</div>
 						<!-- Update Button -->
 						<div class="mt-4 text-right">

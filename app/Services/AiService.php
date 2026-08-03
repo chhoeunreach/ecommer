@@ -140,7 +140,7 @@ class AiService
 
             $response = Http::withHeaders([
                 'Content-Type'=>'application/json'
-            ])->post(
+            ])->timeout(20)->connectTimeout(10)->post(
                 "https://generativelanguage.googleapis.com/v1/models/{$model}:generateContent?key={$apiKey}",
                 [
                     'contents'=>[

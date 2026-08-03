@@ -3,7 +3,10 @@
 use App\Http\Controllers\AizUploadController;
 use App\Http\Controllers\Seller\CustomLabelController;
 use App\Http\Controllers\Seller\DashboardController;
-use App\Http\Controllers\Seller\GSTController;
+// App\Http\Controllers\Seller\GSTController was never implemented anywhere
+// in this codebase (confirmed absent from git history). Aliased to the
+// DisabledAddonController stub so the route names below stay resolvable.
+use App\Http\Controllers\DisabledAddonController as GSTController;
 use App\Http\Controllers\Seller\NoteController;
 use App\Http\Controllers\Seller\PaymentController;
 use App\Http\Controllers\Seller\ProductController;
@@ -227,6 +230,13 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
 
     });
 
+});
+
+// Kept out of the 'App\Http\Controllers\Seller' namespace group above:
+// GSTController is aliased to the DisabledAddonController stub, which lives
+// directly under App\Http\Controllers, so Laravel's group-namespace
+// prepending would otherwise mangle it into a nonexistent class path.
+Route::group(['prefix' => 'seller', 'middleware' => ['seller', 'verified', 'user', 'prevent-back-history'], 'as' => 'seller.'], function () {
     Route::controller(GSTController::class)->group(function () {
         Route::get('/gst-configuration', 'configure_index')->name('gst.configconfiguration');
         Route::post('/gst-docs-update', 'update_documents')->name('update_gst_docs');
@@ -238,6 +248,5 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
         Route::post('/bulk-product-gst-assign', 'updateBulkHsnGstRate')->name('products.bulk-product-gst-assign');
         Route::get('/products/gst/products/{type}', 'get_filter_products')->name('products.gst.filter');
     });
-
 });
 

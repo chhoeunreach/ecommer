@@ -26,7 +26,6 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\Payment\AamarpayController;
 use App\Http\Controllers\Payment\AuthorizenetController;
 use App\Http\Controllers\Payment\BkashController;
-use App\Http\Controllers\Payment\CybersourceController;
 use App\Http\Controllers\Payment\InstamojoController;
 use App\Http\Controllers\Payment\IyzicoController;
 use App\Http\Controllers\Payment\MercadopagoController;
@@ -239,7 +238,7 @@ Route::controller(PaypalController::class)->group(function () {
     Route::get('/paypal/payment/cancel', 'getCancel')->name('payment.cancel');
 });
 //Cybersource START
-Route::controller(CybersourceController::class)->group(function () {
+Route::controller(\App\Http\Controllers\DisabledAddonController::class)->group(function () {
     Route::post('/cyber-source/payment/process', 'process')->name('cybersource.process');
     Route::any('/cyber-source/payment/callback', 'callback')->name('cybersource.callback');
     Route::any('/cyber-source/payment/webhook', 'webhook')->name('cybersource.webhook');
@@ -310,7 +309,7 @@ Route::group(['middleware' => ['user', 'verified', 'unbanned']], function () {
 Route::group(['prefix' => 'checkout'], function () {
     Route::controller(CheckoutController::class)->group(function () {
         Route::get('/', 'index')->name('checkout');
-        Route::any('/delivery-info', 'store_shipping_info')->name('checkout.store_shipping_infostore');
+        Route::any('/delivery-info', 'store_shipping_info')->name('checkout.shipping_info');
         Route::post('/payment-select', 'store_delivery_info')->name('checkout.store_delivery_info');
         Route::post('/payment', 'checkout')->name('payment.checkout');
         Route::get('/order-confirmed', 'order_confirmed')->name('order_confirmed');
@@ -546,4 +545,8 @@ Route::controller(PaymentInformationController::class)->group(function () {
     Route::get('/payment-informations/set-default/{id}', 'set_default')->name('payment_informations.set_default');
 });
 
-Route::get('/reset-user-monthly-tokens', [AiController::class, 'resetUserMonthlyTokens']);
+// Disabled: referenced an unimported "AiController" (no `use` statement, so
+// it resolved to the global namespace) and resetUserMonthlyTokens() doesn't
+// exist on App\Http\Controllers\AIController either - dead route, crashed
+// route:list/route:cache app-wide.
+// Route::get('/reset-user-monthly-tokens', [AiController::class, 'resetUserMonthlyTokens']);

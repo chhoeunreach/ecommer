@@ -25,6 +25,17 @@ use Spatie\Sitemap\SitemapGenerator;
 class AdminController extends Controller
 {
     /**
+     * Whitelist a dashboard interval_type request value against valid MySQL
+     * INTERVAL units, since the unit cannot be passed as a bound parameter.
+     */
+    private function dashboardIntervalUnit(?string $intervalType): ?string
+    {
+        $unit = strtoupper((string) $intervalType);
+
+        return in_array($unit, ['DAY', 'WEEK', 'MONTH', 'YEAR'], true) ? $unit : null;
+    }
+
+    /**
      * Show the admin dashboard.
      *
      * @return \Illuminate\Http\Response
@@ -261,9 +272,9 @@ class AdminController extends Controller
             ->where('orders.delivery_status', 'delivered')
             ->whereNotNull('products.category_id');
 
-        if ($request->interval_type != 'all') {
+        if ($request->interval_type != 'all' && $unit = $this->dashboardIntervalUnit($request->interval_type)) {
             $categories_query->whereRaw(
-                'orders.created_at >= DATE_SUB(NOW(), INTERVAL 1 ?)', [$request->interval_type]
+                "orders.created_at >= DATE_SUB(NOW(), INTERVAL 1 {$unit})"
             );
         }
 
@@ -294,9 +305,9 @@ class AdminController extends Controller
                 ->where('products.published', 1)
                 ->where('order_details.delivery_status', 'delivered');
 
-            if ($request->interval_type != 'all') {
+            if ($request->interval_type != 'all' && $unit = $this->dashboardIntervalUnit($request->interval_type)) {
                 $products_query->whereRaw(
-                    'order_details.created_at >= DATE_SUB(NOW(), INTERVAL 1 ?)', [$request->interval_type]
+                    "order_details.created_at >= DATE_SUB(NOW(), INTERVAL 1 {$unit})"
                 );
             }
 
@@ -344,8 +355,8 @@ class AdminController extends Controller
             ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
             ->where('orders.delivery_status', '=', 'delivered')
             ->whereRaw('products.added_by = "admin"');
-        if ($request->interval_type != 'all') {
-            $inhouse_top_category_query->whereRaw('orders.created_at >= DATE_SUB(NOW(), INTERVAL 1 ?)', [$request->interval_type]);
+        if ($request->interval_type != 'all' && $unit = $this->dashboardIntervalUnit($request->interval_type)) {
+            $inhouse_top_category_query->whereRaw("orders.created_at >= DATE_SUB(NOW(), INTERVAL 1 {$unit})");
         }
         $inhouse_top_categories = $inhouse_top_category_query->groupBy('categories.name')
             ->orderBy('total', 'desc')
@@ -365,8 +376,8 @@ class AdminController extends Controller
             ->where('orders.delivery_status', '=', 'delivered')
             ->where('products.brand_id', '!=', null)
             ->whereRaw('products.added_by = "admin"');
-        if ($request->interval_type != 'all') {
-            $inhouse_top_brand_query->whereRaw('orders.created_at >= DATE_SUB(NOW(), INTERVAL 1 ?)', [$request->interval_type]);
+        if ($request->interval_type != 'all' && $unit = $this->dashboardIntervalUnit($request->interval_type)) {
+            $inhouse_top_brand_query->whereRaw("orders.created_at >= DATE_SUB(NOW(), INTERVAL 1 {$unit})");
         }
         $inhouse_top_brands = $inhouse_top_brand_query->groupBy('brands.name')
             ->orderBy('total', 'desc')
@@ -400,8 +411,8 @@ class AdminController extends Controller
             ->where('orders.delivery_status', 'delivered')
             ->groupBy('shops.user_id','shops.name','shops.logo')
             ->orderByDesc('sale');
-        if ($request->interval_type != 'all') {
-            $new_top_sellers_query->whereRaw('orders.created_at >= DATE_SUB(NOW(), INTERVAL 1 ?)', [$request->interval_type]);
+        if ($request->interval_type != 'all' && $unit = $this->dashboardIntervalUnit($request->interval_type)) {
+            $new_top_sellers_query->whereRaw("orders.created_at >= DATE_SUB(NOW(), INTERVAL 1 {$unit})");
         }
 
         $new_top_sellers = $new_top_sellers_query->get();
@@ -414,8 +425,8 @@ class AdminController extends Controller
                 ->where('order_details.delivery_status', 'delivered')
                 ->where('products.approved', 1)
                 ->where('products.published', 1);
-            if ($request->interval_type != 'all') {
-                $products_query->whereRaw('order_details.created_at >= DATE_SUB(NOW(), INTERVAL 1 ?)', [$request->interval_type]);
+            if ($request->interval_type != 'all' && $unit = $this->dashboardIntervalUnit($request->interval_type)) {
+                $products_query->whereRaw("order_details.created_at >= DATE_SUB(NOW(), INTERVAL 1 {$unit})");
             }
             $products_query->groupBy('product_id')
                 ->orderBy('sale', 'desc')
@@ -450,12 +461,8 @@ class AdminController extends Controller
             ->whereNotNull('products.brand_id')
             ->where('products.added_by', 'admin');
 
-        if ($request->interval_type != 'all') {
-            $brands_query->where(
-                'orders.created_at',
-                '>=',
-                DB::raw('DATE_SUB(NOW(), INTERVAL 1 ?)')
-            , [$request->interval_type]);
+        if ($request->interval_type != 'all' && $unit = $this->dashboardIntervalUnit($request->interval_type)) {
+            $brands_query->whereRaw("orders.created_at >= DATE_SUB(NOW(), INTERVAL 1 {$unit})");
         }
 
         $top_brands = $brands_query
@@ -486,12 +493,8 @@ class AdminController extends Controller
                 ->where('products.published', 1)
                 ->where('order_details.delivery_status', 'delivered');
 
-            if ($request->interval_type != 'all') {
-                $products_query->where(
-                    'order_details.created_at',
-                    '>=',
-                    DB::raw('DATE_SUB(NOW(), INTERVAL 1 ' . $request->interval_type . ')')
-                );
+            if ($request->interval_type != 'all' && $unit = $this->dashboardIntervalUnit($request->interval_type)) {
+                $products_query->whereRaw("order_details.created_at >= DATE_SUB(NOW(), INTERVAL 1 {$unit})");
             }
 
             $products = $products_query

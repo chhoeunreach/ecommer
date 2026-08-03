@@ -135,7 +135,7 @@ class OrderController extends Controller
                 $product_variation = $cartItem['variation'];
 
                 $product_stock = $product->stocks->where('variant', $product_variation)->first();
-                if ($product->digital != 1 && $cartItem['quantity'] > $product_stock->qty) {
+                if ($product->digital != 1 && (!$product_stock || $cartItem['quantity'] > $product_stock->qty)) {
                     $order->delete();
                     $combined_order->delete();
                     return response()->json([

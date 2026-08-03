@@ -80,3 +80,31 @@
 		</div>
 	</div>
 </div>
+
+<script>
+    (function () {
+        var uploadRoot = document.getElementById('aiz-upload-files');
+        if (!uploadRoot) {
+            return;
+        }
+
+        // Uppy 1.x hides the AddFiles panel after a file is selected, but can
+        // leave focus on its Browse button. Release that focus during capture,
+        // before Uppy changes the panel to aria-hidden="true".
+        uploadRoot.addEventListener('change', function (event) {
+            if (!event.target || !event.target.matches('input[type="file"]')) {
+                return;
+            }
+
+            var activeElement = document.activeElement;
+            if (
+                activeElement &&
+                activeElement.closest &&
+                activeElement.closest('.uppy-Dashboard-AddFilesPanel')
+            ) {
+                uploadRoot.setAttribute('tabindex', '-1');
+                uploadRoot.focus();
+            }
+        }, true);
+    })();
+</script>

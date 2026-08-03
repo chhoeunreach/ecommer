@@ -21,16 +21,14 @@
                         <div class="form-group">
                             <label class="col-from-label">{{translate('Select AI Model')}}</label>
                             <select class="form-control aiz-selectpicker" name="gemini_model">
-                                <optgroup label="Gemini 3.1 (Cutting Edge)">
-                                    <option value="gemini-3.1-pro-preview" @if(get_setting('gemini_model') == 'gemini-3.1-pro-preview') selected @endif>Gemini 3.1 Pro (Advanced)</option>
-                                    <option value="gemini-3.1-flash-lite-preview" @if(get_setting('gemini_model') == 'gemini-3.1-flash-lite-preview') selected @endif>Gemini 3.1 Flash-Lite (Super Fast)</option>
-                                </optgroup>
-                                <optgroup label="Gemini 3.0">
-                                    <option value="gemini-3-flash-preview" @if(get_setting('gemini_model') == 'gemini-3-flash-preview') selected @endif>Gemini 3 Flash</option>
-                                    <option value="gemini-3-deep-think" @if(get_setting('gemini_model') == 'gemini-3-deep-think') selected @endif>Gemini 3 Deep Think</option>
+                                <optgroup label="Gemini 3 (Cutting Edge)">
+                                    <option value="gemini-3.6-flash" @if(get_setting('gemini_model') == 'gemini-3.6-flash') selected @endif>Gemini 3.6 Flash</option>
+                                    <option value="gemini-3.5-flash" @if(get_setting('gemini_model') == 'gemini-3.5-flash') selected @endif>Gemini 3.5 Flash</option>
+                                    <option value="gemini-3.5-flash-lite" @if(get_setting('gemini_model') == 'gemini-3.5-flash-lite') selected @endif>Gemini 3.5 Flash-Lite</option>
+                                    <option value="gemini-3.1-flash-lite" @if(get_setting('gemini_model') == 'gemini-3.1-flash-lite') selected @endif>Gemini 3.1 Flash-Lite (Super Fast)</option>
                                 </optgroup>
                                 <optgroup label="Gemini 2.5 (Most Stable)">
-                                    <option value="gemini-2.5-pro" @if(get_setting('gemini_model') == 'gemini-2.5-pro') selected @endif>Gemini 2.5 Pro</option>
+                                    <option value="gemini-2.5-pro" @if(get_setting('gemini_model') == 'gemini-2.5-pro') selected @endif>Gemini 2.5 Pro (Advanced)</option>
                                     <option value="gemini-2.5-flash" @if(get_setting('gemini_model') == 'gemini-2.5-flash') selected @endif>Gemini 2.5 Flash</option>
                                     <option value="gemini-2.5-flash-lite" @if(get_setting('gemini_model') == 'gemini-2.5-flash-lite') selected @endif>Gemini 2.5 Flash-Lite (Legacy Lite)</option>
                                 </optgroup>

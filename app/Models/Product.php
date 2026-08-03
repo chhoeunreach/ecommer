@@ -43,6 +43,11 @@ class Product extends Model
         return $this->hasMany(FrequentlyBoughtProduct::class);
     }
 
+    public function freeAccessories()
+    {
+        return $this->hasMany(ProductFreeAccessory::class)->with('translations')->orderBy('sort_order');
+    }
+
     public function product_categories()
     {
         return $this->hasMany(ProductCategory::class);

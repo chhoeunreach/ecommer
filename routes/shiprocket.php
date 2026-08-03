@@ -11,7 +11,7 @@
 |
 */
 
-use App\Http\Controllers\ShiprocketController;
+use App\Http\Controllers\DisabledAddonController as ShiprocketController;
 
 //Admin
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {

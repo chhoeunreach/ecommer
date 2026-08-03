@@ -11,7 +11,7 @@
 |
 */
 
-use App\Http\Controllers\SteadfastController;
+use App\Http\Controllers\DisabledAddonController as SteadfastController;
 
 //Admin
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {

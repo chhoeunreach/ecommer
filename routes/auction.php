@@ -11,8 +11,15 @@
 |
 */
 
-use App\Http\Controllers\AuctionProductController;
-use App\Http\Controllers\AuctionProductBidController;
+// App\Http\Controllers\AuctionProductController and AuctionProductBidController
+// (root namespace) were never implemented anywhere in this codebase
+// (confirmed absent from git history) - only the unrelated Api\V2 namesakes
+// exist. Aliased to the DisabledAddonController stub so every route name
+// below stays resolvable (they're referenced from every theme's product
+// card, the storefront floating buttons widget, and the global bid modal)
+// while actually visiting one 404s instead of fatally erroring.
+use App\Http\Controllers\DisabledAddonController as AuctionProductController;
+use App\Http\Controllers\DisabledAddonController as AuctionProductBidController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 

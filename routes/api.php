@@ -295,12 +295,12 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
     Route::get('products/todays-deal', 'App\Http\Controllers\Api\V2\ProductController@todaysDeal');
     Route::get('products/featured', 'App\Http\Controllers\Api\V2\ProductController@featured');
     Route::get('products/best-seller', 'App\Http\Controllers\Api\V2\ProductController@bestSeller');
-    Route::get('products/top-from-seller/{slug}', 'App\Http\Controllers\Api\V2\ProductController@topFromSeller');
+    Route::get('products/top-from-seller/{slug}', 'App\Http\Controllers\Api\V2\ProductController@topFromSeller')->name('products.topFromSeller');
     Route::get('products/frequently-bought/{slug}', 'App\Http\Controllers\Api\V2\ProductController@frequentlyBought')->name('products.frequently_bought');
 
     Route::get('products/featured-from-seller/{id}', 'App\Http\Controllers\Api\V2\ProductController@newFromSeller')->name('products.featuredromSeller');
     Route::get('products/from-seller/{slug}', 'App\Http\Controllers\Api\V2\ProductController@sellerProducts')->name('products.fromSeller');
-    Route::get('products/related/{slug}', 'App\Http\Controllers\Api\V2\ProductController@relatedProducts')->name('api.products.related');
+    Route::get('products/related/{slug}', 'App\Http\Controllers\Api\V2\ProductController@relatedProducts')->name('products.related');
     Route::get('products/queries/{slug}', 'App\Http\Controllers\Api\V2\ProductController@queriesProducts')->name('api.products.queries');
     Route::get('products/search', 'App\Http\Controllers\Api\V2\ProductController@search');
     Route::post('products/variant/price', 'App\Http\Controllers\Api\V2\ProductController@getPrice');
@@ -454,11 +454,11 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
         Route::get('instamojo/failed', 'App\Http\Controllers\Api\V2\InstamojoController@failed');
 
         // Cybersource
-        Route::post('cyber-source/payment/pay', 'App\Http\Controllers\Api\V2\CybersourceController@pay')->name('cybersource.pay');
-        Route::any('cyber-source/payment/process', 'App\Http\Controllers\Api\V2\CybersourceController@process')->name('cybersource.process');
-        Route::any('cyber-source/payment/callback', 'App\Http\Controllers\Api\V2\CybersourceController@callback')->name('cybersource.callback');
-        Route::any('cyber-source/payment/webhook', 'App\Http\Controllers\Api\V2\CybersourceController@webhook')->name('cybersource.webhook');
-        
+        Route::post('cyber-source/payment/pay', [\App\Http\Controllers\DisabledAddonController::class, 'pay'])->name('cybersource.pay');
+        Route::any('cyber-source/payment/process', [\App\Http\Controllers\DisabledAddonController::class, 'process'])->name('cybersource.process');
+        Route::any('cyber-source/payment/callback', [\App\Http\Controllers\DisabledAddonController::class, 'callback'])->name('cybersource.callback');
+        Route::any('cyber-source/payment/webhook', [\App\Http\Controllers\DisabledAddonController::class, 'webhook'])->name('cybersource.webhook');
+
         //Payfast routes <starts>
         Route::controller(PayfastController::class)->group(function () {
             Route::any('/payfast/notify', 'payfast_notify')->name('api.payfast.notify');

@@ -11,7 +11,7 @@
 |
 */
 
-use App\Http\Controllers\WholesaleProductController;
+use App\Http\Controllers\DisabledAddonController as WholesaleProductController;
 
 //Admin
 

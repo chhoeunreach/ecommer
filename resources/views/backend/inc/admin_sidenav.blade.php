@@ -101,7 +101,7 @@
                                     <ul class="aiz-side-nav-list level-3">
                                         @can('show_all_products')
                                             <li class="aiz-side-nav-item">
-                                                <a href="{{route('products.all')}}"
+                                                <a href="{{ url('admin/products/all') }}"
                                                     class="aiz-side-nav-link {{ areActiveRoutes(['products.all']) || request('source') == 'all' ? 'active' : ''}}">
                                                     <span class="aiz-side-nav-text"
                                                         style="color: {{ get_setting('navbar_text_color') }}">{{ translate('All Products') }}</span>
@@ -322,6 +322,13 @@
                                                         style="color: {{ get_setting('navbar_text_color') }}">{{translate('Smart Bar')}}</span>
                                                 </a>
                                             </li>
+                                            <li class="aiz-side-nav-item">
+                                                <a class="aiz-side-nav-link {{ areActiveRoutes(['product.detail.buttons']) }}"
+                                                    href="{{ route('product.detail.buttons') }}">
+                                                    <span class="aiz-side-nav-text"
+                                                        style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Product Detail Buttons') }}</span>
+                                                </a>
+                                            </li>
                                         @endcan
                                         @can('view_custom_label')
                                             <li class="aiz-side-nav-item">
@@ -501,7 +508,7 @@
                     </span>
                 </li>
 
-                @canany(['view_all_orders', 'view_inhouse_orders', 'view_seller_orders', 'view_pickup_point_orders'])
+                @canany(['view_all_orders', 'view_inhouse_orders', 'view_seller_orders', 'view_pickup_point_orders', 'view_customer_orders'])
                     <li class="aiz-side-nav-item">
                         <a href="#" class="aiz-side-nav-link">
                             <div class="aiz-side-nav-icon">
@@ -565,6 +572,15 @@
                                         class="aiz-side-nav-link {{ areActiveRoutes(['unpaid_orders.index'])}}">
                                         <span class="aiz-side-nav-text"
                                             style="color: {{ get_setting('navbar_text_color') }}">{{translate('Unpaid Orders')}}</span>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('view_customer_orders')
+                                <li class="aiz-side-nav-item">
+                                    <a href="{{ route('customer_orders.index') }}"
+                                        class="aiz-side-nav-link {{ areActiveRoutes(['customer_orders.index', 'customer_orders.show'])}}">
+                                        <span class="aiz-side-nav-text"
+                                            style="color: {{ get_setting('navbar_text_color') }}">{{translate('Customer Orders')}}</span>
                                     </a>
                                 </li>
                             @endcan

@@ -142,7 +142,7 @@
                                                                 class="col border-0 text-center px-0 fs-14 input-number"
                                                                 placeholder="1" value="{{ $cartItem['quantity'] }}"
                                                                 min="{{ $product->min_qty }}"
-                                                                max="{{ $product_stock->qty }}"
+                                                                max="{{ $product_stock->qty ?? $product->min_qty }}"
                                                                 onchange="updateQuantity({{ $cartItem->id }}, this)" style="min-width: 45px;">
                                                             <button
                                                                 class="btn col-auto btn-icon btn-sm btn-light rounded-0"
@@ -259,7 +259,7 @@
                                                                     class="col border-0 text-center px-0 fs-14 input-number"
                                                                     placeholder="1" value="{{ $cartItem['quantity'] }}"
                                                                     min="{{ $product->min_qty }}"
-                                                                    max="{{ $product_stock->qty }}"
+                                                                    max="{{ $product_stock->qty ?? $product->min_qty }}"
                                                                     onchange="updateQuantity({{ $cartItem->id }}, this)" style="min-width: 45px;">
                                                                 <button
                                                                     class="btn col-auto btn-icon btn-sm btn-light rounded-0"

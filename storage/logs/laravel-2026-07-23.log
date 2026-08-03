@@ -1,8 +1,0 @@
-[2026-07-23 16:36:25] local.ERROR: Command ".\server.php" is not defined. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \".\\server.php\" is not defined. at C:\\xampp\\htdocs\\apply like facebook\\active ecommer\\vendor\\symfony\\console\\Application.php:737)
-[stacktrace]
-#0 C:\\xampp\\htdocs\\apply like facebook\\active ecommer\\vendor\\symfony\\console\\Application.php(266): Symfony\\Component\\Console\\Application->find('.\\\\server.php')
-#1 C:\\xampp\\htdocs\\apply like facebook\\active ecommer\\vendor\\symfony\\console\\Application.php(175): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
-#2 C:\\xampp\\htdocs\\apply like facebook\\active ecommer\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(201): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
-#3 C:\\xampp\\htdocs\\apply like facebook\\active ecommer\\artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
-#4 {main}
-"} 

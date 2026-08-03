@@ -252,7 +252,7 @@
                         const text = $(items[i]).find(".aiz-side-nav-text")[0].innerText;
                         const link = $(items[i]).attr('href');
                         $("#search-menu").append(
-                            `<li class="aiz-side-nav-item"><a href="${link}" class="aiz-side-nav-link"><i class="las la-ellipsis-h aiz-side-nav-icon"></i><span style="color: {{ get_setting('navbar_text_color') }}">${text}</span></a></li`
+                            `<li class="aiz-side-nav-item"><a href="${link}" class="aiz-side-nav-link"><i class="las la-ellipsis-h aiz-side-nav-icon"></i><span style="color: {{ get_setting('navbar_text_color') }}">${text}</span></a></li>`
                             );
                     }
                 } else {
