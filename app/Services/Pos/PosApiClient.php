@@ -30,9 +30,15 @@ class PosApiClient
         return $this->get('brands');
     }
 
-    public function products(int $limit = 50, int $page = 1): array
+    public function products(int $limit = 50, int $page = 1, string $search = ''): array
     {
-        return $this->get('products', compact('limit', 'page'));
+        $query = compact('limit', 'page');
+
+        if ($search !== '') {
+            $query['search'] = $search;
+        }
+
+        return $this->get('products', $query);
     }
 
     public function product($id): array

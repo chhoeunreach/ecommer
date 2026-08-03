@@ -220,9 +220,9 @@ class PosSyncService
         return ['count' => $count];
     }
 
-    public function productManagerPage(int $limit = 50, int $page = 1): array
+    public function productManagerPage(int $limit = 50, int $page = 1, string $search = ''): array
     {
-        $response = $this->client->products($limit, $page);
+        $response = $this->client->products($limit, $page, $search);
         $items = $this->collection($response);
         $posIds = array_values(array_filter(array_map(fn ($item) => (string) $this->value($item, ['id', 'product_id']), $items)));
         $mappings = PosSyncMapping::where('entity_type', 'product')
@@ -253,6 +253,7 @@ class PosSyncService
             'rows' => $rows,
             'page' => $page,
             'limit' => $limit,
+            'search' => $search,
             'last_page' => $this->lastPage($response, $page),
             'total' => (int) data_get($response, 'total', data_get($response, 'data.total', count($rows))),
             'imported_total' => PosSyncMapping::where('entity_type', 'product')->count(),

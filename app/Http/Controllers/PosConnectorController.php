@@ -27,7 +27,8 @@ class PosConnectorController extends Controller
             try {
                 $productManager = (new PosSyncService())->productManagerPage(
                     (int) request('limit', 50),
-                    (int) request('page', 1)
+                    (int) request('page', 1),
+                    trim((string) request('search', ''))
                 );
             } catch (\Throwable $e) {
                 Log::warning('POS product manager failed to load', ['error' => $e->getMessage()]);

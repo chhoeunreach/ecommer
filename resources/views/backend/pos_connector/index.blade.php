@@ -81,6 +81,25 @@
                 </div>
                 <div class="card-body">
                     @if($productManager)
+                        <form method="GET" action="{{ route('pos-connector.index') }}" class="mb-3">
+                            <div class="input-group">
+                                <input type="search" name="search" class="form-control"
+                                    value="{{ $productManager['search'] }}"
+                                    placeholder="{{ translate('Search POS products by name or SKU') }}"
+                                    aria-label="{{ translate('Search POS products') }}">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="las la-search"></i> {{ translate('Search') }}
+                                    </button>
+                                    @if($productManager['search'] !== '')
+                                        <a class="btn btn-soft-secondary" href="{{ route('pos-connector.index') }}">
+                                            {{ translate('Clear') }}
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </form>
+
                         <form method="POST" action="{{ route('pos-connector.products.action') }}" id="pos-products-action-form">
                             @csrf
                             <input type="hidden" name="action" id="pos-products-action">
