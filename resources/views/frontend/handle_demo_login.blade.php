@@ -87,7 +87,7 @@
                             <a href="https://codecanyon.net/item/active-ecommerce-delivery-boy-flutter-app/32173746" target="_blank" class="fs-14 fw-700 text-primary mx-3 animate-underline-primary">Delivery Boy Mobile App</a>
                         </div>
                         <div class="mb-5">
-                            <a href="https://codecanyon.net/user/activeitzone/portfolio" target="_blank" class="fs-12 fw-500 hov-text-primary" style="text-decoration: underline; text-transform: uppercase;color: #78829d;">View all Add-ons for Active eCommerce CMS</a>
+                            <a href="{{ url('/') }}" class="fs-12 fw-500 hov-text-primary" style="text-decoration: underline; text-transform: uppercase;color: #78829d;">View all Add-ons for Active eCommerce CMS</a>
                         </div>
                         <div class="d-flex flex-wrap justify-content-center mb-2">
                             <a href="{{ url('/') }}" class="fs-14 fw-700 text-primary mx-4 d-flex align-items-center">

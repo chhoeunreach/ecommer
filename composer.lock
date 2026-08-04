@@ -4915,12 +4915,12 @@
             "version": "v2.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/activeitzone-github/core-component-repository.git",
+                "url": "https://github.com/local-repository/core-component-repository.git",
                 "reference": "f00bf6b8c3f7894d22ddbce1e15a6409d34c8dca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/activeitzone-github/core-component-repository/zipball/f00bf6b8c3f7894d22ddbce1e15a6409d34c8dca",
+                "url": "https://api.github.com/repos/local-repository/core-component-repository/zipball/f00bf6b8c3f7894d22ddbce1e15a6409d34c8dca",
                 "reference": "f00bf6b8c3f7894d22ddbce1e15a6409d34c8dca",
                 "shasum": ""
             },
@@ -4969,8 +4969,8 @@
                 "mehedi-iitdu"
             ],
             "support": {
-                "issues": "https://github.com/activeitzone-github/core-component-repository/issues",
-                "source": "https://github.com/activeitzone-github/core-component-repository/tree/v2.2"
+                "issues": "https://github.com/local-repository/core-component-repository/issues",
+                "source": "https://github.com/local-repository/core-component-repository/tree/v2.2"
             },
             "time": "2023-02-14T07:23:35+00:00"
         },
