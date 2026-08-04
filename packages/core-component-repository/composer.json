@@ -1,0 +1,26 @@
+{
+    "name": "mehedi-iitdu/core-component-repository",
+    "description": "Core component repository bundled for reproducible builds",
+    "version": "2.2.0",
+    "license": "MIT",
+    "type": "library",
+    "require": {
+        "php": "^7.3|^8.0",
+        "illuminate/support": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "MehediIitdu\\CoreComponentRepository\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MehediIitdu\\CoreComponentRepository\\CoreComponentRepositoryServiceProvider"
+            ],
+            "aliases": {
+                "CoreComponentRepository": "MehediIitdu\\CoreComponentRepository\\CoreComponentRepositoryFacade"
+            }
+        }
+    }
+}
