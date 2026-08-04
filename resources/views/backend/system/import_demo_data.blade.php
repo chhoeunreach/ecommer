@@ -17,7 +17,7 @@
 							</li>
 							<li class="">{{ translate('It may take some times to upload so do not close the browser or tab.') }}</li>
 							<li class="">{{ translate('If you have previous data, then it may conflicts with some of your current data.') }}</li>
-							<li class="">{{ translate('Make sure you have activated your system with the domain and site URL.') }}</li>
+							<li class="">{{ translate('Make sure you have a backup of your current data before importing.') }}</li>
 						</ul>
 					</div>
 					<form action="{{ route('import_data') }}" method="post" enctype="multipart/form-data">
@@ -31,27 +31,6 @@
                                     <!--<option value="metro">Metro</option>-->
                                     <!--<option value="minima">Minima</option>-->
                                 </select>
-							</div>
-						</div>
-						<!-- Purchase Code -->
-						<div class="form-group row">
-							<label class="col-xxl-3 col-from-label fs-13">{{translate('Purchase Code')}} <span class="text-danger">*</span></label>
-							<div class="col-xxl-9">
-								<input type="text" class="form-control" name="purchase_key" placeholder="{{ translate('CodeCanyon Purchase Code') }}" required>
-							</div>
-						</div>
-						<!-- Domain Name -->
-						<div class="form-group row">
-							<label class="col-xxl-3 col-from-label fs-13">{{translate('Domain Name')}} <span class="text-danger">*</span></label>
-							<div class="col-xxl-9">
-								<input type="text" class="form-control" name="domain" value="{{ request()->getHost() }}" placeholder="{{ translate('Domain Name (example: abcd.com)') }}" required>
-							</div>
-						</div>
-						<!-- Main Site URL -->
-						<div class="form-group row">
-							<label class="col-xxl-3 col-from-label fs-13">{{translate('Site URL')}} <span class="text-danger">*</span></label>
-							<div class="col-xxl-9">
-								<input type="text" class="form-control" name="main_url" value="{{ URL::to('/') }}" placeholder="{{ translate('Site URL (example: https://www.abcd.com or https://abcd.com)') }}" required>
 							</div>
 						</div>
 						<!-- Submit button -->

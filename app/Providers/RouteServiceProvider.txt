@@ -74,8 +74,6 @@ class RouteServiceProvider extends ServiceProvider
 
     $this->mapPreorderRoutes();
 
-    $this->mapCybersourceRoutes();
-
     $this->mapGstRoutes();
 
     $this->mapShiprocketRoutes();

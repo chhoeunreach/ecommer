@@ -30,24 +30,13 @@
                               </g>
                             </g>
                         </svg>
-                        <h1 class="fs-21 fw-700 text-uppercase mt-2" style="color: #3d3d3d;">Purchase Code</h1>
+                        <h1 class="fs-21 fw-700 text-uppercase mt-2" style="color: #3d3d3d;">Get Started</h1>
                         <p class="fs-12 fw-500" style="color:  #666; line-height: 18px;">
-                            Provide your codecanyon purchase code.<br>
-                            <a href="https://help.market.envato.com/hc/en-us/articles/202822600-Where-Is-My-Purchase-Code" target="_blank" class="text-blue hov-text-primary"><i>Where to get purchase code?</i></a>
+                            Your server meets all requirements. Click continue to setup your database.
                         </p>
                     </div>
 
-                    <form method="POST" action="{{ route('purchase.code') }}">
-                        @csrf
-                        <div class="form-group mb-3">
-                            <label for="purchase_code" class="fs-12 fw-500" style="color: #666;">Purchase Code</label>
-                            <input type="text" class="form-control rounded-2 border" style="height: 36px !important;" id="purchase_code" name="purchase_code" placeholder="**** **** **** ****" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="system_key" class="fs-12 fw-500" style="color: #666;">System Key</label>
-                            <input type="text" class="form-control rounded-2 border" style="height: 36px !important;" id="system_key" name="system_key" placeholder="***************************" required>
-                            <p class="text-right fs-11">After activating the application you will get the system key.</p>
-                        </div>
+                    <form method="GET" action="{{ route('step3') }}">
                         <div class="text-center mt-3 pt-4">
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="110" height="90" viewBox="0 0 110 90">
                                 <defs>
@@ -77,8 +66,7 @@
                           </a>
                             <button type="submit" class="btn btn-install text-uppercase">Continue</button>
                         </div>
-                    </form>
-                </div>
+                    </form>                </div>
 
                 <!-- Common file -->
                 @include('installation.common')

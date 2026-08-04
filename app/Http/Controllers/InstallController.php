@@ -62,6 +62,7 @@ class InstallController extends Controller
         $businessSetting->save();
 
         $this->writeEnvironmentFile('APP_NAME', $request->system_name);
+        $this->writeEnvironmentFile('APP_INSTALLED', 'true');
         Artisan::call('key:generate');
 
         $user = new User;
@@ -117,14 +118,19 @@ class InstallController extends Controller
         $sql_path = base_path('shop.sql');
         DB::unprepared(file_get_contents($sql_path));
 
-        // import sql
-        $sql_path = base_path('public/demo.sql');
-        DB::unprepared(file_get_contents($sql_path));
+        // import demo sql (optional - only when the demo package is present)
+        $demo_sql_path = base_path('public/demo.sql');
+        if (file_exists($demo_sql_path)) {
+            DB::unprepared(file_get_contents($demo_sql_path));
+        }
 
-        // extract images
-        $zip = new ZipArchive;
-        $zip->open(base_path('public/uploads.zip'));
-        $zip->extractTo('public/uploads/all/');
+        // extract demo images (optional - only when the demo package is present)
+        $uploads_zip = base_path('public/uploads.zip');
+        if (file_exists($uploads_zip)) {
+            $zip = new ZipArchive;
+            $zip->open($uploads_zip);
+            $zip->extractTo('public/uploads/all/');
+        }
         flash(translate('Demo data uploaded successfully'))->success();
         return redirect('step5');
     }

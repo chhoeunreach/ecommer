@@ -1357,10 +1357,7 @@ if (!function_exists('my_asset')) {
             return Storage::disk(config('filesystems.default'))->url($path);
         }
 
-        // This app's docroot is the project root, not /public (see
-        // nginx/default.conf) -- asset() must be prefixed with 'public/' to
-        // resolve correctly. Without it, every asset URL 404s.
-        return app('url')->asset('public/' . $path, $secure);
+        return app('url')->asset(asset_path($path), $secure);
     }
 }
 
@@ -1374,7 +1371,64 @@ if (!function_exists('static_asset')) {
      */
     function static_asset($path, $secure = null)
     {
-        return app('url')->asset('public/' . $path, $secure);
+        return app('url')->asset(asset_path($path), $secure);
+    }
+}
+
+if (!function_exists('asset_path')) {
+    /**
+     * Generate the relative path for local public assets.
+     *
+     * The project can run from the repository root index.php on shared
+     * hosting, or from public/index.php via artisan/nginx. Root mode needs a
+     * public/ prefix; public docroot mode does not.
+     *
+     * @param string $path
+     * @return string
+     */
+    function asset_path($path)
+    {
+        $path = ltrim($path, '/');
+
+        if (asset_path_needs_public_prefix()) {
+            return 'public/' . $path;
+        }
+
+        return $path;
+    }
+}
+
+if (!function_exists('asset_path_needs_public_prefix')) {
+    /**
+     * Determine whether asset URLs should include the public/ directory.
+     *
+     * @return bool
+     */
+    function asset_path_needs_public_prefix()
+    {
+        if (env('ASSET_PUBLIC_PREFIX') !== null) {
+            return filter_var(env('ASSET_PUBLIC_PREFIX'), FILTER_VALIDATE_BOOLEAN);
+        }
+
+        if (PHP_SAPI === 'cli-server') {
+            return false;
+        }
+
+        $script = isset($_SERVER['SCRIPT_FILENAME']) ? realpath($_SERVER['SCRIPT_FILENAME']) : false;
+        $rootIndex = realpath(base_path('index.php'));
+        $publicIndex = realpath(public_path('index.php'));
+
+        if ($script && $publicIndex && $script === $publicIndex) {
+            return false;
+        }
+
+        if ($script && $rootIndex && $script === $rootIndex) {
+            return true;
+        }
+
+        $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+
+        return strpos($scriptName, '/public/') === false;
     }
 }
 
@@ -3955,5 +4009,31 @@ if (!function_exists('custom_upload_file')) {
         $upload->save();
 
         return $upload->id; 
+    }
+}
+
+if (!function_exists('isInstallMiddleware')) {
+    /**
+     * Determine whether the application is not installed yet.
+     *
+     * When APP_INSTALLED is set in the .env file it wins. Otherwise we fall
+     * back to checking whether the "users" table exists in the configured
+     * database. If the database is unreachable we assume "not installed" so
+     * that the installer is reachable on a completely fresh server.
+     *
+     * @return bool
+     */
+    function isInstallMiddleware()
+    {
+        $installed = env('APP_INSTALLED');
+        if ($installed !== null && $installed !== '') {
+            return !filter_var($installed, FILTER_VALIDATE_BOOLEAN);
+        }
+
+        try {
+            return !\Illuminate\Support\Facades\Schema::hasTable('users');
+        } catch (\Throwable $e) {
+            return true;
+        }
     }
 }
