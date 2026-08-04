@@ -1443,12 +1443,16 @@ if (!function_exists('asset_path_needs_public_prefix')) {
 if (!function_exists('getBaseURL')) {
     function getBaseURL()
     {
-        $request = request();
-        $host = $_SERVER['HTTP_HOST'] ?? $request->getHost();
-        $scriptName = $_SERVER['SCRIPT_NAME'] ?? $request->getScriptName() ?? '';
-        $root = '//' . $host . str_replace(basename($scriptName), '', $scriptName);
+        // SCRIPT_NAME is a filesystem path under Octane/RoadRunner (for
+        // example /var/www/vendor/bin/aiz-uploader), not a browser URL.
+        // Using it here makes uploader requests target that filesystem path.
+        $configuredUrl = config('app.url');
 
-        return rtrim($root, '/');
+        if (is_string($configuredUrl) && trim($configuredUrl) !== '') {
+            return rtrim($configuredUrl, '/');
+        }
+
+        return rtrim(request()->getSchemeAndHttpHost(), '/');
     }
 }
 
@@ -1496,13 +1500,13 @@ if (!function_exists('get_setting')) {
         if ($request && $request->attributes->has($requestCacheKey)) {
             $settings = $request->attributes->get($requestCacheKey);
         } else {
-            $settings = Cache::remember('business_settings', 86400, function () {
-                return BusinessSetting::all();
-            });
+            // Business settings are edited from either the local app or
+            // Docker, while their cache stores are separate. Reading the
+            // database here prevents Design Studio changes from remaining
+            // stale in the other environment. The request attribute still
+            // ensures this is queried only once per request.
+            $settings = BusinessSetting::all();
 
-            // Octane workers persist between requests, so a function-static
-            // cache becomes stale. The request attribute gives us one Redis
-            // lookup per render and is discarded with the request sandbox.
             if ($request) {
                 $request->attributes->set($requestCacheKey, $settings);
             }

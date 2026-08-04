@@ -2,28 +2,27 @@
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 class SuperAdminSeeder extends Seeder
 {
     /**
-     * Promote the primary administrator without changing login credentials.
+     * Create or update the local super-admin login.
      *
-     * @return void
+     * Set SUPER_ADMIN_EMAIL and SUPER_ADMIN_PASSWORD in the environment to
+     * override these development defaults for a deployment.
      */
     public function run()
     {
-        $admin = User::where('user_type', 'admin')
-            ->orderBy('id')
-            ->first();
-
-        if ($admin === null) {
-            $this->command->warn('Super admin was not seeded because no admin user exists.');
-
-            return;
-        }
+        $admin = User::firstOrNew([
+            'email' => env('SUPER_ADMIN_EMAIL', 'admin@example.com'),
+        ]);
 
         $admin->name = 'Super Admin';
+        $admin->user_type = 'admin';
+        $admin->password = Hash::make(env('SUPER_ADMIN_PASSWORD', 'Admin@123456'));
+        $admin->email_verified_at = $admin->email_verified_at ?: now();
         $admin->save();
 
         $role = Role::findOrCreate('Super Admin', 'web');

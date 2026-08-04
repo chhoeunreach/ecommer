@@ -9,6 +9,18 @@
 				{{translate('Variant Price')}}
 			</td>
 			<td class="text-center" data-breakpoints="lg">
+				{{translate('Code')}}
+			</td>
+			<td class="text-center" data-breakpoints="lg">
+				{{translate('Country')}}
+			</td>
+			<td class="text-center" data-breakpoints="lg">
+				{{translate('Condition')}}
+			</td>
+			<td class="text-center" data-breakpoints="lg">
+				{{translate('Storage')}}
+			</td>
+			<td class="text-center" data-breakpoints="lg">
 				{{translate('SKU')}}
 			</td>
 			<td class="text-center" data-breakpoints="lg">
@@ -54,6 +66,18 @@
 				</td>
 				<td>
 					<input type="number" lang="en" name="price_{{ $fieldKey }}" value="{{ $unit_price }}" min="0" step="0.01" class="form-control" required>
+				</td>
+				<td>
+					<input type="text" name="code_{{ $fieldKey }}" value="" class="form-control">
+				</td>
+				<td>
+					<input type="text" name="country_{{ $fieldKey }}" value="" class="form-control">
+				</td>
+				<td>
+					<input type="text" name="condition_{{ $fieldKey }}" value="" class="form-control">
+				</td>
+				<td>
+					<input type="text" name="storage_{{ $fieldKey }}" value="" class="form-control">
 				</td>
 				<td>
 					<input type="text" name="sku_{{ $fieldKey }}" value="{{ $str }}" class="form-control">

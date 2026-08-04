@@ -527,6 +527,28 @@
     <script src="{{ static_asset('assets/js/vendors.js?v=') }}{{ get_setting('current_version') }}"></script>
     <script src="{{ static_asset('assets/js/aiz-core.js?v=') }}{{ rand(1000, 9999) }}"></script>
 
+    <script>
+        window.addEventListener('pageshow', function (event) {
+            if (!document.querySelector('.modal.show')) {
+                document.querySelectorAll('.modal-backdrop').forEach(function (backdrop) {
+                    backdrop.remove();
+                });
+                document.body.classList.remove('modal-open');
+                document.body.style.removeProperty('padding-right');
+            }
+
+            if (event.persisted) {
+                const rightOffcanvas = document.getElementById('rightOffcanvas');
+                const rightOffcanvasOverlay = document.getElementById('rightOffcanvasOverlay');
+
+                if (rightOffcanvas) rightOffcanvas.classList.remove('active');
+                if (rightOffcanvasOverlay) rightOffcanvasOverlay.classList.remove('active');
+
+                document.body.classList.remove('body-no-scroll', 'overflow-hidden');
+            }
+        });
+    </script>
+
     {{-- WhatsaApp Chat --}}
     @if (get_setting('whatsapp_chat') == 1)
         <script type="text/javascript">

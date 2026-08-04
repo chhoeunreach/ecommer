@@ -135,7 +135,12 @@ return [
     ],
 
     'flush' => [
-        \Barryvdh\Debugbar\LaravelDebugbar::class,
+        // Debugbar is a development-only dependency and is not installed in
+        // the production Docker image. Keep the Octane config usable in both
+        // environments instead of resolving a missing class at boot.
+        ...(class_exists(\Barryvdh\Debugbar\LaravelDebugbar::class)
+            ? [\Barryvdh\Debugbar\LaravelDebugbar::class]
+            : []),
     ],
 
     /*

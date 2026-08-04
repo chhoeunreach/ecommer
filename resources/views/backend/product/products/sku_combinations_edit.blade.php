@@ -9,6 +9,18 @@
                 {{translate('Variant Price')}}
             </td>
             <td class="text-center" data-breakpoints="lg">
+                {{translate('Code')}}
+            </td>
+            <td class="text-center" data-breakpoints="lg">
+                {{translate('Country')}}
+            </td>
+            <td class="text-center" data-breakpoints="lg">
+                {{translate('Condition')}}
+            </td>
+            <td class="text-center" data-breakpoints="lg">
+                {{translate('Storage')}}
+            </td>
+            <td class="text-center" data-breakpoints="lg">
                 {{translate('SKU')}}
             </td>
             <td class="text-center" data-breakpoints="lg">
@@ -72,6 +84,34 @@
                                 echo $unit_price;
                             }
                            @endphp" min="0" step="0.01" class="form-control" required>
+                </td>
+                <td>
+                    <input type="text" name="code_{{ $fieldKey }}" value="@php
+                            if($stock != null) {
+                                echo $stock->code;
+                            }
+                           @endphp" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="country_{{ $fieldKey }}" value="@php
+                            if($stock != null) {
+                                echo $stock->country;
+                            }
+                           @endphp" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="condition_{{ $fieldKey }}" value="@php
+                            if($stock != null) {
+                                echo $stock->condition;
+                            }
+                           @endphp" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="storage_{{ $fieldKey }}" value="@php
+                            if($stock != null) {
+                                echo $stock->storage;
+                            }
+                           @endphp" class="form-control">
                 </td>
                 <td>
                     <input type="text" name="sku_{{ $fieldKey }}" value="@php

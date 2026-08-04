@@ -31,6 +31,10 @@ class ProductStockService
                 $product_stock->variant = $str;
                 $product_stock->price = request()->input('price_' . $fieldKey, $collection['unit_price']);
                 $product_stock->sku = request()->input('sku_' . $fieldKey, $str);
+                $product_stock->code = request()->input('code_' . $fieldKey);
+                $product_stock->country = request()->input('country_' . $fieldKey);
+                $product_stock->condition = request()->input('condition_' . $fieldKey);
+                $product_stock->storage = request()->input('storage_' . $fieldKey);
                 $product_stock->qty = request()->input('qty_' . $fieldKey, 0);
                 $product_stock->image = request()->input('img_' . $fieldKey);
                 $product_stock->save();
