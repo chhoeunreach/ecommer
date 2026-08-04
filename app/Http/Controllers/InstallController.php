@@ -81,13 +81,10 @@ class InstallController extends Controller
         copy($newRouteServiceProvier, $previousRouteServiceProvier);
         //sleep(5);
 
-        if (Session::has('purchase_code')) {
-            $business_settings = new BusinessSetting;
-            $business_settings->type = 'purchase_code';
-            $business_settings->value = Session::get('purchase_code');
-            $business_settings->save();
-            Session::forget('purchase_code');
-        }
+        $business_settings = BusinessSetting::firstOrNew(['type' => 'purchase_code']);
+        $business_settings->value = Session::get('purchase_code', 'local-auto-activated');
+        $business_settings->save();
+        Session::forget('purchase_code');
         Artisan::call('optimize:clear');
         return view('installation.step6');
     }

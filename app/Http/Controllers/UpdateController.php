@@ -73,6 +73,11 @@ class UpdateController extends Controller
 
     public function purchase_code(Request $request)
     {
+        BusinessSetting::updateOrCreate(
+            ['type' => 'purchase_code'],
+            ['value' => $request->purchase_code ?: 'local-auto-activated']
+        );
+
         return redirect()->route('update.step2');
     }
 

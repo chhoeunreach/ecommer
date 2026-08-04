@@ -72,10 +72,10 @@
                             <div class="mb-4 text-center">
                                 <img class="h-40px" src="{{ my_asset('assets/img/demo/link/logo.svg') }}" alt="Active eCommerce CMS">
                             </div>
-                            <a href="https://demo.activeitzone.com/ecommerce/users/login" class="btn btn-block btn-lg btn-soft-primary fs-14 fw-700 mb-3 rounded-2">Login as Customer</a>
-                            <a href="https://demo.activeitzone.com/ecommerce/login" class="btn btn-block btn-lg btn-soft-info fs-14 fw-700 mb-3 rounded-2">Login as Admin</a>
-                            <a href="https://demo.activeitzone.com/ecommerce/seller/login" class="btn btn-block btn-lg btn-soft-success fs-14 fw-700 mb-3 rounded-2">Login as Seller</a>
-                            <a href="https://demo.activeitzone.com/ecommerce/deliveryboy/login" class="btn btn-block btn-lg btn-soft-warning fs-14 fw-700 mb-3 rounded-2">Login as Delivery Boy</a>
+                            <a href="{{ url('/users/login') }}" class="btn btn-block btn-lg btn-soft-primary fs-14 fw-700 mb-3 rounded-2">Login as Customer</a>
+                            <a href="{{ url('/login') }}" class="btn btn-block btn-lg btn-soft-info fs-14 fw-700 mb-3 rounded-2">Login as Admin</a>
+                            <a href="{{ url('/seller/login') }}" class="btn btn-block btn-lg btn-soft-success fs-14 fw-700 mb-3 rounded-2">Login as Seller</a>
+                            <a href="{{ url('/deliveryboy/login') }}" class="btn btn-block btn-lg btn-soft-warning fs-14 fw-700 mb-3 rounded-2">Login as Delivery Boy</a>
                             <small class="d-block fs-10 text-center" style="color: #78829d;">* The above links of Login will forward you to main demo.</small>
                         </div>
                     </div>
@@ -90,7 +90,7 @@
                             <a href="https://codecanyon.net/user/activeitzone/portfolio" target="_blank" class="fs-12 fw-500 hov-text-primary" style="text-decoration: underline; text-transform: uppercase;color: #78829d;">View all Add-ons for Active eCommerce CMS</a>
                         </div>
                         <div class="d-flex flex-wrap justify-content-center mb-2">
-                            <a href="https://activeitzone.com/docs/active-ecommerce-cms/" target="_blank" class="fs-14 fw-700 text-primary mx-4 d-flex align-items-center">
+                            <a href="{{ url('/') }}" class="fs-14 fw-700 text-primary mx-4 d-flex align-items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="16" viewBox="0 0 12 16">
                                     <path id="Google_Docs" data-name="Google Docs" d="M14.9,3.433,11.567.1a.333.333,0,0,0-.233-.1h-7A1.333,1.333,0,0,0,3,1.333V14.667A1.333,1.333,0,0,0,4.333,16h9.333A1.333,1.333,0,0,0,15,14.667v-11a.333.333,0,0,0-.1-.233ZM9.333,12H6a.333.333,0,0,1,0-.667H9.333a.333.333,0,0,1,0,.667ZM12,10.667H6A.333.333,0,0,1,6,10h6a.333.333,0,1,1,0,.667Zm0-1.333H6a.333.333,0,0,1,0-.667h6a.333.333,0,1,1,0,.667ZM12,8H6a.333.333,0,0,1,0-.667h6A.333.333,0,1,1,12,8Zm.333-4.667a.667.667,0,0,1-.667-.667V1.14L13.86,3.333Z" transform="translate(-3)" fill="#1b84ff"/>
                                 </svg>
@@ -113,7 +113,7 @@
                             </a>
                         </div>
                         <div class="">
-                            <a href="https://activeitzone.com/" target="_blank" class="fs-12 hov-text-primary" style="color: #78829d;">www.activeitzone.com</a>
+                            <a href="{{ url('/') }}" class="fs-12 hov-text-primary" style="color: #78829d;">{{ url('/') }}</a>
                         </div>
                     </div>
                 </div>
