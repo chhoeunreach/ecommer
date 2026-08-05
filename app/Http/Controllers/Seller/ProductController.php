@@ -446,6 +446,24 @@ class ProductController extends Controller
         echo json_encode($html);
     }
 
+    public function add_new_attribute_value(Request $request)
+    {
+        $value = $request->value;
+        $attribute_id = $request->attribute_id;
+
+        if (!empty($value) && !empty($attribute_id)) {
+            $existing = AttributeValue::where('attribute_id', $attribute_id)->where('value', $value)->first();
+            if(!$existing) {
+                $attribute_value = new AttributeValue;
+                $attribute_value->attribute_id = $attribute_id;
+                $attribute_value->value = ucfirst($value);
+                $attribute_value->save();
+            }
+        }
+        
+        return $this->add_more_choice_option($request);
+    }
+
     public function updatePublished(Request $request)
     {
         $product = Product::findOrFail($request->id);

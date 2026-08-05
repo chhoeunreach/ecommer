@@ -1280,13 +1280,44 @@
                         <select class="form-control aiz-selectpicker attribute_choice" data-live-search="true" name="choice_options_'+ i +'[]" data-selected-text-format="count" multiple required>\
                             '+obj+'\
                         </select>\
+                        <div class="mt-1">\
+                            <a href="javascript:void(0)" onclick="add_new_attribute_value('+i+', \''+name+'\')" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">\
+                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>\
+                                <span> {{translate("New ") }} ' + name + '</span>\
+                            </a>\
+                        </div>\
                     </div>\
                 </div>');
                 AIZ.plugins.bootstrapSelect('refresh');
            }
        });
+    }
 
-
+    function add_new_attribute_value(attribute_id, attribute_name) {
+        var value = prompt("{{ translate('Enter new ') }}" + attribute_name + " {{ translate('value:') }}");
+        if(value != null && value.trim() != "") {
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "POST",
+                url: '{{ route("products.add-new-attribute-value") }}',
+                data: {
+                    attribute_id: attribute_id,
+                    value: value
+                },
+                success: function(data) {
+                    var obj = JSON.parse(data);
+                    var select = $('select[name="choice_options_' + attribute_id + '[]"]');
+                    var currentValues = select.val() || [];
+                    select.html(obj);
+                    currentValues.push(value.trim().charAt(0).toUpperCase() + value.trim().slice(1));
+                    select.val(currentValues);
+                    AIZ.plugins.bootstrapSelect('refresh');
+                    update_sku();
+                }
+            });
+        }
     }
 
     $('input[name="colors_active"]').on('change', function() {

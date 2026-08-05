@@ -26,6 +26,12 @@ class ProductStockService
             foreach ($combinations as $key => $combination) {
                 $str = ProductUtility::get_combination_string($combination, $collection);
                 $fieldKey = md5($str);
+                
+                // If the user removed this variant row from the UI, its inputs won't be in the request.
+                if (!request()->has('price_' . $fieldKey)) {
+                    continue;
+                }
+
                 $product_stock = new ProductStock();
                 $product_stock->product_id = $product->id;
                 $product_stock->variant = $str;

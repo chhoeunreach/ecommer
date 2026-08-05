@@ -37,8 +37,8 @@
                         <!-- footer logo -->
                         <div class="mt-3 mb-4">
                             <a href="#" class="d-block">
-                                <img class="lazyload h-45px" src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
-                                        data-src="{{ uploaded_asset(get_setting('footer_logo')) }}" alt="Logo" height="45">
+                                <img class="lazyload h-45px mw-100" style="object-fit: contain;" src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
+                                        data-src="{{ uploaded_asset(get_setting('footer_logo')) }}" alt="Logo" height="45" width="200">
                             </a>
                         </div>
                         <p class="fs-13 fw-400" style="color: {{ get_setting('footer_text_color') }}">{!! get_setting('about_us_description', null, App::getLocale()) !!}
@@ -266,10 +266,10 @@
                         <!-- footer logo -->
                         <div class="mt-3 mb-4">
                             <a href="#" class="d-block">
-                                <img class="lazyload h-45px"
+                                <img class="lazyload h-45px mw-100" style="object-fit: contain;"
                                     src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
                                     data-src="{{ uploaded_asset(get_setting('footer_logo')) }}" alt="Logo"
-                                    height="45">
+                                    height="45" width="200">
                             </a>
                         </div>
                         <p class="" style="color: {{ get_setting('footer_text_color') }}">{!! get_setting('about_us_description', null, App::getLocale()) !!}</p>

@@ -182,7 +182,9 @@ if (!function_exists('get_active_countries')) {
 if (!function_exists('filter_products')) {
     function filter_products($products)
     {
-
+        if ($products instanceof \Illuminate\Database\Eloquent\Builder || $products instanceof \Illuminate\Database\Eloquent\Relations\Relation) {
+            $products = $products->with(['taxes', 'bids', 'photos']);
+        }
         $products = $products->isApprovedPublished()->where('auction_product', 0);
 
         if (!addon_is_activated('wholesale')) {

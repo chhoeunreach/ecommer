@@ -8,13 +8,13 @@
                 <div class="mt-3 mb-4">
                     <a href="{{ route('home') }}" class="d-block">
                         @if (get_setting('footer_logo') != null)
-                            <img class="lazyload h-45px" src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
+                            <img class="lazyload h-45px mw-100" style="object-fit: contain;" src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
                                 data-src="{{ uploaded_asset(get_setting('footer_logo')) }}"
-                                alt="{{ env('APP_NAME') }}" height="45">
+                                alt="{{ env('APP_NAME') }}" height="45" width="200">
                         @else
-                            <img class="lazyload h-45px" src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
+                            <img class="lazyload h-45px mw-100" style="object-fit: contain;" src="{{ static_asset('assets/img/placeholder-rect.jpg') }}"
                                 data-src="{{ static_asset('assets/img/logo.png') }}" alt="{{ env('APP_NAME') }}"
-                                height="45">
+                                height="45" width="200">
                         @endif
                     </a>
                 </div>

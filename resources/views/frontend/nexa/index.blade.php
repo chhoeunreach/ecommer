@@ -20,8 +20,9 @@
                 @foreach ($sliders as $key => $slider)
                     <a href="{{ isset(json_decode($home_slider_links, true)[$key]) ? json_decode($home_slider_links, true)[$key] : '' }}" class="d-block w-100 hero-banner-wrapper">
                         <div class="hero-banner-container hov-scale-img overflow-hidden" >
-                            <img class="img-fit mx-auto w-100  h-100 lazyload  has-transition" style="object-position: center;"
-                                src="{{ $slider ? my_asset($slider->file_name) : static_asset('assets/img/placeholder.jpg') }}" data-src=""
+                            <img class="img-fit mx-auto w-100  h-100 has-transition" style="object-position: center;"
+                                src="{{ $slider ? my_asset($slider->file_name) : static_asset('assets/img/placeholder.jpg') }}"
+                                @if($key == 0) fetchpriority="high" @endif
                                 alt="{{ env('APP_NAME') }} promo" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder-rect.jpg') }}';">
                         </div>
                     </a>
@@ -44,8 +45,9 @@
                 @foreach ($small_sliders as $key => $small_slider)
                     <a href="{{ isset(json_decode($home_slider_links, true)[$key]) ? json_decode($home_slider_links, true)[$key] : '' }}" class="d-block w-100 hero-banner-wrapper">
                         <div class="hero-banner-container hov-scale-img overflow-hidden" >
-                            <img class="img-fit mx-auto w-100  h-100 lazyload  has-transition" style="object-position: center;"
-                                src="{{ $small_slider ? my_asset($small_slider->file_name) : static_asset('assets/img/placeholder.jpg') }}" data-src=""
+                            <img class="img-fit mx-auto w-100  h-100 has-transition" style="object-position: center;"
+                                src="{{ $small_slider ? my_asset($small_slider->file_name) : static_asset('assets/img/placeholder.jpg') }}"
+                                @if($key == 0) fetchpriority="high" @endif
                                 alt="{{ env('APP_NAME') }} promo" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder-rect.jpg') }}';">
                         </div>
                     </a>

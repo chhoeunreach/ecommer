@@ -430,6 +430,7 @@
 
                         <img src="{{ uploaded_asset($dynamic_popup->banner) }}"
                             class="card-img"
+                            fetchpriority="high"
                             alt="{{ $dynamic_popup->title }}">
 
                         <div class="p-4 text-center">

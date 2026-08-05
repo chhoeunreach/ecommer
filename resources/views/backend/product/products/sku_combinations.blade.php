@@ -2,11 +2,14 @@
 <table class="table table-bordered aiz-table">
 	<thead>
 		<tr>
+			<td class="text-center" data-breakpoints="lg">
+				{{translate('SKU')}}
+			</td>
 			<td class="text-center">
 				{{translate('Variant')}}
 			</td>
-			<td class="text-center">
-				{{translate('Variant Price')}}
+			<td class="text-center" data-breakpoints="lg">
+				{{translate('Storage')}}
 			</td>
 			<td class="text-center" data-breakpoints="lg">
 				{{translate('Code')}}
@@ -18,16 +21,16 @@
 				{{translate('Condition')}}
 			</td>
 			<td class="text-center" data-breakpoints="lg">
-				{{translate('Storage')}}
-			</td>
-			<td class="text-center" data-breakpoints="lg">
-				{{translate('SKU')}}
-			</td>
-			<td class="text-center" data-breakpoints="lg">
 				{{translate('Quantity')}}
+			</td>
+			<td class="text-center">
+				{{translate('Variant Price')}}
 			</td>
 			<td class="text-center" data-breakpoints="lg">
 				{{translate('Photo')}}
+			</td>
+			<td class="text-center">
+				{{translate('Action')}}
 			</td>
 		</tr>
 	</thead>
@@ -62,38 +65,42 @@
 			@php($fieldKey = md5($str))
 			<tr class="variant">
 				<td>
+					<input type="text" name="sku_{{ $fieldKey }}" value="{{ request()->has('sku_'.$fieldKey) ? request()->input('sku_'.$fieldKey) : $str }}" class="form-control">
+				</td>
+				<td>
 					<label for="" class="control-label">{{ $str }}</label>
 				</td>
 				<td>
-					<input type="number" lang="en" name="price_{{ $fieldKey }}" value="{{ $unit_price }}" min="0" step="0.01" class="form-control" required>
+					<input type="text" name="storage_{{ $fieldKey }}" value="{{ request()->input('storage_'.$fieldKey) }}" class="form-control">
 				</td>
 				<td>
-					<input type="text" name="code_{{ $fieldKey }}" value="" class="form-control">
+					<input type="text" name="code_{{ $fieldKey }}" value="{{ request()->input('code_'.$fieldKey) }}" class="form-control">
 				</td>
 				<td>
-					<input type="text" name="country_{{ $fieldKey }}" value="" class="form-control">
+					<input type="text" name="country_{{ $fieldKey }}" value="{{ request()->input('country_'.$fieldKey) }}" class="form-control">
 				</td>
 				<td>
-					<input type="text" name="condition_{{ $fieldKey }}" value="" class="form-control">
+					<input type="text" name="condition_{{ $fieldKey }}" value="{{ request()->input('condition_'.$fieldKey) }}" class="form-control">
 				</td>
 				<td>
-					<input type="text" name="storage_{{ $fieldKey }}" value="" class="form-control">
+					<input type="number" lang="en" name="qty_{{ $fieldKey }}" value="{{ request()->has('qty_'.$fieldKey) ? request()->input('qty_'.$fieldKey) : '10' }}" min="0" step="1" class="form-control" required>
 				</td>
 				<td>
-					<input type="text" name="sku_{{ $fieldKey }}" value="{{ $str }}" class="form-control">
+					<input type="number" lang="en" name="price_{{ $fieldKey }}" value="{{ request()->has('price_'.$fieldKey) ? request()->input('price_'.$fieldKey) : $unit_price }}" min="0" step="0.01" class="form-control" required>
 				</td>
 				<td>
-					<input type="number" lang="en" name="qty_{{ $fieldKey }}" value="10" min="0" step="1" class="form-control" required>
-				</td>
-				<td>
-					<div class=" input-group " data-toggle="aizuploader" data-type="image">
+					<div class="input-group" data-toggle="aizuploader" data-type="image">
 						<div class="input-group-prepend">
 							<div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse') }}</div>
 						</div>
 						<div class="form-control file-amount text-truncate">{{ translate('Choose File') }}</div>
-						<input type="hidden" name="img_{{ $fieldKey }}" class="selected-files">
+						<input type="hidden" name="img_{{ $fieldKey }}" class="selected-files" value="{{ request()->input('img_'.$fieldKey) }}">
 					</div>
-					<div class="file-preview box sm"></div>
+					<div class="file-preview box sm">
+					</div>
+				</td>
+				<td class="text-center">
+					<button type="button" class="btn btn-icon btn-sm btn-danger" onclick="delete_variant(this)"><i class="las la-trash"></i></button>
 				</td>
 			</tr>
 		@endif
