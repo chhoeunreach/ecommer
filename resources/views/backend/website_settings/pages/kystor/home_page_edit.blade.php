@@ -174,8 +174,8 @@
 						<form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
 							@csrf
 							<input type="hidden" name="tab" value="home_slider">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_slider_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_slider_links">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_slider_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_slider_links">
 
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="w-100">
@@ -528,8 +528,8 @@
 						<form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
 							@csrf
 							<input type="hidden" name="tab" value="banner_1">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner1_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner1_links">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner1_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner1_links">
 
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="w-100">
@@ -638,9 +638,9 @@
 						<form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
 							@csrf
 							<input type="hidden" name="tab" value="banner_2">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner2_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner2_sm_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner2_links">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner2_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner2_sm_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner2_links">
 
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="w-100">
@@ -793,7 +793,7 @@
 												<div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
 											</div>
 											<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-											<input type="hidden" name="types[][{{ $lang }}]" value="auction_banner_image">
+											<input type="hidden" name="types_lang[{{ $lang }}][]" value="auction_banner_image">
 											<input type="hidden" name="auction_banner_image" class="selected-files" value="{{ get_setting('auction_banner_image', null, $lang) }}">
 										</div>
 										<div class="file-preview box sm">
@@ -862,7 +862,7 @@
 											<div class="input-group-text bg-soft-secondary">{{ translate('Browse') }}</div>
 										</div>
 										<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-										<input type="hidden" name="types[][{{ $lang }}]" value="newest_preorder_banner_image">
+										<input type="hidden" name="types_lang[{{ $lang }}][]" value="newest_preorder_banner_image">
 										<input type="hidden" name="newest_preorder_banner_image" value="{{ get_setting('newest_preorder_banner_image', null, $lang) }}" class="selected-files">
 									</div>
 									<div class="file-preview box"></div>

@@ -195,8 +195,8 @@
 						<form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
 							@csrf
 							<input type="hidden" name="tab" value="home_slider">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_slider_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_slider_links">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_slider_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_slider_links">
 
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="w-100">
@@ -424,7 +424,7 @@
 														<div class="input-group-text bg-soft-secondary">{{ translate('Browse') }}</div>
 													</div>
 													<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-													<input type="hidden" name="types[][{{ $lang }}]" value="todays_deal_banner">
+													<input type="hidden" name="types_lang[{{ $lang }}][]" value="todays_deal_banner">
 													<input type="hidden" name="todays_deal_banner" value="{{ get_setting('todays_deal_banner', null, $lang) }}" class="selected-files">
 												</div>
 												<div class="file-preview box"></div>
@@ -439,7 +439,7 @@
 														<div class="input-group-text bg-soft-secondary">{{ translate('Browse') }}</div>
 													</div>
 													<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-													<input type="hidden" name="types[][{{ $lang }}]" value="todays_deal_banner_small">
+													<input type="hidden" name="types_lang[{{ $lang }}][]" value="todays_deal_banner_small">
 													<input type="hidden" name="todays_deal_banner_small" value="{{ get_setting('todays_deal_banner_small', null, $lang) }}" class="selected-files">
 												</div>
 												<div class="file-preview box"></div>
@@ -495,8 +495,8 @@
 						<form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
 							@csrf
 							<input type="hidden" name="tab" value="banner_1">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner1_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner1_links">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner1_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner1_links">
 
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="w-100">
@@ -605,8 +605,8 @@
 						<form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
 							@csrf
 							<input type="hidden" name="tab" value="preorder_banner_1">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_preorder_banner_1_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_preorder_banner_1_links">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_preorder_banner_1_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_preorder_banner_1_links">
 
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="w-100">
@@ -716,8 +716,8 @@
 						<form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
 							@csrf
 							<input type="hidden" name="tab" value="banner_2">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner2_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner2_links">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner2_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner2_links">
 
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="w-100">
@@ -826,8 +826,8 @@
 						<form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
 							@csrf
 							<input type="hidden" name="tab" value="banner_3">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner3_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner3_links">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner3_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner3_links">
 
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="w-100">
@@ -947,7 +947,7 @@
 												<div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
 											</div>
 											<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-											<input type="hidden" name="types[][{{ $lang }}]" value="auction_banner_image">
+											<input type="hidden" name="types_lang[{{ $lang }}][]" value="auction_banner_image">
 											<input type="hidden" name="auction_banner_image" class="selected-files" value="{{ get_setting('auction_banner_image', null, $lang) }}">
 										</div>
 										<div class="file-preview box sm">
@@ -984,7 +984,7 @@
 															<div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
 														</div>
 														<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-														<input type="hidden" name="types[][{{ $lang }}]" value="coupon_background_image">
+														<input type="hidden" name="types_lang[{{ $lang }}][]" value="coupon_background_image">
 														<input type="hidden" name="coupon_background_image" class="selected-files" value="{{ get_setting('coupon_background_image', null, $lang) }}">
 													</div>
 													<div class="file-preview box sm">
@@ -1014,7 +1014,7 @@
 										<div class="col-lg-12">
 											<div class="form-group">
 												<label class="col-from-label fs-13 fw-500">{{ translate('Title') }}</label>
-												<input type="hidden" name="types[][{{ $lang }}]" value="cupon_title">
+												<input type="hidden" name="types_lang[{{ $lang }}][]" value="cupon_title">
 												<input type="text" class="form-control" placeholder="{{ translate('Title') }}" name="cupon_title" value="{{ get_setting('cupon_title', null, $lang) }}">
 											</div>
 										</div>
@@ -1022,7 +1022,7 @@
 										<div class="col-12">
 											<div class="form-group">
 												<label class="col-from-label fs-13 fw-500">{{ translate('Subtitle') }}</label>
-												<input type="hidden" name="types[][{{ $lang }}]" value="cupon_subtitle">
+												<input type="hidden" name="types_lang[{{ $lang }}][]" value="cupon_subtitle">
 												<input type="text" class="form-control" placeholder="{{ translate('Subtitle') }}" name="cupon_subtitle" value="{{ get_setting('cupon_subtitle', null, $lang) }}">
 											</div>
 										</div>
@@ -1051,7 +1051,7 @@
 											<div class="input-group-text bg-soft-secondary">{{ translate('Browse') }}</div>
 										</div>
 										<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-										<input type="hidden" name="types[][{{ $lang }}]" value="newest_preorder_banner_image">
+										<input type="hidden" name="types_lang[{{ $lang }}][]" value="newest_preorder_banner_image">
 										<input type="hidden" name="newest_preorder_banner_image" value="{{ get_setting('newest_preorder_banner_image', null, $lang) }}" class="selected-files">
 									</div>
 									<div class="file-preview box"></div>
@@ -1161,7 +1161,7 @@
 													<div class="input-group-text bg-soft-secondary">{{ translate('Browse') }}</div>
 												</div>
 												<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-												<input type="hidden" name="types[][{{ $lang }}]" value="classified_banner_image">
+												<input type="hidden" name="types_lang[{{ $lang }}][]" value="classified_banner_image">
 												<input type="hidden" name="classified_banner_image" value="{{ get_setting('classified_banner_image', null, $lang) }}" class="selected-files">
 											</div>
 											<div class="file-preview box"></div>
@@ -1176,7 +1176,7 @@
 													<div class="input-group-text bg-soft-secondary">{{ translate('Browse') }}</div>
 												</div>
 												<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-												<input type="hidden" name="types[][{{ $lang }}]" value="classified_banner_image_small">
+												<input type="hidden" name="types_lang[{{ $lang }}][]" value="classified_banner_image_small">
 												<input type="hidden" name="classified_banner_image_small" value="{{ get_setting('classified_banner_image_small', null, $lang) }}" class="selected-files">
 											</div>
 											<div class="file-preview box"></div>

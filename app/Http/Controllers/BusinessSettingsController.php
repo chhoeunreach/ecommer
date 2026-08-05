@@ -451,6 +451,14 @@ class BusinessSettingsController extends Controller
     {
        // dd($request->all());
         $types = $request->types ?? [];
+
+        if ($request->has('types_lang')) {
+            foreach ($request->types_lang as $lang => $langTypes) {
+                foreach ($langTypes as $type) {
+                    $types[] = [$lang => $type];
+                }
+            }
+        }
         $resetRefundData = in_array('refund_type', $types);
         $featuredProductIds = [];
 

@@ -83,7 +83,7 @@ class PosConnectorController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => PosApiClient::readableError($e),
-            ], 422);
+            ]);
         }
     }
 

@@ -233,7 +233,11 @@
             $.post('{{ route('pos-connector.test') }}', {
                 _token: '{{ csrf_token() }}'
             }).done(function (response) {
-                AIZ.plugins.notify('success', response.message || '{{ translate('Connection successful') }}');
+                if (response.success) {
+                    AIZ.plugins.notify('success', response.message || '{{ translate('Connection successful') }}');
+                } else {
+                    AIZ.plugins.notify('danger', response.message || '{{ translate('Connection failed') }}');
+                }
             }).fail(function (xhr) {
                 var message = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : '{{ translate('Connection failed') }}';
                 AIZ.plugins.notify('danger', message);

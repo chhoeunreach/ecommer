@@ -35,7 +35,7 @@
                     <form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 						<div class="form-group d-flex justify-content-between align-items-center">
-							<input type="hidden" name="types[][{{ $lang }}]" value="show_full_width_sub_footer">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="show_full_width_sub_footer">
 							<div class="d-flex align-items-center">
 								<label class="aiz-switch aiz-switch-blue mb-0 pr-2">
 									<input type="checkbox" name="show_full_width_sub_footer" value="1"
@@ -46,7 +46,7 @@
 							</div>
 						</div>
 						<div class="form-group d-flex justify-content-between align-items-center">
-							<input type="hidden" name="types[][{{ $lang }}]" value="enable_sub_footer_section">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="enable_sub_footer_section">
 							<div class="d-flex align-items-center">
 								<label class="aiz-switch aiz-switch-blue mb-0 pr-2">
 									<input type="checkbox" name="enable_sub_footer_section" value="1"
@@ -98,13 +98,13 @@
 						<!-- Title -->
     					<div class="form-group">
     						<label>{{ translate('Title') }} ({{ translate('Translatable') }})</label>
-    						<input type="hidden" name="types[][{{ $lang }}]" value="footer_title">
+    						<input type="hidden" name="types_lang[{{ $lang }}][]" value="footer_title">
     						<input type="text" class="form-control" placeholder="Footer title" name="footer_title" value="{{ get_setting('footer_title',null,$lang) }}">
     					</div>
 						<!-- About description -->
     		            <div class="form-group">
     						<label>{{ translate('Footer description') }} ({{ translate('Translatable') }})</label>
-    						<input type="hidden" name="types[][{{ $lang }}]" value="footer_description">
+    						<input type="hidden" name="types_lang[{{ $lang }}][]" value="footer_description">
     						<textarea class="form-control" name="footer_description" rows="6" placeholder="Type.." >{{ get_setting('footer_description',null,$lang); }}</textarea>
     					</div>
 						<!-- Update Button -->
@@ -129,7 +129,7 @@
                     <form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 						<div class="form-group d-flex justify-content-between align-items-center">
-							<input type="hidden" name="types[][{{ $lang }}]" value="show_full_width_policy_section">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="show_full_width_policy_section">
 							<div class="d-flex align-items-center">
 								<label class="aiz-switch aiz-switch-blue mb-0 pr-2">
 									<input type="checkbox" name="show_full_width_policy_section" value="1"
@@ -140,7 +140,7 @@
 							</div>
 						</div>
 						<div class="form-group d-flex justify-content-between align-items-center">
-							<input type="hidden" name="types[][{{ $lang }}]" value="enable_footer_policy_section">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="enable_footer_policy_section">
 							<div class="d-flex align-items-center">
 								<label class="aiz-switch aiz-switch-blue mb-0 pr-2">
 									<input type="checkbox" name="enable_footer_policy_section" value="1"
@@ -211,7 +211,7 @@
                     <form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 						<div class="form-group d-flex justify-content-between align-items-center">
-							<input type="hidden" name="types[][{{ $lang }}]" value="show_full_width_footer">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="show_full_width_footer">
 							<div class="d-flex align-items-center">
 								<label class="aiz-switch aiz-switch-blue mb-0 pr-2">
 									<input type="checkbox" name="show_full_width_footer" value="1"
@@ -298,7 +298,7 @@
 						<!-- About description -->
     		            <div class="form-group">
     						<label>{{ translate('About description') }} ({{ translate('Translatable') }})</label>
-    						<input type="hidden" name="types[][{{ $lang }}]" value="about_us_description">
+    						<input type="hidden" name="types_lang[{{ $lang }}][]" value="about_us_description">
     						<textarea class="form-control" name="about_us_description" placeholder="Type.." row="3" maxlength="240">{!! get_setting('about_us_description',null,$lang); !!}</textarea>
     					</div>
 						<!-- Update Button -->
@@ -412,7 +412,7 @@
 						<!-- Contact address -->
                         <div class="form-group">
     						<label>{{ translate('Contact address') }} ({{ translate('Translatable') }})</label>
-    						<input type="hidden" name="types[][{{ $lang }}]" value="contact_address">
+    						<input type="hidden" name="types_lang[{{ $lang }}][]" value="contact_address">
     						<input type="text" class="form-control" placeholder="{{ translate('Address') }}" name="contact_address" value="{{ get_setting('contact_address',null,$lang) }}">
     					</div>
 						<!-- Contact phone -->
@@ -452,7 +452,7 @@
     		            <div class="form-group">
     						<label>{{ translate('Links') }} - ({{ translate('Translatable') }} {{ translate('Label') }})</label>
     						<div class="w3-links-target">
-    							<input type="hidden" name="types[][{{ $lang }}]" value="widget_one_labels">
+    							<input type="hidden" name="types_lang[{{ $lang }}][]" value="widget_one_labels">
     							<input type="hidden" name="types[]" value="widget_one_links">
     							@if (get_setting('widget_one_labels',null,$lang) != null)
     								@foreach (json_decode(get_setting('widget_one_labels',null,$lang), true) as $key => $value)
@@ -629,7 +629,7 @@
 						@csrf
 							<div class="form-group">
 								<label>{{ translate('Copyright Text') }} ({{ translate('Translatable') }})</label>
-								<input type="hidden" name="types[][{{ $lang }}]" value="frontend_copyright_text">
+								<input type="hidden" name="types_lang[{{ $lang }}][]" value="frontend_copyright_text">
 								<textarea class="form-control" name="frontend_copyright_text" placeholder="Type.." row="1" maxlength="60">{!! get_setting('frontend_copyright_text',null,$lang) !!}</textarea>
 							</div>
 							<div class="card-header p-0">

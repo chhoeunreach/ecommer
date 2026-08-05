@@ -139,9 +139,9 @@
 						<form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
 							@csrf
 							<input type="hidden" name="tab" value="home_slider">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_slider_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="small_home_slider_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_slider_links">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_slider_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="small_home_slider_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_slider_links">
 
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="w-100">
@@ -492,8 +492,8 @@
 						<form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
 							@csrf
 							<input type="hidden" name="tab" value="banner_1">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner1_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner1_links">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner1_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner1_links">
 							
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="row gutters-16">
@@ -936,7 +936,7 @@
 													</div>
 												</div>
 												<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-												<input type="hidden" name="types[][{{ $lang }}]" value="auction_banner_image">
+												<input type="hidden" name="types_lang[{{ $lang }}][]" value="auction_banner_image">
 												<input type="hidden" name="auction_banner_image" class="selected-files"
 													value="{{ get_setting('auction_banner_image', null, $lang) }}">
 											</div>
@@ -958,7 +958,7 @@
 													</div>
 												</div>
 												<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-												<input type="hidden" name="types[][{{ $lang }}]" value="auction_banner_image_small">
+												<input type="hidden" name="types_lang[{{ $lang }}][]" value="auction_banner_image_small">
 												<input type="hidden" name="auction_banner_image_small" class="selected-files"
 													value="{{ get_setting('auction_banner_image_small', null, $lang) }}">
 											</div>
@@ -1026,7 +1026,7 @@
 												</div>
 											</div>
 											<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-											<input type="hidden" name="types[][{{ $lang }}]" value="classified_banner_image">
+											<input type="hidden" name="types_lang[{{ $lang }}][]" value="classified_banner_image">
 											<input type="hidden" name="classified_banner_image" class="selected-files"
 												value="{{ get_setting('classified_banner_image', null, $lang) }}">
 										</div>
@@ -1048,7 +1048,7 @@
 												</div>
 											</div>
 											<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-											<input type="hidden" name="types[][{{ $lang }}]" value="classified_banner_image_small">
+											<input type="hidden" name="types_lang[{{ $lang }}][]" value="classified_banner_image_small">
 											<input type="hidden" name="classified_banner_image_small" class="selected-files"
 												value="{{ get_setting('classified_banner_image_small', null, $lang) }}">
 										</div>
@@ -1071,8 +1071,8 @@
 						<form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
 							@csrf
 							<input type="hidden" name="tab" value="banner_2">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner2_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner2_links">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner2_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner2_links">
 
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="row gutters-16">
@@ -1254,7 +1254,7 @@
 											<div class="input-group-text bg-soft-secondary">{{ translate('Browse') }}</div>
 										</div>
 										<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-										<input type="hidden" name="types[][{{ $lang }}]"
+										<input type="hidden" name="types_lang[{{ $lang }}][]"
 											value="newest_preorder_banner_image">
 										<input type="hidden" name="newest_preorder_banner_image"
 											value="{{ get_setting('newest_preorder_banner_image', null, $lang) }}"
@@ -1271,7 +1271,7 @@
 											<div class="input-group-text bg-soft-secondary">{{ translate('Browse') }}</div>
 										</div>
 										<div class="form-control file-amount">{{ translate('Choose File') }}</div>
-										<input type="hidden" name="types[][{{ $lang }}]"
+										<input type="hidden" name="types_lang[{{ $lang }}][]"
 											value="newest_preorder_banner_image_small">
 										<input type="hidden" name="newest_preorder_banner_image_small"
 											value="{{ get_setting('newest_preorder_banner_image_small', null, $lang) }}"
@@ -1382,9 +1382,9 @@
 						<form action="{{ route('business_settings.update') }}" method="POST" enctype="multipart/form-data">
 							@csrf
 							<input type="hidden" name="tab" value="banner_3">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner3_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="small_home_banner3_images">
-							<input type="hidden" name="types[][{{ $lang }}]" value="home_banner3_links">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner3_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="small_home_banner3_images">
+							<input type="hidden" name="types_lang[{{ $lang }}][]" value="home_banner3_links">
 
 							<div class="bg-white p-3 p-sm-2rem">
 								<div class="row gutters-16">
