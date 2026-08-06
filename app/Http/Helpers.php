@@ -183,7 +183,7 @@ if (!function_exists('filter_products')) {
     function filter_products($products)
     {
         if ($products instanceof \Illuminate\Database\Eloquent\Builder || $products instanceof \Illuminate\Database\Eloquent\Relations\Relation) {
-            $products = $products->with(['taxes', 'bids', 'photos']);
+            $products = $products->with(['taxes', 'bids']);
         }
         $products = $products->isApprovedPublished()->where('auction_product', 0);
 
@@ -1342,6 +1342,17 @@ if (!function_exists('uploaded_asset')) {
             return $asset->external_link == null ? my_asset($asset->file_name) : $asset->external_link;
         }
         return static_asset('assets/img/placeholder.jpg');
+    }
+}
+
+if (!function_exists('site_favicon_url')) {
+    /**
+     * Return a stable favicon URL. The endpoint redirects to the icon selected
+     * in Website Settings, allowing administrators to replace it at any time.
+     */
+    function site_favicon_url()
+    {
+        return url('/favicon.ico');
     }
 }
 

@@ -15,6 +15,7 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\CustomerPackageController;
 use App\Http\Controllers\CustomerProductController;
 use App\Http\Controllers\DemoController;
+use App\Http\Controllers\FaviconController;
 use App\Http\Controllers\FollowSellerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoiceController;
@@ -79,6 +80,8 @@ Route::controller(DemoController::class)->group(function () {
 Route::get('/refresh-csrf', function () {
     return csrf_token();
 });
+
+Route::get('/favicon.ico', FaviconController::class)->name('favicon');
 
 // AIZ Uploader
 Route::controller(AizUploadController::class)->group(function () {

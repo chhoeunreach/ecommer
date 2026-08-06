@@ -48,28 +48,7 @@
                             </select>
                             <small class="text-muted">{{ translate('"svg and gif" image will not be converted.') }}</small>
                         </div>
-                        <!-- Site Icon -->
-                        <div class="form-group">
-                            <label class="col-from-label">{{ translate('Site Icon') }}</label>
-                            <div class="add-product-page-content">
-                                <div class="img-upload-container">
-                                    <div class="input-group file-upload-input border border-dashed border-gray-400 rounded-1 w-120px h-120px d-flex align-items-center justify-content-center"
-                                        data-toggle="aizuploader" data-type="image" data-multiple="false">
-                                        <div
-                                            class="form-control p-0 border-0 d-flex align-items-center justify-content-center">
-                                            <img src="{{ static_asset('assets/img/plus-lg.svg') }}"
-                                                class="w-40px h-40px w-md-64px h-md-64px" alt="generate Icon">
-                                        </div>
-                                        <input type="hidden" name="types[]" value="site_icon">
-                                        <input type="hidden" name="site_icon" class="selected-files"
-                                            value="{{ get_setting('site_icon') }}">
-                                    </div>
-                                    <div class="file-preview box sm"></div>
-                                </div>
-                            </div>
-                            <small
-                                class="text-muted">{{ translate('Minimum dimensions required: 32px width X 32px height.') }}</small>
-                        </div>
+                        @include('backend.website_settings.partials.site_icon')
 
                         <!-- Update Button -->
                         <div class="mt-4 text-right">

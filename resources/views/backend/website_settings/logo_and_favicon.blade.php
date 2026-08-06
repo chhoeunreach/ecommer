@@ -59,6 +59,7 @@
                                 class="text-muted">{{ translate('Will be used in Admin login page, Seller login page & Delivery Boy login page. Minimum dimensions required: 189px width X 31px height.') }}</small>
 
                         </div>
+                        @include('backend.website_settings.partials.site_icon')
                         <!-- Update Button -->
                         <div class="mt-4 text-right">
                             <button type="submit"
