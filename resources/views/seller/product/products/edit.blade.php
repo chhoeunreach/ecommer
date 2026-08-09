@@ -1252,7 +1252,7 @@
 
 
     function add_more_customer_choice_option(i, name){
-        $.ajax({
+        return $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
@@ -1386,11 +1386,16 @@
 
     $('#choice_attributes').on('change', function() {
         $('#customer_choice_options').html(null);
-        $.each($("#choice_attributes option:selected"), function(){
-            add_more_customer_choice_option($(this).val(), $(this).text());
+        var $submitBtns = $('#aizSubmitForm .action-btn').prop('disabled', true);
+
+        var pendingRequests = $.map($("#choice_attributes option:selected"), function(option){
+            return add_more_customer_choice_option($(option).val(), $(option).text());
         });
 
-        update_sku();
+        $.when.apply($, pendingRequests).always(function() {
+            $submitBtns.prop('disabled', false);
+            update_sku();
+        });
     });
 
     function fq_bought_product_selection_type(){

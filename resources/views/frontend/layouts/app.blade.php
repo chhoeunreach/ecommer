@@ -1041,20 +1041,24 @@
         }
 
         $('#option-choice-form input').on('change', function(){
-            getVariantPrice();
+            getVariantPrice(this);
         });
 
         $(document).on('change click', '#option-choice-form input', function () {
-            getVariantPrice();
+            getVariantPrice(this);
         });
 
-        
-        function getVariantPrice(){
+
+        function getVariantPrice(triggerEl){
             if($('#option-choice-form input[name=quantity]').val() > 0 && checkAddToCartValidity()){
+                var formData = $('#option-choice-form').serializeArray();
+                if (triggerEl && triggerEl.name) {
+                    formData.push({name: 'changed_field', value: triggerEl.name});
+                }
                 $.ajax({
                     type:"POST",
                     url: '{{ route('products.variant_price') }}',
-                    data: $('#option-choice-form').serializeArray(),
+                    data: formData,
                     success: function(data){
                         
                         
@@ -1094,6 +1098,21 @@
                         $('#option-choice-form #chosen_price_div #chosen_price').html(data.price);
                         $('#variant_sku_section #variant_sku').html(data.sku);
                         $('#option-choice-form #selected_variant').html(data.variation);
+
+                        // Snap every facet picker (including color) to the resolved real variant,
+                        // since not every combination the customer clicks through is actually in stock.
+                        $.each({color: data.variation, storage: data.storage, code: data.code, country: data.country, condition: data.condition}, function(field, value) {
+                            if (!value) return;
+                            $('#option-choice-form input[name="' + field + '"]').each(function() {
+                                this.checked = (String(this.value) === String(value));
+                            });
+                        });
+
+                        $.each({storage: data.storage, code: data.code, country: data.country, condition: data.condition}, function(field, value) {
+                            var $wrap = $('#variant_' + field + '_wrap');
+                            $('#variant_' + field).html(value);
+                            $wrap.toggleClass('d-none', !value).toggleClass('d-flex', !!value);
+                        });
                         $('#available-quantity').html(data.quantity);
                         $('.input-number').prop('max', data.max_limit);
                         if(parseInt(data.in_stock) == 0 && data.digital  == 0){

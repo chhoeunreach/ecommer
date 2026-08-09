@@ -131,6 +131,29 @@
     </div>
     <!--Rating & SKU End-->
 
+    @if ($detailedProduct->variant_product)
+        <!--Variant Specs Start-->
+        <div class="d-flex flex-wrap align-items-center mb-2 mb-md-0" id="variant_specs_section" style="gap: 4px 16px;">
+            <span class="d-none align-items-center" id="variant_storage_wrap">
+                <span class="fs-14 fw-400 text-gray">{{ translate('Storage') }}</span>
+                <span class="fs-14 fw-500 text-dark ml-2" id="variant_storage"></span>
+            </span>
+            <span class="d-none align-items-center" id="variant_code_wrap">
+                <span class="fs-14 fw-400 text-gray">{{ translate('Code') }}</span>
+                <span class="fs-14 fw-500 text-dark ml-2" id="variant_code"></span>
+            </span>
+            <span class="d-none align-items-center" id="variant_country_wrap">
+                <span class="fs-14 fw-400 text-gray">{{ translate('Country') }}</span>
+                <span class="fs-14 fw-500 text-dark ml-2" id="variant_country"></span>
+            </span>
+            <span class="d-none align-items-center" id="variant_condition_wrap">
+                <span class="fs-14 fw-400 text-gray">{{ translate('Condition') }}</span>
+                <span class="fs-14 fw-500 text-dark ml-2" id="variant_condition"></span>
+            </span>
+        </div>
+        <!--Variant Specs End-->
+    @endif
+
     <!--Watching Product Start-->
     <div class="d-flex flex-column align-items-start mt-3">
         @if(get_setting('show_custom_product_visitors')==1)
@@ -440,12 +463,56 @@
                             </div>
                         @endif
                     </div>
-                    <div class="px-20px py-10px border border-soft-light rounded-2 product-variant position-relative collapsed">
+                    <div class="px-20px py-10px border border-soft-light rounded-2 product-variant position-relative">
                         <!--Variant Selection-->
+                        <!-- Color Options -->
+                        @if ($detailedProduct->colors != null && count(json_decode($detailedProduct->colors)) > 0)
+                            <div class="py-10px">
+                                <p class="mb-3 fs-14 fw-bold text-dark">{{ translate('Color') }}</p>
+                                <div class="variant-wrapper">
+                                    @foreach (json_decode($detailedProduct->colors) as $key => $color)
+                                        <label class="aiz-megabox rounded-1 bg-white cursor-pointer" data-title="{{ get_single_color_name($color) }}">
+                                            <input type="radio" name="color" value="{{ get_single_color_name($color) }}" @if ($key == 0) checked @endif>
+                                            <div class="d-flex align-items-center variant-item-select aiz-megabox-elem px-15px">
+                                                <span class="w-15px h-15px rounded-circle" style="background-color: {{ $color }};"></span>
+                                                <span class="fs-14 fw-400 text-dark pl-2">{{ get_single_color_name($color) }}</span>
+                                            </div>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                        <!-- Independent Storage/Code/Country/Condition Pickers -->
+                        @php
+                            $defaultStock = $detailedProduct->stocks->first();
+                            $variantFacets = [
+                                ['name' => 'storage', 'label' => translate('Storage'), 'options' => $detailedProduct->stocks->pluck('storage')->filter()->unique()->values(), 'default' => optional($defaultStock)->storage],
+                                ['name' => 'code', 'label' => translate('Code'), 'options' => $detailedProduct->stocks->pluck('code')->filter()->unique()->values(), 'default' => optional($defaultStock)->code],
+                                ['name' => 'country', 'label' => translate('Country'), 'options' => $detailedProduct->stocks->pluck('country')->filter()->unique()->values(), 'default' => optional($defaultStock)->country],
+                                ['name' => 'condition', 'label' => translate('Condition'), 'options' => $detailedProduct->stocks->pluck('condition')->filter()->unique()->values(), 'default' => optional($defaultStock)->condition],
+                            ];
+                        @endphp
+                        @foreach ($variantFacets as $facet)
+                            @if ($facet['options']->isNotEmpty())
+                                <div class="py-10px variant-item">
+                                    <p class="mb-3 fs-14 fw-bold text-dark">{{ $facet['label'] }}</p>
+                                    <div class="variant-wrapper">
+                                        @foreach ($facet['options'] as $value)
+                                            <label class="rounded-1 bg-white cursor-pointer aiz-megabox mb-1">
+                                                <input type="radio" name="{{ $facet['name'] }}" value="{{ $value }}" @if ($value == $facet['default']) checked @endif>
+                                                <div class="variant-item-select aiz-megabox-elem px-10px">
+                                                    <span class="fs-14 fw-400 text-dark px-15px">{{ $value }}</span>
+                                                </div>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
                         <!-- Choice Options -->
                         @if ($detailedProduct->choice_options != null)
                             @foreach (json_decode($detailedProduct->choice_options) as $key => $choice)
-                                <div class="py-10px {{ $key == 0 ? '' : 'variant-item' }} {{ $key <9 ? '' : 'variant-item-none' }}">
+                                <div class="py-10px {{ $key == 0 && $colorCount == 0 ? '' : 'variant-item' }}">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <p class="m-0 fs-14 fw-bold text-dark">{{ get_single_attribute_name($choice->attribute_id) }}</p>
                                     </div>
@@ -461,32 +528,6 @@
                                     </div>
                                 </div>
                             @endforeach
-                        @endif
-                        <!-- Color Options -->
-                        @if ($detailedProduct->colors != null && count(json_decode($detailedProduct->colors)) > 0)
-                            <div class="py-10px  {{ $product_variations>1 ? 'variant-item':''}}">
-                                <p class="mb-3 fs-14 fw-bold text-dark">{{ translate('Color') }}</p>
-                                <div class="variant-wrapper">
-                                    @foreach (json_decode($detailedProduct->colors) as $key => $color)
-                                        <label class="aiz-megabox rounded-1 bg-white cursor-pointer" data-title="{{ get_single_color_name($color) }}">
-                                            <input type="radio" name="color" value="{{ get_single_color_name($color) }}" @if ($key == 0) checked @endif>
-                                            <div class="d-flex align-items-center variant-item-select aiz-megabox-elem px-15px">
-                                                <span class="w-15px h-15px rounded-circle" style="background-color: {{ $color }};"></span>
-                                                <span class="fs-14 fw-400 text-dark pl-2">{{ get_single_color_name($color) }}</span>
-                                            </div>
-                                        </label>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-                        <!-- Toggle Button -->
-                        @if ($product_variations > 10)
-                            <button type="button" id="toggleHeight" class="d-flex align-items-center justify-content-center pt-10px pb-10px w-100 rounded-1 mb-2 fs-12 text-blue fw-400 has-transition border-0 more-toggle-btn" data-more="{{ translate('View More') }}" data-less="{{ translate('See Less') }}">
-                                <span class="toggle-text">
-                                    {{ translate('View More') }}
-                                    <i class="las la-angle-down ms-1"></i>
-                                </span>
-                            </button>
                         @endif
                     </div>
                     <!--Product Variant End-->

@@ -185,6 +185,21 @@
     </div>
     @if ($detailedProduct->auction_product != 1)
     @include('frontend.smart_bar')
+    
+    <!-- STICKY MOBILE ACTION BAR (MOBILE OPTIMIZATION) -->
+    <div class="d-md-none fixed-bottom bg-white border-top shadow-lg p-2 z-1030 px-3 py-2">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="mr-2">
+                <div class="fs-10 text-uppercase text-muted fw-600">{{ translate('Price') }}</div>
+                <div class="fs-15 fw-700 text-primary">
+                    {{ home_discounted_base_price($detailedProduct) }}
+                </div>
+            </div>
+            <div class="d-flex flex-grow-1 justify-content-end ml-2">
+                @include('frontend.product_details.partials.action_buttons', ['buttonPadding' => 'py-2'])
+            </div>
+        </div>
+    </div>
     @endif
 @endsection
 
@@ -437,30 +452,6 @@
     </script>
     
    <!-- ======================== Message Seller End ================== -->
-
-   <!-- ======================== Product Variant Height Controll Start ================== -->
-    <script type="text/javascript">
-        $(document).on('click', '#toggleHeight', function () {
-
-            var $btn = $(this);
-            var $variant = $btn.closest('.product-variant');
-            var $text = $btn.find('.toggle-text');
-            var isCollapsed = $variant.hasClass('collapsed');
-
-            // Toggle state
-            $variant.toggleClass('collapsed');
-
-            // Change text (HTML allowed)
-            $text.html(
-                isCollapsed
-                    ? $btn.data('less') + ' <i class="las la-angle-up ms-1"></i>'
-                    : $btn.data('more') + ' <i class="las la-angle-down ms-1"></i>'
-            );
-
-        });
-    </script>
-
-    <!-- ======================== Product Variant Height Controll End ================== -->
 
     <!-- ======================== Product Swipper Slide Start ================== -->
     <script type="text/javascript">

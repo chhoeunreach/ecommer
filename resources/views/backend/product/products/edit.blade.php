@@ -653,56 +653,6 @@
                         <!-- Product Price & Stock End -->
 
 
-                        <!-- Product Variants Start -->
-                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4 mb-4 mb-xl-0" id="variant-div-show-hide">
-                            <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Product Variants') }}</h5>
-                            <div class="form-group row gutters-5 mb-2">
-                                <label class="col-md-3 col-from-label fs-14 fw-500">{{ translate('Choose Attributes') }}</label>
-                                <div class="col-md-9">
-                                    <select name="choice_attributes[]" id="choice_attributes" class="form-control aiz-selectpicker" data-selected-text-format="count" data-live-search="true" multiple data-placeholder="{{ translate('Choose Attributes') }}">
-                                        @foreach (\App\Models\Attribute::all() as $attribute)
-                                            <option value="{{ $attribute->id }}" @if($product->attributes != null && in_array($attribute->id, json_decode($product->attributes, true) ?? [])) selected @endif>{{ $attribute->getTranslation('name') }}</option>
-                                        @endforeach
-                                    </select>
-                                    @can('add_product_attribute')
-                                        <a href="#" id="add_attribute" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center mt-1">
-                                            <i class="las la-plus fs-16 mr-1"></i><span>{{ translate('New Attribute') }}</span>
-                                        </a>
-                                    @endcan
-                                </div>
-                            </div>
-                            <div id="chose_options_text" class="{{ count(json_decode($product->choice_options ?? '[]')) == 0 ? 'd-none' : '' }}">
-                                <p class="fs-12 text-muted mb-2">{{ translate('Choose the attributes and select the values used to build product variants.') }}</p>
-                            </div>
-                            <div class="customer_choice_options mb-3" id="customer_choice_options">
-                                @foreach (json_decode($product->choice_options) as $choice_option)
-                                    <div class="form-group row">
-                                        <div class="col-md-3">
-                                            <input type="hidden" name="choice_no[]" value="{{ $choice_option->attribute_id }}">
-                                            <input type="text" class="form-control" name="choice[]" value="{{ optional(\App\Models\Attribute::find($choice_option->attribute_id))->getTranslation('name') }}" readonly>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <select class="form-control aiz-selectpicker attribute_choice" data-live-search="true" name="choice_options_{{ $choice_option->attribute_id }}[]" data-selected-text-format="count" multiple required>
-                                                @foreach (\App\Models\AttributeValue::where('attribute_id', $choice_option->attribute_id)->get() as $row)
-                                                    <option value="{{ $row->value }}" @if(in_array($row->value, $choice_option->values)) selected @endif>{{ $row->value }}</option>
-                                                @endforeach
-                                            </select>
-                                            <div class="mt-1">
-                                                <a href="javascript:void(0)" onclick="add_new_attribute_value({{ $choice_option->attribute_id }}, '{{ optional(\App\Models\Attribute::find($choice_option->attribute_id))->getTranslation('name') }}')" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
-                                                    <span> {{translate('New ') }} {{ optional(\App\Models\Attribute::find($choice_option->attribute_id))->getTranslation('name') }}</span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                            <!-- sku combination -->
-                            <div class="sku_combination" id="sku_combination">
-
-                            </div>
-                        </div>
-                        <!-- Product Variants End -->
                     </div>
 
                     <!--Right Side -->
@@ -1422,6 +1372,58 @@
                         <!-- Frequently Bought Product End -->
                     </div>
                 </div>
+                
+                        <!-- Product Variants Start -->
+                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4 mb-4 mb-xl-0" id="variant-div-show-hide">
+                            <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Product Variants') }}</h5>
+                            <div class="form-group row gutters-5 mb-2">
+                                <label class="col-md-3 col-from-label fs-14 fw-500">{{ translate('Choose Attributes') }}</label>
+                                <div class="col-md-9">
+                                    <select name="choice_attributes[]" id="choice_attributes" class="form-control aiz-selectpicker" data-selected-text-format="count" data-live-search="true" multiple data-placeholder="{{ translate('Choose Attributes') }}">
+                                        @foreach (\App\Models\Attribute::all() as $attribute)
+                                            <option value="{{ $attribute->id }}" @if($product->attributes != null && in_array($attribute->id, json_decode($product->attributes, true) ?? [])) selected @endif>{{ $attribute->getTranslation('name') }}</option>
+                                        @endforeach
+                                    </select>
+                                    @can('add_product_attribute')
+                                        <a href="#" id="add_attribute" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center mt-1">
+                                            <i class="las la-plus fs-16 mr-1"></i><span>{{ translate('New Attribute') }}</span>
+                                        </a>
+                                    @endcan
+                                </div>
+                            </div>
+                            <div id="chose_options_text" class="{{ count(json_decode($product->choice_options ?? '[]')) == 0 ? 'd-none' : '' }}">
+                                <p class="fs-12 text-muted mb-2">{{ translate('Choose the attributes and select the values used to build product variants.') }}</p>
+                            </div>
+                            <div class="customer_choice_options mb-3" id="customer_choice_options">
+                                @foreach (json_decode($product->choice_options) as $choice_option)
+                                    <div class="form-group row">
+                                        <div class="col-md-3">
+                                            <input type="hidden" name="choice_no[]" value="{{ $choice_option->attribute_id }}">
+                                            <input type="text" class="form-control" name="choice[]" value="{{ optional(\App\Models\Attribute::find($choice_option->attribute_id))->getTranslation('name') }}" readonly>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-control aiz-selectpicker attribute_choice" data-live-search="true" name="choice_options_{{ $choice_option->attribute_id }}[]" data-selected-text-format="count" multiple required>
+                                                @foreach (\App\Models\AttributeValue::where('attribute_id', $choice_option->attribute_id)->get() as $row)
+                                                    <option value="{{ $row->value }}" @if(in_array($row->value, $choice_option->values)) selected @endif>{{ $row->value }}</option>
+                                                @endforeach
+                                            </select>
+                                            <div class="mt-1">
+                                                <a href="javascript:void(0)" onclick="add_new_attribute_value({{ $choice_option->attribute_id }}, '{{ optional(\App\Models\Attribute::find($choice_option->attribute_id))->getTranslation('name') }}')" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                                    <span> {{translate('New ') }} {{ optional(\App\Models\Attribute::find($choice_option->attribute_id))->getTranslation('name') }}</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <!-- sku combination -->
+                            <div class="sku_combination table-responsive" id="sku_combination" style="overflow-x: auto; width: 100%;">
+
+                            </div>
+                        </div>
+                        <!-- Product Variants End -->
+
                 <!-- Save Button -->
                 <div class="mt-4 text-right">
                     @if ($product->draft)
@@ -1592,7 +1594,7 @@
     }
 
     function add_more_customer_choice_option(i, name){
-        $.ajax({
+        return $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
@@ -1727,11 +1729,16 @@ AIZ.plugins.tagify();
 
     $('#choice_attributes').on('change', function() {
         $('#customer_choice_options').html(null);
-        $.each($("#choice_attributes option:selected"), function(){
-            add_more_customer_choice_option($(this).val(), $(this).text());
+        var $submitBtns = $('#aizSubmitForm .action-btn').prop('disabled', true);
+
+        var pendingRequests = $.map($("#choice_attributes option:selected"), function(option){
+            return add_more_customer_choice_option($(option).val(), $(option).text());
         });
 
-        update_sku();
+        $.when.apply($, pendingRequests).always(function() {
+            $submitBtns.prop('disabled', false);
+            update_sku();
+        });
     });
 
     function fq_bought_product_selection_type(){

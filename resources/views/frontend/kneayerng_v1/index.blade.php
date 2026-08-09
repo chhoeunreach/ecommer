@@ -3,21 +3,134 @@
 @section('content')
 
 <style>
-    /* Premium Homepage Styles */
-    .hero-banner-container {
-        border-radius: 24px !important;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.08) !important;
+    /* Hero Banner Display Fix */
+    .kneayerng-home > .hero-banner-carousel,
+    .kneayerng-home .hero-banner-carousel {
+        background: transparent !important;
+    }
+
+    /* Banner Images - Sharp 0px Corners (No Border Radius) */
+    .hero-banner-container,
+    .hero-banner-container img,
+    .mega-banner-container,
+    .mega-banner-container img,
+    .banner-lg-container,
+    .banner-lg-container img,
+    .banner-lg-container-two,
+    .banner-lg-container-two img,
+    .fd-banner-container,
+    .fd-banner-container img,
+    .landing-banner-carousel img,
+    .landing-banner-carousel .banner-lg-container,
+    .kneayerng-home .hero-banner-container,
+    .kneayerng-home .hero-banner-container img,
+    .kneayerng-home .mega-banner-container,
+    .kneayerng-home .mega-banner-container img,
+    .kneayerng-home .banner-lg-container,
+    .kneayerng-home .banner-lg-container img,
+    .kneayerng-home .banner-lg-container-two,
+    .kneayerng-home .banner-lg-container-two img {
+        border-radius: 0px !important;
+    }
+
+    .hero-banner-container,
+    .kneayerng-home .hero-banner-container,
+    .kneayerng-home .mega-banner-container {
+        background: transparent !important;
+        box-shadow: none !important;
         transform: translateZ(0);
+        aspect-ratio: auto !important;
+        height: auto !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .hero-banner-container img,
+    .kneayerng-home .hero-banner-container img,
+    .kneayerng-home .mega-banner-container img {
+        width: 100% !important;
+        height: auto !important;
+        object-fit: cover !important;
+        object-position: center !important;
+        display: block !important;
+    }
+
+    .hero-banner-wrapper,
+    .kneayerng-home .hero-banner-wrapper {
+        padding: 10px 0 20px !important;
+        background: transparent !important;
+    }
+
+    /* Redesigned Category Cards */
+    .bg-soft-primary-light {
+        background: rgba(240, 246, 255, 0.7);
     }
     
-    .hero-banner-wrapper {
-        padding: 10px 0 30px;
+    .hov-bg-soft-primary:hover {
+        background: #eef5ff !important;
+        border-color: #3390f3 !important;
+    }
+
+    .ky-category-card .ky-category-card-header {
+        min-height: 52px;
+        gap: 12px;
+    }
+
+    .ky-category-card .ky-category-card-title {
+        min-width: 0;
+    }
+
+    .ky-category-card .ky-category-view-all {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .ky-category-card .ky-category-cover {
+        position: relative;
+        aspect-ratio: 3 / 4;
+        background: #f8fafc;
+    }
+
+    .ky-category-card .ky-category-cover img,
+    .ky-category-card .ky-child-category-image img {
+        display: block;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center !important;
+    }
+
+    .ky-category-card .ky-category-cover img {
+        position: absolute;
+        inset: 0;
+    }
+
+    .ky-category-card .ky-child-category-list {
+        gap: 8px;
+    }
+
+    .ky-category-card .ky-child-category-link {
+        min-height: 58px;
+    }
+
+    @media (max-width: 374px) {
+        .ky-category-card .ky-category-card-body {
+            padding: 12px !important;
+        }
+
+        .ky-category-card .ky-child-category-link {
+            padding: 6px !important;
+        }
+
+        .ky-category-card .ky-child-category-image {
+            width: 34px !important;
+            height: 34px !important;
+        }
     }
 
     /* Product Cards Premium Look */
-    .custom-product-slider .slick-slide > div > div, 
-    .fd-product-slider .slick-slide > div > div, 
-    .td-product-slider .slick-slide > div > div {
+    .custom-product-slider .slick-slide > div > div {
         background: #ffffff;
         border-radius: 16px;
         padding: 12px;
@@ -27,16 +140,67 @@
         border: 1px solid rgba(0,0,0,0.02);
     }
 
-    .custom-product-slider .slick-slide > div > div:hover, 
-    .fd-product-slider .slick-slide > div > div:hover, 
-    .td-product-slider .slick-slide > div > div:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(149, 157, 165, 0.2);
+    .fd-product-slider .slick-slide > div > div,
+    .td-product-slider .slick-slide > div > div {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
-    /* Image rounding for cards */
-    .img-aspect-ratio-200px, .img-aspect-ratio-300px, .img-aspect-ratio-250px {
-        border-radius: 12px !important;
+    .fd-product-card,
+    .td-product-card {
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        padding: 10px !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.05) !important;
+        border: 1px solid rgba(0,0,0,0.06) !important;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+        margin: 6px 4px;
+    }
+
+    .fd-product-card:hover,
+    .td-product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(149, 157, 165, 0.18) !important;
+        border-color: rgba(51, 144, 243, 0.3) !important;
+    }
+
+    /* Image Aspect Ratio & Strict Hover Clip Fix */
+    .img-aspect-ratio-200px,
+    .img-aspect-ratio-250px,
+    .img-aspect-ratio-300px,
+    .featured-categories-slider .hov-scale-img {
+        aspect-ratio: 1 / 1;
+        width: 100%;
+        background: #f8fafc;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+        position: relative !important;
+        isolation: isolate !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .img-aspect-ratio-200px img,
+    .img-aspect-ratio-250px img,
+    .img-aspect-ratio-300px img,
+    .featured-categories-slider .hov-scale-img img,
+    .hov-scale-img img {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: contain !important;
+        border-radius: 14px !important;
+        transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    }
+
+    a.hov-scale-img:hover img,
+    div.hov-scale-img:hover img {
+        transform: scale(1.08) !important;
     }
 
     /* Category Blocks */
@@ -85,6 +249,516 @@
     .feactured-best-selling-product-section {
         padding-top: 20px;
         padding-bottom: 20px;
+    }
+
+    /* Flash and today's deals */
+    .ky-deals-shell {
+        background:
+            radial-gradient(circle at 0 0, rgba(255, 91, 62, 0.07), transparent 24rem),
+            #ffffff;
+    }
+
+    .ky-deals-shell > .row {
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    .ky-deal-panel {
+        min-width: 0;
+        padding: clamp(22px, 2.2vw, 34px) !important;
+    }
+
+    .ky-deal-panel + .ky-deal-panel {
+        border-left: 1px solid rgba(18, 28, 45, 0.09);
+    }
+
+    .ky-deal-heading {
+        min-height: 64px;
+        gap: 16px;
+    }
+
+    .ky-deal-heading-copy {
+        min-width: 0;
+    }
+
+    .ky-deal-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 5px;
+        color: #f04424;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .ky-deal-title {
+        margin: 0;
+        color: #17192b;
+        font-size: clamp(20px, 1.6vw, 25px) !important;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+    }
+
+    .ky-deal-subtitle {
+        display: block;
+        max-width: 360px;
+        margin-top: 4px;
+        color: #73788a !important;
+        font-size: 13px;
+        line-height: 1.45;
+    }
+
+    .ky-deal-actions {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .ky-deal-link,
+    .ky-deal-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .ky-deal-link {
+        color: #4d5365;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .ky-deal-link:hover {
+        color: #f04424;
+    }
+
+    .ky-deal-button {
+        min-height: 38px;
+        padding: 9px 15px;
+        border-radius: 999px;
+        background: #17192b;
+        box-shadow: 0 8px 18px rgba(23, 25, 43, 0.18);
+        color: #ffffff !important;
+        font-size: 12px;
+        font-weight: 750;
+        transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+    }
+
+    .ky-deal-button:hover {
+        background: #f04424;
+        box-shadow: 0 10px 22px rgba(240, 68, 36, 0.24);
+        transform: translateY(-2px);
+    }
+
+    .ky-countdown-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .ky-countdown-label {
+        color: #73788a;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .ky-deals-shell .aiz-count-down {
+        margin: 0 !important;
+    }
+
+    .ky-deals-shell .aiz-count-down .countdown-item {
+        min-width: 40px;
+        border-radius: 10px;
+        background: linear-gradient(145deg, #ff6849, #ef3e20);
+        box-shadow: 0 7px 14px rgba(239, 62, 32, 0.2);
+    }
+
+    .ky-flash-content {
+        display: grid;
+        grid-template-columns: minmax(145px, 0.72fr) minmax(0, 1.7fr);
+        gap: clamp(16px, 1.7vw, 26px);
+        align-items: stretch;
+        margin-top: 22px;
+    }
+
+    .ky-flash-banner {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 100%;
+        aspect-ratio: 4 / 5;
+        border-radius: 18px !important;
+        background: #fff2ed;
+        box-shadow: none !important;
+    }
+
+    .ky-flash-banner img {
+        object-fit: cover;
+    }
+
+    .ky-products-area {
+        min-width: 0;
+    }
+
+    .ky-deals-shell .fd-product-slider.slick-slider,
+    .ky-deals-shell .td-product-slider.slick-slider {
+        margin-top: -8px !important;
+        margin-bottom: -14px !important;
+    }
+
+    .ky-deals-shell .fd-product-slider.slick-slider .slick-list,
+    .ky-deals-shell .td-product-slider.slick-slider .slick-list {
+        padding: 8px 0 14px !important;
+    }
+
+    .ky-deals-shell .fd-product-slider,
+    .ky-deals-shell .td-product-slider {
+        overflow: hidden;
+    }
+
+    .ky-deals-shell .fd-product-card,
+    .ky-deals-shell .td-product-card {
+        position: relative;
+        margin: 0 5px;
+        padding: 10px !important;
+        border: 1px solid rgba(18, 28, 45, 0.08) !important;
+        border-radius: 16px !important;
+        background: #ffffff !important;
+        box-shadow: 0 7px 20px rgba(18, 28, 45, 0.06) !important;
+    }
+
+    .ky-deals-shell .fd-product-card:hover,
+    .ky-deals-shell .td-product-card:hover {
+        border-color: rgba(240, 68, 36, 0.25) !important;
+        box-shadow: 0 14px 30px rgba(18, 28, 45, 0.12) !important;
+        transform: translateY(-4px);
+    }
+
+    .ky-deals-shell .ky-deal-product-image {
+        aspect-ratio: 1 / 1;
+        border-radius: 12px !important;
+        background: #f6f7f9 !important;
+    }
+
+    .ky-deals-shell .ky-deal-product-image img {
+        display: block;
+        object-fit: contain !important;
+    }
+
+    .ky-product-name {
+        min-height: 38px;
+        margin-top: 10px !important;
+        font-size: 13px;
+        font-weight: 650;
+        line-height: 1.45;
+    }
+
+    .ky-product-footer {
+        margin-top: 10px !important;
+        padding-top: 10px !important;
+    }
+
+    .ky-cart-button {
+        width: 34px;
+        height: 34px;
+        border: 0;
+        background: #fff0ed !important;
+        color: #f04424 !important;
+        transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+    }
+
+    .ky-cart-button:hover {
+        background: #f04424 !important;
+        color: #ffffff !important;
+        transform: scale(1.06);
+    }
+
+    .ky-today-products {
+        margin-top: 22px;
+    }
+
+    @media (max-width: 1199px) {
+        .ky-deal-panel + .ky-deal-panel {
+            border-top: 1px solid rgba(18, 28, 45, 0.09);
+            border-left: 0;
+        }
+
+        .ky-flash-content {
+            grid-template-columns: minmax(170px, 0.55fr) minmax(0, 2fr);
+        }
+
+        .ky-flash-banner {
+            aspect-ratio: 5 / 4;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .kneayerng-home .ky-deals-shell .ky-deal-panel {
+            padding: 20px 14px !important;
+        }
+
+        .ky-deal-heading {
+            min-height: 0;
+        }
+
+        .ky-deal-link {
+            display: none;
+        }
+
+        .ky-deal-button {
+            min-height: 36px;
+            padding: 8px 12px;
+        }
+
+        .kneayerng-home .ky-deals-shell .ky-flash-content {
+            display: block;
+            margin-top: 18px;
+        }
+
+        .kneayerng-home .ky-deals-shell .ky-flash-banner.fd-banner-container {
+            width: 100% !important;
+            height: auto !important;
+            min-height: 0;
+            aspect-ratio: 3 / 2;
+            background: #f53218;
+        }
+
+        .kneayerng-home .ky-deals-shell .ky-flash-banner img {
+            object-fit: contain;
+        }
+
+        .ky-products-area {
+            margin-top: 18px;
+        }
+
+        .ky-today-products {
+            margin-top: 18px;
+        }
+
+        .kneayerng-home .ky-deals-shell .fd-product-slider,
+        .kneayerng-home .ky-deals-shell .td-product-slider {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .kneayerng-home .ky-deals-shell .fd-product-slider .slick-list,
+        .kneayerng-home .ky-deals-shell .td-product-slider .slick-list {
+            margin-right: 0 !important;
+            margin-left: 0 !important;
+            padding-right: 0 !important;
+            padding-left: 0 !important;
+        }
+
+        .kneayerng-home .ky-deals-shell .fd-product-card,
+        .kneayerng-home .ky-deals-shell .td-product-card {
+            margin-right: 4px;
+            margin-left: 4px;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .ky-deal-heading {
+            align-items: flex-start !important;
+        }
+
+        .ky-deal-button span {
+            display: none;
+        }
+
+        .ky-deal-button {
+            width: 36px;
+            padding: 8px;
+        }
+
+        .ky-countdown-row {
+            display: block;
+        }
+
+        .ky-countdown-label {
+            display: block;
+            margin-bottom: 8px;
+        }
+    }
+
+    /* Modern responsive deal hub */
+    .kneayerng-home .ky-deals-shell {
+        padding: clamp(10px, 1.4vw, 18px) !important;
+        background: #f4f6fa;
+    }
+
+    .kneayerng-home .ky-deals-grid {
+        display: grid;
+        gap: clamp(12px, 1.4vw, 20px);
+        margin: 0;
+    }
+
+    .kneayerng-home .ky-deals-grid-split {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .kneayerng-home .ky-deals-grid-single {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-deal-panel {
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+        padding: clamp(18px, 1.8vw, 28px) !important;
+        border: 1px solid rgba(18, 28, 45, 0.08);
+        border-radius: 20px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(18, 28, 45, 0.055);
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-flash-panel {
+        background:
+            radial-gradient(circle at 0 0, rgba(255, 84, 53, 0.09), transparent 19rem),
+            #ffffff;
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-deal-panel + .ky-deal-panel {
+        border-top: 1px solid rgba(18, 28, 45, 0.08);
+        border-left: 1px solid rgba(18, 28, 45, 0.08);
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-deal-heading {
+        min-height: 92px;
+        margin-bottom: 20px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid rgba(18, 28, 45, 0.075);
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-deal-title {
+        font-size: clamp(21px, 1.6vw, 27px) !important;
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-deal-button {
+        min-height: 40px;
+        padding: 10px 16px;
+        background: #202235;
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-flash-content {
+        grid-template-columns: minmax(135px, 0.72fr) minmax(0, 1.55fr);
+        gap: clamp(14px, 1.5vw, 22px);
+        align-items: start;
+        margin-top: 0;
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-flash-content > a {
+        align-self: start;
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-flash-banner.fd-banner-container {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0;
+        aspect-ratio: 1 / 1;
+        border-radius: 16px !important;
+        background: #f53218;
+        box-shadow: 0 12px 24px rgba(229, 55, 29, 0.16) !important;
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-flash-banner img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center !important;
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-today-products {
+        margin-top: 0;
+    }
+
+    .kneayerng-home .ky-deals-grid .fd-product-card,
+    .kneayerng-home .ky-deals-grid .td-product-card {
+        margin: 0 6px;
+        padding: 9px !important;
+        border-radius: 15px !important;
+        box-shadow: 0 6px 18px rgba(18, 28, 45, 0.055) !important;
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-deal-product-image {
+        border-radius: 11px !important;
+        background: #f1f3f6 !important;
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-product-name {
+        min-height: 40px;
+        margin-top: 9px !important;
+        color: #262938 !important;
+        font-weight: 700;
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-product-footer {
+        min-height: 43px;
+        margin-top: 8px !important;
+        padding-top: 8px !important;
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-cart-button {
+        width: 32px;
+        height: 32px;
+        box-shadow: none;
+    }
+
+    @media (max-width: 991px) {
+        .kneayerng-home .ky-deals-grid-split {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .kneayerng-home .ky-deals-grid .ky-deal-panel + .ky-deal-panel {
+            border-top: 1px solid rgba(18, 28, 45, 0.08);
+            border-left: 1px solid rgba(18, 28, 45, 0.08);
+        }
+
+        .kneayerng-home .ky-deals-grid .ky-flash-content {
+            grid-template-columns: minmax(160px, 0.5fr) minmax(0, 2fr);
+        }
+    }
+
+    @media (max-width: 575px) {
+        .kneayerng-home .ky-deals-shell {
+            padding: 8px !important;
+        }
+
+        .kneayerng-home .ky-deals-grid .ky-deal-panel {
+            padding: 16px 12px !important;
+            border-radius: 16px;
+        }
+
+        .kneayerng-home .ky-deals-grid .ky-deal-heading {
+            min-height: 0;
+            margin-bottom: 16px;
+            padding-bottom: 15px;
+        }
+
+        .kneayerng-home .ky-deals-grid .ky-flash-content {
+            display: block;
+        }
+
+        .kneayerng-home .ky-deals-grid .ky-flash-banner.fd-banner-container {
+            aspect-ratio: 16 / 9;
+        }
+
+        .kneayerng-home .ky-deals-grid .ky-flash-banner img {
+            object-fit: contain !important;
+        }
+
+        .kneayerng-home .ky-deals-grid .ky-products-area {
+            margin-top: 16px;
+        }
+
+        .kneayerng-home .ky-deals-grid .fd-product-card,
+        .kneayerng-home .ky-deals-grid .td-product-card {
+            margin: 0 4px;
+        }
     }
 </style>
 
@@ -143,54 +817,59 @@
         <!-- Home Banner End -->
 
         <!-- Flash & Todays Deals Start -->
-        @if (get_setting('enable_flash_deal') == 1 || get_setting('enable_todays_deal') == 1)
+        @php
+            $flash_deal = get_featured_flash_deal();
+            $todays_deal_products = filter_products(App\Models\Product::where('todays_deal', '1'))->orderBy('id', 'desc')->get();
+            $todays_deal_title_sub_text = get_setting('todays_deal_title_sub_text', null);
+            $showFlashDeals = get_setting('enable_flash_deal') == 1 && $flash_deal != null;
+            $showTodaysDeals = get_setting('enable_todays_deal') == 1 && $todays_deal_products->isNotEmpty();
+        @endphp
+        @if ($showFlashDeals || $showTodaysDeals)
             <div class="border-bottom">
-                <div class="layout-container mx-auto px-3">
-                    <div class="row">
+                <div class="layout-container ky-deals-shell mx-auto px-0">
+                    <div class="row ky-deals-grid @if ($showFlashDeals && $showTodaysDeals) ky-deals-grid-split @else ky-deals-grid-single @endif">
                         <!-- Flash Deal -->
-                        @php
-                            $flash_deal = get_featured_flash_deal();
-                        @endphp
-                        @if (get_setting('enable_flash_deal') == 1 )
-                            @if ($flash_deal != null)
-                                <div class="@if (get_setting('enable_flash_deal') == 1 && get_setting('enable_todays_deal') == 1) col-xxl-6 @else col-xxl-12 @endif py-30px flash-deals-border-right">
-                                    <div class="row d-flex">
-                                        <div class="col-12 col-md-auto">
-                                            <a href="{{ route('flash-deal-details', $flash_deal->slug) }}">
-                                                <div
-                                                    class="img-fit w-100 h-270px w-md-200px w-xl-270px rounded-2 overflow-hidden fd-banner-container align-self-stretch hov-scale-img">
-                                                    <img class="img-fit w-100 h-100 has-transition" style="object-position: center;"
-                                                        src="{{ $flash_deal->banner ? uploaded_asset($flash_deal->banner) : static_asset('assets/img/placeholder.jpg') }}" alt="Flash Deal Banner">
-                                                </div>
-                                            </a>
+                        @if ($showFlashDeals)
+                            <div class="ky-deal-panel ky-flash-panel @if ($showTodaysDeals) col-xl-6 @else col-12 @endif">
+                                <div class="ky-deal-heading d-flex align-items-start justify-content-between">
+                                    <div class="ky-deal-heading-copy">
+                                        <span class="ky-deal-kicker"><i class="las la-bolt"></i> {{ translate('Limited time') }}</span>
+                                        <h2 class="ky-deal-title">{{ translate('Flash Deals') }}</h2>
+                                        <div class="ky-countdown-row">
+                                            <span class="ky-countdown-label">{{ translate('Ends in') }}</span>
+                                            <div class="aiz-count-down align-items-center" data-date="{{ date('Y/m/d H:i:s', $flash_deal->end_date) }}"></div>
                                         </div>
-                                        <div class="col mt-4 mt-md-0">
-                                            <!-- Heading -->
-                                            <div class="d-flex flex-wrap align-items-start justify-content-between" style="gap: 12px">
-                                                <div>
-                                                    <h5 class="fs-20 fs-md-20 fw-bold mb-1">{{ translate('Flash Deals') }}</h5>
-                                                    <div class="aiz-count-down align-items-center mb-2 mb-lg-0" data-date="{{ date('Y/m/d H:i:s', $flash_deal->end_date) }}"></div>
-                                                </div>
-                                                <div class="mt-2">
-                                                    <a href="{{ route('flash-deal-details', $flash_deal->slug) }}"
-                                                        class="fs-12 fw-bold text-reset hov-text-blue has-transition mr-3">{{ translate('View All Products') }}</a>
-                                                    <a href="{{ route('flash-deals') }}"
-                                                        class="fs-12 fw-bold text-white bg-dark px-3 py-2 rounded-pill hov-opacity-80 has-transition">{{ translate('All Deals') }}</a>
-                                                </div>
-                                            </div>
+                                    </div>
+                                    <div class="ky-deal-actions">
+                                        <a href="{{ route('flash-deal-details', $flash_deal->slug) }}" class="ky-deal-link has-transition">
+                                            {{ translate('View products') }} <i class="las la-arrow-right"></i>
+                                        </a>
+                                        <a href="{{ route('flash-deals') }}" class="ky-deal-button">
+                                            <span>{{ translate('All Deals') }}</span> <i class="las la-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
 
-                                            <!-- Slider -->
+                                <div class="ky-flash-content">
+                                    <a href="{{ route('flash-deal-details', $flash_deal->slug) }}" class="d-block">
+                                        <div class="ky-flash-banner fd-banner-container overflow-hidden hov-scale-img">
+                                            <img class="w-100 h-100 has-transition"
+                                                src="{{ $flash_deal->banner ? uploaded_asset($flash_deal->banner) : static_asset('assets/img/placeholder.jpg') }}"
+                                                alt="{{ $flash_deal->title }}"
+                                                onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder-rect.jpg') }}';">
+                                        </div>
+                                    </a>
+                                    <div class="ky-products-area">
                                             @php
                                                 $flash_deal_products = get_flash_deal_products($flash_deal->id);
                                             @endphp
-                                            <div class="aiz-carousel arrow-x-0 arrow-inactive-none mt-4 fd-product-slider overflow-hidden"
-                                                
-                                                @if (get_setting('enable_flash_deal') == 1 && get_setting('enable_todays_deal') == 1) 
-                                                    data-items="5" data-full-hd-items="5" data-xxl-items="4" data-xl-items="7" data-lg-items="3.5" 
+                                            <div class="aiz-carousel arrow-x-0 arrow-inactive-none fd-product-slider"
+                                                @if ($showTodaysDeals)
+                                                    data-items="2" data-full-hd-items="2" data-xxl-items="2" data-xl-items="2" data-lg-items="4"
                                                 @else 
-                                                    data-items="12" data-full-hd-items="12" data-xxl-items="8" data-xl-items="6" data-lg-items="4" 
+                                                    data-items="5" data-full-hd-items="5" data-xxl-items="4" data-xl-items="4" data-lg-items="4"
                                                 @endif 
-                                                data-md-items="3" data-sm-items="4" data-xs-items="3" data-arrows='false' data-autoplay="true" data-infinite="true">
+                                                data-md-items="2.5" data-sm-items="2" data-xs-items="2" data-arrows='false' data-autoplay="true" data-autoplay-speed="10000" data-infinite="true">
                                                 @foreach ($flash_deal_products as $key => $flash_deal_product)
                                                     @if ($flash_deal_product->product != null && $flash_deal_product->product->published != 0)
                                                         @php
@@ -199,77 +878,125 @@
                                                                 $product_url = route('auction-product', $flash_deal_product->product->slug);
                                                             }
                                                         @endphp    
-                                                        <div class="text-center">
-                                                            <a href="{{ $product_url }}" title="{{ $flash_deal_product->product->getTranslation('name') }}"
-                                                                class="d-block overflow-hidden text-center mx-auto hov-scale-img rounded-2 img-aspect-ratio-200px">
-                                                                <img class="w-100 lazyload  has-transition"
-                                                                    src="{{ get_image($flash_deal_product->product->thumbnail) }}"
-                                                                    data-src="" alt="{{ $flash_deal_product->product->getTranslation('name') }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
-                                                            </a>
-                                                            @if ($flash_deal_product->auction_product == 0)
-                                                                <p class="mt-2 mb-0 text-center">
-                                                                    <span class="fs-13 fs-md-14 text-dark fw-bold">{{ home_discounted_base_price($flash_deal_product->product) }}</span>
-                                                                    @if (home_base_price($flash_deal_product->product) != home_discounted_base_price($flash_deal_product->product))
-                                                                        <del class="fs-11 fs-md-14 text-gray fw-400 ">{{ home_base_price($flash_deal_product->product) }}</del>
-                                                                    @endif
-                                                                </p>
-                                                            @endif
+                                                        <div class="h-100 py-1">
+                                                            <div class="h-100 d-flex flex-column justify-content-between fd-product-card has-transition overflow-hidden">
+                                                                <!-- Discount Badge -->
+                                                                @if ($flash_deal_product->discount != null && $flash_deal_product->discount > 0)
+                                                                    <span class="badge badge-inline badge-danger position-absolute z-1 rounded-pill px-2 py-1 fs-11 fw-700" style="top: 8px; left: 8px;">
+                                                                        -{{ $flash_deal_product->discount }}{{ $flash_deal_product->discount_type == 'percent' ? '%' : '' }}
+                                                                    </span>
+                                                                @endif
+
+                                                                <div>
+                                                                    <!-- Thumbnail Image -->
+                                                                    <a href="{{ $product_url }}" title="{{ $flash_deal_product->product->getTranslation('name') }}"
+                                                                        class="ky-deal-product-image d-block overflow-hidden text-center mx-auto hov-scale-img position-relative">
+                                                                        <img class="w-100 h-100 lazyload has-transition"
+                                                                            src="{{ get_image($flash_deal_product->product->thumbnail) }}"
+                                                                            data-src="" alt="{{ $flash_deal_product->product->getTranslation('name') }}"
+                                                                            onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
+                                                                    </a>
+
+                                                                    <!-- Product Title -->
+                                                                    <a href="{{ $product_url }}" title="{{ $flash_deal_product->product->getTranslation('name') }}"
+                                                                        class="ky-product-name text-dark d-block text-truncate-2 hov-text-primary has-transition">
+                                                                        {{ $flash_deal_product->product->getTranslation('name') }}
+                                                                    </a>
+                                                                </div>
+
+                                                                <!-- Price & Cart Button -->
+                                                                <div class="ky-product-footer border-top border-gray-200 d-flex align-items-center justify-content-between">
+                                                                    <div class="overflow-hidden mr-1">
+                                                                        @if ($flash_deal_product->auction_product == 0)
+                                                                            <div class="fs-14 fw-700 text-primary text-truncate">
+                                                                                {{ home_discounted_base_price($flash_deal_product->product) }}
+                                                                            </div>
+                                                                            @if (home_base_price($flash_deal_product->product) != home_discounted_base_price($flash_deal_product->product))
+                                                                                <del class="fs-11 text-muted d-block text-truncate" style="margin-top: -2px;">
+                                                                                    {{ home_base_price($flash_deal_product->product) }}
+                                                                                </del>
+                                                                            @endif
+                                                                        @endif
+                                                                    </div>
+                                                                    <button type="button" class="ky-cart-button btn btn-icon btn-circle btn-sm flex-shrink-0"
+                                                                        onclick="showAddToCartModal({{ $flash_deal_product->product->id }})" title="{{ translate('Add to Cart') }}">
+                                                                        <i class="las la-shopping-cart fs-15"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     @endif    
                                                 @endforeach
                                             </div>
                                         </div>
-                                    </div>
                                 </div>
-                            @endif
+                            </div>
                         @endif
 
-                        @php
-                            $todays_deal_products = filter_products(App\Models\Product::where('todays_deal', '1'))->orderBy('id', 'desc')->get();
-                            $todays_deal_title_sub_text = get_setting('todays_deal_title_sub_text', null);
-                        @endphp
-                        @if (get_setting('enable_todays_deal') == 1 && $todays_deal_products != null)
-                            <div class="@if (get_setting('enable_flash_deal') == 1 && get_setting('enable_todays_deal') == 1) col-xxl-6 @else col-xxl-12 @endif py-30px ">
+                        @if ($showTodaysDeals)
+                            <div class="ky-deal-panel ky-today-panel @if ($showFlashDeals) col-xl-6 @else col-12 @endif">
                                 <!-- Heading -->
-                                <div class="d-flex flex-wrap  align-items-start justify-content-between" style="gap: 12px">
-                                    <div class="flex-grow-1 text-xxl-center">
-                                        <h5 class="fs-20 fs-md-20 fw-bold mb-1">{{ translate("Today's Deals") }}</h5>
-                                        <span class="fs-14 fw-400 text-reset">{{ $todays_deal_title_sub_text }}</span>
+                                <div class="ky-deal-heading d-flex align-items-start justify-content-between">
+                                    <div class="ky-deal-heading-copy">
+                                        <span class="ky-deal-kicker"><i class="las la-star"></i> {{ translate('Picked for today') }}</span>
+                                        <h2 class="ky-deal-title">{{ translate("Today's Deals") }}</h2>
+                                        <span class="ky-deal-subtitle">
+                                            {{ $todays_deal_title_sub_text ?: translate('Fresh offers selected for you today') }}
+                                        </span>
                                     </div>
-                                    <div>
-                                        <a href="{{ route('todays-deal') }}"
-                                            class="fs-12 fw-bold text-white bg-dark px-3 py-2 rounded-pill hov-opacity-80 has-transition">{{ translate('View All') }}</a>
-                                    </div>
+                                    <a href="{{ route('todays-deal') }}" class="ky-deal-button">
+                                        <span>{{ translate('View All') }}</span> <i class="las la-arrow-right"></i>
+                                    </a>
                                 </div>
 
                                 <!-- Slider -->
-                                <div class="aiz-carousel arrow-x-0 arrow-inactive-none  td-product-slider overflow-hidden"
-                                    
-                                    @if (get_setting('enable_flash_deal') == 1 && get_setting('enable_todays_deal') == 1) 
-                                        data-items="7" data-full-hd-items="7" data-xxl-items="6" data-xl-items="8" data-lg-items="5"   
+                                <div class="ky-today-products aiz-carousel arrow-x-0 arrow-inactive-none td-product-slider"
+                                    @if ($showFlashDeals)
+                                        data-items="3" data-full-hd-items="3" data-xxl-items="3" data-xl-items="3" data-lg-items="4"
                                     @else 
-                                        data-items="12" data-full-hd-items="12" data-xxl-items="10" data-xl-items="6" data-lg-items="5"  
+                                        data-items="6" data-full-hd-items="6" data-xxl-items="5" data-xl-items="4" data-lg-items="4"
                                     @endif 
-                                    data-md-items="4" data-sm-items="4" data-xs-items="3" data-arrows='false'
-                                    data-autoplay="true" data-infinite="true">
-                                    @if(count($todays_deal_products) > 0)
-                                        @foreach ($todays_deal_products as $key => $product)
-                                            <div class="text-center">
-                                                <a href="{{ route('product', $product->slug) }}" title="{{  $product->getTranslation('name')  }}"
-                                                    class="d-block overflow-hidden text-center mx-auto hov-scale-img rounded-2 img-aspect-ratio-200px">
-                                                    <img class="w-100 lazyload  has-transition"
-                                                        src="{{ static_asset('assets/img/placeholder.jpg') }}" data-src="{{ get_image($product->thumbnail) }}"
-                                                        alt="{{ $product->getTranslation('name') }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
-                                                </a>
-                                                <p class="mt-2 mb-0 text-center">
-                                                    <span class="fs-13 fs-md-14 text-dark fw-bold">{{ home_discounted_base_price($product) }}</span>
-                                                    @if(home_base_price($product) != home_discounted_base_price($product))
-                                                        <del class="fs-11 fs-md-14 text-gray fw-400 ">{{ home_base_price($product) }}</del>
-                                                    @endif
-                                                </p>
+                                    data-md-items="3" data-sm-items="2" data-xs-items="2" data-arrows='false'
+                                    data-autoplay="true" data-autoplay-speed="10000" data-infinite="true">
+                                    @foreach ($todays_deal_products as $key => $product)
+                                            <div class="h-100 py-1">
+                                                <div class="h-100 d-flex flex-column justify-content-between td-product-card has-transition overflow-hidden">
+                                                    <div>
+                                                        <!-- Thumbnail Image -->
+                                                        <a href="{{ route('product', $product->slug) }}" title="{{ $product->getTranslation('name') }}"
+                                                            class="ky-deal-product-image d-block overflow-hidden text-center mx-auto hov-scale-img position-relative">
+                                                            <img class="w-100 h-100 lazyload has-transition"
+                                                                src="{{ static_asset('assets/img/placeholder.jpg') }}" data-src="{{ get_image($product->thumbnail) }}"
+                                                                alt="{{ $product->getTranslation('name') }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
+                                                        </a>
+
+                                                        <!-- Product Title -->
+                                                        <a href="{{ route('product', $product->slug) }}" title="{{ $product->getTranslation('name') }}"
+                                                            class="ky-product-name text-dark d-block text-truncate-2 hov-text-primary has-transition">
+                                                            {{ $product->getTranslation('name') }}
+                                                        </a>
+                                                    </div>
+
+                                                    <!-- Price & Cart Button -->
+                                                    <div class="ky-product-footer border-top border-gray-200 d-flex align-items-center justify-content-between">
+                                                        <div class="overflow-hidden mr-1">
+                                                            <div class="fs-14 fw-700 text-primary text-truncate">
+                                                                {{ home_discounted_base_price($product) }}
+                                                            </div>
+                                                            @if (home_base_price($product) != home_discounted_base_price($product))
+                                                                <del class="fs-11 text-muted d-block text-truncate" style="margin-top: -2px;">
+                                                                    {{ home_base_price($product) }}
+                                                                </del>
+                                                            @endif
+                                                        </div>
+                                                        <button type="button" class="ky-cart-button btn btn-icon btn-circle btn-sm flex-shrink-0"
+                                                            onclick="showAddToCartModal({{ $product->id }})" title="{{ translate('Add to Cart') }}">
+                                                            <i class="las la-shopping-cart fs-15"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        @endforeach    
-                                    @endif
+                                    @endforeach
                                 </div>
                             </div>
                         @endif
@@ -301,7 +1028,7 @@
                             <div class="aiz-carousel arrow-x-0 arrow-inactive-none featured-categories-slider" data-items="10"
                                 data-full-hd-items="10" data-xxl-items="8" data-xl-items="5.5" data-lg-items="4.2"
                                 data-md-items="3.2" data-sm-items="3" data-xs-items="3" data-arrows='false'
-                                data-autoplay="true" data-infinite="true">
+                                data-autoplay="true" data-autoplay-speed="10000" data-infinite="true">
                                 @foreach ($featured_categories as $key => $category)
                                     @php
                                         $category_name = $category->getTranslation('name');
@@ -480,98 +1207,89 @@
 
         @if (get_setting('enable_categories') == 1 && count($mainCategories) > 0)
 
-            <div class="border-bottom">
-                <div class="layout-container mx-auto px-3 mf-w-wf-bc">
-
-                    <div class="row gutters-0 mf-w-wf-bc-grid">
-
+        <!-- Category Section Redesign Start -->
+        @if (isset($mainCategories) && count($mainCategories) > 0)
+            <div class="py-4 py-lg-5 bg-white border-bottom">
+                <div class="layout-container mx-auto px-3">
+                    <div class="row gutters-20">
                         @foreach ($mainCategories as $key => $mainCategoryId)
-
                             @php
                                 $mainCategory = \App\Models\Category::find($mainCategoryId);
-
                                 if (!$mainCategory) {
                                     continue;
                                 }
-
                                 $selectedChildIds = $childCategories[$key] ?? [];
-
                                 $selectedChildren = \App\Models\Category::whereIn('id', $selectedChildIds)->get();
+                                $mainCategoryImageId = $mainCategory->cover_image ?: ($mainCategory->banner ?: $mainCategory->icon);
+                                $mainCategoryImage = $mainCategoryImageId
+                                    ? uploaded_asset($mainCategoryImageId)
+                                    : static_asset('assets/img/placeholder.jpg');
                             @endphp
 
-                            <div class="col-6 col-md-6 col-lg-6 col-xl-4 col-xxl-3 ky-category-group">
-
-                                <!-- Main Category Name -->
-                                <h5 class="fs-20 fs-md-20 fw-bold mb-3">
-                                    {{ $mainCategory->getTranslation('name') }}
-                                </h5>
-
-                                <div class="row gutters-16 d-flex ky-category-content">
-
-                                    <!-- Big Image -->
-                                    <div class="col-12 col-md-12 col-lg-6 col-xl-6 pr-lg-0 img-container-col-6 ky-category-main">
-
-                                        <a href="{{ route('products.category', $mainCategory->slug) }}"
-                                            class="d-block w-100 h-100 overflow-hidden hov-scale-img rounded-2 align-items-stretch img-container-lg  border border-gray-300">
-
-                                            <img class="img-fit w-100 h-100 lazyload has-transition"
-                                                src="{{ uploaded_asset($mainCategory->cover_image) }}"
-                                                alt="{{ $mainCategory->getTranslation('name') }}">
-
+                            <div class="col-12 col-md-6 col-xl-4 mb-4">
+                                <div class="card ky-category-card h-100 border border-gray-200 rounded-3 shadow-none overflow-hidden bg-white has-transition hov-shadow-md">
+                                    <!-- Category Card Header -->
+                                    <div class="ky-category-card-header p-3 bg-soft-primary-light border-bottom d-flex align-items-center justify-content-between">
+                                        <h5 class="ky-category-card-title fs-16 fs-md-18 fw-bold text-dark m-0 text-truncate">
+                                            {{ $mainCategory->getTranslation('name') }}
+                                        </h5>
+                                        <a href="{{ route('products.category', $mainCategory->slug) }}" class="ky-category-view-all fs-12 fw-bold text-primary animate-underline-blue d-inline-flex align-items-center">
+                                            <span>{{ translate('View All') }}</span>
+                                            <i class="las la-angle-right ml-1 fs-14"></i>
                                         </a>
-
                                     </div>
 
-                                    <!-- Child Categories -->
-                                    <div class="col-12 col-md-12 col-lg-6 col-xl-6 mt-3 mt-lg-0 ky-category-children">
+                                    <!-- Category Card Body -->
+                                    <div class="ky-category-card-body p-3">
+                                        <div class="row gutters-12 align-items-stretch">
+                                            <!-- Main Cover Image -->
+                                            <div class="col-5">
+                                                <a href="{{ route('products.category', $mainCategory->slug) }}" class="ky-category-cover d-block position-relative h-100 rounded-2 overflow-hidden hov-scale-img border border-gray-200">
+                                                    <img class="w-100 h-100 has-transition"
+                                                        src="{{ $mainCategoryImage }}"
+                                                        alt="{{ $mainCategory->getTranslation('name') }}"
+                                                        onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
+                                                </a>
+                                            </div>
 
-                                        <div class="row">
-
-                                            @foreach ($selectedChildren as $childCategory)
-
-                                                <div class="col-12 {{ !$loop->first ? 'mt-3' : '' }}">
-
-                                                    <a href="{{ route('products.category', $childCategory->slug) }}"
-                                                        class="text-reset hov-text-blue has-transition">
-
-                                                        <div class="bg-light rounded-2 d-flex justify-content-between overflow-hidden category-card p-3 p-lg-3">
-
-                                                            <h5 class="fs-14 fs-md-16 fw-semibold text-reset m-0 w-xl-110px overflow-hidden text-truncate-2 mr-2 text-break child-cate-title" title="{{ $childCategory->getTranslation('name') }}">
-
-                                                                {{ $childCategory->getTranslation('name') }}
-
-                                                            </h5>
-
-                                                            <div class="w-60px h-60px w-sm-80px h-sm-80px w-md-100px h-md-100px w-xl-80px h-xl-80px overflow-hidden hov-scale-img flex-shrink-0 d-flex align-items-center justify-content-center">
-
-                                                                <img class="img-fluid w-100 h-100 has-transition"
-                                                                    src="{{ uploaded_asset($childCategory->cover_image) }}"
-                                                                    alt="{{ $childCategory->getTranslation('name') }}">
-
+                                            <!-- Child Categories -->
+                                            <div class="col-7 pl-1">
+                                                <div class="ky-child-category-list d-flex h-100 flex-column justify-content-center">
+                                                    @foreach ($selectedChildren as $childCategory)
+                                                        @php
+                                                            $childCategoryImageId = $childCategory->cover_image ?: ($childCategory->banner ?: $childCategory->icon);
+                                                            $childCategoryImage = $childCategoryImageId
+                                                                ? uploaded_asset($childCategoryImageId)
+                                                                : static_asset('assets/img/placeholder.jpg');
+                                                        @endphp
+                                                        <a href="{{ route('products.category', $childCategory->slug) }}"
+                                                           class="ky-child-category-link d-flex align-items-center p-2 rounded-2 text-reset bg-light hov-bg-soft-primary has-transition border border-gray-100">
+                                                            <div class="ky-child-category-image size-40px rounded-1 overflow-hidden flex-shrink-0 mr-2 bg-white border border-gray-200 d-flex align-items-center justify-content-center">
+                                                                <img class="w-100 h-100"
+                                                                    src="{{ $childCategoryImage }}"
+                                                                    alt="{{ $childCategory->getTranslation('name') }}"
+                                                                    onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
                                                             </div>
-
-                                                        </div>
-
-                                                    </a>
-
+                                                            <div class="overflow-hidden flex-grow-1">
+                                                                <div class="fs-13 fw-bold text-dark text-truncate" title="{{ $childCategory->getTranslation('name') }}">
+                                                                    {{ $childCategory->getTranslation('name') }}
+                                                                </div>
+                                                                <div class="fs-11 text-muted">{{ translate('Shop Now') }}</div>
+                                                            </div>
+                                                        </a>
+                                                    @endforeach
                                                 </div>
-
-                                            @endforeach
-
+                                            </div>
                                         </div>
-
                                     </div>
-
                                 </div>
-
                             </div>
-
                         @endforeach
-
                     </div>
-
                 </div>
             </div>
+        @endif
+        <!-- Category Section Redesign End -->
 
         @endif
         <!-- Categories -->

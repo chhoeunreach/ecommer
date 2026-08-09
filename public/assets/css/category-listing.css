@@ -60,87 +60,133 @@
 
 .product-category-tree,
 .product-category-tree__children {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 .product-category-tree__children {
-    padding-left: 22px;
+    padding-left: 18px !important;
 }
 
 .product-category-tree__item {
-    margin-bottom: 2px;
+    margin-bottom: 2px !important;
 }
 
 .product-category-tree__row {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    min-height: 34px;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    min-height: 32px !important;
+    position: relative !important;
 }
 
 .product-category-tree__toggle,
 .product-category-tree__toggle-spacer {
-    flex: 0 0 22px;
-    width: 22px;
-    height: 22px;
+    flex: 0 0 18px !important;
+    width: 18px !important;
+    height: 18px !important;
 }
 
 .product-category-tree__toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: #9199a8;
-    font-size: 15px;
-    cursor: pointer;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #808896 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
 }
 
 .product-category-tree__toggle:hover {
-    color: var(--primary);
+    color: var(--primary) !important;
 }
 
 .product-category-tree__toggle i {
-    display: inline-block;
-    transition: transform .2s ease;
+    display: inline-block !important;
+    transition: transform 0.2s ease !important;
 }
 
 .product-category-tree__toggle[aria-expanded="false"] i {
-    transform: rotate(-90deg);
+    transform: rotate(-90deg) !important;
 }
 
 .product-category-tree__label {
-    flex: 1 1 auto;
-    min-width: 0;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    font-size: 14px;
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding-left: 24px !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+    margin-bottom: 0 !important;
+    cursor: pointer !important;
 }
 
-.product-category-tree__label .aiz-square-check {
-    top: 50%;
-    width: 17px;
-    height: 17px;
-    transform: translateY(-50%);
+.product-category-tree__label input[type="checkbox"] {
+    position: absolute !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+}
+
+.product-category-tree__check {
+    position: absolute !important;
+    left: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 3px !important;
+    border: 1px solid #cbd5e1 !important;
+    background-color: #ffffff !important;
+    transition: all 0.2s ease !important;
+    margin: 0 !important;
+}
+
+.product-category-tree__label input[type="checkbox"]:checked ~ .product-category-tree__check {
+    background-color: var(--primary, #3390f3) !important;
+    border-color: var(--primary, #3390f3) !important;
+}
+
+.product-category-tree__label input[type="checkbox"]:checked ~ .product-category-tree__check::after {
+    content: '' !important;
+    position: absolute !important;
+    left: 5px !important;
+    top: 2px !important;
+    width: 4px !important;
+    height: 8px !important;
+    border: solid #ffffff !important;
+    border-width: 0 2px 2px 0 !important;
+    transform: rotate(45deg) !important;
 }
 
 .product-category-tree__name {
-    flex: 1 1 auto;
-    line-height: 1.4;
+    flex: 1 1 auto !important;
+    font-size: 13px !important;
+    color: #334155 !important;
+    line-height: 1.4 !important;
+    word-break: break-word !important;
+    transition: color 0.2s ease !important;
 }
 
 .product-category-tree__row:hover .product-category-tree__name {
-    color: var(--primary);
+    color: var(--primary, #3390f3) !important;
 }
 
 .product-category-tree__count {
-    flex: 0 0 auto;
-    margin-left: 6px;
-    color: #9ba0ac;
-    font-size: 12px;
+    flex: 0 0 auto !important;
+    margin-left: auto !important;
+    padding-left: 8px !important;
+    color: #94a3b8 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
 }
 
 .listing-breadcrumb {
@@ -181,17 +227,65 @@
 }
 
 .listing-sort-control {
-    min-height: 40px;
-    padding: 0 8px;
-    border: 1px solid var(--listing-border);
-    border-radius: 10px;
-    background: #fafbfc;
+    min-height: 40px !important;
+    padding: 0 12px !important;
+    border: 1px solid var(--listing-border, #e2e8f0) !important;
+    border-radius: 12px !important;
+    background: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    max-width: 220px !important;
+    width: auto !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03) !important;
+}
+
+.listing-sort-control #select_option_svg {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+    color: #64748b !important;
+}
+
+.listing-sort-control .bootstrap-select {
+    width: auto !important;
+    flex: 1 1 auto !important;
+    min-width: 110px !important;
+    background: transparent !important;
+    border: none !important;
+    margin: 0 !important;
 }
 
 .listing-sort-control .bootstrap-select > .dropdown-toggle {
-    min-height: 38px;
+    min-height: 38px !important;
+    padding: 0 22px 0 4px !important;
     background: transparent !important;
+    border: none !important;
     box-shadow: none !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #1e293b !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+.listing-sort-control .bootstrap-select .filter-option-inner-inner {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.listing-sort-control .bootstrap-select > .dropdown-toggle::after {
+    display: inline-block !important;
+    position: absolute !important;
+    right: 6px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin: 0 !important;
+    border-top: 5px solid #64748b !important;
+    border-right: 4px solid transparent !important;
+    border-left: 4px solid transparent !important;
 }
 
 .listing-column-controls .btn-col-filter {

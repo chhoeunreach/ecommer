@@ -448,7 +448,7 @@
                                     </button>
                                 </div>
 
-                                <div class="col-7 col-lg-auto mb-3 w-lg-200px d-flex align-items-center gap-2 listing-sort-control">
+                                <div class="col-7 col-lg-auto mb-3 d-flex align-items-center gap-2 listing-sort-control">
                                     <div id="select_option_svg">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="17.5" height="13.5"
                                             viewBox="0 0 17.5 13.5">

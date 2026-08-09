@@ -1403,6 +1403,10 @@ if (!function_exists('asset_path')) {
     {
         $path = ltrim($path, '/');
 
+        if (strpos($path, 'public/') === 0) {
+            $path = substr($path, 7);
+        }
+
         if (asset_path_needs_public_prefix()) {
             return 'public/' . $path;
         }
@@ -1427,6 +1431,11 @@ if (!function_exists('asset_path_needs_public_prefix')) {
             return false;
         }
 
+        $docRoot = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? '');
+        if ($docRoot !== '' && (basename($docRoot) === 'public' || str_ends_with(rtrim($docRoot, '/'), '/public'))) {
+            return false;
+        }
+
         $script = isset($_SERVER['SCRIPT_FILENAME']) ? realpath($_SERVER['SCRIPT_FILENAME']) : false;
         $rootIndex = realpath(base_path('index.php'));
         $publicIndex = realpath(public_path('index.php'));
@@ -1439,9 +1448,7 @@ if (!function_exists('asset_path_needs_public_prefix')) {
             return true;
         }
 
-        $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
-
-        return strpos($scriptName, '/public/') === false;
+        return false;
     }
 }
 

@@ -52,7 +52,7 @@
 
 .kneayerng-home > .hero-banner-carousel {
     margin-top: 0;
-    background: #e9edf4;
+    background: transparent;
 }
 
 .kneayerng-home .hero-banner-container,
@@ -60,7 +60,7 @@
 .kneayerng-home .banner-lg-container,
 .kneayerng-home .banner-lg-container-two {
     overflow: hidden;
-    background: #eef1f5;
+    background: transparent;
 }
 
 .kneayerng-home .hero-banner-container img,
@@ -69,9 +69,9 @@
 .kneayerng-home .banner-lg-container-two img {
     display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
     max-height: none;
-    object-fit: contain !important;
+    object-fit: cover !important;
     object-position: center !important;
     transform: none !important;
 }
@@ -84,7 +84,7 @@
 
 .kneayerng-home .hero-banner-container,
 .kneayerng-home .mega-banner-container {
-    aspect-ratio: 6 / 1;
+    aspect-ratio: auto;
 }
 
 .kneayerng-home .banner-lg-container {
@@ -126,17 +126,77 @@
     border-radius: 14px !important;
 }
 
+/* The slick carousel clips its track with overflow:hidden for the slide
+   mechanics (needed so off-screen slides stay hidden), which otherwise cuts
+   off the hover-lift shadow defined on the card itself (see the <style>
+   block in kneayerng_v1/index.blade.php for .fd-product-slider,
+   .td-product-slider and .custom-product-slider card hover states).
+   Reserve room inside the clipped area, then cancel it out on the outer
+   wrapper so the widget's overall position doesn't shift. */
+.kneayerng-home .fd-product-slider.slick-slider,
+.kneayerng-home .td-product-slider.slick-slider,
+.kneayerng-home .custom-product-slider.slick-slider {
+    margin-top: -14px;
+    margin-bottom: -24px;
+}
+
+.kneayerng-home .fd-product-slider.slick-slider .slick-list,
+.kneayerng-home .td-product-slider.slick-slider .slick-list,
+.kneayerng-home .custom-product-slider.slick-slider .slick-list {
+    padding: 14px 0 24px !important;
+}
+
+.kneayerng-home .fd-product-slider .img-aspect-ratio-200px,
+.kneayerng-home .td-product-slider .img-aspect-ratio-200px {
+    background: #f4f6f9;
+    border-radius: 10px !important;
+}
+
+.kneayerng-home .fd-product-slider p,
+.kneayerng-home .td-product-slider p {
+    padding: 0 2px;
+}
+
+/* Countdown timer */
+.kneayerng-home .aiz-count-down {
+    align-items: center;
+    gap: 3px;
+}
+
+.kneayerng-home .aiz-count-down .countdown-item {
+    min-width: 38px;
+    padding: 7px 4px 5px;
+    margin: 0;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #ff6b4a, #e5391a);
+    box-shadow: 0 6px 14px rgba(229, 57, 26, 0.25);
+    text-align: center;
+}
+
+.kneayerng-home .aiz-count-down .countdown-digit {
+    display: block;
+    font-size: 15px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.kneayerng-home .aiz-count-down .countdown-separator {
+    margin: 0 1px;
+    color: #e5391a;
+    font-weight: 700;
+}
+
 .kneayerng-home .featured-categories-slider a:first-child,
 .kneayerng-home .shop-by-brand a:first-child,
 .kneayerng-home .shop-by-seller a:first-child {
     transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
 }
 
-.kneayerng-home .featured-categories-slider > div:hover a:first-child,
-.kneayerng-home .shop-by-brand .slick-slide:hover a:first-child,
-.kneayerng-home .shop-by-seller .slick-slide:hover a:first-child {
+.kneayerng-home .featured-categories-slider a:first-child:hover,
+.kneayerng-home .shop-by-brand .slick-slide a:first-child:hover,
+.kneayerng-home .shop-by-seller .slick-slide a:first-child:hover {
     border-color: rgba(52, 144, 243, 0.25) !important;
-    box-shadow: 0 12px 28px rgba(18, 28, 45, 0.11);
+    box-shadow: 0 8px 20px rgba(18, 28, 45, 0.08);
     transform: translateY(-3px);
 }
 

@@ -617,34 +617,6 @@
                         <!-- Product Price & Stock End -->
 
 
-                        <!-- Product Variants Start -->
-                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4 mb-4 mb-xl-0" id="variant-div-show-hide">
-                            <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Product Variants') }}</h5>
-                            <div class="form-group row gutters-5 mb-2">
-                                <label class="col-md-3 col-from-label fs-14 fw-500">{{ translate('Choose Attributes') }}</label>
-                                <div class="col-md-9">
-                                    <select name="choice_attributes[]" id="choice_attributes" class="form-control aiz-selectpicker" data-selected-text-format="count" data-live-search="true" multiple data-placeholder="{{ translate('Choose Attributes') }}">
-                                        @foreach (\App\Models\Attribute::all() as $attribute)
-                                            <option value="{{ $attribute->id }}">{{ $attribute->getTranslation('name') }}</option>
-                                        @endforeach
-                                    </select>
-                                    @can('add_product_attribute')
-                                        <a href="#" id="add_attribute" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center mt-1">
-                                            <i class="las la-plus fs-16 mr-1"></i><span>{{ translate('New Attribute') }}</span>
-                                        </a>
-                                    @endcan
-                                </div>
-                            </div>
-                            <div id="chose_options_text" class="d-none">
-                                <p class="fs-12 text-muted mb-2">{{ translate('Choose the attributes and select the values used to build product variants.') }}</p>
-                            </div>
-                            <div class="customer_choice_options mb-3" id="customer_choice_options"></div>
-                            <!-- sku combination -->
-                            <div class="sku_combination" id="sku_combination">
-
-                            </div>
-                        </div>
-                        <!-- Product Variants End -->
                     </div>
 
                     <!--Right Side -->
@@ -1184,6 +1156,36 @@
                         </div>
                     </div>
                 </div>
+                
+                        <!-- Product Variants Start -->
+                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4 mb-4 mb-xl-0" id="variant-div-show-hide">
+                            <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Product Variants') }}</h5>
+                            <div class="form-group row gutters-5 mb-2">
+                                <label class="col-md-3 col-from-label fs-14 fw-500">{{ translate('Choose Attributes') }}</label>
+                                <div class="col-md-9">
+                                    <select name="choice_attributes[]" id="choice_attributes" class="form-control aiz-selectpicker" data-selected-text-format="count" data-live-search="true" multiple data-placeholder="{{ translate('Choose Attributes') }}">
+                                        @foreach (\App\Models\Attribute::all() as $attribute)
+                                            <option value="{{ $attribute->id }}">{{ $attribute->getTranslation('name') }}</option>
+                                        @endforeach
+                                    </select>
+                                    @can('add_product_attribute')
+                                        <a href="#" id="add_attribute" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center mt-1">
+                                            <i class="las la-plus fs-16 mr-1"></i><span>{{ translate('New Attribute') }}</span>
+                                        </a>
+                                    @endcan
+                                </div>
+                            </div>
+                            <div id="chose_options_text" class="d-none">
+                                <p class="fs-12 text-muted mb-2">{{ translate('Choose the attributes and select the values used to build product variants.') }}</p>
+                            </div>
+                            <div class="customer_choice_options mb-3" id="customer_choice_options"></div>
+                            <!-- sku combination -->
+                            <div class="sku_combination table-responsive" id="sku_combination" style="overflow-x: auto; width: 100%;">
+
+                            </div>
+                        </div>
+                        <!-- Product Variants End -->
+
                 <!-- Save Button -->
                 <div class="mt-4 text-right">
                     <button type="submit" name="button" value="unpublish" data-action="unpublish" class="mx-2 btn btn-light w-230px btn-md rounded-2 fs-14 fw-700 shadow-secondary border-soft-secondary action-btn">{{ translate('Save & Unpublish') }}</button>
@@ -1258,7 +1260,7 @@
     });
 
     function add_more_customer_choice_option(i, name){
-        $.ajax({
+        return $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
@@ -1384,11 +1386,16 @@
 
     $('#choice_attributes').on('change', function() {
         $('#customer_choice_options').html(null);
-        $.each($("#choice_attributes option:selected"), function(){
-            add_more_customer_choice_option($(this).val(), $(this).text());
+        var $submitBtns = $('#aizSubmitForm .action-btn').prop('disabled', true);
+
+        var pendingRequests = $.map($("#choice_attributes option:selected"), function(option){
+            return add_more_customer_choice_option($(option).val(), $(option).text());
         });
 
-        update_sku();
+        $.when.apply($, pendingRequests).always(function() {
+            $submitBtns.prop('disabled', false);
+            update_sku();
+        });
     });
 
     function fq_bought_product_selection_type(){

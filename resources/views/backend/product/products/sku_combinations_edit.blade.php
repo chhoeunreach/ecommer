@@ -2,34 +2,34 @@
 <table class="table table-bordered aiz-table">
     <thead>
         <tr>
-            <td class="text-center" data-breakpoints="lg">
+            <td class="text-center" data-breakpoints="lg" style="min-width: 120px;">
                 {{translate('SKU')}}
             </td>
-            <td class="text-center">
+            <td class="text-center" style="min-width: 120px;">
                 {{translate('Variant')}}
             </td>
-            <td class="text-center" data-breakpoints="lg">
+            <td class="text-center" data-breakpoints="lg" style="min-width: 100px;">
                 {{translate('Storage')}}
             </td>
-            <td class="text-center" data-breakpoints="lg">
+            <td class="text-center" data-breakpoints="lg" style="min-width: 100px;">
                 {{translate('Code')}}
             </td>
-            <td class="text-center" data-breakpoints="lg">
+            <td class="text-center" data-breakpoints="lg" style="min-width: 100px;">
                 {{translate('Country')}}
             </td>
-            <td class="text-center" data-breakpoints="lg">
+            <td class="text-center" data-breakpoints="lg" style="min-width: 100px;">
                 {{translate('Condition')}}
             </td>
-            <td class="text-center" data-breakpoints="lg">
+            <td class="text-center" data-breakpoints="lg" style="min-width: 100px;">
                 {{translate('Quantity')}}
             </td>
-            <td class="text-center">
+            <td class="text-center" style="min-width: 120px;">
                 {{translate('Variant Price')}}
             </td>
-            <td class="text-center" data-breakpoints="lg">
+            <td class="text-center" data-breakpoints="lg" style="min-width: 200px;">
                 {{translate('Photo')}}
             </td>
-            <td class="text-center">
+            <td class="text-center" style="min-width: 80px;">
                 {{translate('Action')}}
             </td>
         </tr>

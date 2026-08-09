@@ -1265,23 +1265,11 @@
     transition: all .4s ease;
 }
 
-.product-variant .more-toggle-btn{
-    background-color: #fafafc!important;
-}
-.product-variant .more-toggle-btn:hover{
-    background-color: var(--light)!important;
-}
-
 .product-variant button:hover .dot {
     background-color: var(--blue) !important;
 }
 
-.product-variant.collapsed .variant-item {
-    border-top: 1px dashed #DFDFE6 !important;
-}
-
-.product-variant.collapsed .variant-item-none {
-    display: none;
+.product-variant .variant-item {
     border-top: 1px dashed #DFDFE6 !important;
 }
 

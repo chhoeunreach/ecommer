@@ -31,14 +31,14 @@
             <span class="product-category-tree__toggle-spacer" aria-hidden="true"></span>
         @endif
 
-        <label class="aiz-checkbox product-category-tree__label mb-0 d-flex align-items-center"
+        <label class="product-category-tree__label mb-0"
             for="{{ $categoryInputId }}">
             <input id="{{ $categoryInputId }}" type="checkbox" name="{{ $inputName }}"
                 value="{{ $categoryItem->id }}" @checked(in_array($categoryItem->id, $selectedIds ?? []))
                 onchange="filter(event)">
-            <span class="aiz-square-check border_black product-category-tree__check" aria-hidden="true"></span>
+            <span class="product-category-tree__check" aria-hidden="true"></span>
             <span id="category_checkid_text{{ $idPrefix }}{{ $categoryItem->id }}"
-                class="product-category-tree__name @if (in_array($categoryItem->id, $selectedIds ?? [])) fw-bold @endif">
+                class="product-category-tree__name @if (in_array($categoryItem->id, $selectedIds ?? [])) fw-bold text-primary @endif">
                 {{ $categoryName }}
             </span>
             @if ($categoryCount > 0)
