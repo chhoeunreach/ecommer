@@ -75,6 +75,9 @@
     @if(get_setting('homepage_select') == 'kystor')
     <link rel="stylesheet" href="{{ static_asset('assets/css/kystor.css?v=') }}{{ filemtime(public_path('assets/css/kystor.css')) }}">
     @endif
+    @if(get_setting('homepage_select') == 'kneayerng_v1')
+    <link rel="stylesheet" href="{{ static_asset('assets/css/kneayerng-home.css?v=') }}{{ filemtime(public_path('assets/css/kneayerng-home.css')) }}">
+    @endif
 
     <script>
         var AIZ = AIZ || {};
@@ -717,7 +720,7 @@
             }, function(data) {
                 $('#section_newest').html(data);
                 AIZ.plugins.slickCarousel();
-                @if (get_setting('homepage_select') == 'thecore' || get_setting('homepage_select') == 'kystor')
+                @if (in_array(get_setting('homepage_select'), ['thecore', 'kystor', 'nexa', 'kneayerng_v1']))
                  toggleViewMoreButton();
                 @endif
             });

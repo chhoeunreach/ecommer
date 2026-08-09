@@ -166,10 +166,10 @@
 										</div>
 										<div class="ml-2 text-gray">
 											<div class="mb-2">
-												{{ translate('Minimum dimensions required: 1920px width X 320px height.') }}
+												{{ translate('Recommended sizes — Desktop/iPad: 1920px × 320px (6:1). Phone: 768px × 384px (2:1).') }}
 											</div>
 											<div>
-												{{ translate('We have limited banner height to maintain UI. We had to crop from both left & right side in view for different devices to make it responsive. Before designing banner keep these points in mind.') }}
+											{{ translate('The complete image is shown without cropping. Keep important text and logos inside a safe margin of at least 5% on every side.') }}
 											</div>
 										</div>
 									</div>
@@ -518,7 +518,7 @@
 									<label
 										class="col-from-label fs-13 fw-500 mb-0">{{ translate('Banner & Links (Max 3)') }}</label>
 									<div class="small text-muted mb-3">
-										{{ translate("Minimum dimensions required: 1280px width X 320px height.") }}
+										{{ translate("Recommended size: 1280px × 320px (4:1). The complete banner is shown on every device.") }}
 									</div>
 
 									<!-- Images & links -->
@@ -1097,7 +1097,7 @@
 									<label
 										class="col-from-label fs-13 fw-500 mb-0">{{ translate('Banner & Links (Max 3)') }}</label>
 									<div class="small text-muted mb-0">
-										{{ translate("Minimum dimensions required For Large Screen: 640px width X 320px height (If use a single banner).") }}
+											{{ translate("Recommended size: 640px × 320px (2:1). The complete banner is shown on every device.") }}
 									</div>
 									<!-- Images & links -->
 									<div class="home-banner2-target">
@@ -1409,7 +1409,7 @@
 									<label
 										class="col-from-label fs-13 fw-500 mb-0">{{ translate('Banner & Links (Max 3)') }}</label>
 									<div class="small text-muted mb-0">
-										{{ translate("Minimum dimensions required For Large Screen: 1920px width X 320px height (If use a single banner).") }}
+											{{ translate("Recommended sizes — Desktop/iPad: 1920px × 320px (6:1). Phone: 768px × 384px (2:1).") }}
 									</div>
 									<!-- Images & links -->
 									<div class="home-banner3-target">

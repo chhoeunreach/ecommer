@@ -31,6 +31,7 @@
 @section('meta_keywords'){{ $meta_keywords ?? '' }}@stop
 
 @section('meta')
+    <link rel="stylesheet" href="{{ static_asset('assets/css/category-listing.css?v=') }}{{ filemtime(public_path('assets/css/category-listing.css')) }}">
     <!-- Schema.org markup for Google+ -->
     <meta itemprop="name" content="{{ $meta_title }}">
     <meta itemprop="description" content="{{ $meta_description }}">
@@ -46,14 +47,14 @@
 
 @section('content')
 
-    <section class="mb-1">
-        <div class="container sm-px-0 pt-1">
-            <form class="" id="search-form" action="" method="GET">
-                <div class="row">
+    <section class="product-listing-page">
+        <div class="container product-listing-container">
+            <form id="search-form" action="" method="GET">
+                <div class="row product-listing-layout">
 
                     <!-- Sidebar Filters -->
-                    <div class="col-xl-3">
-                        <div class="aiz-filter-sidebar collapse-sidebar-wrap sidebar-xl sidebar-right z-1035">
+                    <div class="col-xl-3 product-listing-sidebar-column">
+                        <div class="aiz-filter-sidebar collapse-sidebar-wrap sidebar-xl sidebar-right z-1035 product-listing-sidebar">
                             <div class="overlay overlay-fixed dark c-pointer" data-toggle="class-toggle"
                                 data-target=".aiz-filter-sidebar" data-same=".filter-sidebar-thumb"></div>
                             <div class="collapse-sidebar scroll-bar-show c-scrollbar-light text-left">
@@ -342,7 +343,7 @@
                     </div>
 
                     <!-- Contents -->
-                    <div class="col-xl-9">
+                    <div class="col-xl-9 product-listing-content">
                         @if (addon_is_activated('preorder') && Route::currentRouteName() == 'search')
                             <div class="product-tab mt-2">
                                 @php
@@ -377,7 +378,7 @@
                             </div>
                         @endif
                         <!-- Breadcrumb -->
-                        <ul class="breadcrumb mb-0 bg-transparent py-0 px-0 mt-2 d-flex align-items-center">
+                        <ul class="breadcrumb listing-breadcrumb mb-0 bg-transparent py-0 px-0 d-flex align-items-center">
                             <li class=" has-transition opacity-50 hov-opacity-100">
                                 <a class="text-reset" href="{{ route('home') }}">{{ translate('Home') }}</a>
                             </li>
@@ -421,13 +422,12 @@
                         </ul>
 
                         <!-- Top Filters -->
-                        <div class="text-left mb-3">
-                            <div class="row gutters-5 flex-wrap align-items-center">
+                        <div class="listing-toolbar text-left mb-4">
+                            <div class="row gutters-8 flex-wrap align-items-center">
                                 <div class="col-lg col-10">
                                     <h1 class="fs-18 fs-md-20 fw-700 text-dark line-height_0_7">
                                         @if (isset($category_id))
-                                            {{-- {{ $category_search->getTranslation('name') }} --}}
-                                            {{ translate('Showing results') }}
+                                            {{ $category_search->getTranslation('name') }}
                                         @elseif(isset($query))
                                             {{ translate('Search result for ') }} "{{ $query }}"
                                         @else
@@ -442,13 +442,13 @@
                                     <input type="hidden" name="keyword" value="{{ $query }}">
                                 </div>
                                 <div class="col-2 col-lg-auto d-xl-none mb-lg-3 text-right">
-                                    <button type="button" class="btn btn-icon p-0" data-toggle="class-toggle"
+                                    <button type="button" class="btn btn-icon listing-filter-button" data-toggle="class-toggle"
                                         data-target=".aiz-filter-sidebar">
                                         <i class="la la-filter la-2x"></i>
                                     </button>
                                 </div>
 
-                                <div class="col-6 col-lg-auto mb-3 w-lg-200px d-flex align-items-center gap-2">
+                                <div class="col-7 col-lg-auto mb-3 w-lg-200px d-flex align-items-center gap-2 listing-sort-control">
                                     <div id="select_option_svg">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="17.5" height="13.5"
                                             viewBox="0 0 17.5 13.5">
@@ -497,7 +497,7 @@
                                 </div>
 
 
-                                <div class="d-flex gap-2 mb-3 " style="gap: 8px;">
+                                <div class="d-flex gap-2 mb-3 listing-column-controls" style="gap: 8px;">
                                     <button type="button" class="btn-col-filter view-2-hide" data-cols="2">
                                         <div class="block_btn"></div>
                                         <div class="block_btn"></div>
@@ -529,9 +529,9 @@
                         </div>
 
                         <!-- Products -->
-                        <div class="px-3">
+                        <div class="product-listing-results">
 
-                            <div class="row gutters-16 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-4 row-cols-md-3 row-cols-2 border-top border-left"
+                            <div class="row gutters-16 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-4 row-cols-md-3 row-cols-2"
                                 id="products-row">
                                 {{-- @foreach ($products as $key => $product)
                                     <div class="col border-right border-bottom has-transition hov-shadow-out z-1 ">
@@ -715,7 +715,7 @@
 
                 $('.btn-col-filter').removeClass('active-cols');
                 $('.btn-col-filter[data-cols="' + cols + '"]').addClass('active-cols');
-                $('.row.gutters-16').removeClass('row-cols-2 row-cols-3 row-cols-4 row-cols-6')
+                $('#products-row').removeClass('row-cols-2 row-cols-3 row-cols-4 row-cols-6')
                     .addClass('row-cols-' + cols);
             }
 

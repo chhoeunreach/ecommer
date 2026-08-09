@@ -2,7 +2,94 @@
 
 @section('content')
 
+<style>
+    /* Premium Homepage Styles */
+    .hero-banner-container {
+        border-radius: 24px !important;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.08) !important;
+        transform: translateZ(0);
+    }
+    
+    .hero-banner-wrapper {
+        padding: 10px 0 30px;
+    }
+
+    /* Product Cards Premium Look */
+    .custom-product-slider .slick-slide > div > div, 
+    .fd-product-slider .slick-slide > div > div, 
+    .td-product-slider .slick-slide > div > div {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 12px;
+        box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        margin: 10px 5px;
+        border: 1px solid rgba(0,0,0,0.02);
+    }
+
+    .custom-product-slider .slick-slide > div > div:hover, 
+    .fd-product-slider .slick-slide > div > div:hover, 
+    .td-product-slider .slick-slide > div > div:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(149, 157, 165, 0.2);
+    }
+
+    /* Image rounding for cards */
+    .img-aspect-ratio-200px, .img-aspect-ratio-300px, .img-aspect-ratio-250px {
+        border-radius: 12px !important;
+    }
+
+    /* Category Blocks */
+    .ky-category-main a {
+        border-radius: 20px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+        transition: transform 0.3s ease;
+    }
+    .ky-category-main a:hover {
+        transform: scale(1.02);
+    }
+
+    .ky-category-children .category-card {
+        background: rgba(255, 255, 255, 0.8) !important;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.5);
+        border-radius: 16px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        transition: all 0.3s ease;
+    }
+    .ky-category-children .category-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        background: #ffffff !important;
+    }
+
+    /* Section Headings */
+    h5.fw-bold {
+        letter-spacing: -0.5px;
+        color: #1a1a2e;
+    }
+    
+    /* Buttons */
+    .bg-dark.rounded-pill {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+        box-shadow: 0 4px 15px rgba(26, 26, 46, 0.3);
+        border: none !important;
+        transition: all 0.3s ease !important;
+    }
+    .bg-dark.rounded-pill:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(26, 26, 46, 0.4);
+    }
+    
+    /* Main container breathing room */
+    .feactured-best-selling-product-section {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+</style>
+
     @php $lang = get_system_language()->code; @endphp
+    <main class="kneayerng-home" id="kneayerng-home">
         <!-- Home Banner Start -->
         <div class="aiz-carousel arrow-x-0 arrow-inactive-none hero-banner-carousel d-none  d-md-block" data-items="1" data-full-hd-items="1" data-xxl-items="1"
             data-xl-items="1" data-lg-items="1" data-md-items="1" data-sm-items="1" data-xs-items="1" data-arrows='false'
@@ -31,12 +118,13 @@
         <div class="aiz-carousel arrow-x-0 arrow-inactive-none hero-banner-carousel d-md-none" data-items="1" data-full-hd-items="1" data-xxl-items="1"
             data-xl-items="1" data-lg-items="1" data-md-items="1" data-sm-items="1" data-xs-items="1" data-arrows='false'
             data-autoplay="true" data-infinite="true">
-            @if (get_setting('small_home_slider_images', null, $lang) != null)
+            @if (get_setting('home_slider_images', null, $lang) != null)
                 @php
-                    $small_decoded_slider_images = json_decode(
-                        get_setting('small_home_slider_images', null, $lang),
-                        true,
-                    );
+                    $desktop_slider_ids = json_decode(get_setting('home_slider_images', null, $lang), true) ?? [];
+                    $mobile_slider_ids = json_decode(get_setting('small_home_slider_images', null, $lang) ?: '[]', true) ?? [];
+                    $small_decoded_slider_images = collect($desktop_slider_ids)
+                        ->map(fn ($desktopId, $key) => !empty($mobile_slider_ids[$key]) ? $mobile_slider_ids[$key] : $desktopId)
+                        ->all();
                     $small_sliders = get_slider_images($small_decoded_slider_images);
                     $home_slider_links = get_setting('home_slider_links', null, $lang);
                     $home_slider_colors = get_setting('home_slider_colors', null, $lang);
@@ -250,7 +338,7 @@
                     $banner_1_imags = json_decode($homeBanner1Images);
                     $home_banner1_links = get_setting('home_banner1_links', null, $lang);
                 @endphp
-                <div class="aiz-carousel arrow-x-0 arrow-inactive-none" data-items="2" data-full-hd-items="2" data-xxl-items="2"
+                <div class="aiz-carousel arrow-x-0 arrow-inactive-none landing-banner-carousel landing-banner-one" data-items="2" data-full-hd-items="2" data-xxl-items="2"
                     data-xl-items="2" data-lg-items="2" data-md-items="2" data-sm-items="2" data-xs-items="1" data-arrows='false'
                     data-autoplay="true" data-infinite="true">
                     @foreach ($banner_1_imags as $key => $value)
@@ -411,17 +499,17 @@
                                 $selectedChildren = \App\Models\Category::whereIn('id', $selectedChildIds)->get();
                             @endphp
 
-                            <div class="col-6 col-md-6 col-lg-6 col-xl-4 col-xxl-3">
+                            <div class="col-6 col-md-6 col-lg-6 col-xl-4 col-xxl-3 ky-category-group">
 
                                 <!-- Main Category Name -->
                                 <h5 class="fs-20 fs-md-20 fw-bold mb-3">
                                     {{ $mainCategory->getTranslation('name') }}
                                 </h5>
 
-                                <div class="row gutters-16 d-flex">
+                                <div class="row gutters-16 d-flex ky-category-content">
 
                                     <!-- Big Image -->
-                                    <div class="col-12 col-md-12 col-lg-6 col-xl-6 pr-lg-0 img-container-col-6">
+                                    <div class="col-12 col-md-12 col-lg-6 col-xl-6 pr-lg-0 img-container-col-6 ky-category-main">
 
                                         <a href="{{ route('products.category', $mainCategory->slug) }}"
                                             class="d-block w-100 h-100 overflow-hidden hov-scale-img rounded-2 align-items-stretch img-container-lg  border border-gray-300">
@@ -435,7 +523,7 @@
                                     </div>
 
                                     <!-- Child Categories -->
-                                    <div class="col-12 col-md-12 col-lg-6 col-xl-6 mt-3 mt-lg-0">
+                                    <div class="col-12 col-md-12 col-lg-6 col-xl-6 mt-3 mt-lg-0 ky-category-children">
 
                                         <div class="row">
 
@@ -599,7 +687,7 @@
                     $data_md = count($banner_2_images) >= 2 ? 2 : 1;
                     $home_banner2_links = get_setting('home_banner2_links', null, $lang);
                 @endphp
-                <div class="aiz-carousel arrow-x-0 arrow-inactive-none" data-items="4" data-full-hd-items="4" data-xxl-items="3"
+                <div class="aiz-carousel arrow-x-0 arrow-inactive-none landing-banner-carousel landing-banner-two" data-items="4" data-full-hd-items="4" data-xxl-items="3"
                     data-xl-items="3" data-lg-items="2" data-md-items="2" data-sm-items="2" data-xs-items="1"
                     data-arrows='false' data-autoplay="true" data-infinite="true">
                     @foreach ($banner_2_images as $key => $value)
@@ -908,7 +996,7 @@
         @if (get_setting('enable_banner_3') == 1)
             @php $homeBanner3Images = get_setting('home_banner3_images', null, $lang);   @endphp
             @if ($homeBanner3Images != null)
-                <div class="aiz-carousel arrow-x-0 arrow-inactive-none d-none d-md-block" data-items="1" data-full-hd-items="1" data-xxl-items="1"
+                <div class="aiz-carousel arrow-x-0 arrow-inactive-none mega-banner-carousel d-none d-md-block" data-items="1" data-full-hd-items="1" data-xxl-items="1"
                     data-xl-items="1" data-lg-items="1" data-md-items="1" data-sm-items="1" data-xs-items="1"
                     data-arrows='false' data-autoplay="true" data-infinite="true">
                     @php
@@ -927,13 +1015,20 @@
                     @endforeach
                 </div>
             @endif
-            @php $smallHomeBanner3Images = get_setting('small_home_banner3_images', null, $lang);   @endphp
-            @if ($smallHomeBanner3Images != null)
-                <div class="aiz-carousel arrow-x-0 arrow-inactive-none d-md-none" data-items="1" data-full-hd-items="1" data-xxl-items="1"
+            @php
+                $smallHomeBanner3Images = get_setting('small_home_banner3_images', null, $lang);
+                $desktopBanner3Ids = json_decode($homeBanner3Images, true) ?? [];
+                $mobileBanner3Ids = json_decode($smallHomeBanner3Images ?: '[]', true) ?? [];
+                $resolvedMobileBanner3Ids = collect($desktopBanner3Ids)
+                    ->map(fn ($desktopId, $key) => !empty($mobileBanner3Ids[$key]) ? $mobileBanner3Ids[$key] : $desktopId)
+                    ->all();
+            @endphp
+            @if (count($resolvedMobileBanner3Ids) > 0)
+                <div class="aiz-carousel arrow-x-0 arrow-inactive-none mega-banner-carousel d-md-none" data-items="1" data-full-hd-items="1" data-xxl-items="1"
                     data-xl-items="1" data-lg-items="1" data-md-items="1" data-sm-items="1" data-xs-items="1"
                     data-arrows='false' data-autoplay="true" data-infinite="true">
                     @php
-                        $banner_3_imags_small = json_decode($smallHomeBanner3Images);
+                        $banner_3_imags_small = $resolvedMobileBanner3Ids;
                         $home_banner3_links = get_setting('home_banner3_links', null, $lang);
                         $home_banner3_colors = get_setting('home_banner3_colors', null, $lang);
                     @endphp
@@ -972,6 +1067,7 @@
             <i class="las la-arrow-up fs-20"></i>
         </button>
          <!-- Back to Top End -->
+    </main>
 @endsection
 
 @section('script')
@@ -1077,6 +1173,57 @@
             $('#view-more-container').removeClass('d-block').addClass('d-none');
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const home = document.getElementById('kneayerng-home');
+
+        if (!home) return;
+
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const sections = Array.from(home.children).filter(function (element) {
+            return element.matches('.border-bottom, .layout-container, .aiz-carousel');
+        });
+
+        if (reduceMotion || !('IntersectionObserver' in window)) {
+            sections.forEach(function (section) {
+                section.classList.add('ky-reveal', 'is-visible');
+            });
+        } else {
+            const revealObserver = new IntersectionObserver(function (entries, observer) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                });
+            }, {
+                rootMargin: '0px 0px -8% 0px',
+                threshold: 0.08
+            });
+
+            sections.forEach(function (section) {
+                section.classList.add('ky-reveal');
+                revealObserver.observe(section);
+            });
+        }
+
+        const prepareProductCards = function () {
+            home.querySelectorAll('.products-wrapper-grid .grid-item:not(.ky-card-ready)').forEach(function (card, index) {
+                card.classList.add('ky-card-ready');
+                card.style.setProperty('--ky-card-delay', Math.min(index % 8, 7) * 45 + 'ms');
+            });
+        };
+
+        prepareProductCards();
+
+        const newestSection = document.getElementById('section_newest');
+        if (newestSection && 'MutationObserver' in window) {
+            new MutationObserver(prepareProductCards).observe(newestSection, {
+                childList: true,
+                subtree: true
+            });
+        }
+    });
 
 </script>
 

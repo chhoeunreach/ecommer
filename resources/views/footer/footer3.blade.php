@@ -1,4 +1,34 @@
 <!-- FOOTER V3 START-->
+<style>
+    .footer-design-three {
+        position: relative;
+        background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(0,0,0,0.02) 100%);
+    }
+    .footer-design-three .footer-widget {
+        border-top-left-radius: 40px;
+        border-top-right-radius: 40px;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.03);
+    }
+    .footer-email-input {
+        border-radius: 30px 0 0 30px !important;
+        padding-left: 20px;
+    }
+    .footer-email-input + .col-4 button {
+        border-radius: 0 30px 30px 0 !important;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(26, 26, 46, 0.2);
+    }
+    .footer-design-three h4 {
+        letter-spacing: -0.5px;
+    }
+    .footer-design-three a:hover {
+        opacity: 1 !important;
+        transform: translateX(3px);
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+</style>
 <footer class="footer-design-three" id="footer-v-three">
     <div class="pt-5 text-light footer-widget" style="background-color: {{ get_setting('footer_bg_color') }}">
         @if (get_setting('newsletter_activation'))

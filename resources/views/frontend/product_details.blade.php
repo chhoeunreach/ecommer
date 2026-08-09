@@ -1,5 +1,10 @@
 @extends('frontend.layouts.app')
 
+@php
+    $productDetailsLayout = get_setting('product_details_layout', 'v1');
+    $productDetailsLayout = in_array($productDetailsLayout, ['v1', 'v2'], true) ? $productDetailsLayout : 'v1';
+@endphp
+
 @section('meta_title'){{ $detailedProduct->meta_title }}@stop
 
 @section('meta_description'){{ $detailedProduct->meta_description }}@stop
@@ -7,6 +12,9 @@
 @section('meta_keywords'){{ $detailedProduct->tags }},{{ $detailedProduct->meta_keywords }}@stop
 
 @section('meta')
+    @if ($productDetailsLayout === 'v2')
+        <link rel="stylesheet" href="{{ static_asset('assets/css/product-details-v2.css?v=') }}{{ filemtime(public_path('assets/css/product-details-v2.css')) }}">
+    @endif
     @php
         $availability = "out of stock";
         $qty = 0;
@@ -57,7 +65,7 @@
 
 
 @section('content')
-    <div class="product-details">
+    <div class="product-details product-details-{{ $productDetailsLayout }}">
         <!--PRODUCT DETAILS TOP SECTION START-->
         <div class="container">
             <div class="pt-30px pb-6">
