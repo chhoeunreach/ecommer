@@ -1116,13 +1116,13 @@
                         $('#available-quantity').html(data.quantity);
                         $('.input-number').prop('max', data.max_limit);
                         if(parseInt(data.in_stock) == 0 && data.digital  == 0){
-                           $('.buy-now').addClass('d-none');
-                           $('.add-to-cart').addClass('d-none');
+                           $('.buy-now').removeClass('d-inline-flex').addClass('d-none');
+                           $('.add-to-cart').removeClass('d-inline-flex').addClass('d-none');
                            $('.out-of-stock').removeClass('d-none');
                         }
                         else{
-                           $('.buy-now').removeClass('d-none');
-                           $('.add-to-cart').removeClass('d-none');
+                           $('.buy-now').removeClass('d-none').addClass('d-inline-flex');
+                           $('.add-to-cart').removeClass('d-none').addClass('d-inline-flex');
                            $('.out-of-stock').addClass('d-none');
                         }
 
