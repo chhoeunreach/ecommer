@@ -51,6 +51,16 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function concept()
+    {
+        return view('frontend.minima.concept');
+    }
+
+    /**
+     * Show the application frontend home.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         $lang = get_system_language() ? get_system_language()->code : null;

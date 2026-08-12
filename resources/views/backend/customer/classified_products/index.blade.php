@@ -13,6 +13,11 @@
                     <div class="col-auto">
                         <h1 class="h3 fw-bold">{{ translate('All Classified Products') }}</h1>
                     </div>
+                    <div class="col-auto ml-auto">
+                        <a href="{{ route('classified_products.create') }}" class="btn btn-circle btn-info">
+                            <span>{{ translate('Add New Classified Product') }}</span>
+                        </a>
+                    </div>
                 </div>
             </div>
             <div class="card">

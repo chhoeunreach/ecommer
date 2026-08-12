@@ -1232,7 +1232,7 @@
                     </span>
                 </li>
 
-                @canany(['view_promotion_and_offers_dashboard', 'view_all_flash_deals', 'todays_deal_products.index', 'view_all_coupons', 'set_category_wise_discount', 'view_promotional_product', 'edit_website_page'])
+                @canany(['view_promotion_and_offers_dashboard', 'view_all_flash_deals', 'todays_deal_products.index', 'view_all_coupons', 'set_category_wise_discount', 'view_promotional_product', 'edit_website_page', 'view_all_auction_products', 'view_classified_products'])
                     <li class="aiz-side-nav-item">
                         <a href="#" class="aiz-side-nav-link">
                             <div class="aiz-side-nav-icon">
@@ -1272,6 +1272,15 @@
                                     </a>
                                 </li>
                             @endcan
+                            @can('edit_website_page')
+                                <li class="aiz-side-nav-item">
+                                    <a href="{{ route('best_seller_products.index') }}"
+                                        class="aiz-side-nav-link {{ areActiveRoutes(['best_seller_products.index']) }}">
+                                        <span class="aiz-side-nav-text"
+                                            style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Best Seller') }}</span>
+                                    </a>
+                                </li>
+                            @endcan
                             @can('view_all_flash_deals')
                                 <li class="aiz-side-nav-item">
                                     <a href="{{ route('flash_deals.index') }}"
@@ -1305,6 +1314,26 @@
                                             style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Coupon') }}</span>
                                     </a>
                                 </li>
+                            @endif
+                            @can('view_all_auction_products')
+                                <li class="aiz-side-nav-item">
+                                    <a href="{{ route('auction_products.admin.index') }}"
+                                        class="aiz-side-nav-link {{ areActiveRoutes(['auction_products.admin.index']) }}">
+                                        <span class="aiz-side-nav-text"
+                                            style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Auction') }}</span>
+                                    </a>
+                                </li>
+                            @endcan
+                            @if(get_setting('classified_product') == 1)
+                                @can('view_classified_products')
+                                    <li class="aiz-side-nav-item">
+                                        <a href="{{ route('classified_products') }}"
+                                            class="aiz-side-nav-link {{ areActiveRoutes(['classified_products']) }}">
+                                            <span class="aiz-side-nav-text"
+                                                style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Classified Products') }}</span>
+                                        </a>
+                                    </li>
+                                @endcan
                             @endif
                         </ul>
                     </li>

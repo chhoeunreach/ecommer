@@ -148,6 +148,16 @@ class ProductController extends Controller
         return view('backend.product.products.index', compact('seller_type', 'product_types', 'brand_id', 'category_id','back_to','source'));
     }
 
+    public function auction_products_admin(Request $request)
+    {
+        $products = Product::where('auction_product', 1)
+            ->withMax('bids', 'amount')
+            ->orderByDesc('auction_end_date')
+            ->paginate(15);
+
+        return view('backend.product.auction.index', compact('products'));
+    }
+
     public function get_filter_products(Request $request)
     {
         //Log::info('Filter Products Request: ', $request->all());

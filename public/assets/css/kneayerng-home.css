@@ -293,7 +293,8 @@
     }
 
     .kneayerng-home .hero-banner-container,
-    .kneayerng-home .mega-banner-container {
+    .kneayerng-home .mega-banner-container,
+    .kneayerng-home .banner-lg-container {
         aspect-ratio: 2 / 1;
     }
 

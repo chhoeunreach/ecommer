@@ -1,0 +1,66 @@
+.admin-crud-loading {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    background: rgba(239, 246, 255, 0.58);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: opacity 0.18s ease, visibility 0.18s ease;
+}
+
+.admin-crud-loading.is-visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+.admin-crud-loading__card {
+    min-width: 180px;
+    padding: 24px 30px;
+    text-align: center;
+    color: #1677d2;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(51, 144, 243, 0.18);
+    border-radius: 14px;
+    box-shadow: 0 18px 50px rgba(31, 109, 194, 0.2);
+}
+
+.admin-crud-loading__spinner {
+    width: 42px;
+    height: 42px;
+    margin: 0 auto 12px;
+    border: 4px solid rgba(51, 144, 243, 0.2);
+    border-top-color: #3390f3;
+    border-radius: 50%;
+    animation: admin-crud-spin 0.7s linear infinite;
+}
+
+.admin-crud-loading__text {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+body.admin-crud-is-loading {
+    overflow: hidden;
+}
+
+.swal2-container {
+    z-index: 21000 !important;
+}
+
+@keyframes admin-crud-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-crud-loading,
+    .admin-crud-loading__spinner {
+        transition: none;
+        animation-duration: 1.5s;
+    }
+}

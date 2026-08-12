@@ -9,5 +9,8 @@ class BusinessSetting extends Model
 {
     use PreventDemoModeChanges;
 
-    //
+    protected $fillable = [
+        'type',
+        'value',
+    ];
 }

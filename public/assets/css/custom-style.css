@@ -587,6 +587,58 @@
     visibility: visible;
 }
 
+#bestSellerRightOffcanvas {
+    box-shadow: rgba(50, 50, 93, 0.16) 0px 0px 40px;
+    transition: right 0.4s ease;
+    min-height: 100vh;
+}
+
+#bestSellerRightOffcanvas.active {
+    right: 0;
+}
+
+#bestSellerRightOffcanvas .right-offcanvas-body {
+    padding-bottom: 120px;
+    width: 100%;
+    overflow-y: scroll;
+}
+
+@media (min-width: 320px) and (max-width: 575px) {
+    #bestSellerRightOffcanvas {
+        right: -90%;
+        width: 90% !important;
+    }
+}
+
+#bestSellerRightOffcanvasOverlay {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(1px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 1040;
+}
+
+#bestSellerRightOffcanvasOverlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Home Page banner/slider upload previews — bigger box so wide banner images aren't cropped down to a tiny thumbnail */
+.home-slider-target .file-preview.box.sm .file-preview-item {
+    width: 240px;
+}
+
+.home-slider-target .file-preview.box.sm .thumb {
+    height: 120px;
+}
+
+.home-slider-target .file-preview.box.sm .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
 #rightOffcanvas .right-offcanvas-body .brand-categories {
     border-width: 3px !important;
 }
@@ -1067,7 +1119,7 @@
 
 .main-slider .swiper-slide img {
     z-index: 2;
-    object-fit: cover;
+    object-fit: contain;
     object-position: center;
 }
 
@@ -3245,6 +3297,11 @@ select.form-control.mo-custom-select {
 
 
 /* Image Hover Effect */
+.product-main-image,
+.product-hover-image {
+    object-fit: contain !important;
+}
+
 .single-product-item .product-main-image {
     opacity: 1;
     transition: opacity 0.8s ease;

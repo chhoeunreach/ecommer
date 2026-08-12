@@ -9,6 +9,7 @@ use App\Http\Controllers\AizUploadController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\AttributeController;
+use App\Http\Controllers\BestSellerProductController;
 use App\Http\Controllers\BlogCategoryController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BrandBulkUploadController;
@@ -221,6 +222,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/products/admin', 'admin_products')->name('products.admin');
         Route::get('/products/seller/{product_type}', 'seller_products')->name('products.seller');
         Route::get('/products/all', 'all_products')->name('products.all');
+        Route::get('/products/auction', 'auction_products_admin')->name('auction_products.admin.index');
         Route::get('/products/filter/products', 'get_filter_products')->name('products.filter');
         Route::get('/products/create', 'create')->name('products.create');
         Route::post('/products/store/', 'store')->name('products.store');
@@ -616,6 +618,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::post('/featured-products-bulk-remove', 'bulkRemove')->name('featured_products.bulk-remove');
     });
 
+    // Best Seller Products
+    Route::controller(BestSellerProductController::class)->group(function () {
+        Route::get('/best-seller-products-index', 'index')->name('best_seller_products.index');
+        Route::post('/best-seller-products-search', 'search')->name('best_seller_products.search');
+        Route::post('/best-seller-products-store', 'store')->name('best_seller_products.store');
+        Route::post('/best-seller-products-remove', 'remove')->name('best_seller_products.remove');
+        Route::post('/best-seller-products-bulk-remove', 'bulkRemove')->name('best_seller_products.bulk-remove');
+    });
+
     // Todays Deal Products
     Route::controller(TodaysDealController::class)->group(function () {
         Route::get('/todays-deal-products-index', 'index')->name('todays_deal_products.index');     
@@ -864,7 +875,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     //Classified Products
     Route::controller(CustomerProductController::class)->group(function () {
         Route::get('/classified_products', 'customer_product_index')->name('classified_products');
-        Route::get('/classified-products-filter', 'filter')->name('classified_products.filter'); 
+        Route::get('/classified_products/create', 'create_admin')->name('classified_products.create');
+        Route::post('/classified_products/store', 'store_admin')->name('classified_products.store');
+        Route::get('/classified-products-filter', 'filter')->name('classified_products.filter');
         Route::post('/classified_products/published', 'updatePublished')->name('classified_products.published');
         Route::get('/classified_products/destroy/{id}', 'destroy_by_admin')->name('classified_products.destroy');
         Route::post('/bulk-classified-products-delete', 'bulk_classified_products_delete')->name('bulk-classified-products-delete');       

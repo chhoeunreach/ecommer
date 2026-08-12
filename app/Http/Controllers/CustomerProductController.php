@@ -14,7 +14,7 @@ use App\Utility\CategoryUtility;
 class CustomerProductController extends Controller
 {
     public function __construct() {
-        $this->middleware(['permission:view_classified_products'])->only('customer_product_index');
+        $this->middleware(['permission:view_classified_products'])->only(['customer_product_index', 'create_admin', 'store_admin']);
         $this->middleware(['permission:publish_classified_product'])->only('updatePublished');
         $this->middleware(['permission:delete_classified_product'])->only('destroy_by_admin');
     }
@@ -136,9 +136,68 @@ class CustomerProductController extends Controller
         }
     }
 
+    public function create_admin()
+    {
+        $categories = Category::where('parent_id', 0)
+            ->where('digital', 0)
+            ->with('childrenCategories')
+            ->get();
+
+        return view('backend.customer.classified_products.create', compact('categories'));
+    }
+
+    public function store_admin(Request $request)
+    {
+        $customer_product                       = new CustomerProduct;
+        $customer_product->name                 = $request->name;
+        $customer_product->added_by             = 'admin';
+        $customer_product->user_id              = Auth::user()->id;
+        $customer_product->category_id          = $request->category_id;
+        $customer_product->brand_id             = $request->brand_id;
+        $customer_product->conditon             = $request->conditon;
+        $customer_product->location             = $request->location;
+        $customer_product->photos               = $request->photos;
+        $customer_product->thumbnail_img        = $request->thumbnail_img;
+        $customer_product->unit                 = $request->unit;
+
+        $tags = array();
+        if ($request->tags && $request->tags[0] != null) {
+            foreach (json_decode($request->tags[0]) as $key => $tag) {
+                array_push($tags, $tag->value);
+            }
+        }
+
+        $customer_product->tags                 = implode(',', $tags);
+        $customer_product->description          = $request->description;
+        $customer_product->video_provider       = $request->video_provider;
+        $customer_product->video_link           = $request->video_link;
+        $customer_product->unit_price           = $request->unit_price;
+        $customer_product->meta_title           = $request->meta_title;
+        $customer_product->meta_description     = $request->meta_description;
+        $customer_product->meta_img             = $request->meta_img;
+        $customer_product->pdf                  = $request->pdf;
+        $customer_product->published            = 1;
+        $customer_product->status               = 1;
+        $customer_product->slug                 = strtolower(preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', $request->name)) . '-' . Str::random(5));
+
+        if ($customer_product->save()) {
+            $customer_product_translation               = CustomerProductTranslation::firstOrNew(['lang' => env('DEFAULT_LANGUAGE'), 'customer_product_id' => $customer_product->id]);
+            $customer_product_translation->name         = $request->name;
+            $customer_product_translation->unit         = $request->unit;
+            $customer_product_translation->description  = $request->description;
+            $customer_product_translation->save();
+
+            flash(translate('Classified product has been added successfully'))->success();
+            return redirect()->route('classified_products');
+        } else {
+            flash(translate('Something went wrong'))->error();
+            return back();
+        }
+    }
+
     public function show($id)
     {
-        
+
     }
 
     public function edit(Request $request, $id)

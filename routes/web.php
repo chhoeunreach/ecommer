@@ -139,6 +139,7 @@ Route::controller(HomeController::class)->group(function () {
     //Home Page
     Route::get('/', 'index')->name('home');
     Route::get('/home', 'index');
+    Route::get('/3d-concept', 'concept')->name('home.concept');
 
     Route::post('/home/section/featured', 'load_featured_section')->name('home.section.featured');
     Route::post('/home/section/todays-deal', 'load_todays_deal_section')->name('home.section.todays_deal');

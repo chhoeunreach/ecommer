@@ -68,7 +68,16 @@ class AiService
 
                 'product-description'=>[
                     'fields'=>['description'],
-                    'prompt_fields'=>"description: 2–4 paragraphs, attractive, benefit-focused HTML",
+                    'prompt_fields'=>implode("\n", [
+                        'description: polished, benefit-focused HTML with the following sections in this order:',
+                        '1. <h2>Overview</h2> with a concise 1–2 paragraph introduction.',
+                        '2. <h2>Highlights &amp; Key Upgrades</h2> with a <ul> of the most important features, improvements, and customer benefits.',
+                        '3. <h2>Key Specifications Summary</h2> with a clear HTML <table> containing the most relevant specifications and values.',
+                        '4. <h2>Why You\'ll Love It</h2> with a short <ul> translating the main features into practical benefits.',
+                        '5. <h2>Ideal For</h2> with a concise paragraph describing the best users or use cases.',
+                        'Use semantic HTML only (headings, paragraphs, lists, and a table); do not use Markdown.',
+                        'Only include accurate, confidently known product details. Do not invent specifications, upgrades, accessories, pricing, warranty, or availability. Omit any unsupported detail.',
+                    ]),
                     'language_target'=>$languageName,
                 ],
 
@@ -153,7 +162,7 @@ class AiService
                     'generationConfig'=>[
                         'temperature'=>0.7,
                         'topP'=>0.95,
-                        'maxOutputTokens'=>1024
+                        'maxOutputTokens'=>$section === 'product-description' ? 2048 : 1024
                     ]
                 ]
             );
@@ -253,8 +262,7 @@ class AiService
 
                     if ($user && $user->user_type != 'admin') {
 
-                        $user->seller_monthly_token_limit =
-                            $user->seller_monthly_token_limit - $totalTokens;
+                        $user->seller_monthly_token_limit = max(0, $user->seller_monthly_token_limit - 1);
 
                         $user->save();  
 

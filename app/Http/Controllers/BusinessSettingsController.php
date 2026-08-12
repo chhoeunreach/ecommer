@@ -949,33 +949,29 @@ class BusinessSettingsController extends Controller
 
     public function ai_config_update(Request $request)
     {
-        foreach ($request->types as $key => $type) {
-            $this->overWriteEnvFile($type, $request[$type]);
+        if ($request->has('types') && is_array($request->types)) {
+            foreach ($request->types as $key => $type) {
+                $this->overWriteEnvFile($type, $request[$type]);
+            }
         }
 
-        $business_settings1 = BusinessSetting::where('type', 'ai_activation')->first();
-
-        if ($request->has('ai_activation')) {
-            $business_settings1->value = 1;
-            $business_settings1->save();
-        } else {
-            $business_settings1->value = 0;
-            $business_settings1->save();
-        }
-
-        
-        $business_settings = BusinessSetting::where('type', 'gemini_model')->first();
+        BusinessSetting::updateOrCreate(
+            ['type' => 'ai_activation'],
+            ['value' => $request->has('ai_activation') ? 1 : 0]
+        );
 
         if ($request->has('gemini_model')) {
-            $business_settings->value = $request->gemini_model;
-            $business_settings->save();
+            BusinessSetting::updateOrCreate(
+                ['type' => 'gemini_model'],
+                ['value' => $request->gemini_model]
+            );
         }
 
-        $business_settings2 = BusinessSetting::where('type', 'seller_monthly_token_limit')->first();
-
         if ($request->has('seller_monthly_token_limit')) {
-            $business_settings2->value = $request->seller_monthly_token_limit;
-            $business_settings2->save();
+            BusinessSetting::updateOrCreate(
+                ['type' => 'seller_monthly_token_limit'],
+                ['value' => $request->seller_monthly_token_limit]
+            );
 
             User::query()->update([
                 'seller_monthly_token_limit' => $request->seller_monthly_token_limit,

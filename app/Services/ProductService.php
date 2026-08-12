@@ -63,6 +63,16 @@ class ProductService
             $discount_end_date   = strtotime($date_var[1]);
         }
         unset($collection['date_range']);
+
+        $collection['auction_product'] = !empty($collection['auction_product']) ? 1 : 0;
+        $auction_start_date = null;
+        $auction_end_date   = null;
+        if ($collection['auction_product'] && !empty($collection['auction_date_range'])) {
+            $auction_date_var   = explode(" to ", $collection['auction_date_range']);
+            $auction_start_date = strtotime($auction_date_var[0]);
+            $auction_end_date   = strtotime($auction_date_var[1]);
+        }
+        unset($collection['auction_date_range']);
         
         if ($collection['meta_title'] == null) {
             $collection['meta_title'] = $collection['name'];
@@ -173,6 +183,8 @@ class ProductService
             'approved',
             'discount_start_date',
             'discount_end_date',
+            'auction_start_date',
+            'auction_end_date',
             'shipping_cost',
             'slug',
             'colors',
@@ -250,6 +262,16 @@ class ProductService
             $discount_end_date   = strtotime($date_var[1]);
         }
         unset($collection['date_range']);
+
+        $collection['auction_product'] = !empty($collection['auction_product']) ? 1 : 0;
+        $auction_start_date = null;
+        $auction_end_date   = null;
+        if ($collection['auction_product'] && !empty($collection['auction_date_range'])) {
+            $auction_date_var   = explode(" to ", $collection['auction_date_range']);
+            $auction_start_date = strtotime($auction_date_var[0]);
+            $auction_end_date   = strtotime($auction_date_var[1]);
+        }
+        unset($collection['auction_date_range']);
         
         if ($collection['meta_title'] == null) {
             $collection['meta_title'] = $collection['name'];
@@ -362,6 +384,8 @@ class ProductService
         $data = $collection->merge(compact(
             'discount_start_date',
             'discount_end_date',
+            'auction_start_date',
+            'auction_end_date',
             'shipping_cost',
             'slug',
             'colors',

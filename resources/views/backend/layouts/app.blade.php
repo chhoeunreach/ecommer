@@ -32,6 +32,8 @@
     @endif
     <link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ rand(1000,9999) }}">
     <link rel="stylesheet" href="{{ static_asset('assets/css/custom-style.css?v=') }}{{ rand(1000,9999) }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="{{ static_asset('assets/css/admin-crud-feedback.css?v=') }}{{ get_setting('current_version') }}">
 
     <style>
         :root {
@@ -181,6 +183,13 @@
         </div><!-- .aiz-content-wrapper -->
     </div><!-- .aiz-main-wrapper -->
 
+    <div id="admin-crud-loading" class="admin-crud-loading" role="status" aria-live="polite" aria-hidden="true">
+        <div class="admin-crud-loading__card">
+            <div class="admin-crud-loading__spinner" aria-hidden="true"></div>
+            <div class="admin-crud-loading__text">{{ translate('Processing...') }}</div>
+        </div>
+    </div>
+
     
     <!-- Bulk Action modal -->
     @include('modals.bulk_action_modal')
@@ -198,6 +207,18 @@
     <script src="{{ static_asset('assets/js/vendors.js?v=') }}{{ get_setting('current_version') }}"></script>
     <script src="{{ static_asset('assets/js/aiz-core.js?v=') }}{{ rand(1000,9999) }}"></script>
     <script src="{{ static_asset('assets/js/aiz-form-submission.js?v=') }}{{ rand(1000,9999) }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script>
+        window.AdminCrudMessages = {
+            loading: @json(translate('Processing...')),
+            deleting: @json(translate('Deleting...')),
+            confirmTitle: @json(translate('Are you sure?')),
+            confirmDelete: @json(translate('This record will be deleted and cannot be recovered.')),
+            yesDelete: @json(translate('Yes, delete it')),
+            cancel: @json(translate('Cancel'))
+        };
+    </script>
+    <script src="{{ static_asset('assets/js/admin-crud-feedback.js?v=') }}{{ get_setting('current_version') }}"></script>
 
     @yield('script')
 

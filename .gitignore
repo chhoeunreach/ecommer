@@ -81,6 +81,10 @@ yarn-error.log*
 !/public/assets/css/kneayerng-home.css
 !/public/assets/css/product-details-v2.css
 !/public/assets/css/category-listing.css
+!/public/assets/css/admin-crud-feedback.css
+!/public/assets/js/
+/public/assets/js/*
+!/public/assets/js/admin-crud-feedback.js
 !/public/assets/img/
 /public/assets/img/*
 !/public/assets/img/footers/

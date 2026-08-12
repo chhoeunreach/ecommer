@@ -1102,6 +1102,43 @@
                         </div>
                         <!-- Stock & Order Display Settings End -->
 
+                        <!-- Auction Start -->
+                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
+                            <div class="d-flex align-items-center justify-content-between border-bottom-dashed mb-3 pb-2">
+                                <div>
+                                    <h5 class="fs-16 fw-700 mb-1">{{ translate('Auction') }}</h5>
+                                    <p class="fs-12 fw-400 text-gray mb-0">{{ translate('Turn this product into an auction with a starting bid and an end date.') }}</p>
+                                </div>
+                                <label class="aiz-switch aiz-switch-blue mb-0">
+                                    <input type="checkbox" name="auction_product" id="auction_product" value="1" @checked(old('auction_product', request('auction')))>
+                                    <span></span>
+                                </label>
+                            </div>
+
+                            <div id="auction-fields" @class(['d-none' => !old('auction_product', request('auction'))])>
+                                <div class="row gutters-5">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-2 mb-lg-3">
+                                            <label class="col-from-label fs-14 fw-500">{{ translate('Starting Bid') }}</label>
+                                            <input type="number" lang="en" min="1" step="0.01" name="starting_bid" class="form-control @error('starting_bid') is-invalid @enderror"
+                                                value="{{ old('starting_bid') }}" placeholder="{{ translate('0.00') }}">
+                                            @error('starting_bid')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-2 mb-lg-3">
+                                            <label class="col-from-label fs-14 fw-500">{{ translate('Auction Date Range') }}</label>
+                                            <input type="text" class="form-control aiz-date-range @error('auction_date_range') is-invalid @enderror" name="auction_date_range"
+                                                placeholder="{{ translate('Select Date') }}" data-time-picker="true" data-past-disable="true" data-format="DD-MM-Y HH:mm:ss" data-separator=" to " autocomplete="off"
+                                                value="{{ old('auction_date_range') }}">
+                                            @error('auction_date_range')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Auction End -->
+
                         <!-- Frequently Bought Product -->
                         <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
                             <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{translate('Frequently Bought')}}</h5>
@@ -1212,6 +1249,17 @@
 @endsection
 
 @section('script')
+
+<script type="text/javascript">
+    $(document).on('change', '#auction_product', function () {
+        $('#auction-fields').toggleClass('d-none', !this.checked);
+        $('#auction-fields').find('input').prop('disabled', !this.checked);
+    });
+
+    $(function () {
+        $('#auction_product').trigger('change');
+    });
+</script>
 
 <!-- Treeview js -->
 

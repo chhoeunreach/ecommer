@@ -430,8 +430,35 @@
         border-radius: 14px;
     }
 
+    .listing-toolbar > .row {
+        margin-right: -4px;
+        margin-left: -4px;
+    }
+
+    .listing-toolbar > .row > [class*="col-"] {
+        padding-right: 4px;
+        padding-left: 4px;
+    }
+
     .listing-toolbar h1 {
         font-size: 21px !important;
+    }
+
+    .listing-sort-control {
+        flex: 0 0 calc(100% - 8px) !important;
+        width: calc(100% - 8px) !important;
+        max-width: calc(100% - 8px) !important;
+        margin: 12px 4px 13px !important;
+    }
+
+    .listing-sort-control .bootstrap-select {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .listing-filter-button {
+        width: 36px;
+        height: 36px;
     }
 
     .listing-column-controls {
