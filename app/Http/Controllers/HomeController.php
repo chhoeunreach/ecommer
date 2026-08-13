@@ -737,22 +737,29 @@ class HomeController extends Controller
 
         $product_stock = $product->stocks->where('variant', $str)->first();
 
-        // Independent Storage/Code/Country/Condition pickers for simple color-variant products:
+        // Independent Storage/Code/Country/Condition pickers:
         // not every combination the customer clicks through is actually in stock, so snap to the
         // nearest real variant that still honors whichever field they just changed.
-        if (json_decode($product->choice_options) == null && $request->hasAny(['storage', 'code', 'country', 'condition'])) {
+        if ($request->hasAny(['storage', 'code', 'country', 'condition'])) {
             $fieldColumns = ['color' => 'variant', 'storage' => 'storage', 'code' => 'code', 'country' => 'country', 'condition' => 'condition'];
             $changedField = $request->input('changed_field', 'color');
             $order = array_unique(array_merge([$changedField], array_keys($fieldColumns)));
 
-            $candidates = $product->stocks;
+            $candidates = $product->stocks->filter(
+                fn ($stock) => $stock->variant === $str || str_starts_with($stock->variant, $str . '-')
+            );
+            if ($candidates->isEmpty()) {
+                $candidates = $product->stocks;
+            }
             foreach ($order as $field) {
                 $column = $fieldColumns[$field] ?? null;
                 $value = $request->input($field);
                 if (!$column || !$value) {
                     continue;
                 }
-                $narrowed = $candidates->where($column, $value);
+                $narrowed = $field === 'color'
+                    ? $candidates->filter(fn ($stock) => $stock->variant === $value || str_starts_with($stock->variant, $value . '-'))
+                    : $candidates->where($column, $value);
                 if ($narrowed->isNotEmpty()) {
                     $candidates = $narrowed;
                 }
@@ -846,6 +853,10 @@ class HomeController extends Controller
 
         $sku= $product_stock->sku ?? 'N/A';
 
+        $resolvedColor = collect(json_decode($product->colors, true) ?: [])
+            ->map(fn ($color) => get_single_color_name($color))
+            ->first(fn ($color) => $product_stock->variant === $color || str_starts_with($product_stock->variant, $color . '-'));
+
         return array(
             'price' => single_price($price * $request->quantity),
             'quantity' => $quantity,
@@ -855,6 +866,7 @@ class HomeController extends Controller
             'in_stock' => $in_stock,
             'sku'      => $sku,
             'image' => $image,
+            'color' => $resolvedColor ?? '',
             'storage' => $product_stock->storage ?? '',
             'code' => $product_stock->code ?? '',
             'country' => $product_stock->country ?? '',

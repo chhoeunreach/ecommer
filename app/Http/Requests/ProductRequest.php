@@ -31,9 +31,9 @@ class ProductRequest extends FormRequest
         $rules['category_id']   = ['required', Rule::in($this->category_ids)];
         $rules['unit']         = 'sometimes|required';
         $rules['min_qty']      = 'sometimes|required|numeric';
-        $rules['unit_price']    = 'sometimes|required|numeric|gt:0';
+        $rules['unit_price']    = 'sometimes|nullable|numeric|min:0';
         if ($this->get('discount_type') == 'amount') {
-            $rules['discount'] = 'nullable|numeric|lt:unit_price';
+            $rules['discount'] = 'nullable|numeric|min:0';
         } else {
             $rules['discount'] = 'nullable|numeric|lt:100';
         }
@@ -68,8 +68,6 @@ class ProductRequest extends FormRequest
             'unit.required'             => translate('Product unit is required'),
             'min_qty.required'          => translate('Minimum purchase quantity is required'),
             'min_qty.numeric'           => translate('Minimum purchase must be numeric'),
-            'unit_price.gt'             => translate('The unit price must be greater than 0'),
-            'unit_price.required'       => translate('Unit price is required'),
             'unit_price.numeric'        => translate('Unit price must be numeric'),
             'discount.required'         => translate('Discount is required'),
             'discount.numeric'          => translate('Discount must be numeric'),

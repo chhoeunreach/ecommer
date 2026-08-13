@@ -1,3 +1,69 @@
+<style>
+    .related-product-container .related-product-card {
+        background: #fff;
+        border: 1px solid #e4e9ef;
+        border-radius: 10px;
+        height: 100%;
+        margin: 4px;
+        overflow: hidden;
+        padding: 10px;
+        transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    .related-product-container .related-product-card:hover {
+        border-color: #b8d8fa;
+        box-shadow: 0 7px 20px rgba(31, 41, 55, .09);
+        transform: translateY(-2px);
+    }
+
+    .related-product-container .related-product-image {
+        background: #f8fafc;
+        border-radius: 8px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .related-product-container .related-product-image a {
+        display: block;
+        height: 100%;
+        position: relative;
+        width: 100%;
+    }
+
+    .related-product-container .related-product-image img {
+        backface-visibility: hidden;
+        height: 100% !important;
+        inset: 0;
+        object-fit: contain;
+        opacity: 1;
+        padding: 6px;
+        position: absolute !important;
+        transform: scale(1);
+        transition: opacity .35s ease, transform .45s ease !important;
+        width: 100% !important;
+        will-change: opacity, transform;
+    }
+
+    .related-product-container .related-product-image .product-hover-image {
+        opacity: 0;
+        transform: scale(1.025);
+    }
+
+    .related-product-container .related-product-card:hover .product-main-image:not(.product-hover-image) {
+        opacity: 0;
+        transform: scale(1.025);
+    }
+
+    .related-product-container .related-product-card:hover .product-hover-image {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .related-product-container .related-product-content {
+        padding: 10px 2px 2px;
+    }
+</style>
+
 <div class="related-product-container py-20px px-30px border bg-white border-light-gray rounded-2">
     <p class="fs-20 fw-bold text-dark">{{ translate('Related Products') }}</p>
 
@@ -7,9 +73,10 @@
 
         <!--Single-->
         @forelse (get_related_products_by_category($detailedProduct->category_id) as $key => $related_product)
-        <div class="carousel-box">
+        <div class="carousel-box px-1 py-2">
+          <div class="related-product-card">
             <div
-                class="img h-90px w-90px h-sm-100px w-sm-100px h-md-150px w-md-150px h-lg-170px w-lg-170px h-xxl-190px w-xxl-190px rounded-2 overflow-hidden position-relative image-hover-effect">
+                class="img h-90px w-90px h-sm-100px w-sm-100px h-md-150px w-md-150px h-lg-170px w-lg-170px h-xxl-190px w-xxl-190px overflow-hidden position-relative image-hover-effect related-product-image">
                 <a href="{{ route('product', $related_product->slug) }}" title="">
                     <img class="lazyload img-fit m-auto has-transition product-main-image"
                         src="{{ static_asset('assets/img/placeholder.jpg') }}" data-src="{{ uploaded_asset($related_product->thumbnail_img) }}"
@@ -20,7 +87,7 @@
                         title="" onerror=" this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
                 </a>
             </div>
-            <div class="mt-2 pr-3">
+            <div class="related-product-content">
                 <h3 class="fw-400 fs-13 text-truncate-2 lh-1-4 mb-1 h-35px">
                     <a href="{{ route('product', $related_product->slug) }}" class="text-reset hov-text-primary hov-text-primary">{{ $related_product->name }}</a>
                 </h3>
@@ -32,6 +99,7 @@
                     @endif
                 </div>
             </div>
+          </div>
         </div>
         @empty
         <div class="text-center w-100">

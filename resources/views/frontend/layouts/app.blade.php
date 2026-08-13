@@ -1101,7 +1101,7 @@
 
                         // Snap every facet picker (including color) to the resolved real variant,
                         // since not every combination the customer clicks through is actually in stock.
-                        $.each({color: data.variation, storage: data.storage, code: data.code, country: data.country, condition: data.condition}, function(field, value) {
+                        $.each({color: data.color, storage: data.storage, code: data.code, country: data.country, condition: data.condition}, function(field, value) {
                             if (!value) return;
                             $('#option-choice-form input[name="' + field + '"]').each(function() {
                                 this.checked = (String(this.value) === String(value));

@@ -110,6 +110,34 @@ class CartController extends Controller
         $str = CartUtility::create_cart_variant($product, $request->all());
         $product_stock = $product->stocks->where('variant', $str)->first();
 
+        if ($request->hasAny(['storage', 'code', 'country', 'condition'])) {
+            $candidates = $product->stocks->filter(
+                fn ($stock) => $stock->variant === $str || str_starts_with($stock->variant, $str . '-')
+            );
+
+            if ($candidates->isEmpty()) {
+                $candidates = $product->stocks;
+
+                if ($request->filled('color')) {
+                    $color = $request->input('color');
+                    $candidates = $candidates->filter(
+                        fn ($stock) => $stock->variant === $color || str_starts_with($stock->variant, $color . '-')
+                    );
+                }
+            }
+
+            foreach (['storage', 'code', 'country', 'condition'] as $field) {
+                if ($request->filled($field)) {
+                    $candidates = $candidates->where($field, $request->input($field));
+                }
+            }
+
+            $product_stock = $candidates->first();
+            if ($product_stock) {
+                $str = $product_stock->variant;
+            }
+        }
+
         if (!$product_stock) {
             return array(
                 'status' => 0,

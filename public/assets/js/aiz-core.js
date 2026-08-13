@@ -3675,4 +3675,24 @@ $(document).ready(function() {
         }
     });
 
+    // Global form submit loading state
+    $(document).on('submit', 'form', function (e) {
+        var $form = $(this);
+        if ($form.hasClass('no-loading') || $form.attr('target') === '_blank') {
+            return;
+        }
+        
+        var $btn = $form.find('button[type="submit"]');
+        if ($btn.length && !$btn.hasClass('btn-loading')) {
+            if (this.checkValidity && !this.checkValidity()) {
+                return;
+            }
+            
+            $btn.addClass('btn-loading disabled').prop('disabled', true);
+            if ($btn.find('.spinner-border').length === 0) {
+                $btn.append('<span class="spinner-border spinner-border-sm ml-2" role="status" aria-hidden="true"></span>');
+            }
+        }
+    });
+
 });

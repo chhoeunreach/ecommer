@@ -531,16 +531,8 @@
                                     </a>
                                 </div>
                             @endcan
+                            <input type="hidden" name="unit_price" value="0">
                             <div class="row gutters-5 mt-3">
-                                <div class="col-12">
-                                    <div class="form-group mb-2 mb-lg-3">
-                                        <label for="unit-price"
-                                            class="col-from-label fs-14 fw-500">{{ translate('Unit Price') }}
-                                            <span>*</span></label>
-                                        <input type="number" lang="en" min="0" value="0" step="0.01" placeholder="{{ translate('Unit price') }}" name="unit_price" class="form-control @error('unit_price') is-invalid @enderror">
-                                    </div>
-                                </div>
-
                                 <!-- Discount Date Range -->
                                 <div class="col-md-6 ">
                                     <div class="form-group mb-2 mb-lg-3" id="brand">
@@ -1392,10 +1384,6 @@
         update_sku();
     });
 
-    $('input[name="unit_price"]').on('keyup', function() {
-        update_sku();
-    });
-
     $('input[name="name"]').on('keyup', function() {
         update_sku();
     });
@@ -1404,6 +1392,8 @@
         $(em).closest('.form-group row').remove();
         update_sku();
     }
+
+    @include('backend.product.products.storage_variant_js')
 
     function delete_variant(em){
         $(em).closest('.variant').remove();
