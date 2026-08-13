@@ -55,7 +55,7 @@
                                             <label for="product-name"
                                                 class="col-from-label fs-14 fw-500">{{ translate('Product Name') }} <span
                                                     class="text-danger">*</span></label>
-                                            <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" placeholder="{{ translate('Product Name') }}" onchange="update_sku()">
+                                            <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" placeholder="{{ translate('Product Name') }}">
                                         </div>
                                     </div>
 
@@ -1381,10 +1381,6 @@
     });
 
     $('#colors').on('change', function() {
-        update_sku();
-    });
-
-    $('input[name="name"]').on('keyup', function() {
         update_sku();
     });
 
