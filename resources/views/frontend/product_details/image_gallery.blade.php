@@ -113,7 +113,7 @@
                                 <div
                                     class="swiper-slide rounded-corner-8px border  border-light-gray bg-light overflow-hidden lightbox-item"
                                     data-variation="{{ $stock->variant }}">
-                                    <img src="{{ uploaded_asset($stock->image) }}" class="img-fluid w-100 h-100 lightbox-source" alt="">
+                                    <img src="{{ uploaded_asset($stock->image) }}" class="img-fluid w-100 h-100 lightbox-source product-gallery-image" alt="">
                                     <div class="img-preview-btn wd-show-product-gallery-wrap rounded-pill overflow-hidden">
                                         <a href="#"
                                             class="border-0 bg-transparent d-inline-flex align-items-center woodmart-show-product-gallery">
@@ -134,7 +134,7 @@
                 <!--Single-->
                 <div
                     class="swiper-slide rounded-corner-8px border  border-light-gray bg-light overflow-hidden lightbox-item">
-                    <img src="{{ uploaded_asset($photo) }}" class="img-fluid w-100 h-100 lightbox-source" alt="">
+                    <img src="{{ uploaded_asset($photo) }}" class="img-fluid w-100 h-100 lightbox-source product-gallery-image" alt="">
                     <div class="img-preview-btn wd-show-product-gallery-wrap rounded-pill overflow-hidden">
                         <a href="#"
                             class="border-0 bg-transparent d-inline-flex align-items-center woodmart-show-product-gallery">

@@ -14,6 +14,8 @@
     $showChatButton = (int) get_setting('product_detail_show_chat_button', 0) === 1
         && filter_var($chatButtonUrl, FILTER_VALIDATE_URL)
         && in_array($chatButtonScheme, ['http', 'https'], true);
+    $contactSalesUsesChat = (int) get_setting('conversation_system', 0) === 1;
+    $contactSalesUrl = route('custom-pages.show_custom_page', 'contact-us');
 @endphp
 
 @if ((int) get_setting('product_detail_show_buy_now', 1) === 1)
@@ -28,10 +30,26 @@
 @if ((int) get_setting('product_detail_show_add_to_cart', 1) === 1)
     <button type="button" id="added_to_cart_btn"
         @if (Auth::check() || get_setting('guest_checkout_activation') == 1) onclick="addToCart()" @else onclick="showLoginModal()" @endif
-        class="border-0 rounded-2 fs-14 fw-bold has-transition {{ $buttonPadding }} px-20px w-100 mb-2 mb-md-0 mr-0 @if ($showCustomButton || $showChatButton) mr-md-2 @endif add-to-cart d-inline-flex align-items-center justify-content-center"
+        class="border-0 rounded-2 fs-14 fw-bold has-transition {{ $buttonPadding }} px-20px w-100 mb-2 mb-md-0 mr-0 mr-md-2 add-to-cart d-inline-flex align-items-center justify-content-center"
         style="background-color: {{ get_setting('product_detail_add_to_cart_bg_color', '#dcebff') }}; color: {{ get_setting('product_detail_add_to_cart_text_color', '#3390f3') }}; min-height: 44px;">
         {{ $addToCartText }} <span id="add_to_cart_count">{{ $cartCount }}</span>
     </button>
+@endif
+
+@if ($contactSalesUsesChat)
+    <button type="button" onclick="show_chat_modal()"
+        class="d-inline-flex align-items-center justify-content-center text-center border rounded-2 fs-14 fw-bold has-transition {{ $buttonPadding }} px-20px w-100 mb-2 mb-md-0 @if ($showCustomButton || $showChatButton) mr-md-2 @endif contact-sales-btn"
+        style="background-color: #ffffff; border-color: #3390f3 !important; color: #1677d2; min-height: 44px;">
+        <i class="las la-headset fs-18 mr-2" aria-hidden="true"></i>
+        {{ translate('Contact Sales') }}
+    </button>
+@else
+    <a href="{{ $contactSalesUrl }}"
+        class="d-flex align-items-center justify-content-center text-center border rounded-2 fs-14 fw-bold has-transition {{ $buttonPadding }} px-20px w-100 mb-2 mb-md-0 @if ($showCustomButton || $showChatButton) mr-md-2 @endif contact-sales-btn"
+        style="background-color: #ffffff; border-color: #3390f3 !important; color: #1677d2; min-height: 44px;">
+        <i class="las la-headset fs-18 mr-2" aria-hidden="true"></i>
+        {{ translate('Contact Sales') }}
+    </a>
 @endif
 
 @if ($showCustomButton)

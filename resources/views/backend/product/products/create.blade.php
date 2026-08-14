@@ -1189,7 +1189,7 @@
                         <!-- Product Variants Start -->
                         <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4 mb-4 mb-xl-0" id="variant-div-show-hide">
                             <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Product Variants') }}</h5>
-                            <div class="form-group row gutters-5 mb-2">
+                            <div class="form-group row gutters-5 mb-2 d-none" aria-hidden="true">
                                 <label class="col-md-3 col-from-label fs-14 fw-500">{{ translate('Choose Attributes') }}</label>
                                 <div class="col-md-9">
                                     <select name="choice_attributes[]" id="choice_attributes" class="form-control aiz-selectpicker" data-selected-text-format="count" data-live-search="true" multiple data-placeholder="{{ translate('Choose Attributes') }}">
@@ -1204,10 +1204,10 @@
                                     @endcan
                                 </div>
                             </div>
-                            <div id="chose_options_text" class="d-none">
+                            <div id="chose_options_text" class="d-none" aria-hidden="true">
                                 <p class="fs-12 text-muted mb-2">{{ translate('Choose the attributes and select the values used to build product variants.') }}</p>
                             </div>
-                            <div class="customer_choice_options mb-3" id="customer_choice_options"></div>
+                            <div class="customer_choice_options mb-3 d-none" id="customer_choice_options" aria-hidden="true"></div>
                             <!-- sku combination -->
                             <div class="sku_combination table-responsive" id="sku_combination" style="overflow-x: auto; width: 100%;">
 
