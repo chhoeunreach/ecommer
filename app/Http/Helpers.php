@@ -3553,9 +3553,14 @@ if (!function_exists('get_custom_label')) {
             }
             $label_data = $label_query->first();
             if($label_data){
-                $label = $label_data;
+                return $label_data;
             }
-        return $label;
+            
+            return (object)[
+                'background_color' => 'transparent',
+                'text_color' => '#ffffff',
+                'text' => ''
+            ];
     }
 }
 

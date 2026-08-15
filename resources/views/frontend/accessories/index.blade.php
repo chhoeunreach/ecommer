@@ -50,13 +50,13 @@
         object-fit: cover;
     }
     .shadcn-card-content {
-        padding: 1.25rem;
+        padding: 1rem;
         display: flex;
         flex-direction: column;
         flex-grow: 1;
     }
     .shadcn-card-title {
-        font-size: 1.125rem;
+        font-size: 1rem;
         font-weight: 600;
         color: #0f172a;
         margin-bottom: 0.5rem;
@@ -73,7 +73,7 @@
         flex-grow: 1;
     }
     .shadcn-card-price {
-        font-size: 1.25rem;
+        font-size: 1.125rem;
         font-weight: 700;
         color: #0f172a;
     }
@@ -107,7 +107,7 @@
 
         <div class="row gutters-16">
             @forelse ($accessories as $accessory)
-                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-4">
+                <div class="col-xxl-2 col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 mb-4">
                     <div class="shadcn-card">
                         <div class="shadcn-card-img-wrapper">
                             @if ($accessory->thumbnail_img != null)

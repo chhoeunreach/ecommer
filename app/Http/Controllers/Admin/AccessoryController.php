@@ -8,6 +8,7 @@ use App\Models\Brand;
 use App\Models\Warranty;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Artisan;
 
 class AccessoryController extends Controller
 {
@@ -71,6 +72,9 @@ class AccessoryController extends Controller
         $accessory->save();
 
         flash(translate('Accessory has been inserted successfully'))->success();
+        
+        Artisan::call('cache:clear');
+
         return redirect()->route('admin.accessories.index');
     }
 
@@ -131,6 +135,9 @@ class AccessoryController extends Controller
         $accessory->save();
 
         flash(translate('Accessory has been updated successfully'))->success();
+
+        Artisan::call('cache:clear');
+
         return redirect()->route('admin.accessories.index');
     }
 
@@ -140,6 +147,9 @@ class AccessoryController extends Controller
         $accessory->delete();
 
         flash(translate('Accessory has been deleted successfully'))->success();
+
+        Artisan::call('cache:clear');
+
         return redirect()->route('admin.accessories.index');
     }
 
@@ -148,6 +158,8 @@ class AccessoryController extends Controller
         $accessory = Accessory::findOrFail($request->id);
         $accessory->status = $request->status;
         $accessory->save();
+
+        Artisan::call('cache:clear');
 
         return 1;
     }
