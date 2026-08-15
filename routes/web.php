@@ -288,6 +288,9 @@ Route::controller(CompareController::class)->group(function () {
 // Subscribe
 Route::resource('subscribers', SubscriberController::class);
 
+// Accessories
+Route::get('/accessories', [App\Http\Controllers\AccessoryController::class, 'index'])->name('accessories.index');
+Route::get('/accessories/{id}', [App\Http\Controllers\AccessoryController::class, 'show'])->name('accessories.show');
 Route::group(['middleware' => ['user', 'verified', 'unbanned']], function () {
 
     Route::controller(HomeController::class)->group(function () {
@@ -520,6 +523,7 @@ Route::any('/tap/callback', [TapController::class, 'callback'])->name('tap.callb
 //Blog Section
 Route::controller(BlogController::class)->group(function () {
     Route::get('/blog', 'all_blog')->name('blog');
+    Route::get('/blogs', 'all_blog')->name('blogs');
     Route::get('/blog/{slug}', 'blog_details')->name('blog.details');
     Route::post('/blog/generate-slug', 'generateSlug')->name('generate.slug');
 

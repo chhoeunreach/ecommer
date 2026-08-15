@@ -25,7 +25,7 @@ class AttributeController extends Controller
 
         $this->middleware(['permission:view_colors'])->only('colors');
         $this->middleware(['permission:add_color'])->only('colors_create');
-        $this->middleware(['permission:edit_color'])->only('edit_color');
+        $this->middleware(['permission:edit_color'])->only(['edit_color', 'update_color']);
         $this->middleware(['permission:delete_color'])->only('destroy_color');
     }
 
@@ -330,6 +330,7 @@ class AttributeController extends Controller
         return response()->json([
             'success'        => true,
             'message'        => translate('Color has been inserted successfully'),
+            'color_id'      => $color->id,
             'color_code'    => $color->code,
             'color_name'  => $color->name,
         ]);

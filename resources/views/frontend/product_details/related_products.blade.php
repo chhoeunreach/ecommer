@@ -10,6 +10,27 @@
         transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
     }
 
+    .related-product-container .aiz-carousel {
+        margin-right: -4px;
+        margin-left: -4px;
+        overflow: hidden;
+    }
+
+    .related-product-container .slick-track {
+        display: flex;
+        margin-left: 0;
+    }
+
+    .related-product-container .slick-slide {
+        float: none;
+        height: auto;
+    }
+
+    .related-product-container .slick-slide > div,
+    .related-product-container .carousel-box {
+        height: 100%;
+    }
+
     .related-product-container .related-product-card:hover {
         border-color: #b8d8fa;
         box-shadow: 0 7px 20px rgba(31, 41, 55, .09);
@@ -17,10 +38,14 @@
     }
 
     .related-product-container .related-product-image {
+        aspect-ratio: 1 / 1;
         background: #f8fafc;
         border-radius: 8px;
+        height: auto !important;
         margin-left: auto;
         margin-right: auto;
+        max-width: 190px;
+        width: 100% !important;
     }
 
     .related-product-container .related-product-image a {
@@ -62,17 +87,95 @@
     .related-product-container .related-product-content {
         padding: 10px 2px 2px;
     }
+
+    .related-product-container .related-product-price {
+        color: #202534;
+        line-height: 1.35;
+    }
+
+    .related-product-container .related-products-single .related-product-card {
+        display: grid;
+        grid-template-columns: 160px minmax(0, 1fr);
+        align-items: center;
+        gap: 16px;
+        max-width: 460px;
+        min-height: 184px;
+    }
+
+    .related-product-container .related-products-single .related-product-image {
+        max-width: 160px;
+        margin: 0;
+    }
+
+    .related-product-container .related-products-single .related-product-content {
+        min-width: 0;
+        padding: 6px 8px 6px 0;
+    }
+
+    @media (max-width: 767px) {
+        .related-product-container .related-products-single .related-product-card {
+            grid-template-columns: 112px minmax(0, 1fr);
+            gap: 12px;
+            min-height: 136px;
+        }
+
+        .related-product-container .related-products-single .related-product-image {
+            max-width: 112px;
+            margin: 0;
+        }
+
+        .related-product-container .related-products-single .related-product-content {
+            min-width: 0;
+            padding: 4px 4px 4px 0;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .related-product-container > p {
+            margin-bottom: 10px;
+            font-size: 18px !important;
+        }
+
+        .related-product-container .related-product-card {
+            margin: 3px;
+            padding: 8px;
+        }
+
+        .related-product-container .related-product-content {
+            padding-top: 8px;
+        }
+
+        .related-product-container .related-product-price del {
+            display: block;
+            margin-left: 0 !important;
+        }
+    }
 </style>
+
+@php
+    $relatedProducts = get_related_products_by_category($detailedProduct->category_id)
+        ->where('id', '!=', $detailedProduct->id)
+        ->values();
+    $relatedProductCount = $relatedProducts->count();
+    $relatedXsItems = max(1, min(2, $relatedProductCount));
+    $relatedSmItems = max(1, min(3, $relatedProductCount));
+    $relatedMdItems = max(1, min(4, $relatedProductCount));
+    $relatedLgItems = max(1, min(5, $relatedProductCount));
+    $relatedDesktopItems = max(1, min(6, $relatedProductCount));
+@endphp
 
 <div class="related-product-container py-20px px-30px border bg-white border-light-gray rounded-2">
     <p class="fs-20 fw-bold text-dark">{{ translate('Related Products') }}</p>
 
-    <div class="aiz-carousel arrow-x-0 arrow-inactive-none" data-items="6" data-xxl-items="6"
-        data-xl-items="6" data-lg-items="5" data-md-items="4" data-sm-items="4" data-xs-items="3"
-        data-arrows="false" data-dots="false" data-autoplay="true" data-infinite="true">
+    <div class="aiz-carousel related-products-carousel arrow-x-0 arrow-inactive-none {{ $relatedProductCount === 1 ? 'related-products-single' : '' }}"
+        data-items="{{ $relatedDesktopItems }}" data-xxl-items="{{ $relatedDesktopItems }}"
+        data-xl-items="{{ $relatedDesktopItems }}" data-lg-items="{{ $relatedLgItems }}"
+        data-md-items="{{ $relatedMdItems }}" data-sm-items="{{ $relatedSmItems }}"
+        data-xs-items="{{ $relatedXsItems }}" data-arrows="false" data-dots="false"
+        data-autoplay="false" data-infinite="false">
 
         <!--Single-->
-        @forelse (get_related_products_by_category($detailedProduct->category_id) as $key => $related_product)
+        @forelse ($relatedProducts as $key => $related_product)
         <div class="carousel-box px-1 py-2">
           <div class="related-product-card">
             <div
@@ -91,7 +194,7 @@
                 <h3 class="fw-400 fs-13 text-truncate-2 lh-1-4 mb-1 h-35px">
                     <a href="{{ route('product', $related_product->slug) }}" class="text-reset hov-text-primary hov-text-primary">{{ $related_product->name }}</a>
                 </h3>
-                <div class="fw-700 fs-14 mb-1 mt-2">
+                <div class="related-product-price fw-700 fs-14 mb-1 mt-2">
                     <span >{{ home_discounted_base_price($related_product) }}</span>
                     @if (home_base_price($related_product) != home_discounted_base_price($related_product))
                         <del

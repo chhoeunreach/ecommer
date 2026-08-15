@@ -422,6 +422,13 @@
                         <h6 class="fs-16 fw-semibold mt-3 mb-2">{{ translate('Floating Action Buttons') }} </h6>
                         <span
                             class="fs-12 fw-400 sub-title">{{ translate('Show quick-action buttons (categories, flash deals etc) floating on the storefront.') }}</span>
+                        @can('whatsapp_chat')
+                            <a href="{{ route('whatsapp_chat.index') }}"
+                                class="btn btn-soft-primary btn-sm align-self-start mt-3">
+                                <i class="las la-comment-dots mr-1"></i>
+                                {{ translate('Configure Chat Button') }}
+                            </a>
+                        @endcan
                     </div>
                 </div>
 

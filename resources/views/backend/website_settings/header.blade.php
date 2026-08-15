@@ -1,6 +1,52 @@
 @extends('backend.layouts.app')
 
 @section('content')
+	<style>
+		.header-nav-menu-item {
+			margin-right: -6px;
+			margin-left: -6px;
+			padding: 6px;
+			border: 1px solid transparent;
+			border-radius: 8px;
+			transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease;
+		}
+
+		.header-nav-menu-item:hover {
+			border-color: #e2e5ec;
+			background: #f8f9fa;
+		}
+
+		.header-nav-menu-item.is-dragging {
+			z-index: 2;
+			border-color: #a8c7fa;
+			background: #eef4ff;
+			box-shadow: 0 8px 20px rgba(32, 75, 140, .12);
+		}
+
+		.header-nav-drag-handle {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 34px;
+			height: 38px;
+			margin-top: 1px;
+			padding: 0;
+			border: 0;
+			color: #8c909a;
+			background: transparent;
+			font-size: 22px;
+			cursor: grab;
+			touch-action: none;
+		}
+
+		.header-nav-drag-handle:hover,
+		.header-nav-drag-handle:focus {
+			color: #3490f3;
+			outline: 0;
+		}
+
+		.header-nav-drag-handle:active { cursor: grabbing; }
+	</style>
 
 	<div class="aiz-titlebar text-left mt-2 mb-3">
 		<div class="row align-items-center">
@@ -128,12 +174,19 @@
 							<div class="border-top pt-3">
 								<!-- Header Nav Menus -->
 								<label class="">{{translate('Header Nav Menu')}}</label>
+								<small class="d-block mb-2 text-muted">{{ translate('Drag the handle to move a menu item up or down.') }}</small>
 								<div class="header-nav-menu">
 									<input type="hidden" name="types[]" value="header_menu_labels">
 									<input type="hidden" name="types[]" value="header_menu_links">
 									@if (get_setting('header_menu_labels') != null)
 										@foreach (json_decode(get_setting('header_menu_labels'), true) as $key => $value)
-											<div class="row gutters-5">
+											<div class="row gutters-5 header-nav-menu-item">
+												<div class="col-auto">
+													<button type="button" class="header-nav-drag-handle"
+														aria-label="{{ translate('Drag to reorder') }}" title="{{ translate('Drag to reorder') }}">
+														<i class="las la-grip-vertical" aria-hidden="true"></i>
+													</button>
+												</div>
 												<div class="col-4">
 													<div class="form-group">
 														<input type="text" class="form-control" placeholder="{{translate('Label')}}"
@@ -160,7 +213,12 @@
 									@endif
 								</div>
 								<button type="button" class="btn btn-soft-secondary btn-sm" data-toggle="add-more"
-									data-content='<div class="row gutters-5">
+									data-content='<div class="row gutters-5 header-nav-menu-item">
+										<div class="col-auto">
+											<button type="button" class="header-nav-drag-handle" aria-label="{{ translate('Drag to reorder') }}" title="{{ translate('Drag to reorder') }}">
+												<i class="las la-grip-vertical" aria-hidden="true"></i>
+											</button>
+										</div>
 										<div class="col-4">
 											<div class="form-group">
 												<input type="text" class="form-control" placeholder="{{translate('Label')}}" name="header_menu_labels[]">
@@ -208,6 +266,77 @@
 @endsection
 
 @section('script')
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const menu = document.querySelector('.header-nav-menu');
+			if (!menu) return;
+
+			let draggedItem = null;
+			let activeHandle = null;
+			let previousUserSelect = '';
+
+			function finishDragging() {
+				if (!draggedItem) return;
+
+				draggedItem.classList.remove('is-dragging');
+				if (activeHandle) activeHandle.setAttribute('aria-grabbed', 'false');
+				document.body.style.userSelect = previousUserSelect;
+				draggedItem = null;
+				activeHandle = null;
+			}
+
+			menu.addEventListener('pointerdown', function (event) {
+				const handle = event.target.closest('.header-nav-drag-handle');
+				if (!handle || (event.pointerType === 'mouse' && event.button !== 0)) return;
+
+				const item = handle.closest('.header-nav-menu-item');
+				if (!item) return;
+
+				event.preventDefault();
+				draggedItem = item;
+				activeHandle = handle;
+				previousUserSelect = document.body.style.userSelect;
+				document.body.style.userSelect = 'none';
+				item.classList.add('is-dragging');
+				handle.setAttribute('aria-grabbed', 'true');
+			});
+
+			document.addEventListener('pointermove', function (event) {
+				if (!draggedItem) return;
+
+				event.preventDefault();
+				const elementUnderPointer = document.elementFromPoint(event.clientX, event.clientY);
+				const targetItem = elementUnderPointer && elementUnderPointer.closest('.header-nav-menu-item');
+
+				if (!targetItem || targetItem === draggedItem || !menu.contains(targetItem)) return;
+
+				const targetBounds = targetItem.getBoundingClientRect();
+				const insertBeforeTarget = event.clientY < targetBounds.top + (targetBounds.height / 2);
+				menu.insertBefore(draggedItem, insertBeforeTarget ? targetItem : targetItem.nextElementSibling);
+			}, { passive: false });
+
+			document.addEventListener('pointerup', finishDragging);
+			document.addEventListener('pointercancel', finishDragging);
+			window.addEventListener('blur', finishDragging);
+
+			menu.addEventListener('keydown', function (event) {
+				const handle = event.target.closest('.header-nav-drag-handle');
+				if (!handle || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return;
+
+				const item = handle.closest('.header-nav-menu-item');
+				if (!item) return;
+
+				event.preventDefault();
+				if (event.key === 'ArrowUp' && item.previousElementSibling) {
+					menu.insertBefore(item, item.previousElementSibling);
+				} else if (event.key === 'ArrowDown' && item.nextElementSibling) {
+					menu.insertBefore(item.nextElementSibling, item);
+				}
+				handle.focus();
+			});
+		});
+	</script>
+
 	{{-- Language,currency, stikcy header visibility --}}
 	<script>
 		$(document).ready(function () {

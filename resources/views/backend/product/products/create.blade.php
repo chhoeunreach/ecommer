@@ -137,6 +137,18 @@
                                             @endcan
                                         </div>
                                     </div>
+
+                                    <!-- Tags -->
+                                    <div class="col-12">
+                                        <div class="form-group mb-2 mb-lg-3">
+                                            <label for="tags" class="col-from-label fs-14 fw-500">{{ translate('Tags') }}
+                                                <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control aiz-tag-input" id="tags"
+                                                name="tags[]" placeholder="{{ translate('Type and hit enter to add a tag') }}">
+                                            <small
+                                                class="text-muted">{{ translate('This is used for search. Input those words by which cutomer can find this product.') }}</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -148,7 +160,16 @@
                         <div class="border border-gray-300 rounded-2 mt-4" id="product-configuration">
                             <div class="bg-white border-radius-10px px-3 px-lg-4 py-3 py-lg-4" >
                                 <div class="mb-3 pb-1 d-flex align-items-center justify-content-between border-bottom-dashed">
-                                    <h5 class="fs-16 fw-700" >{{translate('Product Configuration')}}</h5>
+                                    <div class="d-flex align-items-center">
+                                        <h5 class="fs-16 fw-700 mb-0" >{{translate('Product Configuration')}}</h5>
+                                        <div class="ml-4 d-flex align-items-center">
+                                            <span class="fs-14 fw-600 mr-2 status-label text-success">{{ translate('Active') }}</span>
+                                            <label class="aiz-switch aiz-switch-blue mb-0">
+                                                <input value="1" type="checkbox" name="published" checked onchange="updateStatusLabel(this)">
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    </div>
                                     @if (get_setting('ai_activation') == 1)
                                     <a href="javascript:void(0)" class="d-flex align-items-center bg-transparent border-0">
                                         <img src="{{ static_asset('assets/img/generate-icon.svg') }}" class="w-20px h-20px"
@@ -230,17 +251,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Tags -->
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label for="tags" class="col-from-label fs-14 fw-500">{{ translate('Tags') }}
-                                                <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control aiz-tag-input" id="tags"
-                                                name="tags[]" placeholder="{{ translate('Type and hit enter to add a tag') }}">
-                                            <small
-                                                class="text-muted">{{ translate('This is used for search. Input those words by which cutomer can find this product.') }}</small>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -512,7 +522,7 @@
                                 <div class="col-md-8">
                                     <select class="form-control aiz-selectpicker" data-live-search="true" data-selected-text-format="count" name="colors[]" id="colors" multiple disabled>
                                         @foreach (\App\Models\Color::orderBy('name', 'asc')->get() as $key => $color)
-                                        <option  value="{{ $color->code }}" data-content="<span><span class='size-15px d-inline-block mr-2 rounded border' style='background:{{ $color->code }}'></span><span>{{ $color->name }}</span></span>"></option>
+                                        <option value="{{ $color->code }}" data-color-id="{{ $color->id }}" data-content="<span><span class='size-15px d-inline-block mr-2 rounded border' style='background:{{ $color->code }}'></span><span>{{ $color->name }}</span></span>"></option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -531,6 +541,10 @@
                                     </a>
                                 </div>
                             @endcan
+                            <div class="product-color-actions d-none mt-2">
+                                <div class="product-color-items"></div>
+                                <small class="d-block text-muted mt-1">{{ translate('Edit a color name or code, or remove that color from this product.') }}</small>
+                            </div>
                             <input type="hidden" name="unit_price" value="0">
                             <div class="row gutters-5 mt-3">
                                 <!-- Discount Date Range -->
@@ -618,13 +632,6 @@
                         <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4">
                             <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Product Settings') }}</h5>
                             <div class="mb-3">
-                                <div class="d-flex align-items-center mt-3 mb-2">
-                                    <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
-                                        <input value="1" type="checkbox" name="published">
-                                        <span></span>
-                                    </label>
-                                    <span class="fs-14 fw-400 d-block" style="margin-top: -6px">{{ translate('Published') }}</span>
-                                </div>
                                 <div class="d-flex align-items-center mt-3 mb-2">
                                     <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
                                         <input value="1" type="checkbox" name="featured">
@@ -1894,6 +1901,15 @@
 
     // Add border-primary to clicked
     element.classList.add('border-primary');
+}
+
+function updateStatusLabel(el) {
+    let label = $(el).closest('.d-flex').find('.status-label');
+    if(el.checked) {
+        label.text('{{ translate('Active') }}').removeClass('text-danger').addClass('text-success');
+    } else {
+        label.text('{{ translate('Disabled') }}').removeClass('text-success').addClass('text-danger');
+    }
 }
 </script>
 

@@ -65,6 +65,40 @@
             </span>
         </a>
     </div>
+
+    @php
+        $configuredFloatingChatUrl = trim((string) get_setting('floating_chat_url'));
+        $floatingChatScheme = strtolower((string) parse_url($configuredFloatingChatUrl, PHP_URL_SCHEME));
+        $hasValidFloatingChatUrl = filter_var($configuredFloatingChatUrl, FILTER_VALIDATE_URL)
+            && in_array($floatingChatScheme, ['http', 'https'], true);
+        $floatingChatNumber = preg_replace('/[^0-9]/', '', (string) env('WHATSAPP_NUMBER'));
+        $floatingChatUrl = $hasValidFloatingChatUrl
+            ? $configuredFloatingChatUrl
+            : ($floatingChatNumber ? 'https://wa.me/' . $floatingChatNumber : null);
+        $floatingChatLabel = trim((string) get_setting('floating_chat_label', 'Chat Now')) ?: translate('Chat Now');
+    @endphp
+
+    @if (get_setting('floating_chat_button') == 1 && $floatingChatUrl)
+        <!-- Chat Now -->
+        <div class="aiz-floating-button aiz-floating-chat-button">
+            <a href="{{ $floatingChatUrl }}" target="_blank" rel="noopener noreferrer"
+                aria-label="{{ $floatingChatLabel }}">
+                <span class="circle">
+                    <span>
+                        <i class="las la-comment-dots fs-24 text-white" aria-hidden="true"></i>
+                    </span>
+                </span>
+                <span class="text">
+                    <span class="w-120px mr-3">{{ $floatingChatLabel }}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="7.073" height="12" viewBox="0 0 7.073 12" aria-hidden="true">
+                        <path d="M12.913,3.173,11.834,2.1,5.84,8.1l6,6,1.073-1.073L7.985,8.1Z"
+                            transform="translate(12.913 14.1) rotate(180)" fill="#fff"/>
+                    </svg>
+                </span>
+            </a>
+        </div>
+    @endif
+
     @if(addon_is_activated('auction'))
     <!-- Auction -->
     <div class="aiz-floating-button">
@@ -97,4 +131,3 @@
     </div>
     @endif
 </div>
-

@@ -15,11 +15,13 @@
                 src="{{ static_asset('assets/img/placeholder.jpg') }}"
                 data-src="{{ get_image($product->thumbnail) }}"
                 alt="{{ $product->getTranslation('name') }}"
+                style="object-fit: cover; object-position: center; padding: 0;"
                 onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
             <img class="lazyload product-hover-image"
                 src="{{ static_asset('assets/img/placeholder.jpg') }}"
                 data-src="{{ get_first_product_image($product->thumbnail, $product->photos) }}"
                 alt="{{ $product->getTranslation('name') }}"
+                style="object-fit: cover; object-position: center; padding: 0;"
                 onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
         </a>
 

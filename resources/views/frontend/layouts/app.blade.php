@@ -68,7 +68,7 @@
         <link rel="stylesheet" href="{{ static_asset('assets/css/bootstrap-rtl.min.css') }}">
     @endif
     <link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ rand(1000, 9999) }}">
-    <link rel="stylesheet" href="{{ static_asset('assets/css/custom-style.css?v=') }}{{ get_setting('current_version') }}">
+    <link rel="stylesheet" href="{{ static_asset('assets/css/custom-style.css?v=') }}{{ get_setting('current_version') }}-{{ filemtime(public_path('assets/css/custom-style.css')) }}">
     @if(get_setting('homepage_select') == 'thecore')
     <link rel="stylesheet" href="{{ static_asset('assets/css/thecore.css') }}">
     @endif
@@ -202,7 +202,188 @@
             color:  {{ get_setting('top_header_text_color') }} !important;
         }
 
+        /* Premium animated pills for the main header navigation. */
+        .bottom-background-color-visibility .header_menu_links {
+            position: relative;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            margin: 6px 2px;
+            padding: 8px 16px !important;
+            isolation: isolate;
+            overflow: hidden;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            line-height: 1.2;
+            transition: color 240ms ease,
+                        transform 260ms cubic-bezier(.16, 1, .3, 1),
+                        background-color 240ms ease,
+                        border-color 240ms ease,
+                        box-shadow 260ms ease !important;
+        }
+
+        .bottom-background-color-visibility .header_menu_links::before {
+            position: absolute;
+            top: -70%;
+            bottom: -70%;
+            left: -45%;
+            width: 34%;
+            z-index: -1;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .82), transparent);
+            content: '';
+            opacity: 0;
+            transform: rotate(18deg) translateX(-180%);
+        }
+
+        .bottom-background-color-visibility .header_menu_links::after {
+            position: absolute;
+            right: 20px;
+            bottom: 4px;
+            left: 20px;
+            height: 3px;
+            border-radius: 999px;
+            background: var(--primary);
+            content: '';
+            opacity: 0;
+            transform: scaleX(.15);
+            transition: transform 280ms cubic-bezier(.16, 1, .3, 1), opacity 180ms ease;
+        }
+
+        .bottom-background-color-visibility .header_menu_links:hover,
+        .bottom-background-color-visibility .header_menu_links:focus-visible {
+            border-color: rgba(255, 255, 255, .82);
+            color: var(--primary) !important;
+            background: rgba(255, 255, 255, .96) !important;
+            box-shadow: 0 10px 22px rgba(0, 0, 0, .2),
+                        inset 0 1px 0 rgba(255, 255, 255, .9);
+            outline: 0;
+            transform: translateY(-3px) scale(1.045);
+        }
+
+        .bottom-background-color-visibility .header_menu_links:hover::before,
+        .bottom-background-color-visibility .header_menu_links:focus-visible::before {
+            opacity: .72;
+            transform: rotate(18deg) translateX(500%);
+            transition: transform 650ms cubic-bezier(.2, .7, .2, 1), opacity 160ms ease;
+        }
+
+        .bottom-background-color-visibility .header_menu_links:hover::after,
+        .bottom-background-color-visibility .header_menu_links:focus-visible::after,
+        .bottom-background-color-visibility .header_menu_links.active::after {
+            opacity: 1;
+            transform: scaleX(1);
+        }
+
+        .bottom-background-color-visibility .header_menu_links.active {
+            border-color: #fff;
+            color: var(--primary) !important;
+            background: #fff !important;
+            box-shadow: 0 9px 22px rgba(0, 0, 0, .22),
+                        0 0 0 3px rgba(255, 255, 255, .18);
+            animation: headerNavPillIn 560ms cubic-bezier(.16, 1, .3, 1) both;
+        }
+
+        .bottom-background-color-visibility .header_menu_links:active {
+            box-shadow: 0 3px 8px rgba(0, 0, 0, .18);
+            transform: translateY(0) scale(.92);
+            transition-duration: 80ms !important;
+        }
+
+        @media (min-width: 1200px) {
+            .bottom-background-color-visibility .ml-xl-4.w-100.overflow-hidden {
+                overflow: visible !important;
+            }
+        }
+
+        .header-menu-ripple {
+            position: absolute;
+            z-index: 2;
+            width: 12px;
+            height: 12px;
+            margin: -6px 0 0 -6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .58);
+            pointer-events: none;
+            animation: headerMenuRipple 620ms ease-out forwards;
+        }
+
+        .bottom-background-color-visibility .header_menu_links.active .header-menu-ripple,
+        .bottom-background-color-visibility .header_menu_links:hover .header-menu-ripple {
+            background: color-mix(in srgb, var(--primary) 30%, transparent);
+        }
+
+        .bottom-background-color-visibility .all-category {
+            transition: background-color 220ms ease, box-shadow 220ms ease !important;
+        }
+
+        .bottom-background-color-visibility .all-category:hover {
+            background: rgba(0, 0, 0, .2) !important;
+            box-shadow: inset -1px 0 rgba(255, 255, 255, .1),
+                        inset 1px 0 rgba(255, 255, 255, .1),
+                        0 8px 18px rgba(0, 0, 0, .14);
+        }
+
+        .bottom-background-color-visibility .all-category:active {
+            background: rgba(0, 0, 0, .22) !important;
+        }
+
+        @keyframes headerNavPillIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px) scale(.78);
+            }
+            65% {
+                opacity: 1;
+                transform: translateY(-2px) scale(1.07);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes headerMenuRipple {
+            from {
+                opacity: .75;
+                transform: scale(0);
+            }
+            to {
+                opacity: 0;
+                transform: scale(14);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .bottom-background-color-visibility .header_menu_links,
+            .bottom-background-color-visibility .header_menu_links::before,
+            .bottom-background-color-visibility .header_menu_links::after,
+            .header-menu-ripple,
+            .bottom-background-color-visibility .all-category {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.bottom-background-color-visibility .header_menu_links').forEach(function (link) {
+                link.addEventListener('pointerdown', function (event) {
+                    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+                    var bounds = link.getBoundingClientRect();
+                    var ripple = document.createElement('span');
+                    ripple.className = 'header-menu-ripple';
+                    ripple.style.left = (event.clientX - bounds.left) + 'px';
+                    ripple.style.top = (event.clientY - bounds.top) + 'px';
+                    link.appendChild(ripple);
+                    window.setTimeout(function () { ripple.remove(); }, 650);
+                });
+            });
+        });
+    </script>
 
 @if (get_setting('google_analytics') == 1)
     <!-- Global site tag (gtag.js) - Google Analytics -->

@@ -9,7 +9,7 @@
     $total_gallery= count($photos)  +count($short_video) + (is_iterable($videos) ? count($videos) : 0);
 
 @endphp
-<div class="row">
+<div class="row product-gallery-layout">
     <div class="col-md-2 col-lg-3 col-xl-2 order-2 order-md-1">
         <!--THUMBNAILS SLIDER-->
         <div class="thumb-container position-relative overflow-hidden rounded-corner-8px">

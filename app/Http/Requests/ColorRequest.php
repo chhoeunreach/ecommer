@@ -24,7 +24,7 @@ class ColorRequest extends FormRequest
      */
     public function rules()
     {
-        $id = $this->route('id');
+        $id = $this->input('id') ?? $this->route('id');
         return [
             'name' => ['required', 'max:100'],
             'code' => 'required|unique:colors,code,' . $id,

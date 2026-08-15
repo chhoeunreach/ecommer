@@ -660,6 +660,7 @@
                         var $newOption = $('<option>', {
                             value: res.color_code,
                             selected: true, 
+                            'data-color-id': res.color_id,
                             'data-content': `<span><span class='size-15px d-inline-block mr-2 rounded border' style='background:${res.color_code}'></span><span>${res.color_name}</span></span>`
                         });
                         $('#colors').append($newOption).selectpicker('refresh');
@@ -671,6 +672,9 @@
                         );
                         
                         update_sku();
+                        if (typeof refreshProductColorActions === 'function') {
+                            refreshProductColorActions();
+                        }
                         closeglobalRightOffcanvas();
                     }
                 },

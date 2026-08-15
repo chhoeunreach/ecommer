@@ -1,4 +1,4 @@
-<div class="col-sm-12 col-lg-6">
+<div class="col-sm-12 col-lg-6 product-info-panel">
     <div class="d-flex align-items-center justify-content-end pb-20px right-side-cws">
         @php
         $seller_logo = $detailedProduct->user->shop?->logo 
@@ -59,10 +59,10 @@
         </div>
     </div>
 
-    <h1 class="fs-20 fw-600 text-dark mb-3">{{ $detailedProduct->getTranslation('name') }}</h1>
+    <h1 class="fs-20 fw-600 text-dark mb-3 product-detail-title">{{ $detailedProduct->getTranslation('name') }}</h1>
     
     <!--Brand Name and Ask about Start-->
-    <div class="d-flex flex-wrap flex-column flex-sm-row align-items-sm-center justify-content-between">
+    <div class="d-flex flex-wrap flex-column flex-sm-row align-items-sm-center justify-content-between product-meta-line">
         <!--LEFT-->
         @if ($detailedProduct->brand != null)
             <div class="d-flex align-items-center">
@@ -88,7 +88,7 @@
     <!--Brand Name and Ask about End-->
 
     <!--Rating & SKU Start-->
-    <div class="d-flex flex-wrap flex-column flex-sm-row align-items-sm-center justify-content-between mt-2">
+    <div class="d-flex flex-wrap flex-column flex-sm-row align-items-sm-center justify-content-between mt-2 product-rating-line">
         <!--LEFT-->
         @php
             $total = 0;
@@ -133,7 +133,7 @@
 
     @if ($detailedProduct->variant_product)
         <!--Variant Specs Start-->
-        <div class="d-flex flex-wrap align-items-center mb-2 mb-md-0" id="variant_specs_section" style="gap: 4px 16px;">
+        <div class="d-flex flex-wrap align-items-center mb-2 mb-md-0 product-variant-summary" id="variant_specs_section">
             <span class="d-none align-items-center" id="variant_storage_wrap">
                 <span class="fs-14 fw-400 text-gray">{{ translate('Storage') }}</span>
                 <span class="fs-14 fw-500 text-dark ml-2" id="variant_storage"></span>
@@ -155,6 +155,7 @@
     @endif
 
     <!--Watching Product Start-->
+    @if(get_setting('show_custom_product_visitors') == 1 || $detailedProduct->auction_product)
     <div class="d-flex flex-column align-items-start mt-3">
         @if(get_setting('show_custom_product_visitors')==1)
         <div class="d-flex align-items-center" id="live-product-viewing-visitors">
@@ -178,10 +179,11 @@
             @endif
         </div>
     </div>
+    @endif
     <!--Watching Product End-->
 
     <!--Todays Deal Start-->
-    <div class="mt-4 mb-3">
+    <div class="mt-4 mb-3 product-promotion-area">
         @if($detailedProduct->todays_deal)
             <div class="bg-dark py-10px px-20px rounded-corner-8px d-flex flex-wrap align-items-center justify-content-between">
                 <span class="fs-14 fw-bold text-orange">{{ translate('Todays Deal')}}</span>
@@ -283,8 +285,8 @@
                 <p class="my-0 ml-0 mr-4 mr-md-4 mr-lg-5 fs-14 fw-400 text-black">{{ translate('Estimate Shipping Time') }} <span class="fw-bold ml-2">{{ $detailedProduct->est_shipping_days }} {{ translate('Days') }} </span></p>
             </div>
         @endif
-        <div class="py-20px d-flex flex-wrap flex-xl-nowrap align-items-center">
-            <div class="d-flex align-items-center bg-light p-20px rounded-2 w-100 mb-2 mb-xl-0 mr-0 mr-xl-2">
+        <div class="py-20px d-flex flex-wrap flex-xl-nowrap align-items-center seller-brand-grid">
+            <div class="d-flex align-items-center bg-light p-20px rounded-2 w-100 mb-2 mb-xl-0 mr-0 mr-xl-2 seller-info-card">
                 <div class="store-logo-container w-48px h-48px bg-white border bordre-2 border-gray rounded-1 overflow-hidden mr-3 d-flex flex-shrink-0 align-items-center justify-content-center">
                     <img src="{{ uploaded_asset($seller_logo) }}" alt="seller">
                 </div>
@@ -305,7 +307,7 @@
                 </div>
             </div>
             @if ($detailedProduct->brand != null)
-                <div class="d-flex align-items-center bg-light p-20px rounded-2 w-100">
+                <div class="d-flex align-items-center bg-light p-20px rounded-2 w-100 seller-info-card">
                     <div class="store-logo-container w-48px h-48px bg-white border bordre-2 border-gray rounded-1 overflow-hidden mr-3 d-flex flex-shrink-0 align-items-center justify-content-center">
                         <img src="{{ uploaded_asset($detailedProduct->brand->logo) }}"alt="{{ $detailedProduct->brand->name }}" class="img-fit">
                     </div>
@@ -350,8 +352,8 @@
             <input type="hidden" name="id" value="{{ $detailedProduct->id }}">
             
             <!--In Stock Start-->
-            <h5 class="fs-16 fw-600 text-gray">{{ translate('Pricing') }}</h5>
-            <div class="bg-light overflow-hidden px-20px py-20px rounded-2">
+            <h5 class="fs-16 fw-600 text-gray product-section-kicker">{{ translate('Pricing') }}</h5>
+            <div class="bg-light overflow-hidden px-20px py-20px rounded-2 product-price-card">
                 @if ($detailedProduct->digital == 0)
                     <div class="d-flex align-items-center justify-content-between mb-md-0">
                         <div>
@@ -436,7 +438,7 @@
                         $product_variations = $colorCount + $choiceCount;
                     @endphp
 
-                    <div class="d-flex align-items-center justify-content-between mt-4 mb-2">
+                    <div class="d-flex align-items-center justify-content-between mt-4 mb-2 product-section-heading">
                         <div class="d-inline-flex align-items-center">
                             <h5 class="fs-16 fw-600 text-gray mr-2 mb-0">{{translate('Variation')}}</h5>
                             <span>
@@ -536,7 +538,7 @@
 
             @if (((get_setting('product_external_link_for_seller') == 1) && ($detailedProduct->added_by == "seller") && ($detailedProduct->external_link != null)) || (($detailedProduct->added_by != "seller") && ($detailedProduct->external_link != null)))
             @else
-                <div class="border-dashed border-1 border-soft-light rounded-2 overflow-hidden mt-4 mb-1 px-20px pt-15px pb-20px">
+                <div class="border-dashed border-1 border-soft-light rounded-2 overflow-hidden mt-4 mb-1 px-20px pt-15px pb-20px purchase-panel">
                     <div class="d-flex pb-10px flex-wrap align-items-center justify-content-between">
                         <div>
                             <div class="d-flex flex-wrap align-items-center mb-2 mb-md-0">
@@ -664,7 +666,7 @@
                         </div>
                     @endif
                     <!--Buttons Start-->
-                    <div class="d-flex flex-wrap flex-md-nowrap align-items-center">
+                    <div class="d-flex flex-wrap flex-md-nowrap align-items-center product-action-buttons">
                         @include('frontend.product_details.partials.action_buttons', ['cartCount' => '(01)'])
                     </div>
                     <div class="">
@@ -683,8 +685,8 @@
                     <p class="my-0 ml-0 mr-4 mr-md-4 mr-lg-5 fs-14 fw-400 text-black">{{ translate('Estimate Shipping Time') }} <span class="fw-bold ml-2">{{ $detailedProduct->est_shipping_days }} {{ translate('Days') }}</span> @if($detailedProduct->show_shipping_note==1) <a href="javascript:void(1);" data-toggle="modal" data-target="#shipping-note-modal"><i data-toggle="tooltip" data-placement="top" title="{{translate('View Notes')}}" class="las la-info-circle fs-14 text-gray hov-text-dark has-transition"></i></a>@endif</p>
                 </div>
             @endif
-            <div class="py-20px d-flex flex-wrap flex-xl-nowrap align-items-center">
-                <div class="d-flex align-items-center bg-light p-20px rounded-2 w-100 mb-2 mb-xl-0 mr-0 mr-xl-2">
+            <div class="py-20px d-flex flex-wrap flex-xl-nowrap align-items-center seller-brand-grid">
+                <div class="d-flex align-items-center bg-light p-20px rounded-2 w-100 mb-2 mb-xl-0 mr-0 mr-xl-2 seller-info-card">
                     <div class="store-logo-container w-48px h-48px bg-white border bordre-2 border-gray rounded-1 overflow-hidden mr-3 d-flex flex-shrink-0 align-items-center justify-content-center">
                         <img src="{{ uploaded_asset($seller_logo) }}" alt="seller">
                     </div>
@@ -705,7 +707,7 @@
                     </div>
                 </div>
                 @if ($detailedProduct->brand != null)
-                    <div class="d-flex align-items-center bg-light p-20px rounded-2 w-100">
+                    <div class="d-flex align-items-center bg-light p-20px rounded-2 w-100 seller-info-card">
                         <div class="store-logo-container w-48px h-48px bg-white border bordre-2 border-gray rounded-1 overflow-hidden mr-3 d-flex flex-shrink-0 align-items-center justify-content-center">
                             <img src="{{ uploaded_asset($detailedProduct->brand->logo) }}"alt="{{ $detailedProduct->brand->name }}" class="img-fit">
                         </div>

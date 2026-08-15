@@ -8,7 +8,9 @@
     </thead>
     <tbody>
         @foreach($products as $product)
-        <tr>
+        <tr class="selectable-product-row" tabindex="0" aria-selected="false"
+            onclick="if (!event.target.closest('label, input, button, a')) { this.querySelector('input[type=checkbox]').click(); }"
+            onkeydown="if ((event.key === 'Enter' || event.key === ' ') && event.target === this) { event.preventDefault(); this.querySelector('input[type=checkbox]').click(); }">
             <td class="py-2">
                 <div class="d-flex align-items-center">
                     <label class="aiz-checkbox mr-3" style="margin-top: -8px;">
@@ -16,6 +18,7 @@
                                class="flash-deal-product-check"
                                value="{{ $product->id }}"
                                data-product-id="{{ $product->id }}"
+                               onchange="this.closest('tr').classList.toggle('is-selected', this.checked); this.closest('tr').setAttribute('aria-selected', this.checked ? 'true' : 'false')"
                                data-product-name="{{ $product->getTranslation('name') }}"
                                data-product-img="{{ uploaded_asset($product->thumbnail_img) }}"
                                data-product-price="{{ $product->unit_price }}"

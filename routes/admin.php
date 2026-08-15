@@ -268,6 +268,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/seller/digitalproducts/{id}/edit', 'edit')->name('digitalproducts.seller.edit');
     });
 
+    // Accessories
+    Route::resource('accessories', App\Http\Controllers\Admin\AccessoryController::class, ['as' => 'admin']);
+    Route::controller(App\Http\Controllers\Admin\AccessoryController::class)->group(function () {
+        Route::post('/accessories/update-status', 'update_status')->name('admin.accessories.update_status');
+        Route::get('/accessories/destroy/{id}', 'destroy')->name('admin.accessories.destroy');
+    });
+
     Route::controller(ProductBulkUploadController::class)->group(function () {
         //Product Export
         Route::get('/product-bulk-export', 'export')->name('product_bulk_export.index');

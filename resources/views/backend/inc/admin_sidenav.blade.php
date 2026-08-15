@@ -127,6 +127,12 @@
                                                 </li>
                                             @endcan
                                         @endif
+                                        <li class="aiz-side-nav-item">
+                                            <a class="aiz-side-nav-link {{ areActiveRoutes(['admin.accessories.index', 'admin.accessories.create', 'admin.accessories.edit']) ? 'active' : '' }}" href="{{ route('admin.accessories.index') }}">
+                                                <span class="aiz-side-nav-text"
+                                                    style="color: {{ get_setting('navbar_text_color') }}">{{translate('Accessories')}}</span>
+                                            </a>
+                                        </li>
                                         @can('add_new_product')
                                             <li class="aiz-side-nav-item">
                                                 <a class="aiz-side-nav-link" href="{{route('products.create')}}">
@@ -147,7 +153,7 @@
                                     </ul>
                                 </li>
                             @endcanany
-                            @canany(['add_note', 'view_notes', 'view_product_warranties', 'view_product_categories', 'view_all_brands', 'brand_bulk_upload', 'view_colors', 'view_product_attributes', 'view_measurement_points', 'view_size_charts'])
+                            @canany(['add_note', 'view_notes', 'view_product_warranties', 'view_product_categories', 'view_all_brands', 'brand_bulk_upload', 'view_colors', 'view_product_attributes', 'view_measurement_points', 'view_size_charts', 'smart-bar'])
                                 <li class="aiz-side-nav-item">
                                     <a href="javascript:void(0);" class="aiz-side-nav-link">
                                         <span class="aiz-side-nav-text"
@@ -294,6 +300,15 @@
                                                 </ul>
                                             </li>
                                         @endcanany
+                                        @can('smart-bar')
+                                            <li class="aiz-side-nav-item">
+                                                <a class="aiz-side-nav-link {{ areActiveRoutes(['product.detail.buttons']) }}"
+                                                    href="{{ route('product.detail.buttons') }}">
+                                                    <span class="aiz-side-nav-text"
+                                                        style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Custom Button') }}</span>
+                                                </a>
+                                            </li>
+                                        @endcan
                                     </ul>
                                 </li>
                             @endcanany
@@ -320,13 +335,6 @@
                                                     href="{{route('smart.bar')}}">
                                                     <span class="aiz-side-nav-text"
                                                         style="color: {{ get_setting('navbar_text_color') }}">{{translate('Smart Bar')}}</span>
-                                                </a>
-                                            </li>
-                                            <li class="aiz-side-nav-item">
-                                                <a class="aiz-side-nav-link {{ areActiveRoutes(['product.detail.buttons']) }}"
-                                                    href="{{ route('product.detail.buttons') }}">
-                                                    <span class="aiz-side-nav-text"
-                                                        style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Product Detail Buttons') }}</span>
                                                 </a>
                                             </li>
                                         @endcan

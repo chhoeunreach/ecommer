@@ -68,8 +68,8 @@
     <div class="product-details product-details-{{ $productDetailsLayout }}">
         <!--PRODUCT DETAILS TOP SECTION START-->
         <div class="container">
-            <div class="pt-30px pb-6">
-                <div class="row">
+            <div class="pt-30px pb-6 product-hero-card">
+                <div class="row product-hero-row">
                     <!--LEFT SIDE SLIDER-->
                     <div class="col-sm-12 col-lg-6">
                         <div class="product-slider-wrapper mb-2rem mb-lg-0">
@@ -187,7 +187,8 @@
     @include('frontend.smart_bar')
     
     <!-- STICKY MOBILE ACTION BAR (MOBILE OPTIMIZATION) -->
-    <div class="d-md-none fixed-bottom bg-white border-top shadow-lg p-2 z-1030 px-3 py-2">
+    <div class="d-none d-md-none fixed-bottom bg-white border-top shadow-lg p-2 z-1030 px-3 py-2 mobile-product-action-bar"
+        aria-hidden="true">
         <div class="d-flex align-items-center justify-content-between">
             <div class="mr-2">
                 <div class="fs-10 text-uppercase text-muted fw-600">{{ translate('Price') }}</div>
@@ -456,6 +457,22 @@
     <!-- ======================== Product Swipper Slide Start ================== -->
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function () {
+            var mobileActionBar = document.querySelector('.mobile-product-action-bar');
+            var primaryActionButtons = document.querySelector('#option-choice-form .product-action-buttons');
+
+            if (mobileActionBar && primaryActionButtons && 'IntersectionObserver' in window) {
+                var actionButtonObserver = new IntersectionObserver(function (entries) {
+                    var originalButtonsVisible = entries[0].isIntersecting;
+                    mobileActionBar.classList.toggle('d-none', originalButtonsVisible);
+                    mobileActionBar.setAttribute('aria-hidden', originalButtonsVisible ? 'true' : 'false');
+                }, {
+                    threshold: 0.2,
+                    rootMargin: '0px 0px -60px 0px'
+                });
+
+                actionButtonObserver.observe(primaryActionButtons);
+            }
+
             /*------ Thumbnails Swiper ------*/
             var thumbSwiper = new Swiper(".thumb-slider", {
                 direction: "vertical",
@@ -716,6 +733,53 @@
             @else
                 $('#login_modal').modal('show');
             @endif
+        }
+
+        function contactSalesOnTelegram(button) {
+            var form = document.getElementById('option-choice-form');
+            var selectedValue = function (name) {
+                if (!form) return '';
+                var input = form.querySelector('input[name="' + name + '"]:checked');
+                return input ? String(input.value).trim() : '';
+            };
+            var textValue = function (selector) {
+                var element = document.querySelector(selector);
+                return element ? element.textContent.trim() : '';
+            };
+            var addDetail = function (lines, label, value) {
+                if (value) lines.push(label + ': ' + value);
+            };
+
+            var lines = [
+                @json('សួស្តី! ខ្ញុំចង់សាកសួរព័ត៌មានបន្ថែមអំពីផលិតផលខាងក្រោម៖'),
+                '',
+                @json('ឈ្មោះផលិតផល') + ': ' + (button.dataset.productName || document.title)
+            ];
+
+            addDetail(lines, @json('ពណ៌'), selectedValue('color'));
+            addDetail(lines, @json('ទំហំផ្ទុក'), selectedValue('storage') || textValue('#variant_storage'));
+            addDetail(lines, @json('លេខកូដ'), selectedValue('code') || textValue('#variant_code'));
+            addDetail(lines, @json('ប្រទេស'), selectedValue('country') || textValue('#variant_country'));
+            addDetail(lines, @json('ស្ថានភាព'), selectedValue('condition') || textValue('#variant_condition'));
+            addDetail(lines, 'SKU', textValue('#variant_sku'));
+            addDetail(lines, @json('ចំនួន'), form ? (form.querySelector('input[name="quantity"]') || {}).value : '');
+            addDetail(lines, @json('តម្លៃ'), textValue('#chosen_price'));
+            addDetail(lines, @json('តំណភ្ជាប់ផលិតផល'), window.location.href.split('#')[0]);
+            lines.push('', @json('សូមជួយផ្តល់ព័ត៌មានបន្ថែមផង។ អរគុណ!'));
+
+            try {
+                var telegramUrl = new URL(button.dataset.telegramUrl, window.location.origin);
+                telegramUrl.searchParams.set('text', lines.join('\n'));
+                window.open(
+                    telegramUrl.toString(),
+                    button.hasAttribute('target') ? '_blank' : '_self',
+                    button.hasAttribute('target') ? 'noopener,noreferrer' : undefined
+                );
+            } catch (error) {
+                window.location.href = button.href;
+            }
+
+            return false;
         }
 
         // Pagination using ajax

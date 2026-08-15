@@ -117,6 +117,18 @@
                                             </select>
                                         </div>
                                     </div>
+
+                                    <!-- Tags -->
+                                    <div class="col-12">
+                                        <div class="form-group mb-2 mb-lg-3">
+                                            <label for="tags" class="col-from-label fs-14 fw-500">{{ translate('Tags') }}
+                                                <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control aiz-tag-input" id="tags"
+                                                name="tags[]" placeholder="{{ translate('Type and hit enter to add a tag') }}">
+                                            <small
+                                                class="text-muted">{{ translate('This is used for search. Input those words by which cutomer can find this product.') }}</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -203,17 +215,6 @@
                                         </div>
                                     @endif
 
-                                    <!-- Tags -->
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label for="tags" class="col-from-label fs-14 fw-500">{{ translate('Tags') }}
-                                                <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control aiz-tag-input" id="tags"
-                                                name="tags[]" placeholder="{{ translate('Type and hit enter to add a tag') }}">
-                                            <small
-                                                class="text-muted">{{ translate('This is used for search. Input those words by which cutomer can find this product.') }}</small>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -67,6 +67,53 @@
                                 <input type="text" class="form-control" name="WHATSAPP_NUMBER" value="{{  env('WHATSAPP_NUMBER') }}" placeholder="{{ translate('WhatsApp Number') }}" required>
                             </div>
                         </div>
+
+                        <hr>
+                        <h6 class="fw-600 mb-3">{{ translate('Floating Chat Button') }}</h6>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label class="col-from-label">{{ translate('Show Chat Now Button') }}</label>
+                            </div>
+                            <div class="col-md-7">
+                                <label class="aiz-switch aiz-switch-success mb-0">
+                                    <input value="1" id="floating_chat_button" name="floating_chat_button" type="checkbox"
+                                        @if (get_setting('floating_chat_button') == 1) checked @endif>
+                                    <span class="slider round"></span>
+                                </label>
+                                <small class="d-block mt-2 text-muted">
+                                    {{ translate('Adds Chat Now to the storefront floating action buttons.') }}
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="floating-chat-fields">
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <label class="col-from-label">{{ translate('Button Label') }}</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <input type="text" class="form-control" name="floating_chat_label"
+                                        value="{{ get_setting('floating_chat_label', 'Chat Now') }}"
+                                        placeholder="{{ translate('Chat Now') }}" maxlength="40">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <label class="col-from-label">{{ translate('Chat URL') }}</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <input type="url" class="form-control" name="floating_chat_url"
+                                        value="{{ get_setting('floating_chat_url') }}"
+                                        placeholder="https://wa.me/855...">
+                                    <small class="text-muted">
+                                        {{ translate('Leave blank to use the WhatsApp number above. You can also use a Messenger or Telegram link.') }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group mb-0 text-right">
                             <button type="submit" class="btn btn-sm btn-primary">{{translate('Save')}}</button>
                         </div>
@@ -93,6 +140,13 @@
         $('#whatsapp_order_switch').on('change', function () {
             toggleMessageArea();
         });
+
+        function toggleFloatingChatFields() {
+            $('.floating-chat-fields').toggleClass('d-none', !$('#floating_chat_button').is(':checked'));
+        }
+
+        toggleFloatingChatFields();
+        $('#floating_chat_button').on('change', toggleFloatingChatFields);
     });
 </script>
 

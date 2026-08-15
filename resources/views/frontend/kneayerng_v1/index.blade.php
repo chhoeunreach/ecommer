@@ -1768,6 +1768,27 @@
         <div class="layout-container px-3 py-5 mx-auto" id="nexa-product-wrapper" data-products-per-row="8">
             <div id="section_newest"></div>
 
+            <!-- Accessories Section -->
+            @if(isset($accessories) && count($accessories) > 0)
+            <div class="mt-5">
+                <div class="d-flex mb-3 align-items-baseline border-bottom">
+                    <h3 class="h5 fw-700 mb-0">
+                        <span class="border-bottom border-primary border-width-2 pb-3 d-inline-block">{{ translate('New Accessories') }}</span>
+                    </h3>
+                    <a href="{{ route('accessories.index') }}" class="ml-auto mr-0 btn btn-primary btn-sm shadow-md">{{ translate('View More') }}</a>
+                </div>
+                <div class="products-wrapper-grid" id="newest-accessories-list">
+                    @foreach ($accessories as $accessory)
+                        <div class="grid-item single-product-item">
+                            @include('frontend.' . get_setting('homepage_select') . '.partials.home_accessory_box', [
+                                'accessory' => $accessory
+                            ])
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             <!-- Load More Button -->
             <div class="mt-5 mb-5 d-flex align-items-center justify-content-center d-none" id="view-more-container">
                 <button type="button" id="view-more-btn"

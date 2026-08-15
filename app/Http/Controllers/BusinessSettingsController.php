@@ -307,17 +307,20 @@ class BusinessSettingsController extends Controller
             $this->overWriteEnvFile($type, $request[$type]);
         }
         $settings = [
-            'whatsapp_chat' => BusinessSetting::where('type', 'whatsapp_chat')->first(),
-            'whatsapp_order' => BusinessSetting::where('type', 'whatsapp_order')->first(),
-            'whatsapp_order_seller_prods' => BusinessSetting::where('type', 'whatsapp_order_seller_prods')->first(),
-            'order_messege_template' => BusinessSetting::where('type', 'order_messege_template')->first()
+            'whatsapp_chat' => $request->has('whatsapp_chat') ? 1 : 0,
+            'whatsapp_order' => $request->has('whatsapp_order') ? 1 : 0,
+            'whatsapp_order_seller_prods' => $request->has('whatsapp_order_seller_prods') ? 1 : 0,
+            'order_messege_template' => $request->input('order_messege_template', ''),
+            'floating_chat_button' => $request->has('floating_chat_button') ? 1 : 0,
+            'floating_chat_label' => trim($request->input('floating_chat_label', '')) ?: 'Chat Now',
+            'floating_chat_url' => trim($request->input('floating_chat_url', '')),
         ];
 
-        foreach ($settings as $key => $setting) {
-            if ($setting) {
-                $setting->value = $request->has($key) ? $request->input($key) : 0;
-                $setting->save();
-            }
+        foreach ($settings as $key => $value) {
+            BusinessSetting::updateOrCreate(
+                ['type' => $key],
+                ['value' => $value]
+            );
         }
 
         Artisan::call('cache:clear');

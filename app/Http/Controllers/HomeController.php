@@ -83,9 +83,10 @@ class HomeController extends Controller
             }
         }
 
+        $accessories = \App\Models\Accessory::where('status', 1)->latest()->take(8)->get();
 
         $t0 = microtime(true);
-        $view = view('frontend.' . get_setting('homepage_select') . '.index', compact('featured_categories','hot_categories', 'lang'));
+        $view = view('frontend.' . get_setting('homepage_select') . '.index', compact('featured_categories','hot_categories', 'lang', 'accessories'));
         $html = $view->render();
         \Illuminate\Support\Facades\Log::info('HOMETIME controller ' . round((microtime(true) - $t0) * 1000) . 'ms render ' . strlen($html) . 'B');
         return $html;
