@@ -22,29 +22,29 @@
 
         <!--Single-->
         @forelse (get_same_seller_products($detailedProduct->user_id , 20) as $key => $same_seller_product)
-        <div class="carousel-box">
-            <div
-                class="img h-90px w-90px h-sm-100px w-sm-100px h-md-150px w-md-150px h-lg-170px w-lg-170px h-xxl-190px w-xxl-190px rounded-2 overflow-hidden position-relative image-hover-effect">
-                <a href="{{ route('product', $same_seller_product->slug) }}" title="{{ $same_seller_product->getTranslation('name') }}">
-                    <img class="lazyload img-fit m-auto has-transition product-main-image"
-                        src="{{ static_asset('assets/img/placeholder.jpg') }}" data-src="{{ uploaded_asset($same_seller_product->thumbnail_img) }}"
-                        alt="{{ $same_seller_product->getTranslation('name') }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
+        <div class="carousel-box px-2 mb-3">
+            <div class="bg-white border border-light-gray rounded-3 hov-shadow-sm has-transition p-2 d-flex flex-column h-100">
+                <div class="img h-90px h-sm-120px h-md-150px h-lg-170px h-xxl-190px w-100 rounded-2 overflow-hidden position-relative image-hover-effect">
+                    <a href="{{ route('product', $same_seller_product->slug) }}" title="{{ $same_seller_product->getTranslation('name') }}" class="d-block w-100 h-100 position-relative">
+                        <img class="lazyload img-fit m-auto has-transition product-main-image w-100 h-100"
+                            src="{{ static_asset('assets/img/placeholder.jpg') }}" data-src="{{ uploaded_asset($same_seller_product->thumbnail_img) }}"
+                            alt="{{ $same_seller_product->getTranslation('name') }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
 
-                    <img class="lazyload img-fit m-auto has-transition product-main-image product-hover-image position-absolute"
-                        src="{{ get_first_product_image($same_seller_product->thumbnail, $same_seller_product->photos) }}" alt="{{ $same_seller_product->getTranslation('name') }}"
-                        title="{{ $same_seller_product->getTranslation('name') }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
-                </a>
-            </div>
-            <div class="mt-2 pr-3">
-                <h3 class="fw-400 fs-13 text-truncate-1 lh-1-4 mb-1">
-                    <a href="{{ route('product', $same_seller_product->slug) }}" class="text-reset hov-text-primary hov-text-primary">{{ $same_seller_product->getTranslation('name') }}</a>
-                </h3>
-                <div class="fw-700 fs-14 mb-1 mt-2">
-                     <span >{{ home_discounted_base_price($same_seller_product) }}</span>
-                    @if (home_base_price($same_seller_product) != home_discounted_base_price($same_seller_product))
-                        <del
-                            class="fw-700 opacity-60 ml-1">{{ home_base_price($same_seller_product) }}</del>
-                    @endif
+                        <img class="lazyload img-fit m-auto has-transition product-main-image product-hover-image position-absolute w-100 h-100 top-0 left-0"
+                            src="{{ get_first_product_image($same_seller_product->thumbnail, $same_seller_product->photos) }}" alt="{{ $same_seller_product->getTranslation('name') }}"
+                            title="{{ $same_seller_product->getTranslation('name') }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
+                    </a>
+                </div>
+                <div class="mt-2 flex-grow-1 d-flex flex-column justify-content-between">
+                    <h3 class="fw-500 fs-13 text-truncate-2 lh-1-4 mb-2">
+                        <a href="{{ route('product', $same_seller_product->slug) }}" class="text-reset hov-text-primary">{{ $same_seller_product->getTranslation('name') }}</a>
+                    </h3>
+                    <div class="d-flex align-items-center flex-wrap">
+                         <span class="fw-800 fs-14 text-dark">{{ home_discounted_base_price($same_seller_product) }}</span>
+                        @if (home_base_price($same_seller_product) != home_discounted_base_price($same_seller_product))
+                            <del class="fw-500 fs-12 text-gray ml-2">{{ home_base_price($same_seller_product) }}</del>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>

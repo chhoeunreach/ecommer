@@ -184,10 +184,85 @@
 
     <!--Todays Deal Start-->
     <div class="mt-4 mb-3 product-promotion-area">
+        <style>
+        .todays-deal-banner {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .badge-soft-orange {
+            background-color: #fff7ed;
+            color: #ea580c !important;
+            border: 1px solid #fed7aa;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .flash-sale-banner {
+            background: #ffffff;
+            border: 1px solid #fecaca;
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-top: 12px;
+        }
+        .flash-icon-wrapper {
+            background: #fef2f2;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+        }
+        .flash-countdown-wrapper {
+            background: #fef2f2;
+            padding: 6px 16px;
+            border-radius: 8px;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .tracking-wide {
+            letter-spacing: 0.05em;
+        }
+        @media (max-width: 576px) {
+            .todays-deal-banner, .flash-sale-banner {
+                padding: 10px 14px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .badge-soft-orange, .flash-countdown-wrapper {
+                align-self: flex-start;
+                padding: 4px 12px;
+                font-size: 12px;
+            }
+        }
+        </style>
         @if($detailedProduct->todays_deal)
-            <div class="bg-dark py-10px px-20px rounded-corner-8px d-flex flex-wrap align-items-center justify-content-between">
-                <span class="fs-14 fw-bold text-orange">{{ translate('Todays Deal')}}</span>
-                <span class="fs-14 fw-semibold text-orange">{{ translate('Exclusive for today only')}}</span>
+            <div class="todays-deal-banner">
+                <div class="d-flex align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span class="fs-15 fw-700 text-dark">{{ translate('Todays Deal')}}</span>
+                </div>
+                <div class="fs-13 fw-600 badge-soft-orange px-3 py-2 rounded-pill" style="width: max-content; display: inline-block;">{{ translate('Exclusive for today only')}}</div>
             </div>
         @endif
         <!--Todays Deal End-->
@@ -198,17 +273,19 @@
             $flashDealnotEnd = !is_null($flashDealEndDate);
         @endphp
         @if($flashDealnotEnd)
-            <div id="flashSaleBox" class="flash-sale py-10px px-20px rounded-corner-8px d-flex flex-wrap align-items-center justify-content-between mt-2">
-                <div>
-                    <span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12.8" height="16" viewBox="0 0 12.8 16">
-                            <path d="M163.2-864l.8-5.6h-4l7.2-10.4h1.6l-.8,6.4h4.8l-8,9.6Z" transform="translate(-160 880)" fill="#f5f5f8"/>
+            <div id="flashSaleBox" class="flash-sale-banner">
+                <div class="d-flex align-items-center">
+                    <div class="flash-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                         </svg>
-                    </span>
-                    <span class="fs-14 fw-bold text-white text-uppercase ml-1">{{translate('Flash Sale')}}</span>
+                    </div>
+                    <span class="fs-15 fw-700 text-danger text-uppercase ml-2 tracking-wide" style="color: #ef4444 !important;">{{translate('Flash Sale')}}</span>
                 </div>
                 <!-- Countdown: ISO 8601 UTC string -->
-                <span class="fs-14 fw-400 text-white flashSaleCountdown" data-end-date="{{ date('Y/m/d H:i:s', $flashDealEndDate) }}">{{ translate('Loading...')}}</span>
+                <div class="flash-countdown-wrapper">
+                    <span class="fs-14 fw-700 flashSaleCountdown" data-end-date="{{ date('Y/m/d H:i:s', $flashDealEndDate) }}">{{ translate('Loading...')}}</span>
+                </div>
             </div>
         @endif
     </div>
@@ -353,55 +430,130 @@
             
             <!--In Stock Start-->
             <h5 class="fs-16 fw-600 text-gray product-section-kicker">{{ translate('Pricing') }}</h5>
-            <div class="bg-light overflow-hidden px-20px py-20px rounded-2 product-price-card">
-                @if ($detailedProduct->digital == 0)
-                    <div class="d-flex align-items-center justify-content-between mb-md-0">
-                        <div>
-                            <h6 class="m-0 fs-20 fw-600 text-dark">{{ home_discounted_price($detailedProduct) }}
-                                @if ($detailedProduct->unit != null)
-                                    <span class="opacity-70 fs-16 fw-400">/{{ $unit_name }}</span>
-                                @endif
-                            </h6>
-                            @if (home_price($detailedProduct) != home_discounted_price($detailedProduct))
-                                <del class="m-0 fs-14 fw-400 text-gray px-3">{{ home_price($detailedProduct) }}</del>
-                            @endif
+            
+            <style>
+            .product-price-card-new {
+                background: #ffffff;
+                border: 1px solid #e5e7eb;
+                padding: 20px 24px;
+                border-radius: 12px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                margin-bottom: 24px;
+                position: relative;
+                overflow: hidden;
+            }
+            .price-text-main {
+                font-size: 28px;
+                font-weight: 800;
+                color: #111827;
+                letter-spacing: -0.02em;
+                display: flex;
+                align-items: baseline;
+                gap: 6px;
+                margin: 0;
+                line-height: 1.2;
+                flex-wrap: wrap;
+            }
+            .price-text-unit {
+                font-size: 16px;
+                font-weight: 500;
+                color: #6b7280;
+            }
+            .price-text-old {
+                font-size: 15px;
+                font-weight: 500;
+                color: #9ca3af;
+                text-decoration: line-through;
+                margin: 4px 0 0 0;
+                display: block;
+            }
+            .price-badge-container {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 12px;
+                flex-wrap: wrap;
+            }
+            .discount-badge-new {
+                background-color: #fef2f2;
+                color: #ef4444;
+                border: 1px solid #fee2e2;
+                padding: 4px 10px;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: 700;
+            }
+            .club-point-badge-new {
+                background-color: #fff7ed;
+                color: #ea580c;
+                border: 1px solid #fed7aa;
+                padding: 4px 10px;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+            .download-spec-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                margin-top: 12px;
+                font-size: 14px;
+                color: #3b82f6;
+                font-weight: 500;
+                text-decoration: none;
+            }
+            .download-spec-link:hover {
+                text-decoration: underline;
+            }
+            @media (max-width: 576px) {
+                .product-price-card-new {
+                    padding: 16px 16px;
+                }
+                .price-text-main {
+                    font-size: 24px;
+                }
+                .price-text-unit {
+                    font-size: 14px;
+                }
+                .price-text-old {
+                    font-size: 14px;
+                }
+            }
+            </style>
 
-                        </div>
-                        <!-- Download Button -->
-                        @if ($detailedProduct->pdf != null)
-                        <a href="{{ uploaded_asset($detailedProduct->pdf) }}" target="_blank" class="fs-14 fw-400 text-blue cursor-pointer"> <i class="las la-download mr-1"></i>
-                            {{ translate('Download product specifation') }}
-                        </a>
-                        @endif
-                        
-                    </div>
-                @else
-                    <input type="hidden" name="quantity" value="1">
-                    <div class="d-flex flex-wrap align-items-center mb-md-0">
-                        <h6 class="m-0 fs-24 fw-bold fw-700 text-dark">{{ home_discounted_price($detailedProduct) }}
+            <div class="product-price-card-new">
+                @if ($detailedProduct->digital == 0 || $detailedProduct->digital == 1)
+                    <div>
+                        <div class="price-text-main">
+                            {{ home_discounted_price($detailedProduct) }}
                             @if ($detailedProduct->unit != null)
-                                <span class="opacity-70 fs-16 fw-400">/{{ $unit_name }}</span>
+                                <span class="price-text-unit">/{{ $unit_name }}</span>
                             @endif
-                        </h6>
+                        </div>
                         @if (home_price($detailedProduct) != home_discounted_price($detailedProduct))
-                            <del class="m-0 fs-14 fw-400 text-gray px-3">{{ home_price($detailedProduct) }}</del>
+                            <span class="price-text-old">{{ home_price($detailedProduct) }}</span>
                         @endif
                     </div>
                 @endif
+                
+                @if ($detailedProduct->digital == 1)
+                    <input type="hidden" name="quantity" value="1">
+                @endif
 
-                @if (discount_in_percentage($detailedProduct) > 0 || (addon_is_activated('club_point') && $detailedProduct->earn_point > 0))
-                <div class="d-flex flex-wrap align-items-center py-5px">
-                    <div class="d-flex flex-wrap align-items-center mb-2 mb-md-0">
-                        <div class="d-flex align-items-center mt-2">
-                            @if (discount_in_percentage($detailedProduct) > 0 && (home_price($detailedProduct) != home_discounted_price($detailedProduct)))
-                                <span class="fs-12 fw-bold text-white py-1 py-md-2 px-10px discount-badge rounded-1">-{{ discount_in_percentage($detailedProduct) }}%</span>
-                            @endif
-                            @if (addon_is_activated('club_point') && $detailedProduct->earn_point > 0)
-                                <span class="fs-12 fw-bold text-orange text-uppercase opacity-80 py-1 py-md-2 px-10px bg-soft-light rounded-1 ml-1">{{ translate('Club Point') }}: {{ $detailedProduct->earn_point }}</span>
-                            @endif
-                        </div>
-                    </div>
+                <div class="price-badge-container">
+                    @if (discount_in_percentage($detailedProduct) > 0 && (home_price($detailedProduct) != home_discounted_price($detailedProduct)))
+                        <span class="discount-badge-new">-{{ discount_in_percentage($detailedProduct) }}%</span>
+                    @endif
+                    @if (addon_is_activated('club_point') && $detailedProduct->earn_point > 0)
+                        <span class="club-point-badge-new">{{ translate('Club Point') }}: {{ $detailedProduct->earn_point }}</span>
+                    @endif
                 </div>
+
+                @if ($detailedProduct->pdf != null)
+                <a href="{{ uploaded_asset($detailedProduct->pdf) }}" target="_blank" class="download-spec-link">
+                    <i class="las la-download"></i> {{ translate('Download product specifation') }}
+                </a>
                 @endif
             </div>
             <!--In Stock End-->

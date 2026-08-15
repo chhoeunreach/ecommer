@@ -170,11 +170,34 @@
                                 <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Product Configuration') }}</h5>
                                 <div class="mb-3">
                                     <div class="d-flex align-items-center mt-3 mb-2">
-                                        <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
-                                            <input value="1" type="checkbox" name="published" @if($accessory->status == 1) checked @endif onchange="updateStatusLabel(this)">
-                                            <span></span>
-                                        </label>
-                                        <span class="fs-14 fw-600 d-block status-label @if($accessory->status == 1) text-success @else text-danger @endif" style="margin-top: -6px">@if($accessory->status == 1) {{ translate('Active') }} @else {{ translate('Disabled') }} @endif</span>
+                                        <div class="btn-group" role="group" style="border: 1px solid #e2e5ec; border-radius: 8px; overflow: hidden; background: #f8f9fa;">
+                                            <label class="mb-0 btn btn-sm px-4 fw-600 @if($accessory->status == 1) bg-success text-white @else text-muted @endif" id="btn-active" onclick="setPublished(true)" style="border-radius: 0; box-shadow: none; cursor: pointer;">
+                                                {{ translate('Active') }}
+                                            </label>
+                                            <label class="mb-0 btn btn-sm px-4 fw-600 @if($accessory->status != 1) bg-danger text-white @else text-muted @endif" id="btn-disabled" onclick="setPublished(false)" style="border-radius: 0; box-shadow: none; cursor: pointer;">
+                                                {{ translate('Disabled') }}
+                                            </label>
+                                        </div>
+                                        <input value="1" type="checkbox" name="published" id="real-published-checkbox" @if($accessory->status == 1) checked @endif style="display:none;">
+                                        <script>
+                                            function setPublished(isActive) {
+                                                let checkbox = document.getElementById('real-published-checkbox');
+                                                let btnActive = document.getElementById('btn-active');
+                                                let btnDisabled = document.getElementById('btn-disabled');
+                                                checkbox.checked = isActive;
+                                                if (isActive) {
+                                                    btnActive.classList.add('bg-success', 'text-white');
+                                                    btnActive.classList.remove('text-muted');
+                                                    btnDisabled.classList.remove('bg-danger', 'text-white');
+                                                    btnDisabled.classList.add('text-muted');
+                                                } else {
+                                                    btnDisabled.classList.add('bg-danger', 'text-white');
+                                                    btnDisabled.classList.remove('text-muted');
+                                                    btnActive.classList.remove('bg-success', 'text-white');
+                                                    btnActive.classList.add('text-muted');
+                                                }
+                                            }
+                                        </script>
                                     </div>
                                 </div>
                             </div>
