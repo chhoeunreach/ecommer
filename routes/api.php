@@ -260,26 +260,26 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
 
     Route::get('brands/top', 'App\Http\Controllers\Api\V2\BrandController@top');
     Route::get('all-brands', [ProductController::class, 'getBrands'])->name('allBrands');
-    Route::apiResource('brands', 'App\Http\Controllers\Api\V2\BrandController')->only('index');
+    Route::apiResource('brands', 'App\Http\Controllers\Api\V2\BrandController')->only('index')->names('api.brands');
 
-    Route::apiResource('business-settings', 'App\Http\Controllers\Api\V2\BusinessSettingController')->only('index');
+    Route::apiResource('business-settings', 'App\Http\Controllers\Api\V2\BusinessSettingController')->only('index')->names('api.business-settings');
 
     Route::get('category/info/{slug}', 'App\Http\Controllers\Api\V2\CategoryController@info');
     Route::get('categories/featured', 'App\Http\Controllers\Api\V2\CategoryController@featured');
     Route::get('categories/home', 'App\Http\Controllers\Api\V2\CategoryController@home');
     Route::get('categories/top', 'App\Http\Controllers\Api\V2\CategoryController@top');
-    Route::apiResource('categories', 'App\Http\Controllers\Api\V2\CategoryController')->only('index');
+    Route::apiResource('categories', 'App\Http\Controllers\Api\V2\CategoryController')->only('index')->names('api.categories');
     Route::get('sub-categories/{id}', 'App\Http\Controllers\Api\V2\SubCategoryController@index')->name('subCategories.index');
 
-    Route::apiResource('colors', 'App\Http\Controllers\Api\V2\ColorController')->only('index');
+    Route::apiResource('colors', 'App\Http\Controllers\Api\V2\ColorController')->only('index')->names('api.colors');
 
-    Route::apiResource('currencies', 'App\Http\Controllers\Api\V2\CurrencyController')->only('index');
+    Route::apiResource('currencies', 'App\Http\Controllers\Api\V2\CurrencyController')->only('index')->names('api.currencies');
 
-    Route::apiResource('customers', 'App\Http\Controllers\Api\V2\CustomerController')->only('show');
+    Route::apiResource('customers', 'App\Http\Controllers\Api\V2\CustomerController')->only('show')->names('api.customers');
 
-    Route::apiResource('general-settings', 'App\Http\Controllers\Api\V2\GeneralSettingController')->only('index');
+    Route::apiResource('general-settings', 'App\Http\Controllers\Api\V2\GeneralSettingController')->only('index')->names('api.general-settings');
 
-    Route::apiResource('home-categories', 'App\Http\Controllers\Api\V2\HomeCategoryController')->only('index');
+    Route::apiResource('home-categories', 'App\Http\Controllers\Api\V2\HomeCategoryController')->only('index')->names('api.home-categories');
 
 
 
@@ -305,7 +305,7 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
     Route::get('products/search', 'App\Http\Controllers\Api\V2\ProductController@search');
     Route::post('products/variant/price', 'App\Http\Controllers\Api\V2\ProductController@getPrice');
     Route::get('products/digital', 'App\Http\Controllers\Api\V2\ProductController@digital')->name('products.digital');
-    Route::apiResource('products', 'App\Http\Controllers\Api\V2\ProductController')->except(['store', 'update', 'destroy']);
+    Route::apiResource('products', 'App\Http\Controllers\Api\V2\ProductController')->except(['store', 'update', 'destroy'])->names('api.products');
 
     Route::get('products/{slug}/{user_id}',  'App\Http\Controllers\Api\V2\ProductController@product_details');
 
@@ -326,7 +326,7 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
     Route::get('shops/products/featured/{id}', 'App\Http\Controllers\Api\V2\ShopController@featuredProducts')->name('shops.featuredProducts');
     Route::get('shops/products/new/{id}', 'App\Http\Controllers\Api\V2\ShopController@newProducts')->name('shops.newProducts');
     Route::get('shops/brands/{id}', 'App\Http\Controllers\Api\V2\ShopController@brands')->name('shops.brands');
-    Route::apiResource('shops', 'App\Http\Controllers\Api\V2\ShopController')->only('index');
+    Route::apiResource('shops', 'App\Http\Controllers\Api\V2\ShopController')->only('index')->names('api.shops');
 
     Route::get('sliders', 'App\Http\Controllers\Api\V2\SliderController@sliders');
     Route::get('banners-one', 'App\Http\Controllers\Api\V2\SliderController@bannerOne');
@@ -419,8 +419,8 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
 
     Route::withoutMiddleware([EnsureSystemKey::class])->group(function () {
         Route::controller(WholesaleProductController::class)->group(function () {
-            Route::get('/wholesale/all-products', 'all_wholesale_products')->name('wholesale_products.all');
-            Route::get('/wholesale/product-details/{id}', 'wholesale_product_details')->name('wholesale_products.show');
+            Route::get('/wholesale/all-products', 'all_wholesale_products')->name('api.wholesale_products.all');
+            Route::get('/wholesale/product-details/{id}', 'wholesale_product_details')->name('api.wholesale_products.show');
         });
 
         Route::get('google-recaptcha', function () {
@@ -454,10 +454,10 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
         Route::get('instamojo/failed', 'App\Http\Controllers\Api\V2\InstamojoController@failed');
 
         // Cybersource
-        Route::post('cyber-source/payment/pay', [\App\Http\Controllers\DisabledAddonController::class, 'pay'])->name('cybersource.pay');
-        Route::any('cyber-source/payment/process', [\App\Http\Controllers\DisabledAddonController::class, 'process'])->name('cybersource.process');
-        Route::any('cyber-source/payment/callback', [\App\Http\Controllers\DisabledAddonController::class, 'callback'])->name('cybersource.callback');
-        Route::any('cyber-source/payment/webhook', [\App\Http\Controllers\DisabledAddonController::class, 'webhook'])->name('cybersource.webhook');
+        Route::post('cyber-source/payment/pay', [\App\Http\Controllers\DisabledAddonController::class, 'pay'])->name('api.cybersource.pay');
+        Route::any('cyber-source/payment/process', [\App\Http\Controllers\DisabledAddonController::class, 'process'])->name('api.cybersource.process');
+        Route::any('cyber-source/payment/callback', [\App\Http\Controllers\DisabledAddonController::class, 'callback'])->name('api.cybersource.callback');
+        Route::any('cyber-source/payment/webhook', [\App\Http\Controllers\DisabledAddonController::class, 'webhook'])->name('api.cybersource.webhook');
 
         //Payfast routes <starts>
         Route::controller(PayfastController::class)->group(function () {

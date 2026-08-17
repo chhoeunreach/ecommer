@@ -121,7 +121,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
     
     // category
-    Route::resource('categories', CategoryController::class);
+    Route::resource('categories', CategoryController::class)->except(['edit', 'destroy']);
     Route::controller(CategoryController::class)->group(function () {
         Route::get('/categories/edit/{id}', 'edit')->name('categories.edit');
         Route::get('/categories/destroy/{id}', 'destroy')->name('categories.destroy');
@@ -149,7 +149,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Brand
-    Route::resource('brands', BrandController::class);
+    Route::resource('brands', BrandController::class)->except(['edit', 'destroy']);
     Route::controller(BrandController::class)->group(function () {
         Route::get('/brands/edit/{id}', 'edit')->name('brands.edit');
         Route::get('/brands/destroy/{id}', 'destroy')->name('brands.destroy');
@@ -263,7 +263,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Digital Product
-    Route::resource('digitalproducts', DigitalProductController::class);
+    Route::resource('digitalproducts', DigitalProductController::class)->except(['edit', 'destroy']);
     Route::controller(DigitalProductController::class)->group(function () {
         Route::get('/digitalproducts/edit/{id}', 'edit')->name('digitalproducts.edit');
         Route::get('/digitalproducts/destroy/{id}', 'destroy')->name('digitalproducts.destroy');
@@ -272,7 +272,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Accessories
-    Route::resource('accessories', App\Http\Controllers\Admin\AccessoryController::class, ['as' => 'admin']);
+    Route::resource('accessories', App\Http\Controllers\Admin\AccessoryController::class, ['as' => 'admin'])->except(['destroy']);
     Route::controller(App\Http\Controllers\Admin\AccessoryController::class)->group(function () {
         Route::post('/accessories/update-status', 'update_status')->name('admin.accessories.update_status');
         Route::get('/accessories/destroy/{id}', 'destroy')->name('admin.accessories.destroy');
@@ -309,7 +309,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Seller
-    Route::resource('sellers', SellerController::class);
+    Route::resource('sellers', SellerController::class)->except(['destroy']);
     Route::controller(SellerController::class)->group(function () {
         Route::get('/seller/rating-followers', 'index')->name('sellers.rating_followers');
         Route::get('sellers_ban/{id}', 'ban')->name('sellers.ban');
@@ -354,7 +354,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Customer
-    Route::resource('customers', CustomerController::class);
+    Route::resource('customers', CustomerController::class)->except(['destroy']);
     Route::controller(CustomerController::class)->group(function () {
         Route::get('customers_ban/{customer}', 'ban')->name('customers.ban');
         Route::get('customers-suspicious/{customer}', 'suspicious')->name('customers.suspicious');
@@ -373,7 +373,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Dynamic Popup
-    Route::resource('dynamic-popups', DynamicPopupController::class);
+    Route::resource('dynamic-popups', DynamicPopupController::class)->except(['destroy']);
     Route::controller(DynamicPopupController::class)->group(function () {
         Route::get('/dynamic-popups/destroy/{id}', 'destroy')->name('dynamic-popups.destroy');
         Route::post('/bulk-dynamic-popup-delete', 'bulk_dynamic_popup_delete')->name('bulk-dynamic-popup-delete');
@@ -381,7 +381,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Custom Alert
-    Route::resource('custom-alerts', CustomAlertController::class);
+    Route::resource('custom-alerts', CustomAlertController::class)->except(['destroy']);
     Route::controller(CustomAlertController::class)->group(function () {
         Route::get('/custom-alerts/destroy/{id}', 'destroy')->name('custom-alerts.destroy');
         Route::post('/bulk-custom-alerts-delete', 'bulk_custom_alerts_delete')->name('bulk-custom-alerts-delete');
@@ -493,7 +493,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     //Tax
-    Route::resource('tax', TaxController::class);
+    Route::resource('tax', TaxController::class)->except(['edit', 'destroy']);
     Route::controller(TaxController::class)->group(function () {
         Route::get('/tax/edit/{id}', 'edit')->name('tax.edit');
         Route::get('/tax/destroy/{id}', 'destroy')->name('tax.destroy');
@@ -501,7 +501,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Language
-    Route::resource('/languages', LanguageController::class);
+    Route::resource('/languages', LanguageController::class)->except(['update', 'destroy']);
     Route::controller(LanguageController::class)->group(function () {
         Route::post('/languages/{id}/update', 'update')->name('languages.update');
         Route::get('/languages/destroy/{id}', 'destroy')->name('languages.destroy');
@@ -542,7 +542,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         });
 
         // Custom Page
-        Route::resource('custom-pages', PageController::class);
+        Route::resource('custom-pages', PageController::class)->except(['edit', 'destroy']);
         Route::controller(PageController::class)->group(function () {
             Route::get('/custom-pages/edit/{id}', 'edit')->name('custom-pages.edit');
             Route::get('/custom-pages/destroy/{id}', 'destroy')->name('custom-pages.destroy');
@@ -563,7 +563,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // element
-    Route::resource('elements', ElementController::class);
+    Route::resource('elements', ElementController::class)->except(['edit', 'destroy']);
     Route::controller(ElementController::class)->group(function () {
         Route::get('/elements/edit/{id}', 'edit')->name('elements.edit');
         Route::get('/elements/destroy/{id}', 'destroy')->name('elements.destroy');
@@ -577,7 +577,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Staff Roles
-    Route::resource('roles', RoleController::class);
+    Route::resource('roles', RoleController::class)->except(['edit', 'destroy']);
     Route::controller(RoleController::class)->group(function () {
         Route::get('/roles/edit/{id}', 'edit')->name('roles.edit');
         Route::get('/roles/destroy/{id}', 'destroy')->name('roles.destroy');
@@ -587,11 +587,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Staff
-    Route::resource('staffs', StaffController::class);
+    Route::resource('staffs', StaffController::class)->except(['destroy']);
     Route::get('/staffs/destroy/{id}', [StaffController::class, 'destroy'])->name('staffs.destroy');
 
     // Flash Deal
-    Route::resource('flash_deals', FlashDealController::class);
+    Route::resource('flash_deals', FlashDealController::class)->except(['edit', 'destroy']);
     Route::controller(FlashDealController::class)->group(function () {
         Route::get('/flash_deals/edit/{id}', 'edit')->name('flash_deals.edit');
         Route::get('/flash_deals/destroy/{id}', 'destroy')->name('flash_deals.destroy');
@@ -651,7 +651,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Order
-    Route::resource('orders', OrderController::class);
+    Route::resource('orders', OrderController::class)->except(['destroy']);
     Route::controller(OrderController::class)->group(function () {
         // All Orders
         Route::get('/all_orders', 'all_orders')->name('all_orders.index');
@@ -718,23 +718,24 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::post('/earning-payout-report/net-sales', [EarningReportController::class, 'net_sales']);
         Route::post('/earning-payout-report/payouts', [EarningReportController::class, 'payouts']);
         Route::post('/earning-payout-report/sale-analytic', [EarningReportController::class, 'sale_analytic']);
-        Route::post('/earning-payout-report/payout-analytic', [EarningReportController::class, 'payout_analytic']);
+            Route::post('/earning-payout-report/payout-analytic', [EarningReportController::class, 'payout_analytic']);
     });
 
     //Blog Section
     //Blog cateory
-    Route::resource('blog-category', BlogCategoryController::class);
+    Route::resource('blog-category', BlogCategoryController::class)->except(['destroy']);
     Route::get('/blog-category/destroy/{id}', [BlogCategoryController::class, 'destroy'])->name('blog-category.destroy');
 
     // Blog
-    Route::resource('blog', BlogController::class);
+    Route::resource('blog', BlogController::class)->except(['edit', 'destroy']);
     Route::controller(BlogController::class)->group(function () {
+        Route::get('/blog/edit/{id}', 'edit')->name('blog.edit');
         Route::get('/blog/destroy/{id}', 'destroy')->name('blog.destroy');
         Route::post('/blog/change-status', 'change_status')->name('blog.change-status');
     });
 
     //Coupons
-    Route::resource('coupon', CouponController::class);
+    Route::resource('coupon', CouponController::class)->except(['edit', 'destroy']);
     Route::controller(CouponController::class)->group(function () {
         Route::post('/coupon/update-status', 'updateStatus')->name('coupon.update_status');
         Route::get('/coupon/destroy/{id}', 'destroy')->name('coupon.destroy');
@@ -773,7 +774,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Email Template
-    Route::resource('email-templates', EmailTemplateController::class);
+    Route::resource('email-templates', EmailTemplateController::class)->except(['destroy']);
     Route::controller(EmailTemplateController::class)->group(function () {
         Route::get('/all-email-template', 'all_email')->name('all_email_templates.index');
         Route::get('/all-email-filter', 'filter')->name('all_email.filter');        
@@ -781,7 +782,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     //Pickup_Points
-    Route::resource('pick_up_points', PickupPointController::class);
+    Route::resource('pick_up_points', PickupPointController::class)->except(['edit', 'destroy']);
     Route::controller(PickupPointController::class)->group(function () {
         Route::get('/pick_up_points/edit/{id}', 'edit')->name('pick_up_points.edit');
         Route::get('/pick_up_points/destroy/{id}', 'destroy')->name('pick_up_points.destroy');
@@ -872,11 +873,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Addon
-    Route::resource('addons', AddonController::class);
+    Route::resource('addons', AddonController::class)->except(['destroy']);
     Route::post('/addons/activation', [AddonController::class, 'activation'])->name('addons.activation');
 
     //Customer Package
-    Route::resource('customer_packages', CustomerPackageController::class);
+    Route::resource('customer_packages', CustomerPackageController::class)->except(['edit', 'destroy']);
     Route::controller(CustomerPackageController::class)->group(function () {
         Route::get('/customer_packages/edit/{id}', 'edit')->name('customer_packages.edit');
         Route::get('/customer_packages/destroy/{id}', 'destroy')->name('customer_packages.destroy');
@@ -894,15 +895,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     // Countries
-    Route::resource('countries', CountryController::class);
+    Route::resource('countries', CountryController::class)->except(['destroy']);
     Route::post('/countries/status', [CountryController::class, 'updateStatus'])->name('countries.status');
 
     // States
-    Route::resource('states', StateController::class);
+    Route::resource('states', StateController::class)->except(['destroy']);
     Route::post('/states/status', [StateController::class, 'updateStatus'])->name('states.status');
 
     // Carriers
-    Route::resource('carriers', CarrierController::class);
+    Route::resource('carriers', CarrierController::class)->except(['destroy']);
     Route::controller(CarrierController::class)->group(function () {
         Route::get('/carriers/destroy/{id}', 'destroy')->name('carriers.destroy');
         Route::post('/carriers/update_status', 'updateStatus')->name('carriers.update_status');
@@ -910,10 +911,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
 
 
     // Zones
-    Route::resource('zones', ZoneController::class);
+    Route::resource('zones', ZoneController::class)->except(['destroy']);
     Route::get('/zones/destroy/{id}', [ZoneController::class, 'destroy'])->name('zones.destroy');
 
-    Route::resource('cities', CityController::class);
+    Route::resource('cities', CityController::class)->except(['edit', 'destroy']);
     Route::controller(CityController::class)->group(function () {
         Route::get('/cities/edit/{id}', 'edit')->name('cities.edit');
         Route::get('/cities/destroy/{id}', 'destroy')->name('cities.destroy');
@@ -923,7 +924,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     });
 
     //Areas
-    Route::resource('areas', AreaController::class);
+    Route::resource('areas', AreaController::class)->except(['edit', 'destroy']);
     Route::controller(AreaController::class)->group(function () {
         Route::get('/areas/edit/{id}', 'edit')->name('areas.edit');
         Route::get('/areas/destroy/{id}', 'destroy')->name('areas.destroy');
@@ -941,7 +942,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
     Route::post('/import-data', [BusinessSettingsController::class, 'import_data'])->name('import_data');
 
     // uploaded files
-    Route::resource('/uploaded-files', AizUploadController::class);
+    Route::resource('/uploaded-files', AizUploadController::class)->except(['destroy']);
     Route::controller(AizUploadController::class)->group(function () {
         Route::any('/uploaded-files/file-info', 'file_info')->name('uploaded-files.info');
         Route::get('/uploaded-files/destroy/{id}', 'destroy')->name('uploaded-files.destroy');
@@ -967,7 +968,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::post('/view-all-notication/modal', 'view_all_notication_modal')->name('admin_view_all_notication_modal');
     });
 
-    Route::resource('notification-type', NotificationTypeController::class);
+    Route::resource('notification-type', NotificationTypeController::class)->except(['edit', 'destroy']);
     Route::controller(NotificationTypeController::class)->group(function () {
         Route::get('/notification-type/edit/{id}', 'edit')->name('notification-type.edit');
         Route::post('/notification-type/update-status', 'updateStatus')->name('notification-type.update-status');

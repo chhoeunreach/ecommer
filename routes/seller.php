@@ -104,7 +104,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
     });
     
     // Note
-    Route::resource('note', NoteController::class);
+    Route::resource('note', NoteController::class)->except(['edit']);
     Route::controller(NoteController::class)->group(function () {
         Route::get('/note/edit/{id}', 'edit')->name('note.edit');
         Route::get('note/delete/{note}', 'destroy')->name('note.delete');
@@ -130,7 +130,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
     });
 
     //Coupon
-    Route::resource('coupon', CouponController::class);
+    Route::resource('coupon', CouponController::class)->except(['destroy']);
     Route::controller(CouponController::class)->group(function () {
         Route::post('/coupon/get_form', 'get_coupon_form')->name('coupon.get_coupon_form');
         Route::post('/coupon/get_form_edit', 'get_coupon_form_edit')->name('coupon.get_coupon_form_edit');
@@ -180,7 +180,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
     });
 
     // Address
-    Route::resource('addresses', AddressController::class);
+    Route::resource('addresses', AddressController::class)->except(['update', 'destroy']);
     Route::controller(AddressController::class)->group(function () {
         Route::post('/get-states', 'getStates')->name('get-state');
         Route::post('/get-cities', 'getCities')->name('get-city');
