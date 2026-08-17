@@ -193,7 +193,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
@@ -212,7 +212,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             margin-top: 12px;
@@ -226,6 +226,7 @@
             align-items: center;
             justify-content: center;
             color: #ef4444;
+            flex-shrink: 0;
         }
         .flash-countdown-wrapper {
             background: #fef2f2;
@@ -241,15 +242,22 @@
         }
         @media (max-width: 576px) {
             .todays-deal-banner, .flash-sale-banner {
-                padding: 10px 14px;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
+                padding: 10px 10px;
+                flex-direction: row;
+                align-items: center;
+                gap: 6px;
             }
             .badge-soft-orange, .flash-countdown-wrapper {
-                align-self: flex-start;
-                padding: 4px 12px;
-                font-size: 12px;
+                align-self: center;
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+            .todays-deal-banner .fs-16, .flash-sale-banner .fs-16 {
+                font-size: 13px !important;
+            }
+            .flash-icon-wrapper {
+                width: 24px;
+                height: 24px;
             }
         }
         </style>
@@ -311,17 +319,29 @@
             </div>
 
             <div class="border-bottom-dashed py-3">
+                
                 <div class="mb-1 fs-14 fw-bold text-dark">{{ translate('Starting Bid') }}</div>
+                
                 <div class="">
+                    
                     <span class="text-dark fs-20 fw-400">{{ single_price($detailedProduct->starting_bid) }}</span>
+                    
                     @if ($detailedProduct->unit != null)
+                    
                         <span class="text-secondary fs-14 fw-400">/{{ $unit_name }}</span>
+                        
                     @endif
+                    
                 </div>
+                
             </div>
+            
 
+            
             <div class="pt-3 pb-2">
+                
                 <div class="mb-1 fs-14 fw-bold text-dark">{{ translate('Highest Bid') }}</div>
+                
                 <div class="">
                     @php $highest_bid = $detailedProduct->bids->max('amount'); @endphp
                     <span class="text-dark fs-20 fw-400">
@@ -654,8 +674,8 @@
                                         @foreach ($facet['options'] as $value)
                                             <label class="rounded-1 bg-white cursor-pointer aiz-megabox mb-1">
                                                 <input type="radio" name="{{ $facet['name'] }}" value="{{ $value }}" @if ($value == $facet['default']) checked @endif>
-                                                <div class="variant-item-select aiz-megabox-elem px-10px">
-                                                    <span class="fs-14 fw-400 text-dark px-15px">{{ $value }}</span>
+                                                <div class="variant-item-select aiz-megabox-elem px-10px d-flex align-items-center justify-content-center h-100">
+                                                    <span class="fs-14 fw-400 text-dark px-15px m-0 text-center">{{ $value }}</span>
                                                 </div>
                                             </label>
                                         @endforeach
@@ -674,8 +694,8 @@
                                         @foreach ($choice->values as $key => $value)
                                             <label class="rounded-1 bg-white cursor-pointer aiz-megabox mb-1">
                                                 <input type="radio" name="attribute_id_{{ $choice->attribute_id }}" value="{{ $value }}" @if ($key == 0) checked @endif>
-                                                <div class="variant-item-select aiz-megabox-elem px-10px">
-                                                    <span class="fs-14 fw-400 text-dark px-15px">{{ $value }}</span>
+                                                <div class="variant-item-select aiz-megabox-elem px-10px d-flex align-items-center justify-content-center h-100">
+                                                    <span class="fs-14 fw-400 text-dark px-15px m-0 text-center">{{ $value }}</span>
                                                 </div>
                                             </label>
                                         @endforeach
@@ -837,86 +857,141 @@
                     <p class="my-0 ml-0 mr-4 mr-md-4 mr-lg-5 fs-14 fw-400 text-black">{{ translate('Estimate Shipping Time') }} <span class="fw-bold ml-2">{{ $detailedProduct->est_shipping_days }} {{ translate('Days') }}</span> @if($detailedProduct->show_shipping_note==1) <a href="javascript:void(1);" data-toggle="modal" data-target="#shipping-note-modal"><i data-toggle="tooltip" data-placement="top" title="{{translate('View Notes')}}" class="las la-info-circle fs-14 text-gray hov-text-dark has-transition"></i></a>@endif</p>
                 </div>
             @endif
-            <div class="py-20px d-flex flex-wrap flex-xl-nowrap align-items-center seller-brand-grid">
-                <div class="d-flex align-items-center bg-light p-20px rounded-2 w-100 mb-2 mb-xl-0 mr-0 mr-xl-2 seller-info-card">
-                    <div class="store-logo-container w-48px h-48px bg-white border bordre-2 border-gray rounded-1 overflow-hidden mr-3 d-flex flex-shrink-0 align-items-center justify-content-center">
-                        <img src="{{ uploaded_asset($seller_logo) }}" alt="seller">
+            <!-- Extra Info Boxes -->
+            <style>
+            .info-box-new {
+                background: #ffffff;
+                border: 1px solid #e5e7eb;
+                padding: 16px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                transition: border-color 0.2s ease, box-shadow 0.2s ease;
+                margin-bottom: 12px;
+            }
+            .info-box-new:hover {
+                border-color: #d1d5db;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            }
+            .info-box-icon {
+                width: 48px;
+                height: 48px;
+                border: 1px solid #f3f4f6;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                overflow: hidden;
+                background: #f9fafb;
+            }
+            .info-pill {
+                display: inline-flex;
+                align-items: center;
+                background: #ecfdf5;
+                border: 1px solid #d1fae5;
+                color: #065f46;
+                padding: 8px 16px;
+                border-radius: 99px;
+                font-size: 14px;
+                font-weight: 600;
+                gap: 8px;
+                margin-bottom: 8px;
+                margin-right: 8px;
+            }
+            @media (max-width: 576px) {
+                .info-box-new {
+                    padding: 12px;
+                    gap: 12px;
+                }
+                .info-box-icon {
+                    width: 40px;
+                    height: 40px;
+                }
+            }
+            </style>
+
+            <div class="py-20px d-flex flex-column">
+                <div class="info-box-new">
+                    <div class="info-box-icon">
+                        <img src="{{ uploaded_asset($seller_logo) }}" alt="seller" class="img-fluid">
                     </div>
                     <div>
                         @if ($detailedProduct->added_by == 'seller' && get_setting('vendor_system_activation') == 1)
                             <p class="m-0 fs-14">
-                                <span class="fw-400 text-gray">{{ translate('Sold by') }}</span>
-                                <a href="{{ route('shop.visit', $detailedProduct->user->shop->slug) }}" class="fw-bold text-blue pl-15px">{{ $detailedProduct->user->shop->name }}</a>
+                                <span class="fw-500 text-gray">{{ translate('Sold by') }}</span>
+                                <a href="{{ route('shop.visit', $detailedProduct->user->shop->slug) }}" class="fw-bold text-blue pl-2">{{ $detailedProduct->user->shop->name }}</a>
                             </p>
                         @else
-                            <p class="m-0 fs-14">
-                                <span class="fw-bold text-dark">{{ translate('Inhouse product') }}</span>
-                            </p>
+                            <p class="m-0 fs-14 fw-bold text-dark">{{ translate('Inhouse product') }}</p>
                         @endif
                         @if (get_setting('conversation_system') == 1)
-                            <a href="javascript:void();" onclick="show_chat_modal()" class="fs-14 fw-400 text-blue animate-underline-blue has-transition">{{ translate('Message Seller') }}</a>
+                            <a href="javascript:void();" onclick="show_chat_modal()" class="fs-14 fw-500 text-blue animate-underline-blue has-transition mt-1 d-inline-block">{{ translate('Message Seller') }}</a>
                         @endif
                     </div>
                 </div>
+
                 @if ($detailedProduct->brand != null)
-                    <div class="d-flex align-items-center bg-light p-20px rounded-2 w-100 seller-info-card">
-                        <div class="store-logo-container w-48px h-48px bg-white border bordre-2 border-gray rounded-1 overflow-hidden mr-3 d-flex flex-shrink-0 align-items-center justify-content-center">
-                            <img src="{{ uploaded_asset($detailedProduct->brand->logo) }}"alt="{{ $detailedProduct->brand->name }}" class="img-fit">
+                    <div class="info-box-new">
+                        <div class="info-box-icon">
+                            <img src="{{ uploaded_asset($detailedProduct->brand->logo) }}" alt="{{ $detailedProduct->brand->name }}" class="img-fluid">
                         </div>
                         <div>
                             <p class="m-0 fs-14">
-                                <span class="fw-400 text-gray">{{ translate('Brand') }}</span>
-                                <span class="fw-bold text-dark pl-5px">{{ $detailedProduct->brand->name }}</span>
+                                <span class="fw-500 text-gray">{{ translate('Brand') }}</span>
+                                <span class="fw-bold text-dark pl-2">{{ $detailedProduct->brand->name }}</span>
                             </p>
-                            <a href="{{route('products.brand', $detailedProduct->brand->slug)}}" class="fs-14 fw-400 text-blue animate-underline-blue has-transition">{{ translate('Products from this brand') }}</a>
+                            <a href="{{route('products.brand', $detailedProduct->brand->slug)}}" class="fs-14 fw-500 text-blue animate-underline-blue has-transition mt-1 d-inline-block">{{ translate('Products from this brand') }}</a>
+                        </div>
+                    </div>
+                @endif
+                
+                @if ($detailedProduct->has_warranty == 1 && $detailedProduct->warranty_id != null)
+                    <div class="info-box-new">
+                        <div class="info-box-icon">
+                            <img src="{{ uploaded_asset($detailedProduct->warranty->logo) }}" class="img-fluid" alt="Warranty Circle">
+                        </div>
+                        <div>
+                            <p class="m-0 fs-14">
+                                <span class="fw-bold text-dark">{{ translate('Warranty') }}:</span>
+                                <span class="fw-500 text-gray pl-1">{{ $detailedProduct->warranty->getTranslation('text') }}</span>
+                            </p>
+                            @if($detailedProduct->warranty_note_id != null &&  $detailedProduct->show_warranty_note == 1)
+                                <a href="javascript:void(1);" data-toggle="modal" data-target="#warranty-note-modal" class="fs-14 fw-500 text-blue animate-underline-blue has-transition mt-1 d-inline-block">{{ translate('View Details') }}</a>
+                            @endif
                         </div>
                     </div>
                 @endif
             </div>
+
             <!--Shipping Notes End-->
 
             <!--Warranty Start-->
             <div class="warranty-section pb-20px">
-                @if ($detailedProduct->has_warranty == 1 && $detailedProduct->warranty_id != null)
-                    <p class="fs-14 fw-bold text-dark mb-2">{{ translate('Warranty') }}</p>
-                    <div class="d-flex pb-20px border-bottom-dashed mb-2">
-                        <div class="mr-4">
-                            <p class="fs-14 fw-400 text-dark m-0">{{ translate('This Product has') }} <span class="fw-bold"> {{ $detailedProduct->warranty->getTranslation('text')}}</span> {{ translate('warranty') }}</p>
-                            @if($detailedProduct->warranty_note_id != null &&  $detailedProduct->show_warranty_note == 1)
-                                <a href="javascript:void(1);" data-toggle="modal" data-target="#warranty-note-modal" class="fs-14 fw-400 text-blue m-0 animate-underline-blue has-transitio">{{ translate('View Details') }}</a>
+                <div class="d-flex flex-wrap">
+                    @if ($detailedProduct->cash_on_delivery)
+                        <div class="info-pill">
+                            <img src="{{ static_asset('/assets/img/warranty-check-circle.svg') }}" alt="warranty check circle">
+                            <span>{{ translate('Cash on Delivery Available')}}</span>
+                            @if($detailedProduct->show_delivery_notes==1 && $detailedProduct->delivery_note_id ) 
+                                <a href="javascript:void(1);" data-toggle="modal" data-target="#cod-note-modal"><i data-toggle="tooltip" data-placement="top" title="{{translate('View Notes')}}" class="las la-info-circle fs-16 text-dark hov-text-primary has-transition ml-1"></i></a>
                             @endif
                         </div>
-                        <div class="w-40px h-40px position-relative flex-shrink-0 overflow-hidden">
-                            <img src="{{ uploaded_asset($detailedProduct->warranty->logo) }}" class="img-fluid position-absolute w-100 h-100" alt="Warranty Circle">
-                        </div>
-                    </div>
-                @endif
-                <ul class="m-0 p-0">
-                    @if ($detailedProduct->cash_on_delivery)
-                        <li class="d-flex align-items-center">
-                            <span class="d-block flex-shrink-0">
-                                <img src="{{ static_asset('/assets/img/warranty-check-circle.svg') }}" alt="warranty check circle">
-                            </span>
-                        <span class="d-block pl-10px pr-25px fs-14 fw-400 text-dark warranty-text">{{ translate('Cash on Delivery Available')}} @if($detailedProduct->show_delivery_notes==1 && $detailedProduct->delivery_note_id ) <a href="javascript:void(1);" data-toggle="modal" data-target="#cod-note-modal"><i data-toggle="tooltip" data-placement="top" title="{{translate('View Notes')}}" class="las la-info-circle fs-14 text-gray hov-text-dark has-transition"></i></a>@endif</span>
-                        </li>
                     @endif
                     @if ($detailedProduct->shipping_type == 'free')
-                        <li class="d-flex align-items-center">
-                            <span class="d-block flex-shrink-0">
-                                <img src="{{ static_asset('/assets/img/warranty-check-circle.svg') }}" alt="warranty check circle">
-                            </span>
-                            <span class="d-block pl-10px pr-25px fs-14 fw-400 text-dark warranty-text">{{ translate('Free Shipping') }}</span>
-                        </li>
+                        <div class="info-pill">
+                            <img src="{{ static_asset('/assets/img/warranty-check-circle.svg') }}" alt="warranty check circle">
+                            <span>{{ translate('Free Shipping') }}</span>
+                        </div>
                     @endif
                     @if (addon_is_activated('refund_request') && $detailedProduct->refundable == 1)
-                        <li class="d-flex align-items-center">
-                            <span class="d-block flex-shrink-0">
-                                <img src="{{ static_asset('/assets/img/warranty-check-circle.svg') }}" alt="warranty check circle">
-                            </span>
-                            <span class="d-block pl-10px pr-25px fs-14 fw-400 text-dark warranty-text">{{ translate('Refund Available for this producte') }} </span>
-                        </li>
+                        <div class="info-pill">
+                            <img src="{{ static_asset('/assets/img/warranty-check-circle.svg') }}" alt="warranty check circle">
+                            <span>{{ translate('Refund Available') }}</span>
+                        </div>
                     @endif
-                </ul>
+                </div>
             </div>
             <!--Warranty End-->
 

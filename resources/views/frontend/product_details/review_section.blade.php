@@ -1,6 +1,22 @@
 <section id="reviewsRatings">
-    <div class="reviews-ratings-container py-20px px-30px border bg-white border-light-gray rounded-2">
-        <p class="fs-20 fw-bold text-dark">{{ translate('Reviews & Ratings') }}</p>
+    <style>
+        @media (max-width: 576px) {
+            .mobile-section-container {
+                border: none !important;
+                border-radius: 0 !important;
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+                margin-left: -15px !important;
+                margin-right: -15px !important;
+                width: calc(100% + 30px) !important;
+            }
+            .mobile-section-title {
+                font-size: 16px !important;
+            }
+        }
+    </style>
+    <div class="reviews-ratings-container py-3 py-md-20px px-3 px-md-30px border-md bg-white border-light-gray rounded-2 mobile-section-container">
+        <p class="fs-20 fw-bold text-dark mobile-section-title">{{ translate('Reviews & Ratings') }}</p>
         <!-- Reviews & Ratings Show -->
         <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
             <div class="d-flex flex-wrap align-items-center">

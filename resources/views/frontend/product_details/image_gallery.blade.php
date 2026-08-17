@@ -76,6 +76,18 @@
                     @endforeach
                     @endif
 
+                    <!-- 3D Model -->
+                    @if (!empty($detailedProduct->model_3d))
+                        <div
+                            class="swiper-slide position-relative rounded-corner-8px border  border-light-gray bg-light cursor-pointer overflow-hidden d-flex align-items-center justify-content-center" data-variation="3d-model">
+                                <img class="img-fluid object-fit-cover object-position-cent" src="{{ uploaded_asset($detailedProduct->thumbnail_img) }}"
+                            onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
+                            <span class="position-absolute z-2 bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                <i class="las la-cube fs-24 text-dark has-transition"></i>
+                            </span>
+                        </div>
+                    @endif
+
                         
                 </div>
             </div>
@@ -178,6 +190,28 @@
                     </iframe>
                 </div>
                 @endforeach
+                @endif
+                
+                <!-- 3D Model -->
+                @if (!empty($detailedProduct->model_3d))
+                    <div class="swiper-slide rounded-corner-8px border border-light-gray bg-light overflow-hidden">
+                        @if (str_contains(strtolower($detailedProduct->model_3d), 'sketchfab.com'))
+                            <iframe class="w-100 h-100 border-0"
+                                src="{{ $detailedProduct->model_3d }}"
+                                title="3D Model Viewer"
+                                allow="autoplay; fullscreen; xr-spatial-tracking"
+                                xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share
+                                allowfullscreen loading="lazy">
+                            </iframe>
+                        @else
+                            <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+                            <model-viewer class="w-100 h-100"
+                                src="{{ $detailedProduct->model_3d }}"
+                                alt="{{ $detailedProduct->name }}"
+                                auto-rotate camera-controls shadow-intensity="1">
+                            </model-viewer>
+                        @endif
+                    </div>
                 @endif
             </div>
             <!--Swipper Buttons -->

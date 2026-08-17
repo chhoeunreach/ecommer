@@ -235,6 +235,15 @@
                                                 </a>
                                             </li>
                                         @endcan
+                                        @can('view_product_attributes')
+                                            <li class="aiz-side-nav-item">
+                                                <a href="{{route('products.category-attribute-settings')}}"
+                                                    class="aiz-side-nav-link {{ areActiveRoutes(['products.category-attribute-settings'])}}">
+                                                    <span class="aiz-side-nav-text"
+                                                        style="color: {{ get_setting('navbar_text_color') }}">{{translate('Category Attribute')}}</span>
+                                                </a>
+                                            </li>
+                                        @endcan
                                         @can('view_unit')
                                             <li class="aiz-side-nav-item">
                                                 <a href="{{route('unit.index')}}"

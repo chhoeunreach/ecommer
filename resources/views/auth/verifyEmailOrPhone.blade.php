@@ -3,12 +3,11 @@
         let recaptchaEnabled = {{ get_setting('google_recaptcha') == 1 && get_setting('recaptcha_customer_register') == 1 ? 'true' : 'false' }};
 
         let btn = clickedBtn ? clickedBtn : document.getElementById('sendOtpBtn');
-        let email = $('#signinSrEmail').length ? $('#signinSrEmail').val() : $('#signinAddonEmail').val();
-        let phone = $('#phone-code').length ? $('#phone-code').val() : '';
-        let country_code = $('input[name="country_code"]').val() ?? '';
+        let identifierInput = document.getElementById('email-or-phone');
+        let identifier = identifierInput ? identifierInput.value.trim() : '';
+        let country_code = $('select[name="country_code"]').val() ?? $('input[name="country_code"]').val() ?? '';
+        let isEmail = identifier.indexOf('@') !== -1;
 
-        let identifier = email ? email : phone;
-        let verify_field = email ? 'email' :'phone';
         if (!identifier) {
             AIZ.plugins.notify('danger', '{{ translate("Please enter your email or phone number") }}');
             return;
@@ -25,9 +24,7 @@
 
                 if (res.status == 1) {
                     AIZ.plugins.notify('success', res.message);
-                    //emailPhoneDiv.addClass('d-none');
-                    $(`.${verify_field}-form-group`).addClass('d-none');
-                    $('#mail_phone_toggle_btn').length && $('#mail_phone_toggle_btn').addClass('d-none');
+                    emailPhoneDiv.addClass('d-none');
                     codeGroup.removeClass('d-none').addClass('d-block');
 
                 } else if (res.status == 2) {
@@ -46,9 +43,9 @@
 
         let postData = {
             _token: '{{ csrf_token() }}',
-            email: email,
-            phone: phone,
-            country_code: country_code
+            email: isEmail ? identifier : null,
+            phone: isEmail ? null : identifier,
+            country_code: isEmail ? '' : country_code
         };
 
         if (recaptchaEnabled) {
@@ -79,16 +76,16 @@
         if (this.value.length === 6) {
             verifyBtn.innerHTML = '<i class="las la-lg la-spinner la-spin"></i>';
 
-            let email = $('#signinSrEmail').length ? $('#signinSrEmail').val() : $('#signinAddonEmail').val();
-            let phone = $('#phone-code').length ? $('#phone-code').val() : '';
-            let country_code = $('input[name="country_code"]').val()?? '';
-            let identifier = email ? email : phone;
+            let identifierInput = document.getElementById('email-or-phone');
+            let identifier = identifierInput ? identifierInput.value.trim() : '';
+            let country_code = $('select[name="country_code"]').val() ?? $('input[name="country_code"]').val() ?? '';
+            let isEmail = identifier.indexOf('@') !== -1;
             $.post('{{ route("customer-reg.verify_code_confirmation") }}', {
                 _token: '{{ csrf_token() }}',
                 verification_code: this.value,
-                email: email,  
-                phone: phone  ,
-                country_code: country_code
+                email: isEmail ? identifier : null,
+                phone: isEmail ? null : identifier,
+                country_code: isEmail ? '' : country_code
             }, function(data) {
                 if(data.status === 1){
                     verifyBtn.innerHTML = '<i class="las la-lg la-check-circle text-success"></i>';

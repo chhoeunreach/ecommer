@@ -33,6 +33,7 @@
         <link rel="stylesheet" href="{{ static_asset('assets/css/bootstrap-rtl.min.css') }}">
     @endif
     <link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ rand(1000, 9999) }}">
+    <link rel="stylesheet" href="{{ static_asset('assets/css/custom-style.css?v=') }}{{ filemtime(public_path('assets/css/custom-style.css')) }}">
     
     <style>
         :root{
@@ -82,6 +83,7 @@
         }
     </style>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     @yield('css')
     <script>
         var AIZ = AIZ || {};
@@ -92,6 +94,7 @@
     @yield('content')
 
     <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     @include('auth.login_register_js')
 
     @yield('script')

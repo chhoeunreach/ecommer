@@ -1173,35 +1173,38 @@ $.fn.toggleAttr = function (attr, attr1, attr2) {
             });
         },
         notify: function (type = "dark", message = "") {
-            $.notify(
-                {
-                    // options
-                    message: message,
-                },
-                {
-                    // settings
-                    showProgressbar: true,
-                    delay: 2500,
-                    mouse_over: "pause",
-                    placement: {
-                        from: "bottom",
-                        align: "left",
+            var swalType = 'info';
+            if (type === 'success') {
+                swalType = 'success';
+            } else if (type === 'danger' || type === 'error') {
+                swalType = 'error';
+            } else if (type === 'warning') {
+                swalType = 'warning';
+            }
+
+            if (typeof Swal !== 'undefined') {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    timerProgressBar: true,
+                    didOpen: function (toast) {
+                        toast.addEventListener('mouseenter', Swal.stopTimer);
+                        toast.addEventListener('mouseleave', Swal.resumeTimer);
                     },
-                    animate: {
-                        enter: "animated fadeInUp",
-                        exit: "animated fadeOutDown",
-                    },
-                    type: type,
-                    template:
-                        '<div data-notify="container" class="aiz-notify alert alert-{0}" role="alert">' +
-                        '<button type="button" aria-hidden="true" data-notify="dismiss" class="close"><i class="las la-times"></i></button>' +
-                        '<span data-notify="message">{2}</span>' +
-                        '<div class="progress" data-notify="progressbar">' +
-                        '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-                        "</div>" +
-                        "</div>",
-                }
-            );
+                    customClass: {
+                        popup: 'swal2-modern-toast'
+                    }
+                });
+
+                Toast.fire({
+                    icon: swalType,
+                    title: message
+                });
+            } else if (typeof $.notify === 'function') {
+                $.notify({ message: message }, { type: type, delay: 3500, placement: { from: "top", align: "right" } });
+            }
         },
         aizUppy: function () {
             if ($("#aiz-upload-files").length > 0) {

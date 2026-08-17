@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Str;
 use App\Http\Controllers\OTPVerificationController;
 use App\Services\FacebookConversionService;
 use App\Utility\EmailUtility;
@@ -60,6 +61,7 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => 'required|string|max:255',
+            'email' => 'required_without:phone',
             'password' => 'required|string|min:6|confirmed',
             'g-recaptcha-response' => [
                 Rule::when(get_setting('google_recaptcha') == 1 && get_setting('recaptcha_customer_register') == 1 , ['required', new Recaptcha()], ['sometimes'])
@@ -78,31 +80,30 @@ class RegisterController extends Controller
         if(addon_is_activated('portfolio_system') && get_setting('customer_verification')){
             $data['verification_status'] = 0;
         }
-        if (isset($data['email']) && filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+
+        $identifier = $data['phone'] ?? $data['email'] ?? null;
+
+        if ($identifier != null && filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
             $user = User::create([
                 'name' => $data['name'] . (isset($data['l_name']) && $data['l_name'] !== '' ? ' ' . $data['l_name'] : ''),
-                'email' => $data['email'],
-                'phone' => isset($data['phone']) ? '+'.$data['country_code'].preg_replace('/\D+/', '', $data['phone']) : null,
+                'email' => $identifier,
+                'phone' => isset($data['phone']) && $data['phone'] !== '' ? $this->normalizePhone($data['phone'], $data['country_code'] ?? null) : null,
                 'password' => Hash::make($data['password']),
                 'verification_status' => $data['verification_status'] ?? 1
             ]);
         }
         else {
-            if (addon_is_activated('otp_system')){
-                $cleanPhone = preg_replace('/\D+/', '', $data['phone']);
-                $user = User::create([
-                    'name' => $data['name'] . (isset($data['l_name']) && $data['l_name'] !== '' ? ' ' . $data['l_name'] : ''),
-                    'phone' => '+'.$data['country_code'].$cleanPhone,
-                    'password' => Hash::make($data['password']),
-                    'verification_code' => rand(100000, 999999),
-                    'verification_status' => $data['verification_status'] ?? 1
-                ]);
+            $user = User::create([
+                'name' => $data['name'] . (isset($data['l_name']) && $data['l_name'] !== '' ? ' ' . $data['l_name'] : ''),
+                'phone' => $this->normalizePhone($identifier, $data['country_code'] ?? null),
+                'password' => Hash::make($data['password']),
+                'verification_code' => rand(100000, 999999),
+                'verification_status' => $data['verification_status'] ?? 1
+            ]);
 
-                if(get_setting('customer_registration_verify') != '1' ){
-                    $otpController = new OTPVerificationController;
-                    $otpController->send_code($user);
-                }
-
+            if(addon_is_activated('otp_system') && get_setting('customer_registration_verify') != '1'){
+                $otpController = new OTPVerificationController;
+                $otpController->send_code($user);
             }
         }
 
@@ -138,18 +139,44 @@ class RegisterController extends Controller
         return $user;
     }
 
+    /**
+     * Normalize a raw phone identifier into the E.164 storage format (+<countrycode><digits>).
+     *
+     * @param  string|null  $number
+     * @param  string|null  $countryCode
+     * @return string|null
+     */
+    protected function normalizePhone($number, $countryCode = null)
+    {
+        $number = trim((string) $number);
+
+        if ($number === '') {
+            return null;
+        }
+
+        $digits = preg_replace('/\D+/', '', $number);
+
+        if (Str::startsWith($number, '+') && $digits !== '') {
+            return '+'.$digits;
+        }
+
+        return '+'.preg_replace('/\D+/', '', $countryCode).$digits;
+    }
+
     public function register(Request $request)
     {
         //dd($request->all());
-        if (filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
-            if(User::where('email', $request->email)->first() != null){
-                flash(translate('Email or Phone already exists.'));
+        $identifier = $request->get('phone') ?? $request->email;
+
+        if ($identifier != null && filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+            if(User::where('email', $identifier)->first() != null){
+                flash(translate('Email or Phone already exists.'))->error();
                 return back();
                 
             }
         }
-        elseif (User::where('phone', '+'.$request->country_code.$request->phone)->first() != null) {
-            flash(translate('Phone already exists.'));
+        elseif (User::where('phone', $this->normalizePhone($identifier, $request->country_code))->first() != null) {
+            flash(translate('Phone already exists.'))->error();
             return back();
         }
 
@@ -186,7 +213,7 @@ class RegisterController extends Controller
         }
 
         if($user->phone != null){
-            if(get_setting('email_verification') != 1 || get_setting('customer_registration_verify') === '1'){
+            if(get_setting('email_verification') != 1 || get_setting('customer_registration_verify') === '1' || !addon_is_activated('otp_system')){
                 $user->email_verified_at = date('Y-m-d H:m:s');
                 $user->save();
                 offerUserWelcomeCoupon();
@@ -205,7 +232,7 @@ class RegisterController extends Controller
         if(get_setting('google_analytics') == 1) {
             $ga4Event = [
                 'event' => 'sign_up',
-                'method' => $request->email ? 'email' : 'phone'
+                'method' => filter_var($identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone'
             ];
             session()->flash('ga4_event', $ga4Event);
         }

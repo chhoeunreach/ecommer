@@ -25,12 +25,14 @@ class AuthController extends Controller
 {
     public function signup(Request $request)
     {
+        $registerBy = $request->register_by ?? (filter_var($request->email_or_phone, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone');
+
         $messages = array(
             'name.required' => translate('Name is required'),
-            'email_or_phone.required' => $request->register_by == 'email' ? translate('Email is required') : translate('Phone is required'),
+            'email_or_phone.required' => $registerBy == 'email' ? translate('Email is required') : translate('Phone is required'),
             'email_or_phone.email' => translate('Email must be a valid email address'),
             'email_or_phone.numeric' => translate('Phone must be a number.'),
-            'email_or_phone.unique' => $request->register_by == 'email' ? translate('The email has already been taken') : translate('The phone has already been taken'),
+            'email_or_phone.unique' => $registerBy == 'email' ? translate('The email has already been taken') : translate('The phone has already been taken'),
             'password.required' => translate('Password is required'),
             'password.confirmed' => translate('Password confirmation does not match'),
             'password.min' => translate('Minimum 6 digits required for password')
@@ -40,8 +42,8 @@ class AuthController extends Controller
             'password' => 'required|min:6|confirmed',
             'email_or_phone' => [
                 'required',
-                Rule::when($request->register_by === 'email', ['email', 'unique:users,email']),
-                Rule::when($request->register_by === 'phone', ['numeric', 'unique:users,phone']),
+                Rule::when($registerBy === 'email', ['email', 'unique:users,email']),
+                Rule::when($registerBy === 'phone', ['numeric', 'unique:users,phone']),
             ],
             'g-recaptcha-response' => [
                 Rule::when(get_setting('google_recaptcha') == 1 && get_setting('recaptcha_customer_register') == 1 , ['required', new Recaptcha()], ['sometimes'])
@@ -57,11 +59,11 @@ class AuthController extends Controller
 
         $user = new User();
         $user->name = $request->name;
-        if ($request->register_by == 'email') {
+        if ($registerBy == 'email') {
 
             $user->email = $request->email_or_phone;
         }
-        if ($request->register_by == 'phone') {
+        if ($registerBy == 'phone') {
             $user->phone = $request->email_or_phone;
         }
         $user->password = bcrypt($request->password);
@@ -77,14 +79,18 @@ class AuthController extends Controller
         }
 
         if ($user->email_verified_at == null) {
-            if ($request->register_by == 'email') {
+            if ($registerBy == 'email') {
                 try {
                     $user->notify(new AppEmailVerificationNotification());
                 } catch (\Exception $e) {
                 }
             } else {
-                $otpController = new OTPVerificationController();
-                $otpController->send_code($user);
+                if (addon_is_activated('otp_system')) {
+                    $otpController = new OTPVerificationController();
+                    $otpController->send_code($user);
+                } else {
+                    $user->email_verified_at = date('Y-m-d H:m:s');
+                }
             }
         }
 
@@ -107,8 +113,10 @@ class AuthController extends Controller
             } catch (\Exception $e) {
             }
         } else {
-            $otpController = new OTPVerificationController();
-            $otpController->send_code($user);
+            if (addon_is_activated('otp_system')) {
+                $otpController = new OTPVerificationController();
+                $otpController->send_code($user);
+            }
         }
 
         $user->save();
@@ -141,19 +149,20 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        $loginBy = $request->login_by ?? (filter_var($request->email, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone');
+
         $messages = array(
-            'email.required' => $request->login_by == 'email' ? translate('Email is required') : translate('Phone is required'),
+            'email.required' => $loginBy == 'email' ? translate('Email is required') : translate('Phone is required'),
             'email.email' => translate('Email must be a valid email address'),
             'email.numeric' => translate('Phone must be a number.'),
             'password.required' => translate('Password is required'),
         );
         $validator = Validator::make($request->all(), [
             'password' => 'required',
-            'login_by' => 'required',
             'email' => [
                 'required',
-                Rule::when($request->login_by === 'email', ['email', 'required']),
-                Rule::when($request->login_by === 'phone', ['numeric', 'required']),
+                Rule::when($loginBy === 'email', ['email', 'required']),
+                Rule::when($loginBy === 'phone', ['numeric', 'required']),
             ],
             'g-recaptcha-response' => [
                 Rule::when(get_setting('google_recaptcha') == 1 && get_setting($request['recaptcha_action']) == 1, ['required', new Recaptcha()], ['sometimes'])
@@ -171,26 +180,26 @@ class AuthController extends Controller
         $seller_condition = $request->has('user_type') && $request->user_type == 'seller';
         $req_email = $request->email;
 
+        $matchClosure = function ($query) use ($req_email, $loginBy) {
+            if ($loginBy === 'email') {
+                $query->where('email', $req_email);
+            } else {
+                $digits = preg_replace('/\D+/', '', $req_email);
+                $query->where('phone', 'like', '%'.$digits);
+            }
+        };
+
         if ($delivery_boy_condition) {
             $user = User::whereIn('user_type', ['delivery_boy'])
-                ->where(function ($query) use ($req_email) {
-                    $query->where('email', $req_email)
-                        ->orWhere('phone', $req_email);
-                })
+                ->where($matchClosure)
                 ->first();
         } elseif ($seller_condition) {
             $user = User::whereIn('user_type', ['seller'])
-                ->where(function ($query) use ($req_email) {
-                    $query->where('email', $req_email)
-                        ->orWhere('phone', $req_email);
-                })
+                ->where($matchClosure)
                 ->first();
         } else {
             $user = User::whereIn('user_type', ['customer'])
-                ->where(function ($query) use ($req_email) {
-                    $query->where('email', $req_email)
-                        ->orWhere('phone', $req_email);
-                })
+                ->where($matchClosure)
                 ->first();
         }
         // if (!$delivery_boy_condition) {

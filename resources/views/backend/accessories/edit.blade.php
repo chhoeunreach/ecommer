@@ -218,6 +218,17 @@
                                     </div>
                                     <div class="file-preview box sm"></div>
                                 </div>
+                                <div class="form-group mb-3">
+                                    <label class="col-from-label fs-14 fw-500">{{translate('Gallery Images')}}</label>
+                                    <div class="input-group" data-toggle="aizuploader" data-type="image" data-multiple="true">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
+                                        </div>
+                                        <div class="form-control file-amount">{{ translate('Choose File') }}</div>
+                                        <input type="hidden" name="gallery" class="selected-files" value="{{ $accessory->gallery }}">
+                                    </div>
+                                    <div class="file-preview box sm"></div>
+                                </div>
                             </div>
                         </div>
 

@@ -11,35 +11,38 @@
         };
         AIZ.plugins = {
             notify: function (type = "dark", message = "") {
-                $.notify(
-                    {
-                        // options
-                        message: message,
-                    },
-                    {
-                        // settings
-                        showProgressbar: true,
-                        delay: 2500,
-                        mouse_over: "pause",
-                        placement: {
-                            from: "bottom",
-                            align: "left",
+                var swalType = 'info';
+                if (type === 'success') {
+                    swalType = 'success';
+                } else if (type === 'danger' || type === 'error') {
+                    swalType = 'error';
+                } else if (type === 'warning') {
+                    swalType = 'warning';
+                }
+
+                if (typeof Swal !== 'undefined') {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3500,
+                        timerProgressBar: true,
+                        didOpen: function (toast) {
+                            toast.addEventListener('mouseenter', Swal.stopTimer);
+                            toast.addEventListener('mouseleave', Swal.resumeTimer);
                         },
-                        animate: {
-                            enter: "animated fadeInUp",
-                            exit: "animated fadeOutDown",
-                        },
-                        type: type,
-                        template:
-                            '<div data-notify="container" class="aiz-notify alert alert-{0}" role="alert">' +
-                            '<button type="button" aria-hidden="true" data-notify="dismiss" class="close"><i class="las la-times"></i></button>' +
-                            '<span data-notify="message">{2}</span>' +
-                            '<div class="progress" data-notify="progressbar">' +
-                            '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-                            "</div>" +
-                            "</div>",
-                    }
-                );
+                        customClass: {
+                            popup: 'swal2-modern-toast'
+                        }
+                    });
+
+                    Toast.fire({
+                        icon: swalType,
+                        title: message
+                    });
+                } else if (typeof $.notify === 'function') {
+                    $.notify({ message: message }, { type: type, delay: 3500, placement: { from: "top", align: "right" } });
+                }
             }
         };
 
@@ -49,6 +52,12 @@
     @foreach (session('flash_notification', collect())->toArray() as $message)
         AIZ.plugins.notify('{{ $message['level'] }}', '{{ $message['message'] }}');
     @endforeach
+
+    @if (isset($errors) && $errors->any())
+        @foreach ($errors->all() as $error)
+            AIZ.plugins.notify('danger', '{{ $error }}');
+        @endforeach
+    @endif
 
     $('.password-toggle').click(function(){
         var $this = $(this);
@@ -66,8 +75,7 @@
     <script type="text/javascript">
         // Country Code
         var isPhoneShown = true,
-            countryData = window.intlTelInputGlobals.getCountryData(),
-            input = document.querySelector("#phone-code");
+            countryData = window.intlTelInputGlobals.getCountryData();
 
         for (var i = 0; i < countryData.length; i++) {
             var country = countryData[i];
@@ -76,7 +84,7 @@
             }
         }
 
-        var iti = intlTelInput(input, {
+        var itiConfig = {
             separateDialCode: true,
             utilsScript: "{{ static_asset('assets/js/intlTelutils.js') }}?1590403638580",
             onlyCountries: @php echo get_active_countries()->pluck('code') @endphp,
@@ -86,43 +94,38 @@
                 }
                 return selectedCountryPlaceholder;
             }
-        });
+        };
 
-        var country = iti.getSelectedCountryData();
-        $('input[name=country_code]').val(country.dialCode);
-
-        input.addEventListener("countrychange", function(e) {
-            // var currentMask = e.currentTarget.placeholder;
-            var country = iti.getSelectedCountryData();
+        // Phone-only inputs (forgot password, phone verification pages)
+        var phoneCode = document.querySelector('#phone-code');
+        if (phoneCode) {
+            var itiPhone = intlTelInput(phoneCode, itiConfig);
+            var country = itiPhone.getSelectedCountryData();
             $('input[name=country_code]').val(country.dialCode);
 
-        });
+            phoneCode.addEventListener("countrychange", function(e) {
+                $('input[name=country_code]').val(itiPhone.getSelectedCountryData().dialCode);
+            });
+        }
 
-        function toggleEmailPhone(el) {
-            if (isPhoneShown) {
-                $('.phone-form-group').addClass('d-none');
-                $('.email-form-group').removeClass('d-none');
-                $('input[name=phone]').val(null);
-                isPhoneShown = false;
-                $(el).html('*{{ translate('Use Phone Number Instead') }}');
-
-                $('.toggle-login-with-otp').addClass('d-none');
-
-            } else {
-                $('.phone-form-group').removeClass('d-none');
-                $('.email-form-group').addClass('d-none');
-                $('input[name=email]').val(null);
-                isPhoneShown = true;
-                $(el).html('<i>*{{ translate('Use Email Instead') }}</i>');
-
-                $('.toggle-login-with-otp').removeClass('d-none');
+        // Country code dropdown for the combined registration field
+        var countrySelect = document.querySelector('#country-code-select');
+        if (countrySelect) {
+            var options = '<option value="">{{ translate('Country') }}</option>';
+            for (var i = 0; i < countryData.length; i++) {
+                var c = countryData[i];
+                options += '<option value="' + c.dialCode + '">' + c.name + ' (+' + c.dialCode + ')</option>';
             }
-            
-            $('.submit-button').html('{{ translate('Login') }}');
-            $('.password-login-block').removeClass('d-none');
-            
-            var url = '{{ route('login') }}';
-            $('.loginForm').attr('action', url);
+            countrySelect.innerHTML = options;
+            if (typeof $(countrySelect).selectpicker === 'function') {
+                try {
+                    $(countrySelect).selectpicker('destroy');
+                } catch(err){}
+            }
+            if ($(countrySelect).parent().hasClass('bootstrap-select')) {
+                $(countrySelect).siblings('.dropdown-toggle, .dropdown-menu').remove();
+                $(countrySelect).unwrap();
+            }
         }
 
         function toggleLoginPassOTP() {
@@ -131,6 +134,22 @@
 
             var url = '{{ route('send-otp') }}';
             $('.loginForm').attr('action', url);
+        }
+
+        function toggleEmailPhone(el) {
+            if (isPhoneShown) {
+                $('.phone-form-group').addClass('d-none');
+                $('.email-form-group').removeClass('d-none');
+                $('input[name=phone]').val(null);
+                isPhoneShown = false;
+                $(el).html('*{{ translate('Use Phone Number Instead') }}');
+            } else {
+                $('.phone-form-group').removeClass('d-none');
+                $('.email-form-group').addClass('d-none');
+                $('input[name=email]').val(null);
+                isPhoneShown = true;
+                $(el).html('<i>*{{ translate('Use Email Instead') }}</i>');
+            }
         }
     </script> 
 @endif

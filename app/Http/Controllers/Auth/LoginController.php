@@ -20,6 +20,7 @@ use Storage;
 use App\Rules\Recaptcha;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -325,9 +326,46 @@ class LoginController extends Controller
     {
         if ($request->get('phone') != null) {
             return ['phone' => "+{$request['country_code']}{$request['phone']}", 'password' => $request->get('password')];
-        } elseif ($request->get('email') != null) {
-            return $request->only($this->username(), 'password');
         }
+
+        $login = $request->get('email');
+        if ($login != null && filter_var($login, FILTER_VALIDATE_EMAIL)) {
+            return ['email' => $login, 'password' => $request->get('password')];
+        }
+
+        return ['phone' => "+{$request['country_code']}" . preg_replace('/\D+/', '', (string) $login), 'password' => $request->get('password')];
+    }
+
+    /**
+     * Attempt to log the user into the application.
+     * Allows a single identifier field that can be either an email or a phone number.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    protected function attemptLogin(Request $request)
+    {
+        $login = trim($request->get('email'));
+        $remember = $request->filled('remember');
+
+        if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
+            return $this->guard()->attempt(['email' => $login, 'password' => $request->get('password')], $remember);
+        }
+
+        $digits = preg_replace('/\D+/', '', $login !== '' ? $login : $request->get('phone'));
+
+        if (strlen($digits) < 6) {
+            return false;
+        }
+
+        $user = User::where('phone', 'like', '%'.$digits)->first();
+
+        if ($user && Hash::check($request->get('password'), $user->password)) {
+            $this->guard()->login($user, $remember);
+            return true;
+        }
+
+        return false;
     }
 
     /**

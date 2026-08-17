@@ -37,6 +37,7 @@
     $contactSalesBgColor = get_setting('product_detail_contact_sales_bg_color', '#ffffff');
     $contactSalesTextColor = get_setting('product_detail_contact_sales_text_color', '#168acd');
     $contactSalesNewTab = (int) get_setting('product_detail_contact_sales_new_tab', 1) === 1;
+    $productObj = $detailedProduct ?? $product ?? null;
 @endphp
 
 @if ((int) get_setting('product_detail_show_buy_now', 1) === 1)
@@ -66,7 +67,8 @@
 
 @if ($showContactSales)
     <a href="{{ $contactSalesUrl }}" data-telegram-url="{{ $contactSalesUrl }}"
-        data-product-name="{{ $detailedProduct->getTranslation('name') }}"
+        data-product-name="{{ $productObj ? $productObj->getTranslation('name') : '' }}"
+        data-product-url="{{ $productObj ? route('product', $productObj->slug) : '' }}"
         onclick="return contactSalesOnTelegram(this)"
         @if ($contactSalesNewTab) target="_blank" rel="noopener noreferrer" @endif
         class="d-flex align-items-center justify-content-center text-center border rounded-2 fs-14 fw-bold has-transition {{ $buttonPadding }} px-20px w-100 mb-2 mb-md-0 @if ($showCustomButton || $showChatButton) mr-md-2 @endif contact-sales-btn product-action-btn product-action-btn--contact"

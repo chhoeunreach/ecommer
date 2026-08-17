@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\ProductTranslation;
 use App\Models\ProductFreeAccessory;
 use App\Models\Category;
+use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\Cart;
 use App\Models\ProductCategory;
@@ -314,6 +315,60 @@ class ProductController extends Controller
         }
         
         return $this->add_more_choice_option($request);
+    }
+
+    public function getCategoryAttributes(Request $request)
+    {
+        $category = Category::with('attributes')->find($request->category_id);
+
+        if (!$category) {
+            return response()->json(['attributes' => []]);
+        }
+
+        $attributes = $category->attributes->map(function ($attribute) {
+            return [
+                'id' => $attribute->id,
+                'name' => $attribute->getTranslation('name'),
+            ];
+        })->values();
+
+        return response()->json(['attributes' => $attributes]);
+    }
+
+    public function categoryAttributeSettings()
+    {
+        $categories = Category::where('parent_id', 0)->with('childrenCategories')->get();
+        $attributes = Attribute::all();
+
+        $selectedCategoryId = null;
+        $selectedAttributeIds = [];
+
+        $computer = Category::where('name', 'Computer')->where('parent_id', 0)->first();
+        if ($computer) {
+            $selectedCategoryId = $computer->id;
+            $selectedAttributeIds = $computer->attributes->pluck('id')->toArray();
+        }
+
+        return view('backend.product.products.category_attribute_settings', compact(
+            'categories',
+            'attributes',
+            'selectedCategoryId',
+            'selectedAttributeIds'
+        ));
+    }
+
+    public function updateCategoryAttributes(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
+        $category = Category::findOrFail($request->category_id);
+        $category->attributes()->sync($request->filtering_attributes ?? []);
+
+        flash(translate('Category attributes updated successfully'))->success();
+
+        return back();
     }
 
     /**

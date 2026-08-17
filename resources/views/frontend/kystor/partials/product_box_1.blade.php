@@ -1,101 +1,133 @@
 @php
-    $productUrl = $product->auction_product == 1
-        ? route('auction-product', $product->slug)
-        : route('product', $product->slug);
-    $colors = is_string($product->colors) ? json_decode($product->colors, true) : $product->colors;
-    $attributes = is_string($product->attributes) ? json_decode($product->attributes, true) : $product->attributes;
-    $hasVariants = (is_array($colors) && count($colors) > 0)
-        || (is_array($attributes) && count($attributes) > 0);
+    $cart_added = [];
+    $product_url = route('product', $product->slug);
+    if ($product->auction_product == 1) {
+        $product_url = route('auction-product', $product->slug);
+    }
 @endphp
-
-<article class="kystore-product-card">
-    <div class="kystore-product-media">
-        <a href="{{ $productUrl }}" class="kystore-product-image image-hover-effect">
-            <img class="lazyload product-main-image"
-                src="{{ static_asset('assets/img/placeholder.jpg') }}"
-                data-src="{{ get_image($product->thumbnail) }}"
+<div class="aiz-card-box shadcn-product-card">
+    <div class="shadcn-card-img-wrap">
+        <!-- Image -->
+        <a href="{{ $product_url }}" class="d-block h-100 position-relative">
+            <img
+                class="lazyload mx-auto product-main-image"
+                src="{{ get_image($product->thumbnail) }}"
                 alt="{{ $product->getTranslation('name') }}"
-                style="object-fit: cover; object-position: center; padding: 0;"
+                title="{{ $product->getTranslation('name') }}"
                 onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
-            <img class="lazyload product-hover-image"
-                src="{{ static_asset('assets/img/placeholder.jpg') }}"
-                data-src="{{ get_first_product_image($product->thumbnail, $product->photos) }}"
+            <img
+                class="lazyload mx-auto product-hover-image"
+                src="{{ get_first_product_image($product->thumbnail, $product->photos) }}"
                 alt="{{ $product->getTranslation('name') }}"
-                style="object-fit: cover; object-position: center; padding: 0;"
+                title="{{ $product->getTranslation('name') }}"
                 onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
         </a>
 
-        <div class="kystore-product-badges">
+        <!-- Badges -->
+        <div class="shadcn-badges-wrap">
             @if (discount_in_percentage($product) > 0)
-                <span class="kystore-badge kystore-badge-sale">-{{ discount_in_percentage($product) }}%</span>
+                <span class="shadcn-badge shadcn-badge-discount">-{{ discount_in_percentage($product) }}%</span>
             @endif
             @if ($product->wholesale_product)
-                <span class="kystore-badge">{{ translate('Wholesale') }}</span>
+                <span class="shadcn-badge shadcn-badge-wholesale">{{ translate('Wholesale') }}</span>
+            @endif
+            @php
+                $customLabels = get_custom_labels($product->custom_label_id);
+            @endphp
+            @if ($customLabels)
+                @foreach ($customLabels as $customLabel)
+                    <span class="shadcn-badge" style="background-color: {{ $customLabel->background_color }}; color: {{ $customLabel->text_color }};">
+                        {{ $customLabel->text }}
+                    </span>
+                @endforeach
             @endif
         </div>
 
         @if ($product->auction_product == 0)
-            <div class="kystore-product-actions">
-                <button type="button" onclick="addToWishList({{ $product->id }})"
-                    aria-label="{{ translate('Add to wishlist') }}" data-toggle="tooltip"
-                    data-title="{{ translate('Add to wishlist') }}">
-                    <i class="las la-heart"></i>
-                </button>
-                <button type="button" onclick="addToCompare({{ $product->id }})"
-                    aria-label="{{ translate('Add to compare') }}" data-toggle="tooltip"
-                    data-title="{{ translate('Add to compare') }}">
-                    <i class="las la-random"></i>
-                </button>
+            <!-- Actions Overlay (Top Right) -->
+            <div class="shadcn-actions-wrap">
+                <!-- Wishlist Icon -->
+                <a href="javascript:void(0)" class="shadcn-action-btn" onclick="addToWishList({{ $product->id }})"
+                    data-toggle="tooltip" data-title="{{ translate('Add to wishlist') }}" data-placement="left">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                    </svg>
+                </a>
+
+                <!-- Compare Icon -->
+                <a href="javascript:void(0)" class="shadcn-action-btn" onclick="addToCompare({{ $product->id }})"
+                    data-toggle="tooltip" data-title="{{ translate('Add to compare') }}" data-placement="left">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 3h5v5"/>
+                        <path d="M8 21H3v-5"/>
+                        <path d="M21 3 14 10"/>
+                        <path d="M3 21l7-7"/>
+                    </svg>
+                </a>
             </div>
         @endif
     </div>
 
-    <div class="kystore-product-content">
-        <div class="kystore-product-rating">
-            {!! renderStarRating($product->rating) !!}
-        </div>
-        <h3>
-            <a href="{{ $productUrl }}" title="{{ $product->getTranslation('name') }}">
-                {{ $product->getTranslation('name') }}
-            </a>
-        </h3>
+    <!-- Card Content -->
+    <div class="shadcn-card-body">
+        <div>
+            <!-- Product Title -->
+            <h3 class="shadcn-product-title">
+                <a href="{{ $product_url }}" title="{{ $product->getTranslation('name') }}">
+                    {{ $product->getTranslation('name') }}
+                </a>
+            </h3>
 
-        <div class="kystore-product-footer">
-            <div class="kystore-product-price">
+            <!-- Pricing -->
+            <div class="shadcn-price-container">
                 @if ($product->auction_product == 0)
-                    <strong>{{ home_discounted_base_price($product) }}</strong>
                     @if (home_base_price($product) != home_discounted_base_price($product))
-                        <del>{{ home_base_price($product) }}</del>
+                        <span class="shadcn-price-old">{{ home_base_price($product) }}</span>
                     @endif
+                    <span class="shadcn-price-current">{{ home_discounted_base_price($product) }}</span>
                 @else
-                    <small>{{ translate('Starting bid') }}</small>
-                    <strong>{{ single_price($product->starting_bid) }}</strong>
+                    <span class="shadcn-price-current">{{ single_price($product->starting_bid) }}</span>
                 @endif
             </div>
+        </div>
 
+        <!-- Action Button (Add to Cart / Option / Bid) -->
+        <div>
             @if ($product->auction_product == 0)
-                @if ($hasVariants)
-                    <button type="button" class="kystore-add-button"
-                        onclick="showAddToCartRightCanvas({{ $product->id }})"
-                        aria-label="{{ translate('Select options') }}">
+                @php
+                    $colors = is_string($product->colors) ? json_decode($product->colors, true) : $product->colors;
+                    $attributes = is_string($product->attributes) ? json_decode($product->attributes, true) : $product->attributes;
+                @endphp
+
+                @if ( (is_array($colors) && count($colors) > 0) || (is_array($attributes) && count($attributes) > 0) )
+                    <a class="shadcn-cta-btn @if (in_array($product->id, $cart_added)) active @endif"
+                        href="javascript:void(0)" onclick="showAddToCartRightCanvas({{ $product->id }})">
                         <i class="las la-sliders-h"></i>
-                    </button>
+                        <span>{{ translate('Select Option') }}</span>
+                    </a>
                 @else
-                    <button type="button" class="kystore-add-button"
-                        @if (Auth::check() || get_setting('guest_checkout_activation') == 1)
-                            onclick="addToCartSingleProduct({{ $product->id }})"
-                        @else
-                            onclick="showLoginModal()"
-                        @endif
-                        aria-label="{{ translate('Add to Cart') }}">
-                        <i class="las la-plus"></i>
-                    </button>
+                    <a class="shadcn-cta-btn @if (in_array($product->id, $cart_added)) active @endif"
+                        href="javascript:void(0)" @if (Auth::check() || get_Setting('guest_checkout_activation') == 1) onclick="addToCartSingleProduct({{ $product->id }})" @else onclick="showLoginModal()" @endif>
+                        <i class="las la-shopping-cart"></i>
+                        <span>{{ translate('Add to Cart') }}</span>
+                    </a> 
                 @endif
-            @else
-                <a href="{{ $productUrl }}" class="kystore-add-button" aria-label="{{ translate('View product') }}">
-                    <i class="las la-arrow-right"></i>
+            @elseif ($product->auction_product == 1 && $product->auction_start_date <= strtotime('now') && $product->auction_end_date >= strtotime('now'))
+                @php
+                    $carts = get_user_cart();
+                    if (count($carts) > 0) {
+                        $cart_added = $carts->pluck('product_id')->toArray();
+                    }
+                    $highest_bid = $product->bids->max('amount');
+                    $min_bid_amount = $highest_bid != null ? $highest_bid + 1 : $product->starting_bid;
+                    $gst_rate = gst_applicable_product_rate($product->id);
+                @endphp
+                <a class="shadcn-cta-btn @if (in_array($product->id, $cart_added)) active @endif"
+                    href="javascript:void(0)" onclick="bid_single_modal({{ $product->id }}, {{ $min_bid_amount }}, {{ $gst_rate }})">
+                    <i class="las la-gavel"></i>
+                    <span>{{ translate('Place Bid') }}</span>
                 </a>
             @endif
         </div>
     </div>
-</article>
+</div>

@@ -310,7 +310,7 @@
 
 <div class="w-100 px-30px  position-absolute bottom-0 bg-white right-offcavas-footer pt-20px pb-20px border-top border-soft-light" style="box-shadow: none!important;">
     <div class="d-flex flex-wrap flex-md-nowrap align-items-center mb-2">
-        @include('frontend.product_details.partials.action_buttons', ['buttonPadding' => 'py-15px'])
+        @include('frontend.product_details.partials.action_buttons', ['buttonPadding' => 'py-15px', 'detailedProduct' => $product])
     </div>
     <div class="">
         <button type="button" class="out-of-stock fw-600 d-none text-white bg-light bg-soft-white border-0 rounded-1 fs-14 fw-bold hov-opacity-70 has-transition py-15px px-20px w-100" disabled>

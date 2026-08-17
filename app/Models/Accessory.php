@@ -15,6 +15,7 @@ class Accessory extends Model
         'description',
         'price',
         'thumbnail_img',
+        'gallery',
         'status',
         'brand_id',
         'discount',

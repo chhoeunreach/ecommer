@@ -403,6 +403,17 @@
                                     </button>
                                 </div>
                             </div>
+
+                            <div class="form-group mb-2 mt-3">
+                                <label class="col-from-label fs-14 fw-500">{{ translate('3D Model Link (Sketchfab / .glb / .gltf)') }}</label>
+                                <small class="d-block text-muted fs-12 fw-400 mb-2">{{ translate('Paste a direct link to a .glb/.gltf file or a Sketchfab embed URL to show a 3D viewer on the product page.') }}</small>
+                                <div class="row mb-2">
+                                    <div class="col-md-12">
+                                        <input type="text" class="form-control" name="model_3d" value="{{ $product->model_3d }}" placeholder="{{ translate('Paste 3D URL here') }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <!-- Video/Thumbnail -->
                             <div class="row mt-4">
                                 <!-- Video -->
@@ -1615,6 +1626,7 @@
 <script type="text/javascript">
 
     // select main category in related categories
+    var categoryAutoLoadReady = false;
     $(document).ready(function() {
         $('#category_id').on('change', function() {
             let mainCatId = $(this).val();
@@ -1628,17 +1640,56 @@
             }
 
             relatedSelect.selectpicker('refresh');
+
+            if (categoryAutoLoadReady) {
+                autoLoadCategoryAttributes(mainCatId);
+            }
         });
         $('#category_id').trigger('change');
+        categoryAutoLoadReady = true;
         
         show_hide_shipping_div();
         fq_bought_product_selection_type();
+
+        if ($('#customer_choice_options .form-group.row').length > 0) {
+            $('#chose_options_text').removeClass('d-none');
+            $('#customer_choice_options').removeClass('d-none');
+        }
 
         if ($('input[name="colors_active"]').is(':checked')) {
             $('#add_color').removeClass('d-none');
         }
         
     });
+
+    function autoLoadCategoryAttributes(categoryId) {
+        if (!categoryId || typeof $('#choice_attributes').val() === 'undefined') {
+            return;
+        }
+
+        $.post('{{ route('products.get-category-attributes') }}', {
+            _token: AIZ.data.csrf,
+            category_id: categoryId
+        }, function(response) {
+            if (!response.attributes || response.attributes.length === 0) {
+                return;
+            }
+
+            $('#chose_options_text').removeClass('d-none');
+            $('#customer_choice_options').removeClass('d-none');
+
+            var attributeIds = response.attributes.map(function(attribute) {
+                return String(attribute.id);
+            });
+
+            var currentSelection = $('#choice_attributes').val() || [];
+            var merged = currentSelection.concat(attributeIds.filter(function(id) {
+                return currentSelection.indexOf(id) === -1;
+            }));
+
+            $('#choice_attributes').val(merged).trigger('change');
+        });
+    }
 
     $('form').bind('submit', function (e) {
 		if ( $(".action-btn").attr('attempted') == 'true' ) {

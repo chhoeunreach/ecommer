@@ -47,6 +47,7 @@ class AccessoryController extends Controller
         $accessory->description = $request->description;
         $accessory->price = $request->price;
         $accessory->thumbnail_img = $request->thumbnail_img;
+        $accessory->gallery = $request->gallery;
         $accessory->status = $request->has('published') ? 1 : 0;
         
         $accessory->brand_id = $request->brand_id;
@@ -99,6 +100,7 @@ class AccessoryController extends Controller
         $accessory->description = $request->description;
         $accessory->price = $request->price;
         $accessory->thumbnail_img = $request->thumbnail_img;
+        $accessory->gallery = $request->gallery;
         $accessory->status = $request->has('published') ? 1 : 0;
         
         $accessory->brand_id = $request->brand_id;

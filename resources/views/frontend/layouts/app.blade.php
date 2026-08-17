@@ -28,28 +28,30 @@
 
     @if (!isset($detailedProduct) && !isset($customer_product) && !isset($shop) && !isset($page) && !isset($blog))
         @php
-            $meta_image = uploaded_asset(get_setting('meta_image'));
+            $meta_title = get_setting('meta_title') ?: (get_setting('website_name') . (get_setting('site_motto') ? ' | ' . get_setting('site_motto') : ''));
+            $meta_description = get_setting('meta_description') ?: get_setting('website_name');
+            $meta_image_asset = get_setting('meta_image') ? uploaded_asset(get_setting('meta_image')) : uploaded_asset(get_setting('header_logo'));
         @endphp
         <!-- Schema.org markup for Google+ -->
-        <meta itemprop="name" content="{{ get_setting('meta_title') }}">
-        <meta itemprop="description" content="{{ get_setting('meta_description') }}">
-        <meta itemprop="image" content="{{ $meta_image }}">
+        <meta itemprop="name" content="{{ $meta_title }}">
+        <meta itemprop="description" content="{{ $meta_description }}">
+        <meta itemprop="image" content="{{ $meta_image_asset }}">
 
         <!-- Twitter Card data -->
-        <meta name="twitter:card" content="product">
+        <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:site" content="@publisher_handle">
-        <meta name="twitter:title" content="{{ get_setting('meta_title') }}">
-        <meta name="twitter:description" content="{{ get_setting('meta_description') }}">
+        <meta name="twitter:title" content="{{ $meta_title }}">
+        <meta name="twitter:description" content="{{ $meta_description }}">
         <meta name="twitter:creator" content="@author_handle">
-        <meta name="twitter:image" content="{{ $meta_image }}">
+        <meta name="twitter:image" content="{{ $meta_image_asset }}">
 
         <!-- Open Graph data -->
-        <meta property="og:title" content="{{ get_setting('meta_title') }}" />
+        <meta property="og:title" content="{{ $meta_title }}" />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="{{ route('home') }}" />
-        <meta property="og:image" content="{{ $meta_image }}" />
-        <meta property="og:description" content="{{ get_setting('meta_description') }}" />
-        <meta property="og:site_name" content="{{ env('APP_NAME') }}" />
+        <meta property="og:url" content="{{ url()->current() }}" />
+        <meta property="og:image" content="{{ $meta_image_asset }}" />
+        <meta property="og:description" content="{{ $meta_description }}" />
+        <meta property="og:site_name" content="{{ get_setting('website_name') ?: env('APP_NAME') }}" />
         <meta property="fb:app_id" content="{{ env('FACEBOOK_PIXEL_ID') }}">
     @endif
 
@@ -78,7 +80,7 @@
     @if(get_setting('homepage_select') == 'kneayerng_v1')
     <link rel="stylesheet" href="{{ static_asset('assets/css/kneayerng-home.css?v=') }}{{ filemtime(public_path('assets/css/kneayerng-home.css')) }}">
     @endif
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script>
         var AIZ = AIZ || {};
         AIZ.local = {
@@ -476,11 +478,9 @@
         $custom_alerts = App\Models\CustomAlert::where('status', 1)->orderBy('id', $order)->get();
         $hasUnreviewed = false;
         
-        use App\Models\Order;
-        use App\Models\OrderDetail;
         if(auth()->user()){
-        $userOrderIds = Order::where('user_id', auth()->user()->id)->pluck('id');
-        $hasUnreviewed = OrderDetail::whereIn('order_id', $userOrderIds)->where('delivery_status', 'delivered')->where('reviewed', 0)->exists();
+            $userOrderIds = \App\Models\Order::where('user_id', auth()->user()->id)->pluck('id');
+            $hasUnreviewed = \App\Models\OrderDetail::whereIn('order_id', $userOrderIds)->where('delivery_status', 'delivered')->where('reviewed', 0)->exists();
         }
     @endphp
 
@@ -779,6 +779,12 @@
         @foreach (session('flash_notification', collect())->toArray() as $message)
             AIZ.plugins.notify('{{ $message['level'] }}', '{{ $message['message'] }}');
         @endforeach
+
+        @if (isset($errors) && $errors->any())
+            @foreach ($errors->all() as $error)
+                AIZ.plugins.notify('danger', '{{ $error }}');
+            @endforeach
+        @endif
     </script>
 
     <script>
@@ -1578,10 +1584,9 @@
 
 
     <script type="text/javascript">
-        if ($('input[name=country_code]').length > 0){
+        if ($('input[name=country_code]').length > 0 && document.querySelector("#phone-code")){
             // Country Code
-            var isPhoneShown = true,
-                countryData = window.intlTelInputGlobals.getCountryData(),
+            var countryData = window.intlTelInputGlobals.getCountryData(),
                 input = document.querySelector("#phone-code");
 
             for (var i = 0; i < countryData.length; i++) {
@@ -1612,22 +1617,6 @@
                 $('input[name=country_code]').val(country.dialCode);
 
             });
-
-            function toggleEmailPhone(el) {
-                if (isPhoneShown) {
-                    $('.phone-form-group').addClass('d-none');
-                    $('.email-form-group').removeClass('d-none');
-                    $('input[name=phone]').val(null);
-                    isPhoneShown = false;
-                    $(el).html('*{{ translate('Use Phone Number Instead') }}');
-                } else {
-                    $('.phone-form-group').removeClass('d-none');
-                    $('.email-form-group').addClass('d-none');
-                    $('input[name=email]').val(null);
-                    isPhoneShown = true;
-                    $(el).html('<i>*{{ translate('Use Email Instead') }}</i>');
-                }
-            }
         }
     </script>
 
@@ -1818,8 +1807,56 @@
             }
         });
     });
+
+    function contactSalesOnTelegram(button) {
+        if (!button) return true;
+        var form = document.getElementById('option-choice-form');
+        var selectedValue = function (name) {
+            if (!form) return '';
+            var input = form.querySelector('input[name="' + name + '"]:checked');
+            return input ? String(input.value).trim() : '';
+        };
+        var textValue = function (selector) {
+            var element = document.querySelector(selector);
+            return element ? element.textContent.trim() : '';
+        };
+        var addDetail = function (lines, label, value) {
+            if (value) lines.push(label + ': ' + value);
+        };
+
+        var productName = button.dataset.productName || (document.title ? document.title.split(' | ')[0] : '');
+        var productUrl = button.dataset.productUrl || window.location.href.split('#')[0];
+
+        var lines = [
+            @json('សួស្តី! ខ្ញុំចង់សាកសួរព័ត៌មានបន្ថែមអំពីផលិតផលខាងក្រោម៖'),
+            '',
+            @json('ឈ្មោះផលិតផល') + ': ' + productName
+        ];
+
+        addDetail(lines, @json('ពណ៌'), selectedValue('color'));
+        addDetail(lines, @json('ទំហំផ្ទុក'), selectedValue('storage') || textValue('#variant_storage'));
+        addDetail(lines, @json('លេខកូដ'), selectedValue('code') || textValue('#variant_code'));
+        addDetail(lines, @json('ប្រទេស'), selectedValue('country') || textValue('#variant_country'));
+        addDetail(lines, @json('ស្ថានភាព'), selectedValue('condition') || textValue('#variant_condition'));
+        addDetail(lines, 'SKU', textValue('#variant_sku'));
+        addDetail(lines, @json('ចំនួន'), form ? (form.querySelector('input[name="quantity"]') || {}).value : '1');
+        addDetail(lines, @json('តម្លៃ'), textValue('#chosen_price') || textValue('.shadcn-price-current'));
+        addDetail(lines, @json('តំណភ្ជាប់ផលិតផល'), productUrl);
+        lines.push('', @json('សូមជួយផ្តល់ព័ត៌មានបន្ថែមផង។ អរគុណ!'));
+
+        try {
+            var baseUrl = button.dataset.telegramUrl || button.getAttribute('href') || 'https://t.me/';
+            var telegramUrl = new URL(baseUrl, window.location.origin);
+            telegramUrl.searchParams.set('text', lines.join('\n'));
+            window.open(telegramUrl.toString(), button.target || '_blank');
+            return false;
+        } catch (e) {
+            return true;
+        }
+    }
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     @yield('script')
 
     @php

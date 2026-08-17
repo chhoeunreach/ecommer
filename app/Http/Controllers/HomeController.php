@@ -247,10 +247,15 @@ class HomeController extends Controller
     public function cart_login(Request $request)
     {
         $user = null;
-        if ($request->get('phone') != null) {
-            $user = User::whereIn('user_type', ['customer', 'seller'])->where('phone', "+{$request['country_code']}{$request['phone']}")->first();
-        } elseif ($request->get('email') != null) {
-            $user = User::whereIn('user_type', ['customer', 'seller'])->where('email', $request->email)->first();
+        $identifier = $request->get('phone') ?? $request->get('email');
+
+        if ($identifier != null && filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+            $user = User::whereIn('user_type', ['customer', 'seller'])->where('email', $identifier)->first();
+        } else {
+            $digits = preg_replace('/\D+/', '', $identifier ?? '');
+            if (strlen($digits) > 0) {
+                $user = User::whereIn('user_type', ['customer', 'seller'])->where('phone', 'like', '%'.$digits)->first();
+            }
         }
 
         if ($user != null) {
@@ -1140,10 +1145,13 @@ class HomeController extends Controller
             ],
         ]);
 
-        $email = $request->email ?? null;
-        $phone = $request->phone != null ? '+' . $request->country_code . preg_replace('/\D+/', '', $request->phone) : null;
+        $identifier = $request->get('phone') ?? $request->email;
+        $isEmail = $identifier != null && filter_var($identifier, FILTER_VALIDATE_EMAIL);
+        $email = $isEmail ? $identifier : null;
+        $digits = preg_replace('/\D+/', '', $identifier ?? '');
+        $phone = $isEmail ? null : '+'.preg_replace('/\D+/', '', $request->country_code).$digits;
 
-        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if ($isEmail) {
             if (User::where('email', $email)->first() != null) {                
                 return response()->json(['status' => 0, 'message' => translate('Email already exists.')]);
             }
@@ -1211,11 +1219,14 @@ class HomeController extends Controller
 
     public function regVerifyCodeConfirmation(Request $request)
     {
-        $email = isset($request->email) ? $request->email : null;
-         $phone = $request->phone != null ? '+' . $request->country_code . $request->phone : null;
+        $identifier = $request->get('phone') ?? $request->email;
+        $isEmail = $identifier != null && filter_var($identifier, FILTER_VALIDATE_EMAIL);
+        $email = $isEmail ? $identifier : null;
+        $digits = preg_replace('/\D+/', '', $identifier ?? '');
+        $phone = $isEmail ? null : '+'.preg_replace('/\D+/', '', $request->country_code).$digits;
 
         $customerVerification = RegistrationVerificationCode::where('code', $request->verification_code);
-        $customerVerification = $request->email != null ?
+        $customerVerification = $isEmail ?
             $customerVerification->where('email', $email) :
             $customerVerification->where('phone', $phone);
         $customerVerification = $customerVerification->first();

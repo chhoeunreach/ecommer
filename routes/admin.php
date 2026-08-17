@@ -246,6 +246,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::post('/products/sku_combination_edit', 'sku_combination_edit')->name('products.sku_combination_edit');
         Route::post('/products/add-more-choice-option', 'add_more_choice_option')->name('products.add-more-choice-option');
         Route::post('/products/add-new-attribute-value', 'add_new_attribute_value')->name('products.add-new-attribute-value');
+        Route::post('/products/get-category-attributes', 'getCategoryAttributes')->name('products.get-category-attributes');
+        Route::get('/products/category-attribute-settings', 'categoryAttributeSettings')->name('products.category-attribute-settings');
+        Route::post('/products/category-attribute-settings/update', 'updateCategoryAttributes')->name('products.category-attribute-settings.update');
         Route::post('/product-search', 'product_search')->name('product.search');
         Route::post('/get-selected-products', 'get_selected_products')->name('get-selected-products');
         Route::post('/set-product-discount', 'setProductDiscount')->name('set_product_discount');

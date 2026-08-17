@@ -49,13 +49,32 @@
             <div class="row">
                 <!-- Image -->
                 <div class="col-xl-5 col-lg-6 mb-4">
+                    @php
+                        $gallery_ids = [];
+                        if ($accessory->gallery != null) {
+                            $gallery_ids = explode(',', $accessory->gallery);
+                            $gallery_ids = array_filter(array_map('trim', $gallery_ids));
+                        }
+                        $all_images = array_merge([$accessory->thumbnail_img], $gallery_ids);
+                        $all_images = array_filter($all_images);
+                    @endphp
                     <div class="position-relative overflow-hidden rounded img-aspect-ratio-1-1">
-                        @if ($accessory->thumbnail_img != null)
-                            <img src="{{ uploaded_asset($accessory->thumbnail_img) }}" alt="{{ $accessory->name }}" class="w-100 h-100 object-fit-cover">
+                        @if (count($all_images) > 0)
+                            <img src="{{ uploaded_asset($all_images[0]) }}" alt="{{ $accessory->name }}" class="w-100 h-100 object-fit-cover" id="accessory-main-img">
                         @else
                             <img src="{{ static_asset('assets/img/placeholder.jpg') }}" alt="{{ $accessory->name }}" class="w-100 h-100 object-fit-cover">
                         @endif
                     </div>
+                    @if (count($all_images) > 1)
+                        <div class="d-flex flex-wrap mt-3" style="gap: 8px;">
+                            @foreach ($all_images as $key => $img_id)
+                                <div class="border rounded overflow-hidden {{ $key == 0 ? 'border-primary' : '' }}" style="width: 60px; height: 60px; cursor: pointer;" onclick="showAccessoryImage({{ $loop->index }})">
+                                    <img src="{{ uploaded_asset($img_id) }}" alt="{{ $accessory->name }}" class="w-100 h-100 object-fit-cover">
+                                </div>
+                            @endforeach
+                        </div>
+                        <input type="hidden" id="accessory-all-images" value="{{ json_encode(array_map(function($id) { return uploaded_asset($id); }, array_values($all_images))) }}">
+                    @endif
                 </div>
 
                 <!-- Details -->
@@ -148,4 +167,21 @@
     </div>
 </div>
 
+@endsection
+
+@section('script')
+<script>
+    var accessoryImages = [];
+
+    function showAccessoryImage(index) {
+        if (accessoryImages.length === 0 && $('#accessory-all-images').length) {
+            accessoryImages = JSON.parse($('#accessory-all-images').val());
+        }
+        if (accessoryImages.length > index) {
+            $('#accessory-main-img').attr('src', accessoryImages[index]);
+            $('#accessory-all-images').parent().find('.border').removeClass('border-primary');
+            $('#accessory-all-images').parent().find('.border').eq(index).addClass('border-primary');
+        }
+    }
+</script>
 @endsection
