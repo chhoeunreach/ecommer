@@ -8,11 +8,17 @@
                     <div class="shadcn-auth-card">
                         <!-- Header -->
                         <div class="shadcn-auth-header">
-                            @if(get_setting('site_icon') != null)
-                                <div class="size-48px mb-3">
-                                    <img src="{{ uploaded_asset(get_setting('site_icon')) }}" alt="{{ translate('Site Icon')}}" class="img-fit h-100">
-                                </div>
-                            @endif
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <a href="{{ route('home') }}" class="shadcn-back-home-link">
+                                    <i class="las la-arrow-left fs-14"></i>
+                                    <span>{{ translate('Back to Home') }}</span>
+                                </a>
+                                @if(get_setting('site_icon') != null)
+                                    <a href="{{ route('home') }}" class="size-40px d-inline-block">
+                                        <img src="{{ uploaded_asset(get_setting('site_icon')) }}" alt="{{ translate('Site Icon')}}" class="img-fit h-100">
+                                    </a>
+                                @endif
+                            </div>
                             <h1 class="shadcn-auth-title">{{ translate('Create an Account') }}</h1>
                             <p class="shadcn-auth-subtitle">{{ translate('Enter your information to create your account') }}</p>
                         </div>
