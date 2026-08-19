@@ -63,8 +63,8 @@
                                 <div class="row gutters-5">
                                     <div class="col-md-12">
                                         <div class="form-group mb-3">
-                                            <label class="col-from-label fs-14 fw-500">{{translate('Price')}} <span class="text-danger">*</span></label>
-                                            <input type="number" min="0" step="0.01" placeholder="{{translate('Price')}}" name="price" class="form-control" required>
+                                            <label class="col-from-label fs-14 fw-500">{{translate('Price')}}</label>
+                                            <input type="number" min="0" step="0.01" placeholder="{{translate('Price')}}" name="price" class="form-control">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -178,7 +178,7 @@
                             <div class="bg-white border-radius-10px px-3 px-lg-4 py-3 py-lg-4">
                                 <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{translate('Accessory Image')}}</h5>
                                 <div class="form-group mb-3">
-                                    <label class="col-from-label fs-14 fw-500">{{translate('Thumbnail Image')}}</label>
+                                    <label class="col-from-label fs-14 fw-500">{{translate('Thumbnail Image')}} <span class="text-danger">*</span></label>
                                     <div class="input-group" data-toggle="aizuploader" data-type="image">
                                         <div class="input-group-prepend">
                                             <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>

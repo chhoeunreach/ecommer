@@ -38,18 +38,19 @@ class AccessoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'thumbnail_img' => 'required',
+            'price' => 'nullable|numeric|min:0',
         ]);
 
         $accessory = new Accessory;
         $accessory->name = $request->name;
         $accessory->slug = Str::slug($request->name) . '-' . Str::random(5);
         $accessory->description = $request->description;
-        $accessory->price = $request->price;
+        $accessory->price = $request->price ?? 0;
         $accessory->thumbnail_img = $request->thumbnail_img;
         $accessory->gallery = $request->gallery;
         $accessory->status = $request->has('published') ? 1 : 0;
-        
+
         $accessory->brand_id = $request->brand_id;
         $accessory->has_warranty = $request->has('has_warranty') ? 1 : 0;
         if($accessory->has_warranty){
@@ -92,17 +93,18 @@ class AccessoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'thumbnail_img' => 'required',
+            'price' => 'nullable|numeric|min:0',
         ]);
 
         $accessory = Accessory::findOrFail($id);
         $accessory->name = $request->name;
         $accessory->description = $request->description;
-        $accessory->price = $request->price;
+        $accessory->price = $request->price ?? 0;
         $accessory->thumbnail_img = $request->thumbnail_img;
         $accessory->gallery = $request->gallery;
         $accessory->status = $request->has('published') ? 1 : 0;
-        
+
         $accessory->brand_id = $request->brand_id;
         $accessory->has_warranty = $request->has('has_warranty') ? 1 : 0;
         if($accessory->has_warranty){

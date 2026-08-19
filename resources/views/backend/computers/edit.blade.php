@@ -69,13 +69,8 @@
                                 <div class="mb-3 pb-1 d-flex align-items-center justify-content-between border-bottom-dashed">
                                     <h5 class="fs-16 fw-700">{{translate('Price & Discount')}}</h5>
                                 </div>
+                                <input type="hidden" name="price" value="{{ $computer->price }}">
                                 <div class="row gutters-5">
-                                    <div class="col-md-12">
-                                        <div class="form-group mb-3">
-                                            <label class="col-from-label fs-14 fw-500">{{translate('Price')}} <span class="text-danger">*</span></label>
-                                            <input type="number" min="0" step="0.01" placeholder="{{translate('Price')}}" name="price" class="form-control" value="{{ $computer->price }}" required>
-                                        </div>
-                                    </div>
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
                                             <label class="col-from-label fs-14 fw-500">{{translate('Discount')}}</label>

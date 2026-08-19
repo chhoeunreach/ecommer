@@ -87,7 +87,7 @@ class ComputerStockService
             $stock->computer_id = $computer->id;
             $stock->variant = null;
             $stock->sku = $collection['sku'] ?? null;
-            $stock->price = $collection['price'];
+            $stock->price = $collection->get('price') ?? 0;
             $stock->qty = $collection['current_stock'] ?? 0;
             $stock->save();
         }

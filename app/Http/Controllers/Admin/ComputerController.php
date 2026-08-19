@@ -73,14 +73,14 @@ class ComputerController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'price' => 'nullable|numeric|min:0',
         ]);
 
         $computer = new Computer;
         $computer->name = $request->name;
         $computer->slug = Str::slug($request->name) . '-' . Str::random(5);
         $computer->description = $request->description;
-        $computer->price = $request->price;
+        $computer->price = $request->price ?? 0;
         $computer->thumbnail_img = $request->thumbnail_img;
         $computer->gallery = $request->gallery;
         $computer->status = $request->has('published') ? 1 : 0;
@@ -135,13 +135,13 @@ class ComputerController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'price' => 'nullable|numeric|min:0',
         ]);
 
         $computer = Computer::findOrFail($id);
         $computer->name = $request->name;
         $computer->description = $request->description;
-        $computer->price = $request->price;
+        $computer->price = $request->price ?? 0;
         $computer->thumbnail_img = $request->thumbnail_img;
         $computer->gallery = $request->gallery;
         $computer->status = $request->has('published') ? 1 : 0;
