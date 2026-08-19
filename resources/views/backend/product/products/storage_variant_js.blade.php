@@ -1,10 +1,33 @@
+// Row-based variant tables (Computers create/edit) delete a whole <tr>.
 function deleteProductVariant(element) {
-    var $row = $(element).closest('.variant');
-    var colorCode = String($row.data('color-code') || '');
+    $(element).closest('tr.variant').remove();
+}
+
+function deleteProductVariantColumn(element) {
+    var $col = $(element).closest('th');
+    var classes = $col.attr('class').split(' ');
+    var colClass = '';
+    for(var i=0; i<classes.length; i++) {
+        if(classes[i].indexOf('variant-column-') === 0) {
+            colClass = classes[i];
+            break;
+        }
+    }
+    
+    var $card = $col.closest('.variant-card');
+    var fieldKey = $card.data('field-key');
+    var $siblings = $card.find('th[class*="variant-column-"]');
+
+    if ($siblings.length > 1) {
+        $card.find('.' + colClass).remove();
+        return;
+    }
+
+    var colorCode = String($card.data('color-code') || '');
     var $colors = $('#colors');
 
     if (!colorCode || !$colors.length) {
-        $row.remove();
+        $card.remove();
         return;
     }
 
@@ -16,6 +39,36 @@ function deleteProductVariant(element) {
     $colors.selectpicker('refresh');
     $colors.trigger('change');
 }
+
+// When a Storage multi-select on a variant row ends up with more than one value
+// picked, split it into one row per storage value so each can carry its own
+// Country/Condition/Code/Quantity/Price instead of merging them into one row.
+$(document)
+    .off('change.productStorageSplit', '.variant-cards-container select[name^="storage_"]')
+    .on('change.productStorageSplit', '.variant-cards-container select[name^="storage_"]', function () {
+        var $select = $(this);
+        var $card = $select.closest('.variant-card');
+        var fieldKey = $card.data('field-key');
+        var values = ($select.val() || []).slice();
+
+        if (!fieldKey || values.length <= 1) {
+            return;
+        }
+
+        var firstValue = values.shift();
+        $select.val([firstValue]).trigger('change');
+
+        var existingCount = $card.find('th[class*="variant-column-"]').length;
+        var $pending = $('#pending_storage_rows').empty();
+
+        values.forEach(function (storageValue, idx) {
+            var newRowKey = fieldKey + '_s' + (existingCount + idx + 1);
+            $('<input>', {type: 'hidden', name: 'storage_rows_' + fieldKey + '[]', value: newRowKey}).appendTo($pending);
+            $('<input>', {type: 'hidden', name: 'storage_' + newRowKey + '[]', value: storageValue}).appendTo($pending);
+        });
+
+        update_sku();
+    });
 
 function refreshProductColorActions() {
     var isActive = $('input[name="colors_active"]').is(':checked');

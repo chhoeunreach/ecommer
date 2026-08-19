@@ -23,11 +23,15 @@ class ProductUtility
         if (isset($collection['choice_no']) && $collection['choice_no']) {
             foreach ($collection['choice_no'] as $key => $no) {
                 $name = 'choice_options_' . $no;
-                $data = array();
-                foreach (request()[$name] as $key => $eachValue) {
-                    array_push($data, $eachValue);
+                $data = request()->input($name, []);
+                // An attribute row with no values picked yet must be skipped rather than
+                // pushed as an empty dimension — the cartesian product in
+                // CombinationService::generate_combination() treats any empty dimension as
+                // "no combinations at all", which would wipe out every existing color/variant
+                // combo as soon as an attribute is added but before its values are chosen.
+                if (count($data) > 0) {
+                    array_push($options, $data);
                 }
-                array_push($options, $data);
             }
         }
 

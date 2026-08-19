@@ -1,19 +1,26 @@
-@extends('seller.layouts.app')
+@extends('backend.layouts.app')
 
-@section('panel_content')
+@section('content')
+    @php
+        CoreComponentRepository::instantiateShopRepository();
+        CoreComponentRepository::initializeCache();
+    @endphp
+
     <div class="page-content">
         <div class="aiz-titlebar text-left mt-2 pb-2 px-3 px-md-2rem">
             <div class="row align-items-center">
                 <div class="col">
-                    <h1 class="h3">{{ translate('Add New Product') }}</h1>
+                    <h1 class="h3 fw-700">{{ translate('Add New Product') }}</h1>
                 </div>
                 <div class="col text-right">
                     <a class="btn btn-xs btn-soft-primary" href="javascript:void(0);" onclick="clearTempdata()">
                         {{ translate('Clear Tempdata') }}
                     </a>
+                    @can('product_duplicate')
                     <a class="btn btn-xs btn-soft-warning " href="javascript:void(0);" onclick="showProductSelectModal()">
                         {{ translate('Import Product') }}
                     </a>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -22,13 +29,10 @@
             <!-- Data type -->
             <input type="hidden" id="data_type" value="physical">
 
-            <form class="" action="{{ route('seller.products.store') }}" method="POST" enctype="multipart/form-data" id="aizSubmitForm">
+            <form action="{{route('products.store')}}" method="POST" enctype="multipart/form-data" id="aizSubmitForm">
                 @csrf
                 <div class="row">
                     <div class="col-xl-8">
-                        <input type="hidden" name="added_by" value="seller">
-
-
                         <!-- Product Basic Information Start -->
                         <div class="border border-gray-300 rounded-2" id="basic-information">
                             <div class="bg-white border-radius-10px px-3 px-lg-4 py-3 py-lg-4">
@@ -36,11 +40,11 @@
                                 <div class="mb-3 pb-1 d-flex align-items-center justify-content-between border-bottom-dashed">
                                     <h5 class="fs-16 fw-700">{{translate('Product Basic Information')}}</h5>
                                     @if (get_setting('ai_activation') == 1)
-                                        <a href="javascript:void(0)" class="d-flex align-items-center bg-transparent border-0" onclick="generateWithAI('basic-information')">
-                                            <img src="{{ static_asset('assets/img/generate-icon.svg') }}" class="w-20px h-20px"
-                                                alt="generate Icon">
-                                            <h5 class="fs-16 fw-700 mb-0 ml-2" id="basic-information-generate">{{translate('Generate')}}</h5>
-                                        </a>
+                                    <a href="javascript:void(0)" class="d-flex align-items-center bg-transparent border-0" onclick="generateWithAI('basic-information')">
+                                        <img src="{{ static_asset('assets/img/generate-icon.svg') }}" class="w-20px h-20px"
+                                            alt="generate Icon">
+                                        <h5 class="fs-16 fw-700 mb-0 ml-2" id="basic-information-generate">{{translate('Generate')}}</h5>
+                                    </a>
                                     @endif
                                 </div>
 
@@ -101,6 +105,14 @@
                                                     renderSingleCategoryOptions($categories, $selectedCategoryId);
                                                 @endphp
                                             </select>
+                                            @can('add_product_category')
+                                                <div class="mt-1">
+                                                    <a href="#" id="add_category" class=" text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                                        <span> {{translate('New Catgeory') }}</span>
+                                                    </a>
+                                                </div>
+                                            @endcan
                                         </div>
                                     </div>
                                     <!-- Brand -->
@@ -115,6 +127,14 @@
                                                     <option value="{{ $brand->id }}" >{{ $brand->getTranslation('name') }}</option>
                                                 @endforeach
                                             </select>
+                                            @can('add_brand')
+                                                <div class="mt-1">
+                                                    <a href="#" id="add_brand" class=" text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                                        <span> {{translate('New Brand') }}</span>
+                                                    </a>
+                                                </div>
+                                            @endcan
                                         </div>
                                     </div>
 
@@ -135,17 +155,27 @@
                         </div>
                         <!-- Product Basic Information End -->
 
+
                         <!-- Product Configuration Start -->
                         <div class="border border-gray-300 rounded-2 mt-4" id="product-configuration">
                             <div class="bg-white border-radius-10px px-3 px-lg-4 py-3 py-lg-4" >
                                 <div class="mb-3 pb-1 d-flex align-items-center justify-content-between border-bottom-dashed">
-                                    <h5 class="fs-16 fw-700" >{{translate('Product Configuration')}}</h5>
+                                    <div class="d-flex align-items-center">
+                                        <h5 class="fs-16 fw-700 mb-0" >{{translate('Product Configuration')}}</h5>
+                                        <div class="ml-4 d-flex align-items-center">
+                                            <span class="fs-14 fw-600 mr-2 status-label text-success">{{ translate('Active') }}</span>
+                                            <label class="aiz-switch aiz-switch-blue mb-0">
+                                                <input value="1" type="checkbox" name="published" checked onchange="updateStatusLabel(this)">
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    </div>
                                     @if (get_setting('ai_activation') == 1)
-                                        <a href="javascript:void(0)" class="d-flex align-items-center bg-transparent border-0">
-                                            <img src="{{ static_asset('assets/img/generate-icon.svg') }}" class="w-20px h-20px"
-                                                alt="generate Icon">
-                                            <h5 class="fs-16 fw-700 mb-0 ml-2" id="product-configuration-generate" onclick="generateWithAI('product-configuration')">{{translate('Generate')}}</h5>
-                                        </a>
+                                    <a href="javascript:void(0)" class="d-flex align-items-center bg-transparent border-0">
+                                        <img src="{{ static_asset('assets/img/generate-icon.svg') }}" class="w-20px h-20px"
+                                            alt="generate Icon">
+                                        <h5 class="fs-16 fw-700 mb-0 ml-2" id="product-configuration-generate" onclick="generateWithAI('product-configuration')">{{translate('Generate')}}</h5>
+                                    </a>
                                     @endif
                                 </div>
                                 <div class="row gutters-5">
@@ -175,6 +205,14 @@
                                                     <option value="{{ $unit->id }}" >{{ $unit->name }}</option>
                                                 @endforeach
                                             </select>
+                                            @can('add_unit')
+                                                <div class="mt-1">
+                                                    <a href="#" id="add_unit" class=" text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                                        <span> {{translate('New Unit') }}</span>
+                                                    </a>
+                                                </div>
+                                            @endcan
                                         </div>
                                     </div>
 
@@ -198,28 +236,26 @@
                                     </div>
 
                                     <!-- Barcode -->
-                                    @if (addon_is_activated('pos_system'))
-                                        <div class="col-12">
-                                            <div class="form-group mb-2 mb-lg-3">
-                                                <label for="barcode"
-                                                    class="col-from-label fs-14 fw-500">{{ translate('Barcode') }}</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" id="barcode" name="barcode"
-                                                        value="">
-                                                    <div class="input-group-prepend">
-                                                        <button type="button" id="generateBarcodeBtn"
-                                                            class="bg-dark text-white fs-14 fw-400 border-0 rounded-right px-3 w-100px" onclick="generateBarCode()">{{ translate('Generate') }}</button>
-                                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group mb-2 mb-lg-3">
+                                            <label for="barcode"
+                                                class="col-from-label fs-14 fw-500">{{ translate('Barcode') }}</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="barcode" name="barcode"
+                                                    value="">
+                                                <div class="input-group-prepend">
+                                                    <button type="button" id="generateBarcodeBtn"
+                                                        class="bg-gray text-white fs-14 fw-400 border-0 rounded-right px-3 w-100px" onclick="generateBarCode()">{{ translate('Generate') }}</button>
                                                 </div>
                                             </div>
                                         </div>
-                                    @endif
+                                    </div>
 
                                 </div>
                             </div>
                         </div>
-                        <!-- Product Configuration End -->   
-                        
+                        <!-- Product Configuration End -->
+
 
                         <!-- Files & Media Start -->
                         <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
@@ -260,6 +296,8 @@
                                             <span class="pb-2 d-block">
                                                 <span
                                                     class="fs-12 fw-400 text-gray pr-3">{{ translate('800px X 800px ') }}</span>
+                                                {{--<a href="#" class="fs-12 fw-400 text-blue text-decoration-underline">
+                                                    {{ translate('View Guidelines') }}</a>--}}
                                             </span>
                                         </label>
 
@@ -314,6 +352,17 @@
                                     </button>
                                 </div>
                             </div>
+
+                            <div class="form-group mb-2 mt-3">
+                                <label class="col-from-label fs-14 fw-500">{{ translate('3D Model Link (Sketchfab / .glb / .gltf)') }}</label>
+                                <small class="d-block text-muted fs-12 fw-400 mb-2">{{ translate('Paste a direct link to a .glb/.gltf file or a Sketchfab embed URL to show a 3D viewer on the product page.') }}</small>
+                                <div class="row mb-2">
+                                    <div class="col-md-12">
+                                        <input type="text" class="form-control" name="model_3d" value="" placeholder="{{ translate('Paste 3D URL here') }}">
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Video/Thumbnail -->
                             <div class="row mt-4">
                                 <!-- Video -->
@@ -386,11 +435,11 @@
                                 <div class="mb-3 pb-1 d-flex align-items-center justify-content-between border-bottom-dashed">
                                     <h5 class="fs-16 fw-700">{{translate('Product Description') }}</h5>
                                     @if (get_setting('ai_activation') == 1)
-                                        <a href="javascript:void(0)" onclick="generateWithAI('product-description')" class="d-flex align-items-center bg-transparent border-0">
-                                            <img src="{{ static_asset('assets/img/generate-icon.svg') }}" class="w-20px h-20px"
-                                                alt="generate Icon">
-                                            <h5 class="fs-16 fw-700 text-blue mb-0 ml-2" id="product-description-generate">{{translate('Generate')}}</h5>
-                                        </a>
+                                    <a href="javascript:void(0)" onclick="generateWithAI('product-description')" class="d-flex align-items-center bg-transparent border-0">
+                                        <img src="{{ static_asset('assets/img/generate-icon.svg') }}" class="w-20px h-20px"
+                                            alt="generate Icon">
+                                        <h5 class="fs-16 fw-700 text-blue mb-0 ml-2" id="product-description-generate">{{translate('Generate')}}</h5>
+                                    </a>
                                     @endif
                                 </div>
                                 <div class="">
@@ -407,11 +456,11 @@
                                 <div class="mb-3 pb-1 d-flex align-items-center justify-content-between border-bottom-dashed">
                                     <h5 class="fs-16 fw-700">{{translate('SEO Meta Tags')}}</h5>
                                     @if (get_setting('ai_activation') == 1)
-                                        <a href="javascript:void(0)" onclick="generateWithAI('product-seo-meta-tag')" class="d-flex align-items-center bg-transparent border-0">
-                                            <img src="{{ static_asset('assets/img/generate-icon.svg') }}" class="w-20px h-20px"
-                                                alt="generate Icon">
-                                            <h5 class="fs-16 fw-700 text-blue mb-0 ml-2" id="product-seo-meta-tag-generate">{{translate('Generate')}}</h5>
-                                        </a>
+                                    <a href="javascript:void(0)" onclick="generateWithAI('product-seo-meta-tag')" class="d-flex align-items-center bg-transparent border-0">
+                                        <img src="{{ static_asset('assets/img/generate-icon.svg') }}" class="w-20px h-20px"
+                                            alt="generate Icon">
+                                        <h5 class="fs-16 fw-700 text-blue mb-0 ml-2" id="product-seo-meta-tag-generate">{{translate('Generate')}}</h5>
+                                    </a>
                                     @endif
                                 </div>
                                 <div class="row gutters-5">
@@ -468,18 +517,23 @@
                         <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
                             <div class="mb-3 pb-1 d-flex align-items-center justify-content-between border-bottom-dashed">
                                 <h5 class="fs-16 fw-700">{{translate('Product Price & Stock')}}</h5>
+                                {{--<button type="button" class="d-flex align-items-center bg-transparent border-0">
+                                    <img src="{{ static_asset('assets/img/generate-icon.svg') }}" class="w-20px h-20px"
+                                        alt="generate Icon">
+                                    <h5 class="fs-16 fw-700 text-blue mb-0 ml-2">{{translate('Generate')}}</h5>
+                                </button>--}}
                             </div>
                             <!-- Product Variation Configuration -->
                             <h6 class="fs-14 fw-700">{{translate('Product Variation Configuration')}}</h6>
                             <!-- Colors -->
-                            <div class="form-group row gutters-5">
+                            <div class="form-group row gutters-5 mb-0">
                                 <div class="col-md-3">
                                     <input type="text" class="form-control" value="{{translate('Colors')}}" disabled>
                                 </div>
                                 <div class="col-md-8">
                                     <select class="form-control aiz-selectpicker" data-live-search="true" data-selected-text-format="count" name="colors[]" id="colors" multiple disabled>
                                         @foreach (\App\Models\Color::orderBy('name', 'asc')->get() as $key => $color)
-                                        <option  value="{{ $color->code }}" data-content="<span><span class='size-15px d-inline-block mr-2 rounded border' style='background:{{ $color->code }}'></span><span>{{ $color->name }}</span></span>"></option>
+                                        <option value="{{ $color->code }}" data-color-id="{{ $color->id }}" data-content="<span><span class='size-15px d-inline-block mr-2 rounded border' style='background:{{ $color->code }}'></span><span>{{ $color->name }}</span></span>"></option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -490,32 +544,27 @@
                                     </label>
                                 </div>
                             </div>
-                            <!-- Attributes -->
-                            <div class="form-group row gutters-5">
-                                <div class="col-md-3">
-                                    <input type="text" class="form-control" value="{{translate('Attributes')}}" disabled>
+                            @can('add_color')
+                                <div class="mt-1 d-none" id="add_color" >
+                                    <a href="#" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                        <span> {{translate('New Color') }}</span>
+                                    </a>
                                 </div>
-                                <div class="col-md-9">
-                                    <select name="choice_attributes[]" id="choice_attributes" class="form-control aiz-selectpicker" data-selected-text-format="count" data-live-search="true" multiple data-placeholder="{{ translate('Choose Attributes') }}">
-                                        @foreach (\App\Models\Attribute::all() as $key => $attribute)
-                                        <option value="{{ $attribute->id }}">{{ $attribute->getTranslation('name') }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                            @endcan
+                            <div class="product-color-actions d-none mt-2">
+                                <div class="product-color-items"></div>
+                                <small class="d-block text-muted mt-1">{{ translate('Edit a color name or code, or remove that color from this product.') }}</small>
                             </div>
-                            <div id="chose_options_text" class="d-none">
-                                <p>{{ translate('Choose the attributes of this product and then input values of each attribute') }}</p>
-                                <br>
-                            </div>
-                            <!-- choice options -->
-                            <div class="customer_choice_options mb-4" id="customer_choice_options">
-
-                            </div>
-                                
-
-                            <input type="hidden" name="unit_price" value="0">
                             <div class="row gutters-5 mt-3">
-
+                                <!-- Base Price -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-2 mb-lg-3">
+                                        <label for="unit_price" class="col-from-label fs-14 fw-500">{{ translate('Base Price') }}</label>
+                                        <input type="number" min="0" step="0.01" id="unit_price" name="unit_price" class="form-control" value="{{ old('unit_price', 0) }}" placeholder="{{ translate('0.00') }}">
+                                        <small class="d-block text-muted mt-1">{{ translate('Used as the default price for each variant below; you can still override individual variants.') }}</small>
+                                    </div>
+                                </div>
                                 <!-- Discount Date Range -->
                                 <div class="col-md-6 ">
                                     <div class="form-group mb-2 mb-lg-3" id="brand">
@@ -561,7 +610,7 @@
                                                 <input type="text" class="form-control" id="sku" name="sku" value="{{ old('sku') }}" placeholder="{{ translate('Product SKU') }}">
                                                 <div class="input-group-prepend">
                                                     <button type="button" id="generateSKUBtn"
-                                                        class="bg-dark text-white fs-14 fw-400 border-0 rounded-right px-3 w-100px" onclick="generateSKU()" >{{ translate('Generate') }}</button>
+                                                        class="bg-gray text-white fs-14 fw-400 border-0 rounded-right px-3 w-100px" onclick="generateSKU()" >{{ translate('Generate') }}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -591,22 +640,72 @@
                         </div>
                         <!-- Product Price & Stock End -->
 
-                        <!-- Product Variants Start -->
-                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4 mb-4 mb-xl-0" id="variant-div-show-hide" style="display: none;">
-                            <h5 class="fs-16 fw-700">{{ translate('Product Variants') }}</h5>
-                            <!-- sku combination -->
-                            <div class="sku_combination" id="sku_combination">
 
+                    </div>
+
+                    <!--Right Side -->
+                    <div class="col-xl-4">
+
+                        <!-- Product Setting Start -->
+                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4">
+                            <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Product Settings') }}</h5>
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center mt-3 mb-2">
+                                    <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
+                                        <input value="1" type="checkbox" name="featured">
+                                        <span></span>
+                                    </label>
+                                    <span class="fs-14 fw-400 d-block" style="margin-top: -6px">{{ translate('Featured') }}</span>
+                                </div>
+                                <div class="d-flex align-items-center mt-3 mb-2">
+                                    <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
+                                        <input value="1" type="checkbox" name="todays_deal">
+                                        <span></span>
+                                    </label>
+                                    <span class="fs-14 fw-400 d-block" style="margin-top: -6px">{{ translate('Todays Deal') }}</span>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <div class="form-group mb-0">
+                                    <label class="col-from-label fs-16 fw-700">{{ translate('Flash Sale') }}</label>
+                                    <select class="form-control aiz-selectpicker mt-2"  name="flash_deal_id" id="flash_deal">
+                                        <option value="">{{ translate('Choose Flash Title') }}</option>
+                                        @foreach(\App\Models\FlashDeal::where("status", 1)->get() as $flash_deal)
+                                            <option value="{{ $flash_deal->id}}">
+                                                {{ $flash_deal->title }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @can('add_flash_deal')
+                                        <div class="mt-1">
+                                            <a href="#" id="add_flash_sale" class=" text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                                <span> {{translate('New Flash Sale') }}</span>
+                                            </a>
+                                        </div>
+                                    @endcan
+                                </div>
+                                 <!-- Discount -->
+                                <div class="form-group mt-2">
+                                    <label class="col-from-label">{{translate('Discount')}}</label>
+                                    <input type="number" name="flash_discount" value="0" min="0" step="0.01" class="form-control">
+                                </div>
+                                <!-- Discount Type -->
+                                <div class="form-group">
+                                    <label class="col-from-label">{{translate('Discount Type')}}</label>
+                                    <select class="form-control aiz-selectpicker" name="flash_discount_type" id="flash_discount_type">
+                                        <option value="">{{ translate('Choose Discount Type') }}</option>
+                                        <option value="amount">{{translate('Flat')}}</option>
+                                        <option value="percent">{{translate('Percent')}}</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                        
-                    <div class="col-xl-4">
-                        
+                        <!-- Product Setting End -->
 
                         @if (addon_is_activated('refund_request'))
                         <!-- Refund Start -->
-                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4">
+                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
                             <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Refund') }}</h5>
                             <div>
                                 <div class="d-flex align-items-center mt-3 mb-2">
@@ -628,7 +727,7 @@
                                 </div>
                             </div>
                             <div class="mt-4 pt-3 refundable-notes">
-                                <h6 class="fs-14 fw-700 mb-3">{{translate('Notes')}}</h6>
+                                <h6 class="fs-14 fw-700 mb-3">{{translate('Note (Add from preset)')}}</h6>
                                 <input type="hidden" name="refund_note_id" id="refund_note_id">
                                 <div class="aiz-carousel gutters-10" data-items="2" data-xxl-items="2" data-xl-items="2"
                                     data-lg-items="2" data-md-items="2" data-sm-items="2" data-xs-items="2"
@@ -647,7 +746,7 @@
                                     </div>
                                     @endforeach
                                 </div>
-                                @if(get_setting('seller_can_add_note'))
+                                @can('add_note')
                                     <div class="mt-4">
                                         <a href="#" id="add_note" data-note-type="refund"
                                             class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary mt-2 fs-14 rounded-2 d-flex align-items-center justify-content-center"
@@ -656,11 +755,25 @@
                                             <span class="ml-2">{{ translate('Add Refund Note') }}</span>
                                         </a>
                                     </div>
-                                @endif
+                                @endcan
                             </div>
                         </div>
                         <!-- Refund End -->
                         @endif
+
+                        @if(addon_is_activated('club_point'))
+                        <!-- Club Point Start -->
+                        <div class="rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4 club-point-container">
+                            <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{translate('Clubpoint') }}</h5>
+                            <div class="form-group mb-0">
+                                <label
+                                    class="col-from-label fs-14 fw-400">{{ translate('Set Club Point for this product') }}</label>
+                                <input type="number" lang="en" min="0" value="0" step="1" integer-only placeholder="{{ translate('60') }}" name="earn_point" class="form-control">
+                            </div>
+                        </div>
+                        <!-- Club Point End -->
+                        @endif
+
 
                         <!-- Warranty Start -->
                         <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
@@ -681,6 +794,14 @@
                                             <option value="{{ $warranty->id }}" @selected(old('warranty_id') == $warranty->id)>{{ $warranty->getTranslation('text') }}</option>
                                         @endforeach
                                     </select>
+                                    @can('add_product_warranty')
+                                        <div class="mt-1">
+                                            <a href="#" id="add_warranty" class=" text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
+                                                <span> {{translate('New Warranty') }}</span>
+                                            </a>
+                                        </div>
+                                    @endcan
                                 </div>
 
                                 <div class="mt-3">
@@ -692,7 +813,7 @@
                                 </div>
                             </div>
                             <div class="mt-4 pt-3 warranty-notes">
-                                <h6 class="fs-14 fw-700 mb-3">{{translate('Notes')}}</h6>
+                                <h6 class="fs-14 fw-700 mb-3">Notes (Add from Preset)</h6>
 
                                 <input type="hidden" name="warranty_note_id" id="warranty_note_id">
                                 <div class="aiz-carousel gutters-10" data-items="2" data-xxl-items="2" data-xl-items="2"
@@ -713,7 +834,7 @@
                                     @endforeach
                                     
                                 </div>
-                                @if(get_setting('seller_can_add_note'))
+                                @can('add_note')
                                     <div class="mt-4">
                                         <a href="#" id="add_note" data-note-type="warranty"
                                             class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary mt-2 fs-14 rounded-2 d-flex align-items-center justify-content-center"
@@ -722,7 +843,7 @@
                                             <span class="ml-2">{{ translate('Add Warranty Note') }}</span>
                                         </a>
                                     </div>
-                                @endif
+                                @endcan
                             </div>
                         </div>
                         <!-- Warranty End -->
@@ -734,40 +855,42 @@
                             <div>
                                 <h6 class="fs-14 fw-700">{{ translate('Shipping Configuration') }}</h6>
                                 @if (get_setting('shipping_type') == 'product_wise_shipping')
-                                    <div class="d-flex align-items-center mt-3 mb-2">
-                                        <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
-                                            <input type="radio" name="shipping_type" value="free" checked>
-                                            <span></span>
-                                        </label>
-                                        <span class="fs-14 fw-400 d-block" style="margin-top: -6px">{{ translate('Free Shipping') }}</span>
+                                <div class="d-flex align-items-center mt-3 mb-2">
+                                    <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
+                                        <input type="radio" name="shipping_type" value="free" checked>
+                                        <span></span>
+                                    </label>
+                                    <span class="fs-14 fw-400 d-block" style="margin-top: -6px">{{ translate('Free Shipping') }}</span>
+                                </div>
+                                <div class="d-flex align-items-center mt-3 mb-2">
+                                    <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
+                                        <input type="radio" name="shipping_type" value="flat_rate">
+                                        <span></span>
+                                    </label>
+                                    <span class="fs-14 fw-400 d-block" style="margin-top: -6px">{{ translate('Flat Rate') }}</span>
+                                </div>
+                                <!-- Shipping cost -->
+                                <div class="flat_rate_shipping_div" style="display: none">
+                                    <div class="form-group mb-2">
+                                        <label class="col-from-label">{{translate('Shipping cost')}}</label>
+                                        <input type="number" lang="en" min="0" value="0" step="0.01" placeholder="{{ translate('Shipping cost') }}" name="flat_shipping_cost" class="form-control">
                                     </div>
-                                    <div class="d-flex align-items-center mt-3 mb-2">
-                                        <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
-                                            <input type="radio" name="shipping_type" value="flat_rate">
-                                            <span></span>
-                                        </label>
-                                        <span class="fs-14 fw-400 d-block" style="margin-top: -6px">{{ translate('Flat Rate') }}</span>
-                                    </div>
-                                    <!-- Shipping cost -->
-                                    <div class="flat_rate_shipping_div" style="display: none">
-                                        <div class="form-group mb-2">
-                                            <label class="col-from-label">{{translate('Shipping cost')}}</label>
-                                            <input type="number" lang="en" min="0" value="0" step="0.01" placeholder="{{ translate('Shipping cost') }}" name="flat_shipping_cost" class="form-control">
-                                        </div>
-                                    </div>
+                                </div>
 
-                                    <div class="d-flex align-items-center mt-3 mb-2">
-                                        <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
-                                            <input type="checkbox" name="is_quantity_multiplied" value="1">
-                                            <span></span>
-                                        </label>
-                                        <span class="fs-14 fw-400 d-block" style="margin-top: -6px">{{ translate('Is Product Quantity Multiply') }}</span>
-                                    </div>
+                                <div class="d-flex align-items-center mt-3 mb-2">
+                                    <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
+                                        <input type="checkbox" name="is_quantity_multiplied" value="1">
+                                        <span></span>
+                                    </label>
+                                    <span class="fs-14 fw-400 d-block" style="margin-top: -6px">{{ translate('Is Product Quantity Multiply') }}</span>
+                                </div>
                                 @else
-                                    <p>
-                                        {{ translate('Shipping configuration is maintained by Admin.') }}
-                                        
-                                    </p>
+                                <p>
+                                    {{ translate('Product wise shipping cost is disable. Shipping cost is configured from here') }}
+                                    <a href="{{route('shipping_configuration.shipping_method')}}" class="aiz-side-nav-link {{ areActiveRoutes(['shipping_configuration.shipping_method'])}}">
+                                        <span class="aiz-side-nav-text">{{translate('Shipping Method')}}</span>
+                                    </a>
+                                </p>
                                 @endif
                             </div>
 
@@ -823,7 +946,7 @@
                                     @endforeach
                                     
                                 </div>
-                                @if(get_setting('seller_can_add_note'))
+                                @can('add_note')
                                     <div class="mt-4">
                                         <a href="#" id="add_note" data-note-type="shipping"
                                             class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary mt-2 fs-14 rounded-2 d-flex align-items-center justify-content-center"
@@ -832,7 +955,7 @@
                                             <span class="ml-2">{{ translate('Add Shipping Note') }}</span>
                                         </a>
                                     </div>
-                                @endif
+                                @endcan
                             </div>
                         </div>
                         <!-- Shipping End -->
@@ -842,98 +965,103 @@
                         <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
                             <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Cash On Delivery') }}</h5>
                             @if (get_setting('cash_payment') == '1')
-                                <div>
-                                    <div class="d-flex align-items-center mt-3 mb-2">
-                                        <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
-                                            <input type="checkbox" name="cash_on_delivery" value="1">
-                                            <span></span>
-                                        </label>
-                                        <span class="fs-14 fw-400 d-block" style="margin-top: -6px">{{ translate('Cash on delivery available') }}</span>
-                                    </div>
-
-                                    <div class="mt-3">
-                                        <label class="aiz-checkbox mb-0">
-                                            <input type="checkbox" name="show_delivery_notes" value="1" >
-                                            <span class="fs-14 fw-400">{{ translate('Show notes in cash on delivery section') }}</span>
-                                            <span class="aiz-square-check" style="width: 20px; height: 20px;"></span>
-                                        </label>
-                                    </div>
+                            <div>
+                                <div class="d-flex align-items-center mt-3 mb-2">
+                                    <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
+                                        <input type="checkbox" name="cash_on_delivery" value="1">
+                                        <span></span>
+                                    </label>
+                                    <span class="fs-14 fw-400 d-block" style="margin-top: -6px">{{ translate('Cash on delivery available') }}</span>
                                 </div>
-                                <div class="mt-4 pt-3 cash-on-delivery-notes">
-                                    <h6 class="fs-14 fw-700 mb-3">{{ translate('Notes (Add from Preset)') }}</h6>
-                                    <input type="hidden" name="delivery_note_id" id="delivery_note_id">
-                                    <div class="aiz-carousel gutters-10" data-items="2" data-xxl-items="2" data-xl-items="2"
-                                        data-lg-items="2" data-md-items="2" data-sm-items="2" data-xs-items="2"
-                                        data-arrows="false" data-dots="false" data-autoplay="false" data-infinite="true"
-                                        data-center="false">
-                                        @foreach(\App\Models\Note::where("note_type", 'delivery')->orderBy('created_at', 'desc')->get() as $delivery)
-                                        <div class="carousel-box">
-                                            <div class="delivery-notes border border-2 border-gray-300 rounded-2 p-3 overflow-hidden has-transition"
-                                                onclick="selectNote(this, 'delivery_note_id', 'delivery-notes', {{ $delivery->id }})"
-                                                data-note-id="{{ $delivery->id }}">
 
-                                                <p class="fs-14 fw-400 m-0 text-truncate-3">
-                                                    {{ $delivery->getTranslation('description') }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        @endforeach
-                                        
-                                    </div>
-                                    @if(get_setting('seller_can_add_note'))
-                                        <div class="mt-4">
-                                            <a href="#" id="add_note" data-note-type="delivery"
-                                                class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary mt-2 fs-14 rounded-2 d-flex align-items-center justify-content-center"
-                                                onclick="">
-                                                <i class="las la-plus"></i>
-                                                <span class="ml-2">{{ translate('Add Delivery Note') }}</span>
-                                            </a>
-                                        </div>
-                                    @endif
+                                <div class="mt-3">
+                                    <label class="aiz-checkbox mb-0">
+                                        <input type="checkbox" name="show_delivery_notes" value="1" >
+                                        <span class="fs-14 fw-400">{{ translate('Show notes in cash on delivery section') }}</span>
+                                        <span class="aiz-square-check" style="width: 20px; height: 20px;"></span>
+                                    </label>
                                 </div>
-                            @else
+                            </div>
+                            <div class="mt-4 pt-3 cash-on-delivery-notes">
+                                <h6 class="fs-14 fw-700 mb-3">{{ translate('Notes (Add from Preset)') }}</h6>
+                                <input type="hidden" name="delivery_note_id" id="delivery_note_id">
+                                <div class="aiz-carousel gutters-10" data-items="2" data-xxl-items="2" data-xl-items="2"
+                                    data-lg-items="2" data-md-items="2" data-sm-items="2" data-xs-items="2"
+                                    data-arrows="false" data-dots="false" data-autoplay="false" data-infinite="true"
+                                    data-center="false">
+                                    @foreach(\App\Models\Note::where("note_type", 'delivery')->orderBy('created_at', 'desc')->get() as $delivery)
+                                    <div class="carousel-box">
+                                        <div class="delivery-notes border border-2 border-gray-300 rounded-2 p-3 overflow-hidden has-transition"
+                                            onclick="selectNote(this, 'delivery_note_id', 'delivery-notes', {{ $delivery->id }})"
+                                            data-note-id="{{ $delivery->id }}">
+
+                                            <p class="fs-14 fw-400 m-0 text-truncate-3">
+                                                {{ $delivery->getTranslation('description') }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                    
+                                </div>
+                                @can('add_note')
+                                    <div class="mt-4">
+                                        <a href="#" id="add_note" data-note-type="delivery"
+                                            class="btn btn-block border border-gray-400 border-dashed hov-bg-soft-secondary mt-2 fs-14 rounded-2 d-flex align-items-center justify-content-center"
+                                            onclick="">
+                                            <i class="las la-plus"></i>
+                                            <span class="ml-2">{{ translate('Add Delivery Note') }}</span>
+                                        </a>
+                                    </div>
+                                @endcan
+                            </div>
+                             @else
                                 <p>
-                                    {{ translate('Cash On Delivery activation is maintained by Admin.') }}
+                                    {{ translate('Cash On Delivery option is disabled. Activate this feature from here') }}
+                                    <a href="{{route('activation.index')}}" class="aiz-side-nav-link {{ areActiveRoutes(['shipping_configuration.index','shipping_configuration.edit','shipping_configuration.update'])}}">
+                                        <span class="aiz-side-nav-text">{{translate('Cash Payment Activation')}}</span>
+                                    </a>
                                 </p>
                             @endif
                         </div>
                         <!-- Cash On Delivery End -->
 
-                        <!-- GST Rate -->
+
+                         <!-- GST Rate -->
                         @if (addon_is_activated('gst_system'))
-                            <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
-                                <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{translate('HSN & GST')}}</h5>
-                                <div class="form-group mb-0 mt-3">
-                                    <label class="col-from-label">{{translate('HSN Code')}}</label>
-                                    <input type="text" lang="en" placeholder="{{ translate('HSN Code') }}" name="hsn_code" class="form-control" required>
-                                </div>
-                                <div class="form-group mb-0 mt-3">
-                                    <label class="col-from-label">{{translate('GST Rate (%)')}}</label>
-                                    <input type="number" lang="en" min="0" value="0" step="0.01" placeholder="{{ translate('GST Rate') }}" name="gst_rate" class="form-control" required>
-                                </div>
+                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
+                            <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{translate('HSN & GST')}}</h5>
+                            <div class="form-group mb-0 mt-3">
+                                <label class="col-from-label">{{translate('HSN Code')}}</label>
+                                <input type="text" lang="en" placeholder="{{ translate('HSN Code') }}" name="hsn_code" class="form-control" required>
                             </div>
+                            <div class="form-group mb-0 mt-3">
+                                <label class="col-from-label">{{translate('GST Rate (%)')}}</label>
+                                <input type="number" lang="en" min="0" value="0" step="0.01" placeholder="{{ translate('GST Rate') }}" name="gst_rate" class="form-control" required>
+                            </div>
+                        </div>
                         @else
-                            <!-- VAT & Tax Start -->
-                            <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
-                                <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{translate('Vat & TAX')}}</h5>
-                                @foreach(\App\Models\Tax::where('tax_status', 1)->get() as $tax)
-                                <div class="form-group mb-0 mt-3">
-                                    <label class="col-from-label fs-14 fw-400"> {{$tax->name}}
-                                            <input type="hidden" value="{{$tax->id}}" name="tax_id[]"></label>
-                                    <div class="input-group ">
-                                        <input type="number" lang="en" min="0" value="0" step="0.01" placeholder="{{ translate('Tax') }}" name="tax[]" class="form-control">
-                                        <div class="input-group-append w-140px">
-                                            <select class="form-control aiz-selectpicker" name="tax_type[]">
-                                                <option value="amount">{{ translate('Flat') }}</option>
-                                                <option value="percent">{{ translate('Percentage') }}</option>
-                                            </select>
-                                        </div>
+                        <!-- VAT & Tax Start -->
+                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
+                            <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{translate('Vat & TAX')}}</h5>
+                            @foreach(\App\Models\Tax::where('tax_status', 1)->get() as $tax)
+                            <div class="form-group mb-0 mt-3">
+                                <label class="col-from-label fs-14 fw-400"> {{$tax->name}}
+                                        <input type="hidden" value="{{$tax->id}}" name="tax_id[]"></label>
+                                <div class="input-group ">
+                                    <input type="number" lang="en" min="0" value="0" step="0.01" placeholder="{{ translate('Tax') }}" name="tax[]" class="form-control">
+                                    <div class="input-group-append w-140px">
+                                        <select class="form-control aiz-selectpicker" name="tax_type[]">
+                                            <option value="amount">{{ translate('Flat') }}</option>
+                                            <option value="percent">{{ translate('Percentage') }}</option>
+                                        </select>
                                     </div>
                                 </div>
-                                @endforeach
                             </div>
+                            @endforeach
+                        </div>
                         @endif
                         <!-- VAT & Tax End -->
+
 
                         <!-- Stock & Order Display Settings Start -->
                         <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
@@ -991,6 +1119,43 @@
                         </div>
                         <!-- Stock & Order Display Settings End -->
 
+                        <!-- Auction Start -->
+                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
+                            <div class="d-flex align-items-center justify-content-between border-bottom-dashed mb-3 pb-2">
+                                <div>
+                                    <h5 class="fs-16 fw-700 mb-1">{{ translate('Auction') }}</h5>
+                                    <p class="fs-12 fw-400 text-gray mb-0">{{ translate('Turn this product into an auction with a starting bid and an end date.') }}</p>
+                                </div>
+                                <label class="aiz-switch aiz-switch-blue mb-0">
+                                    <input type="checkbox" name="auction_product" id="auction_product" value="1" @checked(old('auction_product', request('auction')))>
+                                    <span></span>
+                                </label>
+                            </div>
+
+                            <div id="auction-fields" @class(['d-none' => !old('auction_product', request('auction'))])>
+                                <div class="row gutters-5">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-2 mb-lg-3">
+                                            <label class="col-from-label fs-14 fw-500">{{ translate('Starting Bid') }}</label>
+                                            <input type="number" lang="en" min="1" step="0.01" name="starting_bid" class="form-control @error('starting_bid') is-invalid @enderror"
+                                                value="{{ old('starting_bid') }}" placeholder="{{ translate('0.00') }}">
+                                            @error('starting_bid')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-2 mb-lg-3">
+                                            <label class="col-from-label fs-14 fw-500">{{ translate('Auction Date Range') }}</label>
+                                            <input type="text" class="form-control aiz-date-range @error('auction_date_range') is-invalid @enderror" name="auction_date_range"
+                                                placeholder="{{ translate('Select Date') }}" data-time-picker="true" data-past-disable="true" data-format="DD-MM-Y HH:mm:ss" data-separator=" to " autocomplete="off"
+                                                value="{{ old('auction_date_range') }}">
+                                            @error('auction_date_range')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Auction End -->
+
                         <!-- Frequently Bought Product -->
                         <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4">
                             <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{translate('Frequently Bought')}}</h5>
@@ -1045,6 +1210,22 @@
                         </div>
                     </div>
                 </div>
+                
+
+
+                        <!-- Product Variants Start -->
+                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4 mb-4 mb-xl-0" id="variant-div-show-hide" style="display: none;">
+                            <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Product Variants') }}</h5>
+                            
+                            <!-- sku combination -->
+                            <div class="sku_combination table-responsive" id="sku_combination" style="overflow-x: auto; width: 100%;">
+
+                            </div>
+                            <div id="pending_storage_rows" style="display: none;"></div>
+                        </div>
+                        <!-- Product Variants End -->
+
+                <!-- Save Button -->
                 <div class="mt-4 text-right">
                     <button type="submit" name="button" value="unpublish" data-action="unpublish" class="mx-2 btn btn-light w-230px btn-md rounded-2 fs-14 fw-700 shadow-secondary border-soft-secondary action-btn">{{ translate('Save & Unpublish') }}</button>
                     <button type="submit" name="button" value="publish" data-action="publish" class="mx-2 btn btn-success w-230px btn-md rounded-2 fs-14 fw-700 shadow-success action-btn">{{ translate('Save & Publish') }}</button>
@@ -1056,7 +1237,7 @@
 @endsection
 
 @section('modal')
-	<!-- Frequently Bought Product Select Modal -->
+    <!-- Frequently Bought Product Select Modal -->
     @include('modals.product_select_modal')
 
     {{-- Note Modal --}}
@@ -1070,11 +1251,24 @@
 @endsection
 
 @section('script')
+
+<script type="text/javascript">
+    $(document).on('change', '#auction_product', function () {
+        $('#auction-fields').toggleClass('d-none', !this.checked);
+        $('#auction-fields').find('input').prop('disabled', !this.checked);
+    });
+
+    $(function () {
+        $('#auction_product').trigger('change');
+    });
+</script>
+
 <!-- Treeview js -->
 
 <script type="text/javascript">
 
     // select main category in related categories
+    var categoryAutoLoadReady = false;
     $(document).ready(function() {
         $('#category_id').on('change', function() {
             let mainCatId = $(this).val();
@@ -1088,11 +1282,44 @@
             }
 
             relatedSelect.selectpicker('refresh');
+
+            if (categoryAutoLoadReady) {
+                autoLoadCategoryAttributes(mainCatId);
+            }
         });
         $('#category_id').trigger('change');
+        categoryAutoLoadReady = true;
     });
 
-    
+    function autoLoadCategoryAttributes(categoryId) {
+        if (!categoryId || typeof $('#choice_attributes').val() === 'undefined') {
+            return;
+        }
+
+        $.post('{{ route('products.get-category-attributes') }}', {
+            _token: AIZ.data.csrf,
+            category_id: categoryId
+        }, function(response) {
+            if (!response.attributes || response.attributes.length === 0) {
+                return;
+            }
+
+            $('#chose_options_text').removeClass('d-none');
+            $('#customer_choice_options').removeClass('d-none');
+
+            var attributeIds = response.attributes.map(function(attribute) {
+                return String(attribute.id);
+            });
+
+            var currentSelection = $('#choice_attributes').val() || [];
+            var merged = currentSelection.concat(attributeIds.filter(function(id) {
+                return currentSelection.indexOf(id) === -1;
+            }));
+
+            $('#choice_attributes').val(merged).trigger('change');
+        });
+    }
+
     $('form').bind('submit', function (e) {
 		if ( $(".action-btn").attr('attempted') == 'true' ) {
 			//stop submitting the form because we have already clicked submit.
@@ -1117,40 +1344,34 @@
         }
     });
 
-    function add_more_customer_choice_option(i, name) {
+    function add_more_customer_choice_option(i, name){
         return $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            type: "POST",
-            url: '{{ route('seller.products.add-more-choice-option') }}',
-            data: {
-                attribute_id: i
+            type:"POST",
+            url:'{{ route('products.add-more-choice-option') }}',
+            data:{
+               attribute_id: i
             },
             success: function(data) {
+                $('#chose_options_text').removeClass('d-none');
                 var obj = JSON.parse(data);
                 $('#customer_choice_options').append('\
-                    <div class="form-group row">\
-                        <div class="col-md-3">\
-                            <input type="hidden" name="choice_no[]" value="' + i + '">\
-                            <input type="text" class="form-control" name="choice[]" value="' + name +
-                    '" placeholder="{{ translate('Choice Title') }}" readonly>\
-                        </div>\
-                        <div class="col-md-8">\
-                            <select class="form-control aiz-selectpicker attribute_choice" data-live-search="true" name="choice_options_' + i + '[]" multiple>\
-                                ' + obj + '\
-                            </select>\
-                            <div class="mt-1">\
-                                <a href="javascript:void(0)" onclick="add_new_attribute_value('+i+', \''+name+'\')" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">\
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>\
-                                    <span> {{translate("New ") }} ' + name + '</span>\
-                                </a>\
-                            </div>\
-                        </div>\
-                    </div>');
+                <div class="form-group row">\
+                    <div class="col-md-3">\
+                        <input type="hidden" name="choice_no[]" value="'+i+'">\
+                        <input type="text" class="form-control" name="choice[]" value="'+name+'" placeholder="{{ translate('Choice Title') }}" readonly>\
+                    </div>\
+                    <div class="col-md-9">\
+                        <select class="form-control aiz-selectpicker attribute_choice" data-live-search="true" name="choice_options_'+ i +'[]" data-selected-text-format="count" multiple required>\
+                            '+obj+'\
+                        </select>\
+                    </div>\
+                </div>');
                 AIZ.plugins.bootstrapSelect('refresh');
-            }
-        });
+           }
+       });
     }
 
     function add_new_attribute_value(attribute_id, attribute_name) {
@@ -1161,7 +1382,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 type: "POST",
-                url: '{{ route("seller.products.add-new-attribute-value") }}',
+                url: '{{ route("products.add-new-attribute-value") }}',
                 data: {
                     attribute_id: attribute_id,
                     value: value
@@ -1181,52 +1402,60 @@
     }
 
     $('input[name="colors_active"]').on('change', function() {
-        if (!$('input[name="colors_active"]').is(':checked')) {
+        if(!$('input[name="colors_active"]').is(':checked')) {
             $('#colors').prop('disabled', true);
+            $('#add_color').addClass('d-none');
             AIZ.plugins.bootstrapSelect('refresh');
-        } else {
+        }
+        else {
             $('#colors').prop('disabled', false);
+            $('#add_color').removeClass('d-none');
             AIZ.plugins.bootstrapSelect('refresh');
         }
         update_sku();
     });
 
-    $(document).on("change", ".attribute_choice", function() {
+    $(document).on("change", ".attribute_choice",function() {
         update_sku();
     });
 
     $('#colors').on('change', function() {
-            update_sku();
-        });
+        update_sku();
+    });
 
-    function delete_row(em) {
+    $('#unit_price').on('change', function() {
+        update_sku();
+    });
+
+    function delete_row(em){
         $(em).closest('.form-group row').remove();
         update_sku();
     }
 
     @include('backend.product.products.storage_variant_js')
 
-    function delete_variant(em) {
+    function delete_variant(em){
         $(em).closest('.variant').remove();
     }
 
     function update_sku(){
         $.ajax({
            type:"POST",
-           url:'{{ route('seller.products.sku_combination') }}',
+           url:'{{ route('products.sku_combination') }}',
            data:$('#aizSubmitForm').serialize(),
            success: function(data) {
                 $('#sku_combination').html(data);
+                $('#pending_storage_rows').empty();
+                AIZ.plugins.bootstrapSelect();
                 AIZ.uploader.previewGenerate();
                 AIZ.plugins.sectionFooTable('#sku_combination');
                 if (data.trim().length > 1) {
                    $('#show-hide-div').hide();
-                   $('#variant-div-show-hide').show();
                    $('input[name="current_stock"]').removeAttr('integer-only');
                 }
                 else {
                     $('#show-hide-div').show();
-                    $('#variant-div-show-hide').hide();
+                    $('#variant-div-show-hide').show();
                     $('input[name="current_stock"]').attr('integer-only', 'true');
                 }
            }
@@ -1237,7 +1466,7 @@
         $('#customer_choice_options').html(null);
         var $submitBtns = $('#aizSubmitForm .action-btn').prop('disabled', true);
 
-        var pendingRequests = $.map($("#choice_attributes option:selected"), function(option) {
+        var pendingRequests = $.map($("#choice_attributes option:selected"), function(option){
             return add_more_customer_choice_option($(option).val(), $(option).text());
         });
 
@@ -1266,7 +1495,7 @@
     function filterFqBoughtProduct() {
         var searchKey = $('input[name=search_keyword]').val();
         var fqBroughCategory = $('select[name=fq_brough_category]').val();
-        $.post('{{ route('seller.product.search') }}', { _token: AIZ.data.csrf, product_id: null, search_key:searchKey, category:fqBroughCategory, product_type:"physical" }, function(data){
+        $.post('{{ route('product.search') }}', { _token: AIZ.data.csrf, product_id: null, search_key:searchKey, category:fqBroughCategory, product_type:"physical" }, function(data){
             $('#product-list').html(data);
             AIZ.plugins.sectionFooTable('#product-list');
         });
@@ -1285,7 +1514,7 @@
 
         var productIds = selectedProducts.concat(fqBoughtProductIds.filter((item) => selectedProducts.indexOf(item) < 0))
 
-        $.post('{{ route('seller.get-selected-products') }}', { _token: AIZ.data.csrf, product_ids:productIds}, function(data){
+        $.post('{{ route('get-selected-products') }}', { _token: AIZ.data.csrf, product_ids:productIds}, function(data){
             $('#fq-bought-product-select-modal').modal('hide');
             $('#selected-fq-bought-products').html(data);
             AIZ.plugins.sectionFooTable('#selected-fq-bought-products');
@@ -1325,7 +1554,7 @@
         if (refundType !== 'category_based_refund') {
             $refundable.prop('disabled', false);
             $note.addClass('d-none');
-            $('.refund-block').toggleClass('d-none', !$refundable.is(':checked'));
+            $('.refundable-notes').toggleClass('d-none', !$refundable.is(':checked'));
             return;
         }
 
@@ -1340,7 +1569,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '{{ route("seller.products.check_refundable_category") }}',
+            url: '{{ route("admin.products.check_refundable_category") }}',
             data: {
                 _token: '{{ csrf_token() }}',
                 category_id: categoryId
@@ -1370,7 +1599,7 @@
             }
         });
     }
-
+    
     function noteModal(noteType){
         $.post('{{ route('get_notes') }}',{_token:'{{ @csrf_token() }}', note_type: noteType}, function(data){
             $('#note_modal #note_modal_content').html(data);
@@ -1386,17 +1615,17 @@
         $('#note_modal').modal('hide');
     }
 
-
 </script>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function(){
         var hash = document.location.hash;
         if (hash) {
-            $('.nav-tabs a[href="' + hash + '"]').tab('show');
-        } else {
+            $('.nav-tabs a[href="'+hash+'"]').tab('show');
+        }else{
             $('.nav-tabs a[href="#general"]').tab('show');
         }
 
+        // Change hash for page-reload
         $('.nav-tabs a').on('shown.bs.tab', function (e) {
             window.location.hash = e.target.hash;
         });
@@ -1406,12 +1635,12 @@
 
 @include('partials.product.product_temp_data')
 
-<script type="text/javascript">
+ <script type="text/javascript">
     $(document).ready(function () {
         warrantySelection();
         isRefundable();
 
-        $(document).on('change', 'input[name="category_id"]', function () {
+        $('#category_id').on('change', function () {
             isRefundable();
         });
 
@@ -1431,18 +1660,18 @@
     function filterProductByCategory() {
         var searchKey = $('input[name=search_product_keyword]').val();
         var selectedCategory = $('select[name=selected_Products_category]').val();
-        $.post('{{ route('seller.products.search') }}', { _token: AIZ.data.csrf, product_id: null, search_key:searchKey, category:selectedCategory, product_type:"physical",single_select: 1 }, function(data){
+        $.post('{{ route('products.search') }}', { _token: AIZ.data.csrf, product_id: null, search_key:searchKey, category:selectedCategory, product_type:"physical",single_select: 1 }, function(data){
             $('#products-list').html(data);
             AIZ.plugins.sectionFooTable('#products-list');
         });
     }
 
-    var duplicateProductUrl = "{{ route('seller.products.duplicate', ':id') }}";
+    var duplicateProductUrl = "{{ route('products.duplicate', ':id') }}";
 
-    // innitially assign pid null
+   // innitially assign pid null
     let draftProductId = null;
 
-    $(document).ready(function() {
+   $(document).ready(function() {
         function saveDraft() {
             let form = $('#aizSubmitForm')[0];
             let formData = new FormData(form);
@@ -1458,7 +1687,7 @@
             }
 
             $.ajax({
-                url: "{{ route('seller.products.store_as_draft') }}",
+                url: "{{ route('products.store_as_draft') }}",
                 type: 'POST',
                 data: formData,
                 processData: false,
@@ -1469,7 +1698,7 @@
                         draftProductId = response.product_id;
 
                         // Update form action for future edits
-                        $('#aizSubmitForm').attr('action', "{{ url('seller/products/update') }}/" + draftProductId);
+                        $('#aizSubmitForm').attr('action', "{{ url('admin/products/update') }}/" + draftProductId);
 
                         if ($('#aizSubmitForm input[name="_method"]').length === 0) {
                             $('#aizSubmitForm').append('<input type="hidden" name="_method" value="POST">');
@@ -1522,6 +1751,8 @@
 
     });
 
+
+    
     function generateBarCode() {
         const btn = document.getElementById('generateBarcodeBtn');
         btn.disabled = true;
@@ -1560,7 +1791,8 @@
         }, 300);
     }
 
-    // AI Generation Function
+
+ // AI Generation Function
     function generateWithAI(selectedSections = null) {
         let productName = ($('input[name="name"]').val() || '').trim();
 
@@ -1609,7 +1841,7 @@
         // alert(JSON.stringify(inputData));
         
         $.ajax({
-            url: '{{ route("seller.products.generate-with-ai") }}',
+            url: '{{ route("products.generate-with-ai") }}',
             type: 'POST',
             data: {
                 _token: '{{ csrf_token() }}',
@@ -1706,7 +1938,16 @@
 
     // Add border-primary to clicked
     element.classList.add('border-primary');
-    }
+}
 
+function updateStatusLabel(el) {
+    let label = $(el).closest('.d-flex').find('.status-label');
+    if(el.checked) {
+        label.text('{{ translate('Active') }}').removeClass('text-danger').addClass('text-success');
+    } else {
+        label.text('{{ translate('Disabled') }}').removeClass('text-success').addClass('text-danger');
+    }
+}
 </script>
+
 @endsection

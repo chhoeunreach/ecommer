@@ -84,16 +84,17 @@ class CartUtility
         return $tax;
     }
 
-    public static function save_cart_data($cart, $product, $price, $tax, $quantity)
+    public static function save_cart_data($cart, $product, $price, $tax, $quantity, $product_type = 'product')
     {
         $cart->quantity = $quantity;
         $cart->product_id = $product->id;
+        $cart->product_type = $product_type;
         $cart->owner_id = $product->user_id;
         $cart->price = $price;
         $cart->tax = $tax;
         $cart->product_referral_code = null;
 
-        if (Cookie::has('referred_product_id') && Cookie::get('referred_product_id') == $product->id) {
+        if ($product_type == 'product' && Cookie::has('referred_product_id') && Cookie::get('referred_product_id') == $product->id) {
             $cart->product_referral_code = Cookie::get('product_referral_code');
         }
 
@@ -104,7 +105,7 @@ class CartUtility
     public static function check_auction_in_cart($carts)
     {
         foreach ($carts as $cart) {
-            if ($cart->product->auction_product == 1) {
+            if ($cart->item != null && $cart->item->auction_product == 1) {
                 return true;
             }
         }

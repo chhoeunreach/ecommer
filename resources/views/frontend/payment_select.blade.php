@@ -494,7 +494,8 @@
                                             $digital = 0;
                                             $cod_on = 1;
                                             foreach ($carts as $cartItem) {
-                                                $product = get_single_product($cartItem['product_id']);
+                                                $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
+                                                if (!$product) { continue; }
                                                 if ($product['digital'] == 1) {
                                                     $digital = 1;
                                                 }

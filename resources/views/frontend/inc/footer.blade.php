@@ -24,7 +24,7 @@
                     <div class="aiz-carousel slick-left sm-gutters-16 arrow-none" data-items="6" data-xl-items="5" data-lg-items="4"  data-md-items="3" data-sm-items="2" data-xs-items="2" data-arrows='true' data-infinite='false'>
                         @foreach ($lastViewedProducts as $key => $lastViewedProduct)
                             <div class="carousel-box px-3 position-relative has-transition hov-animate-outline border-right border-top border-bottom @if($key == 0) border-left @endif">
-                                @include('frontend.'.get_setting('homepage_select').'.partials.last_view_product_box_1',['product' => $lastViewedProduct->product])
+                                @include('frontend.'.get_setting('homepage_select').'.partials.product_box_1',['product' => $lastViewedProduct->product])
                             </div>
                         @endforeach
                     </div>

@@ -142,10 +142,7 @@
                 <span class="fs-14 fw-400 text-gray">{{ translate('Code') }}</span>
                 <span class="fs-14 fw-500 text-dark ml-2" id="variant_code"></span>
             </span>
-            <span class="d-none align-items-center" id="variant_country_wrap">
-                <span class="fs-14 fw-400 text-gray">{{ translate('Country') }}</span>
-                <span class="fs-14 fw-500 text-dark ml-2" id="variant_country"></span>
-            </span>
+
             <span class="d-none align-items-center" id="variant_condition_wrap">
                 <span class="fs-14 fw-400 text-gray">{{ translate('Condition') }}</span>
                 <span class="fs-14 fw-500 text-dark ml-2" id="variant_condition"></span>
@@ -686,7 +683,7 @@
                         <!-- Choice Options -->
                         @if ($detailedProduct->choice_options != null)
                             @foreach (json_decode($detailedProduct->choice_options) as $key => $choice)
-                                <div class="py-10px {{ $key == 0 && $colorCount == 0 ? '' : 'variant-item' }}">
+                                <div class="{{ $choice->attribute_id == 8 ? 'd-none' : 'py-10px' }} {{ $key == 0 && $colorCount == 0 ? '' : 'variant-item' }}">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <p class="m-0 fs-14 fw-bold text-dark">{{ get_single_attribute_name($choice->attribute_id) }}</p>
                                     </div>

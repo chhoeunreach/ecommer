@@ -217,11 +217,11 @@
                                                     <tr>
                                                         <td class="border-top-0 border-bottom pl-0">{{ $key+1 }}</td>
                                                         <td class="border-top-0 border-bottom">
-                                                            @if ($orderDetail->product != null)
-                                                                <a href="{{ route('product', $orderDetail->product->slug) }}" target="_blank" class="text-reset">
-                                                                    {{ $orderDetail->product->getTranslation('name') }}
+                                                            @if ($orderDetail->item != null)
+                                                                <a href="{{ item_url($orderDetail->item, $orderDetail->product_type ?? 'product') }}" target="_blank" class="text-reset">
+                                                                    {{ $orderDetail->item->getTranslation('name') }}
                                                                     @php
-                                                                        if($orderDetail->combo_id != null) {
+                                                                        if(($orderDetail->product_type ?? 'product') === 'product' && $orderDetail->combo_id != null) {
                                                                             $combo = \App\ComboProduct::findOrFail($orderDetail->combo_id);
 
                                                                             echo '('.$combo->combo_title.')';

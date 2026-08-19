@@ -6,6 +6,8 @@ use App\Models\Address;
 use App\Models\Carrier;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Computer;
+use App\Models\Accessory;
 use App\Models\Category;
 use App\Models\Cart;
 use App\Models\Country;
@@ -83,8 +85,22 @@ class CartController extends Controller
         }
 
         $check_auction_in_cart = CartUtility::check_auction_in_cart($carts);
-        $product = Product::find($request->id);
+        $product_type = in_array($request->product_type, ['computer', 'accessory']) ? $request->product_type : 'product';
+        $product = match ($product_type) {
+            'computer' => Computer::find($request->id),
+            'accessory' => Accessory::find($request->id),
+            default => Product::find($request->id),
+        };
         $carts = array();
+
+        if (!$product) {
+            return array(
+                'status' => 0,
+                'cart_count' => count($carts),
+                'modal_view' => view('frontend.partials.outOfStockCart')->render(),
+                'nav_cart_view' => view('frontend.partials.cart.cart')->render(),
+            );
+        }
 
         if($check_auction_in_cart && $product->auction_product == 0) {
             return array(
@@ -110,9 +126,11 @@ class CartController extends Controller
         $str = CartUtility::create_cart_variant($product, $request->all());
         $product_stock = $product->stocks->where('variant', $str)->first();
 
-        if ($request->hasAny(['storage', 'code', 'country', 'condition'])) {
+        $facetFields = ['storage', 'code', 'country', 'condition', 'display', 'ram', 'cpu', 'chip'];
+
+        if ($request->hasAny($facetFields)) {
             $candidates = $product->stocks->filter(
-                fn ($stock) => $stock->variant === $str || str_starts_with($stock->variant, $str . '-')
+                fn ($stock) => $stock->variant === $str || str_starts_with((string) $stock->variant, $str . '-')
             );
 
             if ($candidates->isEmpty()) {
@@ -121,12 +139,12 @@ class CartController extends Controller
                 if ($request->filled('color')) {
                     $color = $request->input('color');
                     $candidates = $candidates->filter(
-                        fn ($stock) => $stock->variant === $color || str_starts_with($stock->variant, $color . '-')
+                        fn ($stock) => $stock->variant === $color || str_starts_with((string) $stock->variant, $color . '-')
                     );
                 }
             }
 
-            foreach (['storage', 'code', 'country', 'condition'] as $field) {
+            foreach ($facetFields as $field) {
                 if ($request->filled($field)) {
                     $candidates = $candidates->where($field, $request->input($field));
                 }
@@ -152,14 +170,16 @@ class CartController extends Controller
             $cart = Cart::firstOrNew([
                 'variation' => $str,
                 'user_id' => $user_id,
-                'product_id' => $request['id']
+                'product_id' => $request['id'],
+                'product_type' => $product_type,
             ]);
         } else {
             $temp_user_id = $request->session()->get('temp_user_id');
             $cart = Cart::firstOrNew([
                 'variation' => $str,
                 'temp_user_id' => $temp_user_id,
-                'product_id' => $request['id']
+                'product_id' => $request['id'],
+                'product_type' => $product_type,
             ]);
         }
 
@@ -186,8 +206,8 @@ class CartController extends Controller
         $price = CartUtility::get_price($product, $product_stock, $request->quantity);
         $tax = CartUtility::tax_calculation($product, $price);
 
-        CartUtility::save_cart_data($cart, $product, $price, $tax, $quantity);
-        if(get_setting('facebook_pixel_capi') == 1){
+        CartUtility::save_cart_data($cart, $product, $price, $tax, $quantity, $product_type);
+        if($product_type === 'product' && get_setting('facebook_pixel_capi') == 1){
             $eventId = 'atc_' . $cart->id . '_' . time();
             $fb = new FacebookConversionService();
             $fb->sendAddToCart($product, $price, $eventId, $quantity);
@@ -313,7 +333,16 @@ class CartController extends Controller
 
     public function updateCartStatus(Request $request)
     {
-        $product_ids = $request->product_id;
+        // Each value is "type:id" (see cart_details.blade.php checkboxes) so a
+        // Computer and a Product sharing the same numeric id never collide.
+        $selected = collect($request->product_id)->map(function ($value) {
+            if (is_string($value) && str_contains($value, ':')) {
+                [$type, $id] = explode(':', $value, 2);
+                return ['type' => $type, 'id' => (int) $id];
+            }
+            return ['type' => 'product', 'id' => (int) $value];
+        });
+        $product_ids = $selected->pluck('id')->all();
 
         if (auth()->user() != null) {
             $user_id = Auth::user()->id;
@@ -338,10 +367,20 @@ class CartController extends Controller
             );
         }
 
+        $matchSelected = function ($query) use ($selected) {
+            $query->where(function ($q) use ($selected) {
+                foreach ($selected as $s) {
+                    $q->orWhere(function ($q2) use ($s) {
+                        $q2->where('product_id', $s['id'])->where('product_type', $s['type']);
+                    });
+                }
+            });
+        };
+
         $carts->toQuery()->update(['status' => 0]);
-        if($product_ids != null){
+        if($product_ids != null && $selected->isNotEmpty()){
             if($coupon_applied != null){
-                $active_user_carts = $user_carts->toQuery()->whereIn('product_id', $product_ids)->get();
+                $active_user_carts = $user_carts->toQuery()->tap($matchSelected)->get();
                 if (count($active_user_carts) > 0) {
                     $active_user_carts->toQuery()->update(
                         [
@@ -353,7 +392,7 @@ class CartController extends Controller
                 }
             }
 
-            $carts->toQuery()->whereIn('product_id', $product_ids)->update(['status' => 1]);
+            $carts->toQuery()->tap($matchSelected)->update(['status' => 1]);
         }
         $carts = $carts->fresh();
 

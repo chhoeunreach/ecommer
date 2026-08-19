@@ -297,6 +297,7 @@ Route::get('/accessories/{id}', [App\Http\Controllers\AccessoryController::class
 // Computer
 Route::get('/computers', [App\Http\Controllers\ComputerController::class, 'index'])->name('computers.index');
 Route::get('/computers/{id}', [App\Http\Controllers\ComputerController::class, 'show'])->name('computers.show');
+Route::post('/computers/variant-price', [App\Http\Controllers\ComputerController::class, 'variantPrice'])->name('computers.variant_price');
 Route::group(['middleware' => ['user', 'verified', 'unbanned']], function () {
 
     Route::controller(HomeController::class)->group(function () {

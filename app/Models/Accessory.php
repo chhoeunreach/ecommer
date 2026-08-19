@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\CartCompatible;
 
 class Accessory extends Model
 {
-    use HasFactory;
+    use HasFactory, CartCompatible;
     
     protected $fillable = [
         'name',
@@ -38,5 +39,10 @@ class Accessory extends Model
     public function warranty()
     {
         return $this->belongsTo(Warranty::class);
+    }
+
+    public function stocks()
+    {
+        return $this->hasMany(AccessoryStock::class);
     }
 }

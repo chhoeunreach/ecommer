@@ -556,8 +556,15 @@
                                 <div class="product-color-items"></div>
                                 <small class="d-block text-muted mt-1">{{ translate('Edit a color name or code, or remove that color from this product.') }}</small>
                             </div>
-                            <input type="hidden" name="unit_price" value="0">
                             <div class="row gutters-5 mt-3">
+                                <!-- Base Price -->
+                                <div class="col-md-6">
+                                    <div class="form-group mb-2 mb-lg-3">
+                                        <label for="unit_price" class="col-from-label fs-14 fw-500">{{ translate('Base Price') }}</label>
+                                        <input type="number" min="0" step="0.01" id="unit_price" name="unit_price" class="form-control" value="{{ old('unit_price', 0) }}" placeholder="{{ translate('0.00') }}">
+                                        <small class="d-block text-muted mt-1">{{ translate('Used as the default price for each variant below; you can still override individual variants.') }}</small>
+                                    </div>
+                                </div>
                                 <!-- Discount Date Range -->
                                 <div class="col-md-6 ">
                                     <div class="form-group mb-2 mb-lg-3" id="brand">
@@ -1204,32 +1211,17 @@
                     </div>
                 </div>
                 
+
+
                         <!-- Product Variants Start -->
-                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4 mb-4 mb-xl-0" id="variant-div-show-hide">
+                        <div class="border border-gray-300 rounded-2 px-3 px-lg-4 py-3 py-lg-4 mt-4 mb-4 mb-xl-0" id="variant-div-show-hide" style="display: none;">
                             <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Product Variants') }}</h5>
-                            <div class="form-group row gutters-5 mb-2 d-none" aria-hidden="true">
-                                <label class="col-md-3 col-from-label fs-14 fw-500">{{ translate('Choose Attributes') }}</label>
-                                <div class="col-md-9">
-                                    <select name="choice_attributes[]" id="choice_attributes" class="form-control aiz-selectpicker" data-selected-text-format="count" data-live-search="true" multiple data-placeholder="{{ translate('Choose Attributes') }}">
-                                        @foreach (\App\Models\Attribute::all() as $attribute)
-                                            <option value="{{ $attribute->id }}">{{ $attribute->getTranslation('name') }}</option>
-                                        @endforeach
-                                    </select>
-                                    @can('add_product_attribute')
-                                        <a href="#" id="add_attribute" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center mt-1">
-                                            <i class="las la-plus fs-16 mr-1"></i><span>{{ translate('New Attribute') }}</span>
-                                        </a>
-                                    @endcan
-                                </div>
-                            </div>
-                            <div id="chose_options_text" class="d-none" aria-hidden="true">
-                                <p class="fs-12 text-muted mb-2">{{ translate('Choose the attributes and select the values used to build product variants.') }}</p>
-                            </div>
-                            <div class="customer_choice_options mb-3 d-none" id="customer_choice_options" aria-hidden="true"></div>
+                            
                             <!-- sku combination -->
                             <div class="sku_combination table-responsive" id="sku_combination" style="overflow-x: auto; width: 100%;">
 
                             </div>
+                            <div id="pending_storage_rows" style="display: none;"></div>
                         </div>
                         <!-- Product Variants End -->
 
@@ -1375,12 +1367,6 @@
                         <select class="form-control aiz-selectpicker attribute_choice" data-live-search="true" name="choice_options_'+ i +'[]" data-selected-text-format="count" multiple required>\
                             '+obj+'\
                         </select>\
-                        <div class="mt-1">\
-                            <a href="javascript:void(0)" onclick="add_new_attribute_value('+i+', \''+name+'\')" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">\
-                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>\
-                                <span> {{translate("New ") }} ' + name + '</span>\
-                            </a>\
-                        </div>\
                     </div>\
                 </div>');
                 AIZ.plugins.bootstrapSelect('refresh');
@@ -1437,6 +1423,10 @@
         update_sku();
     });
 
+    $('#unit_price').on('change', function() {
+        update_sku();
+    });
+
     function delete_row(em){
         $(em).closest('.form-group row').remove();
         update_sku();
@@ -1455,11 +1445,12 @@
            data:$('#aizSubmitForm').serialize(),
            success: function(data) {
                 $('#sku_combination').html(data);
+                $('#pending_storage_rows').empty();
+                AIZ.plugins.bootstrapSelect();
                 AIZ.uploader.previewGenerate();
                 AIZ.plugins.sectionFooTable('#sku_combination');
                 if (data.trim().length > 1) {
                    $('#show-hide-div').hide();
-                   $('#variant-div-show-hide').show();
                    $('input[name="current_stock"]').removeAttr('integer-only');
                 }
                 else {

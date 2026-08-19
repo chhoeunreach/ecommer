@@ -1,7 +1,8 @@
 @php
     $filteredOrders = $orders->filter(function($order) use ($reviewedProducts){
         return $order->orderDetails->filter(function($detail) use ($reviewedProducts){
-            return $detail->delivery_status == 'delivered'
+            return ($detail->product_type ?? 'product') === 'product'
+                && $detail->delivery_status == 'delivered'
                 && !in_array($detail->product_id, $reviewedProducts);
         })->count() > 0;
     });
@@ -18,7 +19,7 @@
 
                     @foreach($order->orderDetails as $orderDetail)
 
-                        @if($orderDetail->delivery_status == 'delivered' && !in_array($orderDetail->product_id, $reviewedProducts))
+                        @if(($orderDetail->product_type ?? 'product') === 'product' && $orderDetail->delivery_status == 'delivered' && !in_array($orderDetail->product_id, $reviewedProducts))
                             
                            
 

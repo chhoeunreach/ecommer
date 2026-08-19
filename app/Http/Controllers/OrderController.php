@@ -209,7 +209,10 @@ class OrderController extends Controller
         $seller_products = array();
         foreach ($carts as $cartItem) {
             $product_ids = array();
-            $product = Product::find($cartItem['product_id']);
+            $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
+            if (!$product) {
+                continue;
+            }
             if (isset($seller_products[$product->user_id])) {
                 $product_ids = $seller_products[$product->user_id];
             }
@@ -246,7 +249,11 @@ class OrderController extends Controller
 
             //Order Details Storing
             foreach ($seller_product as $cartItem) {
-                $product = Product::find($cartItem['product_id']);
+                $cart_product_type = $cartItem['product_type'] ?? 'product';
+                $product = get_single_product($cartItem['product_id'], $cart_product_type);
+                if (!$product) {
+                    continue;
+                }
 
                 $subtotal += cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
                 $tax +=  cart_product_tax($cartItem, $product, false) * $cartItem['quantity'];
@@ -268,6 +275,7 @@ class OrderController extends Controller
                 $order_detail->order_id = $order->id;
                 $order_detail->seller_id = $product->user_id;
                 $order_detail->product_id = $product->id;
+                $order_detail->product_type = $cart_product_type;
                 $order_detail->variation = $product_variation;
                 $order_detail->price = cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
                 $order_detail->tax = cart_product_tax($cartItem, $product, false) * $cartItem['quantity'];
@@ -318,8 +326,10 @@ class OrderController extends Controller
 
                 $order_detail->save();
 
-                $product->num_of_sale += $cartItem['quantity'];
-                $product->save();
+                if ($cart_product_type === 'product') {
+                    $product->num_of_sale += $cartItem['quantity'];
+                    $product->save();
+                }
 
                 $order->seller_id = $product->user_id;
                 $order->shipping_type = $cartItem['shipping_type'];

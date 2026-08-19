@@ -423,24 +423,24 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>
-                                        @if ($orderDetail->product != null && $orderDetail->product->auction_product == 0)
-                                            <a href="{{ route('product', $orderDetail->product->slug) }}" target="_blank">
-                                                <img height="50" src="{{ uploaded_asset($orderDetail->product->thumbnail_img) }}">
+                                        @if ($orderDetail->item != null && $orderDetail->item->auction_product == 0)
+                                            <a href="{{ item_url($orderDetail->item, $orderDetail->product_type ?? 'product') }}" target="_blank">
+                                                <img height="50" src="{{ uploaded_asset($orderDetail->item->thumbnail_img) }}">
                                             </a>
-                                        @elseif ($orderDetail->product != null && $orderDetail->product->auction_product == 1)
-                                            <a href="{{ route('auction-product', $orderDetail->product->slug) }}" target="_blank">
-                                                <img height="50" src="{{ uploaded_asset($orderDetail->product->thumbnail_img) }}">
+                                        @elseif ($orderDetail->item != null && $orderDetail->item->auction_product == 1)
+                                            <a href="{{ route('auction-product', $orderDetail->item->slug) }}" target="_blank">
+                                                <img height="50" src="{{ uploaded_asset($orderDetail->item->thumbnail_img) }}">
                                             </a>
                                         @else
                                             <strong>{{ translate('N/A') }}</strong>
                                         @endif
                                     </td>
                                     <td>
-                                        @if ($orderDetail->product != null && $orderDetail->product->auction_product == 0)
+                                        @if ($orderDetail->item != null && $orderDetail->item->auction_product == 0)
                                             <strong>
-                                                <a href="{{ route('product', $orderDetail->product->slug) }}" target="_blank"
+                                                <a href="{{ item_url($orderDetail->item, $orderDetail->product_type ?? 'product') }}" target="_blank"
                                                     class="text-muted">
-                                                    {{ $orderDetail->product->getTranslation('name') }}
+                                                    {{ $orderDetail->item->getTranslation('name') }}
                                                 </a>
                                             </strong>
                                             <small>
@@ -449,15 +449,15 @@
                                             <br>
                                             <small>
                                                 @php
-                                                    $product_stock = $orderDetail->product->stocks->where('variant', $orderDetail->variation)->first();
+                                                    $product_stock = $orderDetail->item->stocks->where('variant', $orderDetail->variation)->first();
                                                 @endphp
                                                 {{translate('SKU')}}: {{ $product_stock['sku'] ?? '' }}
                                             </small>
-                                        @elseif ($orderDetail->product != null && $orderDetail->product->auction_product == 1)
+                                        @elseif ($orderDetail->item != null && $orderDetail->item->auction_product == 1)
                                             <strong>
-                                                <a href="{{ route('auction-product', $orderDetail->product->slug) }}" target="_blank"
+                                                <a href="{{ route('auction-product', $orderDetail->item->slug) }}" target="_blank"
                                                     class="text-muted">
-                                                    {{ $orderDetail->product->getTranslation('name') }}
+                                                    {{ $orderDetail->item->getTranslation('name') }}
                                                 </a>
                                             </strong>
                                         @else

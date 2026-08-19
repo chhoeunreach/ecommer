@@ -27,19 +27,32 @@ class ProductStockService
                 $str = ProductUtility::get_combination_string($combination, $collection);
                 $fieldKey = md5($str);
 
-                // If the user removed this variant row from the UI, its inputs won't be in the request.
-                if (!request()->has('price_' . $fieldKey)) {
-                    continue;
+                // Storage can be split across several rows per combination (one per storage
+                // value); the tracker lists every row key that belongs to this combination.
+                $rowKeys = request()->input('storage_rows_' . $fieldKey, [$fieldKey]);
+                if (!is_array($rowKeys) || count($rowKeys) === 0) {
+                    $rowKeys = [$fieldKey];
                 }
 
-                $product_stock = new ProductStock();
-                $product_stock->product_id = $product->id;
-                $product_stock->variant = $str;
-                $product_stock->price = request()->input('price_' . $fieldKey, $collection['unit_price']);
-                $product_stock->sku = request()->input('sku_' . $fieldKey, $str);
-                $product_stock->qty = request()->input('qty_' . $fieldKey, 0);
-                $product_stock->image = request()->input('img_' . $fieldKey);
-                $product_stock->save();
+                foreach ($rowKeys as $rowKey) {
+                    // If the user removed this variant row from the UI, its inputs won't be in the request.
+                    if (!request()->has('price_' . $rowKey)) {
+                        continue;
+                    }
+
+                    $product_stock = new ProductStock();
+                    $product_stock->product_id = $product->id;
+                    $product_stock->variant = $str;
+                    $product_stock->price = request()->input('price_' . $rowKey, $collection['unit_price']);
+                    $product_stock->sku = request()->input('sku_' . $rowKey, $str);
+                    $product_stock->storage = is_array(request()->input('storage_' . $rowKey)) ? implode(',', request()->input('storage_' . $rowKey)) : request()->input('storage_' . $rowKey);
+                    $product_stock->country = is_array(request()->input('country_' . $rowKey)) ? implode(',', request()->input('country_' . $rowKey)) : request()->input('country_' . $rowKey);
+                    $product_stock->condition = is_array(request()->input('condition_' . $rowKey)) ? implode(',', request()->input('condition_' . $rowKey)) : request()->input('condition_' . $rowKey);
+                    $product_stock->code = request()->input('code_' . $rowKey);
+                    $product_stock->qty = request()->input('qty_' . $rowKey, 0);
+                    $product_stock->image = request()->input('img_' . $rowKey);
+                    $product_stock->save();
+                }
             }
 
             $product->unit_price = $product->stocks()->min('price') ?? 0;

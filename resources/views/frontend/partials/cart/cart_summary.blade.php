@@ -14,8 +14,9 @@
         @endphp
         @foreach ($carts as $key => $cartItem)
             @php
-                $product = get_single_product($cartItem['product_id']);
-                $subtotal_for_min_order_amount += cart_product_price($cartItem, $cartItem->product, false, false) * $cartItem['quantity'];
+                $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
+                if (!$product) { continue; }
+                $subtotal_for_min_order_amount += cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
                 $subtotal += cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
                 $tax += cart_product_tax($cartItem, $product, false) * $cartItem['quantity'];
                 if (addon_is_activated('gst_system')) {

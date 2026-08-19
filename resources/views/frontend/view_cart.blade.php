@@ -146,7 +146,7 @@
         $computedTotal = 0.0;
     
         foreach ($carts as $cartItem) {
-            $product = get_single_product($cartItem['product_id'] ?? null);
+            $product = get_single_product($cartItem['product_id'] ?? null, $cartItem['product_type'] ?? 'product');
             if (!$product) { continue; }
     
             $categoryname = optional($product->category)->name

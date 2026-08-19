@@ -258,16 +258,16 @@
             </thead>
             <tbody class="strong">
                 @foreach ($order->orderDetails as $orderDetail)
-                    @if ($orderDetail->product != null)
+                    @if ($orderDetail->item != null)
                         <tr>
                             <td>
-                                {{ $orderDetail->product->getTranslation('name') }}
+                                {{ $orderDetail->item->getTranslation('name') }}
                                 @if($orderDetail->variation) ({{ $orderDetail->variation }}) @endif
                                 <br>
                                 <small class="gry-color">
-                                    {{ translate('SKU') }}: 
+                                    {{ translate('SKU') }}:
                                     @php
-                                        $stock = json_decode($orderDetail->product->stocks->first() ?? '{}', true);
+                                        $stock = json_decode($orderDetail->item->stocks->first() ?? '{}', true);
                                         echo $stock['sku'] ?? 'N/A';
                                     @endphp
                                 </small>

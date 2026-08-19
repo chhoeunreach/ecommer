@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Accessory;
+use App\Models\AccessoryStock;
 use App\Models\Brand;
 use App\Models\Warranty;
 use Illuminate\Http\Request;
@@ -72,6 +73,7 @@ class AccessoryController extends Controller
         $accessory->meta_img = $request->meta_img;
 
         $accessory->save();
+        $this->syncStock($accessory);
 
         flash(translate('Accessory has been inserted successfully'))->success();
         
@@ -137,6 +139,7 @@ class AccessoryController extends Controller
         $accessory->meta_img = $request->meta_img;
 
         $accessory->save();
+        $this->syncStock($accessory);
 
         flash(translate('Accessory has been updated successfully'))->success();
 
@@ -148,6 +151,7 @@ class AccessoryController extends Controller
     public function destroy($id)
     {
         $accessory = Accessory::findOrFail($id);
+        $accessory->stocks()->delete();
         $accessory->delete();
 
         flash(translate('Accessory has been deleted successfully'))->success();
@@ -166,5 +170,21 @@ class AccessoryController extends Controller
         Artisan::call('cache:clear');
 
         return 1;
+    }
+
+    // Accessories have no variants, but the cart/checkout pipeline expects
+    // every sellable item to expose a stocks() relation with a matching
+    // stock row to price/decrement against — so keep exactly one no-variant
+    // stock row in sync with the accessory's own price whenever it's saved.
+    private function syncStock(Accessory $accessory)
+    {
+        AccessoryStock::updateOrCreate(
+            ['accessory_id' => $accessory->id, 'variant' => null],
+            [
+                'price' => $accessory->price,
+                'qty' => 999999,
+                'image' => $accessory->thumbnail_img,
+            ]
+        );
     }
 }

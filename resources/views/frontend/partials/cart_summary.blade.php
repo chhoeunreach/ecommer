@@ -34,7 +34,12 @@
 
             @php $subtotal_for_min_order_amount = 0; @endphp
             @foreach ($carts as $key => $cartItem)
-                @php $subtotal_for_min_order_amount += cart_product_price($cartItem, $cartItem->product, false, false) * $cartItem['quantity']; @endphp
+                @php
+                    $min_order_product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
+                    if ($min_order_product) {
+                        $subtotal_for_min_order_amount += cart_product_price($cartItem, $min_order_product, false, false) * $cartItem['quantity'];
+                    }
+                @endphp
             @endforeach
             @if (get_setting('minimum_order_amount_check') == 1 && $subtotal_for_min_order_amount < get_setting('minimum_order_amount'))
                 <span class="badge badge-inline badge-primary fs-12 rounded-0 px-2">
@@ -56,8 +61,10 @@
                 @endphp
                 @foreach ($carts as $key => $cartItem)
                     @php
-                        $product = get_single_product($cartItem['product_id']);
-                        $total_point += $product->earn_point * $cartItem['quantity'];
+                        $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
+                        if ($product) {
+                            $total_point += $product->earn_point * $cartItem['quantity'];
+                        }
                     @endphp
                 @endforeach
 
@@ -95,7 +102,8 @@
                 @endphp
                 @foreach ($carts as $key => $cartItem)
                     @php
-                        $product = get_single_product($cartItem['product_id']);
+                        $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
+                        if (!$product) { continue; }
                         $subtotal += cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
                         $tax += cart_product_tax($cartItem, $product, false) * $cartItem['quantity'];
                         $product_shipping_cost = $cartItem['shipping_cost'];
@@ -116,7 +124,7 @@
                         </td>
                         <td class="product-total text-right pr-0 fs-14 text-primary fw-600 border-top-0 border-bottom">
                             <span
-                                class="pl-4 pr-0">{{ single_price(cart_product_price($cartItem, $cartItem->product, false, false) * $cartItem['quantity']) }}</span>
+                                class="pl-4 pr-0">{{ single_price(cart_product_price($cartItem, $product, false, false) * $cartItem['quantity']) }}</span>
                         </td>
                     </tr>
                 @endforeach

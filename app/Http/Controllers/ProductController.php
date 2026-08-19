@@ -647,7 +647,7 @@ class ProductController extends Controller
             ->get();
         $type = 'In House';
         //dd($categories);
-        return view('backend.product.products.edit', compact('product', 'categories', 'tags', 'lang', 'type','source'));
+        return view('backend.product.products.edit', compact('product', 'categories', 'tags', 'lang', 'type', 'source'));
     }
 
     /**

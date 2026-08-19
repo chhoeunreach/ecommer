@@ -103,7 +103,8 @@ class CheckoutController extends Controller
             }
 
             foreach ($carts as $key => $cartItem) {
-                $product = Product::find($cartItem['product_id']);
+                $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
+                if (!$product) { continue; }
                 $tax += cart_product_tax($cartItem, $product, false) * $cartItem['quantity'];
                 $subtotal += cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
 
@@ -187,7 +188,8 @@ class CheckoutController extends Controller
         if(get_setting('minimum_order_amount_check') == 1){
             $subtotal = 0;
             foreach ($carts as $key => $cartItem){
-                $product = Product::find($cartItem['product_id']);
+                $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
+                if (!$product) { continue; }
                 $subtotal += cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
             }
             if ($subtotal < get_setting('minimum_order_amount')) {
@@ -526,7 +528,8 @@ class CheckoutController extends Controller
 
         if ($carts && count($carts) > 0) {
             foreach ($carts as $key => $cartItem) {
-                $product = Product::find($cartItem['product_id']);
+                $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
+                if (!$product) { continue; }
                 $tax += cart_product_tax($cartItem, $product, false) * $cartItem['quantity'];
                 $subtotal += cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
 
@@ -610,7 +613,8 @@ class CheckoutController extends Controller
                         $tax = 0;
                         $shipping = 0;
                         foreach ($user_carts as $key => $cartItem) {
-                            $product = Product::find($cartItem['product_id']);
+                            $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
+                            if (!$product) { continue; }
                             $subtotal += cart_product_price($cartItem, $product, false, false) * $cartItem['quantity'];
                             $tax += cart_product_tax($cartItem, $product, false) * $cartItem['quantity'];
                             $shipping += $cartItem['shipping_cost'];
@@ -632,7 +636,8 @@ class CheckoutController extends Controller
                     }
                     elseif ($coupon->type == 'product_base') {
                         foreach ($user_carts as $key => $cartItem) {
-                            $product = Product::find($cartItem['product_id']);
+                            $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
+                            if (!$product) { continue; }
                             foreach ($coupon_details as $key => $coupon_detail) {
                                 if ($coupon_detail->product_id == $cartItem['product_id']) {
                                     if ($coupon->discount_type == 'percent') {

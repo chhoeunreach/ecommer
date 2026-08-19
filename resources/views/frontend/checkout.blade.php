@@ -21,7 +21,7 @@
 
     $gtmItems = [];
     foreach ($carts as $cartItem) {
-        $product = get_single_product($cartItem['product_id']);
+        $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
         if($product) {
             $gtmItems[] = [
                 'item_id' => (string) $product->id,

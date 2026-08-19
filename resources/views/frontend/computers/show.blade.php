@@ -38,6 +38,18 @@
 @endsection
 
 @section('content')
+@php
+    $facetDefs = ['Storage' => 'storage', 'Display' => 'display', 'RAM' => 'ram', 'CPU' => 'cpu', 'Chip' => 'chip'];
+    $facets = [];
+    foreach ($facetDefs as $label => $field) {
+        $values = $computer->stocks->pluck($field)->filter()->unique()->values();
+        if ($values->isNotEmpty()) {
+            $facets[$field] = ['label' => $label, 'values' => $values];
+        }
+    }
+    $colorCodes = collect(json_decode($computer->colors ?? '[]', true) ?: []);
+    $defaultStock = $computer->stocks->first();
+@endphp
 <section class="mb-4 pt-4">
     <div class="container">
         <div class="bg-white shadow-sm rounded p-4">
@@ -53,18 +65,8 @@
                     </ol>
                 </nav>
 
-                <!-- Action Buttons (Compare, Wishlist, Share) -->
+                <!-- Action Buttons (Share) -->
                 <div class="d-flex align-items-center" style="gap: 12px;">
-                    <button type="button" class="btn btn-outline-light text-secondary rounded-pill px-3 py-1 fs-12 fw-500 d-flex align-items-center border" style="border-color: #e2e8f0 !important;" onclick="addToCompare({{ $computer->id }}, 'computer')">
-                        <i class="las la-exchange-alt mr-1 fs-16"></i>
-                        {{ translate('Compare') }}
-                    </button>
-
-                    <button type="button" class="btn btn-outline-light text-secondary rounded-pill px-3 py-1 fs-12 fw-500 d-flex align-items-center border" style="border-color: #e2e8f0 !important;" onclick="addToWishList({{ $computer->id }}, 'computer')">
-                        <i class="las la-heart mr-1 fs-16"></i>
-                        {{ translate('Wishlist') }}
-                    </button>
-
                     <button type="button" class="btn btn-outline-light text-secondary rounded-pill px-3 py-1 fs-12 fw-500 d-flex align-items-center border" style="border-color: #e2e8f0 !important;" data-toggle="modal" data-target="#shareModal">
                         <i class="las la-share mr-1 fs-16"></i>
                         {{ translate('Share') }}
@@ -88,7 +90,7 @@
                         @if (count($all_images) > 0)
                             <img src="{{ uploaded_asset($all_images[0]) }}" alt="{{ $computer->name }}" class="w-100 h-100 object-fit-cover" id="computer-main-img">
                         @else
-                            <img src="{{ static_asset('assets/img/placeholder.jpg') }}" alt="{{ $computer->name }}" class="w-100 h-100 object-fit-cover">
+                            <img src="{{ static_asset('assets/img/placeholder.jpg') }}" alt="{{ $computer->name }}" class="w-100 h-100 object-fit-cover" id="computer-main-img">
                         @endif
                     </div>
                     @if (count($all_images) > 1)
@@ -115,35 +117,106 @@
                             @endif
                         </div>
 
-                        <!-- Price -->
-                        <div class="mb-4">
-                            @php
-                                $price = $computer->price;
-                                $discounted_price = $price;
-                                if($computer->discount > 0) {
-                                    if($computer->discount_type == 'percent') {
-                                        $discounted_price -= ($price * $computer->discount) / 100;
-                                    } elseif($computer->discount_type == 'amount') {
-                                        $discounted_price -= $computer->discount;
-                                    }
-                                }
-                            @endphp
-                            <div class="d-flex align-items-baseline">
-                                <span class="fs-24 fw-700 text-primary">{{ single_price($discounted_price) }}</span>
-                                @if ($price != $discounted_price)
-                                    <del class="fs-16 text-gray ml-2">{{ single_price($price) }}</del>
-                                    @php
-                                        $discount_percent = 0;
-                                        if($computer->discount_type == 'percent') {
-                                            $discount_percent = $computer->discount;
-                                        } elseif($computer->discount_type == 'amount' && $price > 0) {
-                                            $discount_percent = round(($computer->discount / $price) * 100);
-                                        }
-                                    @endphp
-                                    <span class="badge badge-inline badge-danger ml-2">-{{ $discount_percent }}%</span>
-                                @endif
+                        <form id="option-choice-form" class="product-details-page">
+                            @csrf
+                            <input type="hidden" name="id" value="{{ $computer->id }}">
+                            <input type="hidden" name="product_type" value="computer">
+
+                            <!-- Price -->
+                            <div class="mb-4">
+                                @php
+                                    $price = $defaultStock->price ?? $computer->price;
+                                    $discounted_price = \App\Utility\CartUtility::discount_calculation($computer, $price);
+                                @endphp
+                                <div class="d-flex align-items-baseline">
+                                    <span class="fs-24 fw-700 text-primary" id="chosen_price">{{ single_price($discounted_price) }}</span>
+                                    @if ($price != $discounted_price)
+                                        <del class="fs-16 text-gray ml-2">{{ single_price($price) }}</del>
+                                        @php
+                                            $discount_percent = 0;
+                                            if($computer->discount_type == 'percent') {
+                                                $discount_percent = $computer->discount;
+                                            } elseif($computer->discount_type == 'amount' && $price > 0) {
+                                                $discount_percent = round(($computer->discount / $price) * 100);
+                                            }
+                                        @endphp
+                                        <span class="badge badge-inline badge-danger ml-2">-{{ $discount_percent }}%</span>
+                                    @endif
+                                </div>
                             </div>
-                        </div>
+
+                            @if ($colorCodes->isNotEmpty() || count($facets) > 0)
+                                <div class="border-dashed border-1 border-soft-light rounded-2 p-3 mb-3">
+                                    <!-- Colors -->
+                                    @if ($colorCodes->isNotEmpty())
+                                        <div class="mb-3">
+                                            <label class="fs-13 fw-600 text-dark d-block mb-2">{{ translate('Color') }}</label>
+                                            <div class="d-flex flex-wrap" style="gap: 8px;">
+                                                @foreach ($colorCodes as $key => $colorCode)
+                                                    @php $colorName = get_single_color_name($colorCode); @endphp
+                                                    <label class="aiz-megabox rounded-1 bg-white cursor-pointer mb-0">
+                                                        <input type="radio" name="color" value="{{ $colorName }}" @if($key == 0) checked @endif>
+                                                        <div class="d-flex align-items-center aiz-megabox-elem px-15px py-2">
+                                                            <span class="w-15px h-15px rounded-circle border" style="background-color: {{ $colorCode }};"></span>
+                                                            <span class="fs-13 fw-400 text-dark pl-2">{{ $colorName }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <!-- Storage / Display / RAM / CPU / Chip -->
+                                    @foreach ($facets as $field => $facet)
+                                        <div class="mb-3">
+                                            <label class="fs-13 fw-600 text-dark d-block mb-2">{{ translate($facet['label']) }}</label>
+                                            <div class="d-flex flex-wrap" style="gap: 8px;">
+                                                @foreach ($facet['values'] as $key => $value)
+                                                    <label class="aiz-megabox rounded-1 bg-white cursor-pointer mb-0">
+                                                        <input type="radio" name="{{ $field }}" value="{{ $value }}" @if($key == 0) checked @endif>
+                                                        <div class="d-flex align-items-center aiz-megabox-elem px-15px py-2">
+                                                            <span class="fs-13 fw-400 text-dark">{{ $value }}</span>
+                                                        </div>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endforeach
+
+                                    <div class="fs-12 text-gray">
+                                        {{ translate('SKU') }}: <span id="variant_sku">{{ $defaultStock->sku ?? 'N/A' }}</span>
+                                        &nbsp;|&nbsp;
+                                        <span id="available-quantity">{{ $defaultStock->qty ?? 0 }}</span> {{ translate('in stock') }}
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div class="border-dashed border-1 border-soft-light rounded-2 overflow-hidden mb-3 px-20px pt-15px pb-20px purchase-panel">
+                                <div class="d-flex pb-10px flex-wrap align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center justify-content-between justify-content-md-start w-100 w-md-auto mb-3 mb-md-0">
+                                        <div class="mr-2 mr-md-4 text-dark fs-14 fw-bold">{{ translate('Quantity') }}:</div>
+                                        <div class="product-quantity d-flex align-items-center bg-white rounded-1 overflow-hidden ml-auto ml-md-0 border border-gray">
+                                            <button class="btn btn-icon btn-sm btn-light border-0 rounded-0" type="button" data-type="minus" data-field="quantity" disabled>
+                                                <i class="las la-minus"></i>
+                                            </button>
+                                            <input type="text" name="quantity" class="form-control input-number border-0 text-center fs-14 fw-600 w-50px px-1 py-1 h-auto" placeholder="1" value="1" min="1" max="{{ $defaultStock->qty ?? 1 }}">
+                                            <button class="btn btn-icon btn-sm btn-light border-0 rounded-0" type="button" data-type="plus" data-field="quantity">
+                                                <i class="las la-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr class="border-soft-light my-20px">
+
+                                <div class="d-flex flex-wrap product-action-buttons">
+                                    @if (($defaultStock->qty ?? 0) >= 1)
+                                        @include('frontend.product_details.partials.action_buttons', ['buttonPadding' => 'py-2'])
+                                    @endif
+                                    <button type="button" class="btn btn-secondary w-100 out-of-stock d-none" disabled>{{ translate('Out of Stock') }}</button>
+                                </div>
+                            </div>
+                        </form>
 
                         <div class="border-top mt-4 mb-4"></div>
 
@@ -209,5 +282,51 @@
             $('#computer-all-images').parent().find('.border').eq(index).addClass('border-primary');
         }
     }
+
+    // Override the shared getVariantPrice (app.blade.php) — it posts to the
+    // Product-only endpoint. Computers have their own facets (storage,
+    // display, ram, cpu, chip) and their own price-lookup endpoint.
+    window.getVariantPrice = function (triggerEl) {
+        var $form = $('#option-choice-form');
+        var data = $form.serializeArray();
+        if (triggerEl) {
+            data.push({ name: 'changed_field', value: triggerEl.name });
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '{{ route('computers.variant_price') }}',
+            data: data,
+            success: function (res) {
+                $('#chosen_price').html(res.price);
+                $('#variant_sku').html(res.sku);
+                $('#available-quantity').html(res.quantity);
+
+                if (res.image) {
+                    $('#computer-main-img').attr('src', res.image);
+                }
+
+                ['color', 'storage', 'display', 'ram', 'cpu', 'chip'].forEach(function (field) {
+                    if (res[field]) {
+                        $form.find('input[name="' + field + '"][value="' + res[field] + '"]').prop('checked', true);
+                    }
+                });
+
+                var $qty = $form.find('input[name="quantity"]');
+                $qty.attr('max', res.max_limit);
+                if (parseInt($qty.val()) > res.max_limit && res.max_limit > 0) {
+                    $qty.val(res.max_limit);
+                }
+
+                if (res.in_stock == 0) {
+                    $form.find('.buy-now, .add-to-cart').addClass('d-none');
+                    $form.find('.out-of-stock').removeClass('d-none');
+                } else {
+                    $form.find('.buy-now, .add-to-cart').removeClass('d-none');
+                    $form.find('.out-of-stock').addClass('d-none');
+                }
+            }
+        });
+    };
 </script>
 @endsection

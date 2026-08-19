@@ -42,10 +42,12 @@
                             $admin_product_variation = array();
                             $seller_product_variation = array();
                             foreach ($carts as $key => $cartItem){
-                                $product = get_single_product($cartItem['product_id']);
+                                $cart_product_type = $cartItem['product_type'] ?? 'product';
+                                $product = get_single_product($cartItem['product_id'], $cart_product_type);
+                                if (!$product) { continue; }
 
                                 if($product->added_by == 'admin'){
-                                    array_push($admin_products, $cartItem['product_id']);
+                                    array_push($admin_products, ['id' => $cartItem['product_id'], 'type' => $cart_product_type]);
                                     $admin_product_variation[] = $cartItem['variation'];
                                 }
                                 else{
@@ -53,7 +55,7 @@
                                     if(isset($seller_products[$product->user_id])){
                                         $product_ids = $seller_products[$product->user_id];
                                     }
-                                    array_push($product_ids, $cartItem['product_id']);
+                                    array_push($product_ids, ['id' => $cartItem['product_id'], 'type' => $cart_product_type]);
                                     $seller_products[$product->user_id] = $product_ids;
                                     $seller_product_variation[$product->user_id][] = $cartItem['variation'];
                                 }
@@ -63,10 +65,13 @@
                             <!-- Inhouse Products -->
                             @if (!empty($admin_products))
                                 @php
-                                    $all_admin_products = true;
-                                    if(count($admin_products) != count($carts->toQuery()->active()->whereIn('product_id', $admin_products)->get())){
-                                        $all_admin_products = false;
+                                    $active_admin_count = 0;
+                                    foreach ($admin_products as $p) {
+                                        if ($carts->first(fn($c) => $c->product_id == $p['id'] && ($c->product_type ?? 'product') == $p['type'] && $c->status == 1)) {
+                                            $active_admin_count++;
+                                        }
                                     }
+                                    $all_admin_products = $active_admin_count == count($admin_products);
                                 @endphp
                                 <div class="pt-3 px-0">
                                     <div class="aiz-checkbox-inline">
@@ -79,10 +84,12 @@
                                         </label>
                                     </div>
                                 </div>
-                                @foreach ($admin_products as $key => $product_id)
+                                @foreach ($admin_products as $key => $admin_product)
                                     @php
-                                        $product = get_single_product($product_id);
-                                        $cartItem = $carts->toQuery()->where('product_id', $product_id)->where('variation', $admin_product_variation[$key])->first();
+                                        $product_id = $admin_product['id'];
+                                        $item_type = $admin_product['type'];
+                                        $product = get_single_product($product_id, $item_type);
+                                        $cartItem = $carts->first(fn($c) => $c->product_id == $product_id && ($c->product_type ?? 'product') == $item_type && $c->variation == $admin_product_variation[$key]);
                                         $product_stock = $product->stocks->where('variant', $cartItem->variation)->first();
                                         $total = $total + cart_product_price($cartItem, $product, false) * $cartItem->quantity;
                                     @endphp
@@ -92,7 +99,7 @@
                                             <div class="col-auto">
                                                 <div class="aiz-checkbox pl-0">
                                                     <label class="aiz-checkbox">
-                                                        <input type="checkbox" class="check-one check-one-admin" name="id[]" value="{{$product_id}}" @if($cartItem->status == 1) checked @endif>
+                                                        <input type="checkbox" class="check-one check-one-admin" name="id[]" value="{{ $item_type }}:{{ $product_id }}" @if($cartItem->status == 1) checked @endif>
                                                         <span class="aiz-square-check"></span>
                                                     </label>
                                                 </div>
@@ -179,10 +186,13 @@
                             @if (!empty($seller_products))
                                 @foreach ($seller_products as $key => $seller_product)
                                     @php
-                                        $all_seller_products = true;
-                                        if(count($seller_product) != count($carts->toQuery()->active()->whereIn('product_id', $seller_product)->get())){
-                                            $all_seller_products = false;
+                                        $active_seller_count = 0;
+                                        foreach ($seller_product as $p) {
+                                            if ($carts->first(fn($c) => $c->product_id == $p['id'] && ($c->product_type ?? 'product') == $p['type'] && $c->status == 1)) {
+                                                $active_seller_count++;
+                                            }
                                         }
+                                        $all_seller_products = $active_seller_count == count($seller_product);
                                     @endphp
                                     <div class="pt-3 px-0">
                                         <div class="aiz-checkbox-inline">
@@ -195,10 +205,12 @@
                                             </label>
                                         </div>
                                     </div>
-                                    @foreach ($seller_product as $key2 => $product_id)
+                                    @foreach ($seller_product as $key2 => $seller_item)
                                         @php
-                                            $product = get_single_product($product_id);
-                                            $cartItem = $carts->toQuery()->where('product_id', $product_id)->where('variation', $seller_product_variation[$key][$key2])->first();
+                                            $product_id = $seller_item['id'];
+                                            $item_type = $seller_item['type'];
+                                            $product = get_single_product($product_id, $item_type);
+                                            $cartItem = $carts->first(fn($c) => $c->product_id == $product_id && ($c->product_type ?? 'product') == $item_type && $c->variation == $seller_product_variation[$key][$key2]);
                                             $product_stock = $product->stocks->where('variant', $cartItem->variation)->first();
                                             $total = $total + cart_product_price($cartItem, $product, false) * $cartItem->quantity;
                                         @endphp
@@ -208,7 +220,7 @@
                                                 <div class="col-auto">
                                                     <div class="aiz-checkbox pl-0">
                                                         <label class="aiz-checkbox">
-                                                            <input type="checkbox" class="check-one check-one-seller-{{ $key }}" name="id[]" value="{{$product_id}}" @if($cartItem->status == 1) checked @endif>
+                                                            <input type="checkbox" class="check-one check-one-seller-{{ $key }}" name="id[]" value="{{ $item_type }}:{{ $product_id }}" @if($cartItem->status == 1) checked @endif>
                                                             <span class="aiz-square-check"></span>
                                                         </label>
                                                     </div>

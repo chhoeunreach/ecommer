@@ -132,7 +132,7 @@
                             <!-- Product Choice options -->
                             @if ($product->choice_options != null)
                                 @foreach (json_decode($product->choice_options) as $key => $choice)
-                                    <div class="row no-gutters border-bottom-dashed border-soft-light py-2">
+                                    <div class="row no-gutters {{ $choice->attribute_id == 8 ? 'd-none' : 'border-bottom-dashed border-soft-light py-2' }}">
                                         <div class="col-12">
                                             <div class="text-dark fs-14 fw-700">
                                                 {{ get_single_attribute_name($choice->attribute_id) }}</div>

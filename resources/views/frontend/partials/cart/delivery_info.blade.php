@@ -4,10 +4,12 @@
     $admin_product_variation = array();
     $seller_product_variation = array();
     foreach ($carts as $key => $cartItem){
-        $product = get_single_product($cartItem['product_id']);
+        $cart_product_type = $cartItem['product_type'] ?? 'product';
+        $product = get_single_product($cartItem['product_id'], $cart_product_type);
+        if (!$product) { continue; }
 
         if($product->added_by == 'admin'){
-            array_push($admin_products, $cartItem['product_id']);
+            array_push($admin_products, ['id' => $cartItem['product_id'], 'type' => $cart_product_type]);
             $admin_product_variation[] = $cartItem['variation'];
         }
         else{
@@ -15,7 +17,7 @@
             if(isset($seller_products[$product->user_id])){
                 $product_ids = $seller_products[$product->user_id];
             }
-            array_push($product_ids, $cartItem['product_id']);
+            array_push($product_ids, ['id' => $cartItem['product_id'], 'type' => $cart_product_type]);
             $seller_products[$product->user_id] = $product_ids;
             $seller_product_variation[] = $cartItem['variation'];
         }

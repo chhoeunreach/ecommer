@@ -2,9 +2,9 @@
     @php
     $physical = false;
     $col_val = 'col-12';
-    foreach ($products as $key => $cartItem){
-    $product = get_single_product($cartItem);
-    if ($product->digital == 0) {
+    foreach ($products as $key => $item){
+    $product = get_single_product($item['id'], $item['type']);
+    if ($product && $product->digital == 0) {
     $physical = true;
     $col_val = 'col-md-6';
     }
@@ -13,14 +13,15 @@
     <!-- Product List -->
     <div class="{{ $col_val }}">
         <ul class="list-group list-group-flush mb-3">
-            @foreach ($products as $key => $cartItem)
+            @foreach ($products as $key => $item)
             @php
-            $product = get_single_product($cartItem);
+            $product = get_single_product($item['id'], $item['type']);
             @endphp
+            @if ($product)
             <li class="list-group-item pl-0 py-3 border-0">
                 <div class="d-flex align-items-center">
                     <span class="mr-2 mr-md-3">
-                        <img src="{{ get_image($product->thumbnail) }}"
+                        <img src="{{ uploaded_asset($product->thumbnail_img) }}"
                             class="img-fit size-60px"
                             alt="{{  $product->getTranslation('name')  }}"
                             onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
@@ -33,6 +34,7 @@
                     </span>
                 </div>
             </li>
+            @endif
             @endforeach
         </ul>
     </div>

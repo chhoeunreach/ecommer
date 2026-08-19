@@ -6,7 +6,7 @@
 
         @foreach ($newest_products as $index => $new_product)
             <div class="grid-item single-product-item">
-                @include('frontend.' . get_setting('homepage_select') . '.partials.home_product_box', [
+                @include('frontend.' . get_setting('homepage_select') . '.partials.product_box_1', [
                     'product' => $new_product
                 ])
             </div>

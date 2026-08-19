@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\CartCompatible;
 
 class Computer extends Model
 {
-    use HasFactory;
+    use HasFactory, CartCompatible;
 
     protected $fillable = [
         'name',

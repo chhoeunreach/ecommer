@@ -3,8 +3,10 @@
     $carts = get_user_cart();
     if (count($carts) > 0) {
         foreach ($carts as $key => $cartItem) {
-            $product = get_single_product($cartItem['product_id']);
-            $total = $total + cart_product_price($cartItem, $product, false) * $cartItem['quantity'];
+            $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
+            if ($product) {
+                $total = $total + cart_product_price($cartItem, $product, false) * $cartItem['quantity'];
+            }
         }
     }
 @endphp
@@ -78,12 +80,12 @@
         <ul class="h-360px overflow-auto c-scrollbar-light list-group list-group-flush mx-1">
             @foreach ($carts as $key => $cartItem)
                 @php
-                    $product = get_single_product($cartItem['product_id']);
+                    $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
                 @endphp
                 @if ($product != null)
                     <li class="list-group-item border-0 hov-scale-img">
                         <span class="d-flex align-items-center">
-                            <a href="{{ route('product', $product->slug) }}"
+                            <a href="{{ item_url($product, $cartItem['product_type'] ?? 'product') }}"
                                 class="text-reset d-flex align-items-center flex-grow-1">
                                 <img src="{{ static_asset('assets/img/placeholder.jpg') }}"
                                     data-src="{{ uploaded_asset($product->thumbnail_img) }}"

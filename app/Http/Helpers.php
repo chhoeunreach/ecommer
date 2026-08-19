@@ -1044,14 +1044,17 @@ function getShippingCost($carts, $index, $shipping_info = '', $carrier = '')
     $seller_product_total_price = array();
 
     $cartItem = $carts[$index];
-    $product = Product::find($cartItem['product_id']);
+    $product = get_single_product($cartItem['product_id'], $cartItem['product_type'] ?? 'product');
 
-    if ($product->digital == 1) {
+    if (!$product || $product->digital == 1) {
         return 0;
     }
 
     foreach ($carts as $key => $cart_item) {
-        $item_product = Product::find($cart_item['product_id']);
+        $item_product = get_single_product($cart_item['product_id'], $cart_item['product_type'] ?? 'product');
+        if (!$item_product) {
+            continue;
+        }
         if ($item_product->added_by == 'admin') {
             array_push($admin_products, $cart_item['product_id']);
 
@@ -2091,10 +2094,39 @@ if (!function_exists('get_all_active_currency')) {
 }
 
 if (!function_exists('get_single_product')) {
-    function get_single_product($product_id)
+    function get_single_product($product_id, $product_type = 'product')
     {
+        if ($product_type === 'computer') {
+            return \App\Models\Computer::find($product_id);
+        }
+
+        if ($product_type === 'accessory') {
+            return \App\Models\Accessory::find($product_id);
+        }
+
         $product_query = Product::query()->with('thumbnail');
         return $product_query->find($product_id);
+    }
+}
+
+if (!function_exists('item_url')) {
+    // Type-aware equivalent of route('product', $product->slug) for cart/order
+    // rows that may hold a Computer or Accessory instead of a Product.
+    function item_url($product, $product_type = 'product')
+    {
+        if (!$product) {
+            return '#';
+        }
+
+        if ($product_type === 'computer') {
+            return route('computers.show', $product->id);
+        }
+
+        if ($product_type === 'accessory') {
+            return route('accessories.show', $product->id);
+        }
+
+        return route('product', $product->slug);
     }
 }
 

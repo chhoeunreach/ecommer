@@ -404,22 +404,22 @@
             </table>
             
             @foreach ($order->orderDetails as $key => $orderDetail)
-                @if ($orderDetail->product != null)
+                @if ($orderDetail->item != null)
                     <div class="product-item">
                         <table>
                             <!-- Product Name -->
                             <tr>
                                 <td class="bold" style="font-size: 9px;">
-                                    {{ $orderDetail->product->name }}
+                                    {{ $orderDetail->item->name }}
                                     @if($show_product_variation == 1 && $orderDetail->variation != null)
                                         <br><span style="font-size: 8px;">({{ $orderDetail->variation }})</span>
                                     @endif
                                 </td>
                             </tr>
-                            
+
                             <!-- SKU -->
                             @php
-                                $product_stock = json_decode($orderDetail->product->stocks->first(), true);
+                                $product_stock = json_decode($orderDetail->item->stocks->first(), true);
                                 @endphp
                             @if($show_sku == 1)
                             <tr>

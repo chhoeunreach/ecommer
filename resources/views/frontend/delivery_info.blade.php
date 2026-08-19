@@ -61,10 +61,12 @@
                                 $admin_product_variation = array();
                                 $seller_product_variation = array();
                                 foreach ($carts as $key => $cartItem){
-                                    $product = get_single_product($cartItem['product_id']);
+                                    $cart_product_type = $cartItem['product_type'] ?? 'product';
+                                    $product = get_single_product($cartItem['product_id'], $cart_product_type);
+                                    if (!$product) { continue; }
 
                                     if($product->added_by == 'admin'){
-                                        array_push($admin_products, $cartItem['product_id']);
+                                        array_push($admin_products, ['id' => $cartItem['product_id'], 'type' => $cart_product_type]);
                                         $admin_product_variation[] = $cartItem['variation'];
                                     }
                                     else{
@@ -72,7 +74,7 @@
                                         if(isset($seller_products[$product->user_id])){
                                             $product_ids = $seller_products[$product->user_id];
                                         }
-                                        array_push($product_ids, $cartItem['product_id']);
+                                        array_push($product_ids, ['id' => $cartItem['product_id'], 'type' => $cart_product_type]);
                                         $seller_products[$product->user_id] = $product_ids;
                                         $seller_product_variation[] = $cartItem['variation'];
                                     }
@@ -96,17 +98,18 @@
                                         @php
                                             $physical = false;
                                         @endphp
-                                        @foreach ($admin_products as $key => $cartItem)
+                                        @foreach ($admin_products as $key => $admin_product)
                                             @php
-                                                $product = get_single_product($cartItem);
-                                                if ($product->digital == 0) {
+                                                $product = get_single_product($admin_product['id'], $admin_product['type']);
+                                                if ($product && $product->digital == 0) {
                                                     $physical = true;
                                                 }
                                             @endphp
+                                            @if ($product)
                                             <li class="list-group-item">
                                                 <div class="d-flex align-items-center">
                                                     <span class="mr-2 mr-md-3">
-                                                        <img src="{{ get_image($product->thumbnail) }}"
+                                                        <img src="{{ uploaded_asset($product->thumbnail_img) }}"
                                                             class="img-fit size-60px"
                                                             alt="{{  $product->getTranslation('name')  }}"
                                                             onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
@@ -120,6 +123,7 @@
                                                     </span>
                                                 </div>
                                             </li>
+                                            @endif
                                         @endforeach
                                     </ul>
                                     <!-- Choose Delivery Type -->
@@ -257,17 +261,18 @@
                                                 @php
                                                     $physical = false;
                                                 @endphp
-                                                @foreach ($seller_product as $key2 => $cartItem)
+                                                @foreach ($seller_product as $key2 => $seller_item)
                                                     @php
-                                                        $product = get_single_product($cartItem);
-                                                        if ($product->digital == 0) {
+                                                        $product = get_single_product($seller_item['id'], $seller_item['type']);
+                                                        if ($product && $product->digital == 0) {
                                                             $physical = true;
                                                         }
                                                     @endphp
+                                                    @if ($product)
                                                     <li class="list-group-item">
                                                         <div class="d-flex align-items-center">
                                                             <span class="mr-2 mr-md-3">
-                                                                <img src="{{ get_image($product->thumbnail) }}"
+                                                                <img src="{{ uploaded_asset($product->thumbnail_img) }}"
                                                                     class="img-fit size-60px"
                                                                     alt="{{  $product->getTranslation('name')  }}"
                                                                     onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
@@ -281,6 +286,7 @@
                                                             </span>
                                                         </div>
                                                     </li>
+                                                    @endif
                                                 @endforeach
                                             </ul>
                                             <!-- Choose Delivery Type -->

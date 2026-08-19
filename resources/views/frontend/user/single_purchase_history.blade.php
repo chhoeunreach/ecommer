@@ -122,17 +122,17 @@
                     <div class="row">
                         <div class="col-md-6 d-flex align-items-center">
 
-                            @if ($orderDetail->product)
+                            @if ($orderDetail->item)
                             <div class="w-50px h-50px border border-gray-400 rounded-1 overflow-hidden mr-3 flex-shrink-0 d-flex align-items-center justify-content-center">
-                                <img src="{{ uploaded_asset($orderDetail->product->thumbnail_img) }}"
+                                <img src="{{ uploaded_asset($orderDetail->item->thumbnail_img) }}"
                                     class="img-fluid img-fit  product-history-img">
                             </div>
-                                
+
 
                                 <div class="text-wrap">
                                     <div class="font-weight-semibold fs-14 product-name-color text-truncate-2"
-                                        title="{{ $orderDetail->product->getTranslation('name') }}">
-                                        {{ $orderDetail->product->getTranslation('name') }}
+                                        title="{{ $orderDetail->item->getTranslation('name') }}">
+                                        {{ $orderDetail->item->getTranslation('name') }}
                                     </div>
   
                                     <div class="text-muted small mb-2 mobile-title-shift">

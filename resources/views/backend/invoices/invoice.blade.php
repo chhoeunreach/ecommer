@@ -477,19 +477,19 @@
 						</thead>
 						<tbody class="strong">
 							@foreach ($order->orderDetails as $key => $orderDetail)
-								@if ($orderDetail->product != null)
+								@if ($orderDetail->item != null)
 									<tr class="">
 										@if($show_product_image == 1)
 											<td>
-												@if($orderDetail->product->thumbnail_img != null)
-													<img src="{{ uploaded_asset($orderDetail->product->thumbnail_img) }}" alt=""  height="50" style="display:inline-block;"> 
+												@if($orderDetail->item->thumbnail_img != null)
+													<img src="{{ uploaded_asset($orderDetail->item->thumbnail_img) }}" alt=""  height="50" style="display:inline-block;">
 												@else
 													<img src="{{ static_asset('assets/img/logo.png') }}" height="30" style="display:inline-block;">
 												@endif
 											</td>
 										@endif
 										<td>
-											{{ $orderDetail->product->name }} 
+											{{ $orderDetail->item->name }}
 											@if($show_product_variation == 1)
 											@if($orderDetail->variation != null) ({{ $orderDetail->variation }}) @endif
 											@endif
@@ -497,7 +497,7 @@
 											<br>
 											<small>
 												@php
-													$product_stock = json_decode($orderDetail->product->stocks->first(), true);
+													$product_stock = json_decode($orderDetail->item->stocks->first(), true);
 												@endphp
 												{{translate('SKU')}}: {{ $product_stock['sku'] ?? 'N/A' }}
 											</small>
