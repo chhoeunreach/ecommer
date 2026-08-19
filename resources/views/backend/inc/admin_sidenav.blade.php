@@ -133,6 +133,12 @@
                                                     style="color: {{ get_setting('navbar_text_color') }}">{{translate('Accessories')}}</span>
                                             </a>
                                         </li>
+                                        <li class="aiz-side-nav-item">
+                                            <a class="aiz-side-nav-link {{ areActiveRoutes(['admin.computers.index', 'admin.computers.create', 'admin.computers.edit']) ? 'active' : '' }}" href="{{ route('admin.computers.index') }}">
+                                                <span class="aiz-side-nav-text"
+                                                    style="color: {{ get_setting('navbar_text_color') }}">{{translate('Computer')}}</span>
+                                            </a>
+                                        </li>
                                         @can('add_new_product')
                                             <li class="aiz-side-nav-item">
                                                 <a class="aiz-side-nav-link" href="{{route('products.create')}}">
@@ -1664,7 +1670,7 @@
                                 <li class="aiz-side-nav-item">
                                     <a href="{{ route('global_seo') }}" class="aiz-side-nav-link">
                                         <span class="aiz-side-nav-text"
-                                            style="color: {{ get_setting('navbar_text_color') }}">{{translate('Global SEO')}}</span>
+                                            style="color: {{ get_setting('navbar_text_color') }}">{{translate('Shop & SEO Settings')}}</span>
                                     </a>
                                 </li>
                             @endcan

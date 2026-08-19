@@ -278,6 +278,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/accessories/destroy/{id}', 'destroy')->name('admin.accessories.destroy');
     });
 
+    // Computer
+    Route::resource('computers', App\Http\Controllers\Admin\ComputerController::class, ['as' => 'admin'])->except(['destroy']);
+    Route::controller(App\Http\Controllers\Admin\ComputerController::class)->group(function () {
+        Route::post('/computers/update-status', 'update_status')->name('admin.computers.update_status');
+        Route::get('/computers/destroy/{id}', 'destroy')->name('admin.computers.destroy');
+        Route::post('/computers/sku-combination', 'sku_combination')->name('admin.computers.sku_combination');
+        Route::post('/computers/sku-combination-edit', 'sku_combination_edit')->name('admin.computers.sku_combination_edit');
+    });
+
     Route::controller(ProductBulkUploadController::class)->group(function () {
         //Product Export
         Route::get('/product-bulk-export', 'export')->name('product_bulk_export.index');

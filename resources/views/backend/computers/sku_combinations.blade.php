@@ -6,16 +6,28 @@
 			<td class="text-center" data-breakpoints="lg" style="min-width: 120px;">
 				{{translate('SKU')}}
 			</td>
-			<td class="text-center" style="min-width: 120px;">
-				{{translate('Variant')}}
+			<td class="text-center" style="min-width: 110px;">
+				{{translate('Storage')}}
 			</td>
-			<td class="text-center" style="min-width: 140px;">
-				{{translate('Quantity')}}
+			<td class="text-center" style="min-width: 110px;">
+				{{translate('Display')}}
 			</td>
-			<td class="text-center" style="min-width: 140px;">
-				{{translate('Variant Price')}}
+			<td class="text-center" style="min-width: 100px;">
+				{{translate('RAM')}}
 			</td>
-			<td class="text-center" data-breakpoints="lg" style="min-width: 210px;">
+			<td class="text-center" style="min-width: 130px;">
+				{{translate('CPU')}}
+			</td>
+			<td class="text-center" style="min-width: 130px;">
+				{{translate('Chip')}}
+			</td>
+			<td class="text-center" style="min-width: 130px;">
+				{{translate('Price')}}
+			</td>
+			<td class="text-center" style="min-width: 110px;">
+				{{translate('Stock')}}
+			</td>
+			<td class="text-center" data-breakpoints="lg" style="min-width: 190px;">
 				{{translate('Photo')}}
 			</td>
 			<td class="text-center" style="min-width: 80px;">
@@ -32,8 +44,10 @@
 			}
 
 			$str = '';
-			foreach ($combination as $key => $item){
-				if($key > 0 ){
+			$rowValues = [];
+			foreach ($combination as $idx => $item){
+				$label = $optionLabels[$idx] ?? null;
+				if($idx > 0 ){
 					$str .= '-'.str_replace(' ', '', $item);
 					$sku .='-'.str_replace(' ', '', $item);
 				}
@@ -48,6 +62,9 @@
 						$sku .='-'.str_replace(' ', '', $item);
 					}
 				}
+				if ($label && $label !== 'Color') {
+					$rowValues[$label] = $item;
+				}
 			}
 		@endphp
 		@if(strlen($str) > 0)
@@ -59,14 +76,30 @@
 				<td>
 					<input type="text" name="sku_{{ $fieldKey }}" value="{{ request()->has('sku_'.$fieldKey) ? request()->input('sku_'.$fieldKey) : $str }}" class="form-control">
 				</td>
+				@foreach (['Storage' => 'storage', 'Display' => 'display', 'RAM' => 'ram', 'CPU' => 'cpu', 'Chip' => 'chip'] as $label => $field)
+					@php
+						$selected = request()->input($field.'_'.$fieldKey, $rowValues[$label] ?? '');
+					@endphp
+					<td>
+						<button type="button" class="form-control variant-attr-toggle">
+							<span class="variant-attr-toggle-label">{{ $selected !== '' ? $selected : '-' }}</span>
+							<i class="las la-angle-down variant-attr-caret"></i>
+						</button>
+						<select name="{{ $field }}_{{ $fieldKey }}" class="variant-attr-select" multiple style="display:none;">
+							@foreach (($attributeValueOptions[$label] ?? []) as $val)
+								<option value="{{ $val }}" @selected($selected == $val)>{{ $val }}</option>
+							@endforeach
+						</select>
+						<a href="javascript:void(0)" class="add-variant-attr-value text-blue fs-11 fw-600 d-block mt-1" data-field="{{ $field }}" data-attribute-id="{{ $attributeIdsByLabel[$label] ?? '' }}" data-attribute-name="{{ $label }}">
+							<i class="las la-plus"></i> {{ translate('Add New') }}
+						</a>
+					</td>
+				@endforeach
 				<td>
-					<span class="variant-name-badge">{{ $str }}</span>
+					<input type="number" lang="en" name="price_{{ $fieldKey }}" value="{{ request()->input('price_'.$fieldKey, $unit_price) }}" min="0" step="0.01" class="form-control" required>
 				</td>
 				<td>
 					<input type="number" lang="en" name="qty_{{ $fieldKey }}" value="{{ request()->input('qty_'.$fieldKey, 10) }}" min="0" step="1" class="form-control" required>
-				</td>
-				<td>
-					<input type="number" lang="en" name="price_{{ $fieldKey }}" value="{{ request()->input('price_'.$fieldKey, $unit_price) }}" min="0" step="0.01" class="form-control" required>
 				</td>
 				<td>
 					<div class="input-group variant-photo-uploader" data-toggle="aizuploader" data-type="image">

@@ -1,4 +1,35 @@
 <style>
+    /* Appended to <body> when open, so it can never be clipped by the table's scroll box. */
+    .variant-attr-dropdown-menu {
+        background: #fff;
+        border: 1px solid #dbe2ea;
+        border-radius: 8px;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, .14);
+        max-height: 230px;
+        overflow-y: auto;
+        padding: 6px;
+        z-index: 10000;
+    }
+
+    .variant-attr-dropdown-menu .variant-attr-option {
+        align-items: center;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        font-size: 13px;
+        gap: 8px;
+        margin: 0;
+        padding: 7px 8px;
+    }
+
+    .variant-attr-dropdown-menu .variant-attr-option:hover {
+        background: #f1f5f9;
+    }
+
+    .variant-attr-dropdown-menu .variant-attr-option input[type="checkbox"] {
+        margin: 0;
+    }
+
     #sku_combination .product-variant-table {
         border-collapse: separate;
         border-spacing: 0;
@@ -119,6 +150,46 @@
         border-radius: 7px;
         height: 38px;
         width: 38px;
+    }
+
+    #sku_combination .product-variant-table .variant-attr-toggle {
+        align-items: center;
+        background-color: #fff;
+        cursor: pointer;
+        display: flex;
+        font-size: 13px;
+        justify-content: space-between;
+        text-align: left;
+    }
+
+    #sku_combination .product-variant-table .variant-attr-toggle:hover {
+        border-color: #b9c6d5;
+    }
+
+    #sku_combination .product-variant-table .variant-attr-toggle-label {
+        color: #1e293b;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #sku_combination .product-variant-table .variant-attr-toggle .variant-attr-caret {
+        color: #94a3b8;
+        flex-shrink: 0;
+        font-size: 12px;
+        margin-left: 8px;
+    }
+
+    #sku_combination .product-variant-table .add-variant-attr-value {
+        text-decoration: none;
+    }
+
+    #sku_combination .product-variant-table .add-variant-attr-value:hover {
+        text-decoration: underline;
+    }
+
+    #sku_combination .product-variant-table .add-variant-attr-value i {
+        font-size: 11px;
     }
 
     @media (max-width: 991px) {

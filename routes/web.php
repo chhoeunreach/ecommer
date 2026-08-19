@@ -293,6 +293,10 @@ Route::resource('subscribers', SubscriberController::class)->only(['store']);
 // Accessories
 Route::get('/accessories', [App\Http\Controllers\AccessoryController::class, 'index'])->name('accessories.index');
 Route::get('/accessories/{id}', [App\Http\Controllers\AccessoryController::class, 'show'])->name('accessories.show');
+
+// Computer
+Route::get('/computers', [App\Http\Controllers\ComputerController::class, 'index'])->name('computers.index');
+Route::get('/computers/{id}', [App\Http\Controllers\ComputerController::class, 'show'])->name('computers.show');
 Route::group(['middleware' => ['user', 'verified', 'unbanned']], function () {
 
     Route::controller(HomeController::class)->group(function () {

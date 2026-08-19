@@ -51,8 +51,8 @@
         <meta property="og:url" content="{{ url()->current() }}" />
         <meta property="og:image" content="{{ $meta_image_asset }}" />
         <meta property="og:description" content="{{ $meta_description }}" />
-        <meta property="og:site_name" content="{{ get_setting('website_name') ?: env('APP_NAME') }}" />
-        <meta property="fb:app_id" content="{{ env('FACEBOOK_PIXEL_ID') }}">
+        <meta property="og:site_name" content="{{ get_setting('website_name') ?: config('app.name') }}" />
+        <meta property="fb:app_id" content="{{ config('services.facebook_pixel.id') }}">
     @endif
 
     <!-- Favicon -->
@@ -389,13 +389,13 @@
 
 @if (get_setting('google_analytics') == 1)
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ env('TRACKING_ID') }}"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google_analytics.tracking_id') }}"></script>
 
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', '{{ env('TRACKING_ID') }}');
+        gtag('config', '{{ config('services.google_analytics.tracking_id') }}');
     </script>
 @endif
 
@@ -410,11 +410,11 @@
         t.src=v;s=b.getElementsByTagName(e)[0];
         s.parentNode.insertBefore(t,s)}(window, document,'script',
         'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '{{ env('FACEBOOK_PIXEL_ID') }}');
+        fbq('init', '{{ config('services.facebook_pixel.id') }}');
         fbq('track', 'PageView');
     </script>
     <noscript>
-        <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{ env('FACEBOOK_PIXEL_ID') }}&ev=PageView&noscript=1"/>
+        <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{ config('services.facebook_pixel.id') }}&ev=PageView&noscript=1"/>
     </noscript>
     <!-- End Facebook Pixel Code -->
 @endif
@@ -736,7 +736,7 @@
         <script type="text/javascript">
             (function () {
                 var options = {
-                    whatsapp: "{{ env('WHATSAPP_NUMBER') }}",
+                    whatsapp: "{{ config('services.whatsapp.number') }}",
                     call_to_action: "{{ translate('Message us') }}",
                     position: "right", // Position may be 'right' or 'left'
                 };

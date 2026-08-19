@@ -67,4 +67,12 @@ return [
     'number' => env('WHATSAPP_NUMBER'),
 ],
 
+    'facebook_pixel' => [
+        'id' => env('FACEBOOK_PIXEL_ID'),
+    ],
+
+    'google_analytics' => [
+        'tracking_id' => env('TRACKING_ID'),
+    ],
+
 ];

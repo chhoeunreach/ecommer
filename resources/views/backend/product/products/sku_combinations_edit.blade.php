@@ -9,9 +9,6 @@
             <td class="text-center" style="min-width: 120px;">
                 {{translate('Variant')}}
             </td>
-            <td class="text-center" style="min-width: 190px;">
-                {{translate('Storage')}}
-            </td>
             <td class="text-center" style="min-width: 140px;">
                 {{translate('Quantity')}}
             </td>
@@ -58,33 +55,10 @@
             @php
                 $fieldKey = md5($str);
                 $variantColorCode = $colors_active == 1 ? ($combination[0] ?? '') : '';
-                $matchingStocks = $product->stocks->filter(function ($candidate) use ($str) {
-                    if ($candidate->variant === $str) {
-                        return true;
-                    }
-
-                    $storageKey = $candidate->storage ? str_replace(' ', '', $candidate->storage) : null;
-                    return $storageKey && $candidate->variant === $str.'-'.$storageKey;
-                });
-                $stock = $matchingStocks->first();
-                $stockSku = $stock != null ? $stock->sku : $str;
-                $stockStorageKey = $stock != null && $stock->storage ? '-'.str_replace(' ', '', $stock->storage) : null;
-                if ($stockStorageKey && str_ends_with($stockSku, $stockStorageKey)) {
-                    $stockSku = substr($stockSku, 0, -strlen($stockStorageKey));
-                }
-                
-                $val_sku = request()->has('sku_'.$fieldKey) ? request()->input('sku_'.$fieldKey) : $stockSku;
-                $selectedStorages = request()->has('storage_'.$fieldKey)
-                    ? request()->input('storage_'.$fieldKey)
-                    : $matchingStocks->pluck('storage')->filter()->unique()->values()->all();
-                $selectedStorages = is_array($selectedStorages) ? $selectedStorages : preg_split('/[,\r\n]+/', $selectedStorages);
-                $selectedStorages = array_values(array_filter(array_map('trim', $selectedStorages)));
-                $storageOptions = array_values(array_unique(array_merge(
-                    ['4GB', '8GB', '16GB', '32GB', '64GB', '128GB', '256GB', '512GB', '1TB', '2TB'],
-                    $selectedStorages
-                )));
+                $stock = $product->stocks->firstWhere('variant', $str);
+                $val_sku = request()->has('sku_'.$fieldKey) ? request()->input('sku_'.$fieldKey) : ($stock != null ? $stock->sku : $str);
                 $val_qty = request()->has('qty_'.$fieldKey) ? request()->input('qty_'.$fieldKey) : ($stock != null ? $stock->qty : '10');
-                
+
                 if (request()->has('price_'.$fieldKey)) {
                     $val_price = request()->input('price_'.$fieldKey);
                 } elseif ($product->unit_price == $unit_price) {
@@ -92,7 +66,7 @@
                 } else {
                     $val_price = $unit_price;
                 }
-                
+
                 $val_img = request()->has('img_'.$fieldKey) ? request()->input('img_'.$fieldKey) : ($stock != null ? $stock->image : null);
             @endphp
             <tr class="variant" data-color-code="{{ $variantColorCode }}">
@@ -103,42 +77,10 @@
                     <span class="variant-name-badge">{{ $str }}</span>
                 </td>
                 <td>
-                    <select name="storage_{{ $fieldKey }}[]" class="form-control aiz-selectpicker show-tick variant-storage-select" data-field-key="{{ $fieldKey }}" data-default-price="{{ $unit_price }}" onchange="syncStorageStockFields(this)" multiple data-live-search="true" data-actions-box="true" data-container="body" data-width="100%" data-selected-text-format="count > 2" title="{{ translate('Choose Storage') }}">
-                        @foreach ($storageOptions as $storageOption)
-                            <option value="{{ $storageOption }}" @selected(in_array($storageOption, $selectedStorages))>{{ $storageOption }}</option>
-                        @endforeach
-                    </select>
-                    <small class="variant-storage-help">{{ translate('Select storage to configure its quantity and price') }}</small>
+                    <input type="number" lang="en" name="qty_{{ $fieldKey }}" value="{{ $val_qty }}" min="0" step="1" class="form-control" required>
                 </td>
                 <td>
-                    <div class="storage-quantity-fields">
-                        @if (count($selectedStorages) > 0)
-                            @foreach ($selectedStorages as $storageOption)
-                                @php($storageStock = $matchingStocks->firstWhere('storage', $storageOption))
-                                <div class="storage-stock-field mb-2">
-                                    <small class="d-block text-muted mb-1">{{ $storageOption }}</small>
-                                    <input type="number" lang="en" name="qty_{{ $fieldKey }}[{{ $storageOption }}]" data-storage="{{ $storageOption }}" value="{{ request()->input('qty_'.$fieldKey.'.'.$storageOption, $storageStock != null ? $storageStock->qty : 10) }}" min="0" step="1" class="form-control" required>
-                                </div>
-                            @endforeach
-                        @else
-                            <input type="number" lang="en" name="qty_{{ $fieldKey }}" value="{{ $val_qty }}" min="0" step="1" class="form-control" required>
-                        @endif
-                    </div>
-                </td>
-                <td>
-                    <div class="storage-price-fields">
-                        @if (count($selectedStorages) > 0)
-                            @foreach ($selectedStorages as $storageOption)
-                                @php($storageStock = $matchingStocks->firstWhere('storage', $storageOption))
-                                <div class="storage-stock-field mb-2">
-                                    <small class="d-block text-muted mb-1">{{ $storageOption }}</small>
-                                    <input type="number" lang="en" name="price_{{ $fieldKey }}[{{ $storageOption }}]" data-storage="{{ $storageOption }}" value="{{ request()->input('price_'.$fieldKey.'.'.$storageOption, $storageStock != null ? $storageStock->price : $unit_price) }}" min="0" step="0.01" class="form-control" required>
-                                </div>
-                            @endforeach
-                        @else
-                            <input type="number" lang="en" name="price_{{ $fieldKey }}" value="{{ $val_price }}" min="0" step="0.01" class="form-control" required>
-                        @endif
-                    </div>
+                    <input type="number" lang="en" name="price_{{ $fieldKey }}" value="{{ $val_price }}" min="0" step="0.01" class="form-control" required>
                 </td>
                 <td>
                     <div class="input-group variant-photo-uploader" data-toggle="aizuploader" data-type="image">
