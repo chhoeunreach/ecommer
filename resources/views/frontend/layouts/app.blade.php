@@ -1844,15 +1844,18 @@
         addDetail(lines, @json('តំណភ្ជាប់ផលិតផល'), productUrl);
         lines.push('', @json('សូមជួយផ្តល់ព័ត៌មានបន្ថែមផង។ អរគុណ!'));
 
+        // Update the link's own href and let the browser perform a real navigation
+        // instead of window.open(): mobile browsers only hand a t.me link off to the
+        // Telegram app on a genuine top-level navigation, not on a JS-opened popup.
         try {
             var baseUrl = button.dataset.telegramUrl || button.getAttribute('href') || 'https://t.me/';
             var telegramUrl = new URL(baseUrl, window.location.origin);
             telegramUrl.searchParams.set('text', lines.join('\n'));
-            window.open(telegramUrl.toString(), button.target || '_blank');
-            return false;
+            button.href = telegramUrl.toString();
         } catch (e) {
-            return true;
+            // Leave button.href as the plain telegram URL already set in the markup.
         }
+        return true;
     }
     </script>
 

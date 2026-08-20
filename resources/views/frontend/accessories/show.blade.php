@@ -447,19 +447,18 @@
             addDetail(lines, @json('តំណភ្ជាប់ផលិតផល'), window.location.href.split('#')[0]);
             lines.push('', @json('សូមជួយផ្តល់ព័ត៌មានបន្ថែមផង។ អរគុណ!'));
 
+            // Update the link's own href and let the browser perform a real navigation
+            // instead of window.open(): mobile browsers only hand a t.me link off to the
+            // Telegram app on a genuine top-level navigation, not on a JS-opened popup.
             try {
                 var telegramUrl = new URL(button.dataset.telegramUrl, window.location.origin);
                 telegramUrl.searchParams.set('text', lines.join('\n'));
-                window.open(
-                    telegramUrl.toString(),
-                    button.hasAttribute('target') ? '_blank' : '_self',
-                    button.hasAttribute('target') ? 'noopener,noreferrer' : undefined
-                );
+                button.href = telegramUrl.toString();
             } catch (error) {
-                window.location.href = button.href;
+                // Leave button.href as the plain telegram URL already set in the markup.
             }
 
-            return false;
+            return true;
         }
 
         // Override getVariantPrice so it doesn't trigger ajax for accessories and hide buttons

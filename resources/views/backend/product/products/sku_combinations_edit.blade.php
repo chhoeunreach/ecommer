@@ -83,27 +83,34 @@
             $groupSize = count($rowKeys);
         @endphp
         
-        <div class="card mb-4 variant-card border-primary" data-field-key="{{ $fieldKey }}" data-color-code="{{ $variantColorCode }}">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
-                <h6 class="mb-0 fw-600">{{ translate('Variant') }}: <span class="badge badge-inline badge-primary fs-14">{{ $str }}</span></h6>
+        <div class="variant-card" data-field-key="{{ $fieldKey }}" data-color-code="{{ $variantColorCode }}">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <span class="text-muted fs-13 fw-600 mr-2">{{ translate('VARIANT') }}</span>
+                    <span class="badge-custom">{{ $str }}</span>
+                </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-bordered mb-0">
+                    <table class="clean-variant-table mb-0">
                         <thead>
                             <tr>
-                                <th width="150" class="bg-light fw-600 align-middle text-center border-right" style="border-right: 1px solid #e8edf3;">{{ translate('Attribute') }}</th>
+                                <th width="150"></th>
                                 @foreach($rowKeys as $index => $rowKey)
-                                <th class="text-center align-middle bg-soft-secondary variant-column-{{ $rowKey }}" style="min-width: 200px;">
-                                    {{ translate('Option') }} {{ $index + 1 }}
-                                    <button type="button" class="btn btn-icon btn-xs btn-danger float-right" onclick="deleteProductVariantColumn(this)"><i class="las la-trash"></i></button>
+                                <th class="text-center align-middle variant-column-{{ $rowKey }}" style="min-width: 240px;">
+                                    <div class="d-flex justify-content-between align-items-center px-2">
+                                        <span>{{ translate('OPTION') }} {{ $index + 1 }}</span>
+                                        <button type="button" class="btn-delete-col" onclick="deleteProductVariantColumn(this)" title="Remove Option">
+                                            <i class="las la-trash fs-18"></i>
+                                        </button>
+                                    </div>
                                 </th>
                                 @endforeach
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="bg-light fw-600 align-middle text-center border-right" style="border-right: 1px solid #e8edf3;">{{ translate('Storage') }}</td>
+                                <td class="attribute-label">{{ translate('Storage') }}</td>
                                 @foreach($rowKeys as $rowKey)
                                 <td class="variant-column-{{ $rowKey }}">
                                     <input type="hidden" name="storage_rows_{{ $fieldKey }}[]" value="{{ $rowKey }}" class="row-key-tracker">
@@ -126,7 +133,7 @@
                                 @endforeach
                             </tr>
                             <tr>
-                                <td class="bg-light fw-600 align-middle text-center border-right" style="border-right: 1px solid #e8edf3;">{{ translate('SKU') }}</td>
+                                <td class="attribute-label">{{ translate('SKU') }}</td>
                                 @foreach($rowKeys as $rowKey)
                                 <td class="variant-column-{{ $rowKey }}">
                                     @php
@@ -138,7 +145,7 @@
                                 @endforeach
                             </tr>
                             <tr>
-                                <td class="bg-light fw-600 align-middle text-center border-right" style="border-right: 1px solid #e8edf3;">{{ translate('Country') }}</td>
+                                <td class="attribute-label">{{ translate('Country') }}</td>
                                 @foreach($rowKeys as $rowKey)
                                 <td class="variant-column-{{ $rowKey }}">
                                     @php
@@ -156,7 +163,7 @@
                                 @endforeach
                             </tr>
                             <tr>
-                                <td class="bg-light fw-600 align-middle text-center border-right" style="border-right: 1px solid #e8edf3;">{{ translate('Condition') }}</td>
+                                <td class="attribute-label">{{ translate('Condition') }}</td>
                                 @foreach($rowKeys as $rowKey)
                                 <td class="variant-column-{{ $rowKey }}">
                                     @php
@@ -174,7 +181,7 @@
                                 @endforeach
                             </tr>
                             <tr>
-                                <td class="bg-light fw-600 align-middle text-center border-right" style="border-right: 1px solid #e8edf3;">{{ translate('Code') }}</td>
+                                <td class="attribute-label">{{ translate('Code') }}</td>
                                 @foreach($rowKeys as $rowKey)
                                 <td class="variant-column-{{ $rowKey }}">
                                     @php
@@ -186,7 +193,7 @@
                                 @endforeach
                             </tr>
                             <tr>
-                                <td class="bg-light fw-600 align-middle text-center border-right" style="border-right: 1px solid #e8edf3;">{{ translate('Quantity') }}</td>
+                                <td class="attribute-label">{{ translate('Quantity') }}</td>
                                 @foreach($rowKeys as $rowKey)
                                 <td class="variant-column-{{ $rowKey }}">
                                     @php
@@ -198,7 +205,7 @@
                                 @endforeach
                             </tr>
                             <tr>
-                                <td class="bg-light fw-600 align-middle text-center border-right" style="border-right: 1px solid #e8edf3;">{{ translate('Price') }}</td>
+                                <td class="attribute-label">{{ translate('Price') }}</td>
                                 @foreach($rowKeys as $rowKey)
                                 <td class="variant-column-{{ $rowKey }}">
                                     @php
@@ -212,7 +219,7 @@
                                 @endforeach
                             </tr>
                             <tr>
-                                <td class="bg-light fw-600 align-middle text-center border-right" style="border-right: 1px solid #e8edf3;">{{ translate('Photo') }}</td>
+                                <td class="attribute-label">{{ translate('Photo') }}</td>
                                 @foreach($rowKeys as $rowKey)
                                 <td class="variant-column-{{ $rowKey }}">
                                     @php
