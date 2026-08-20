@@ -1084,8 +1084,8 @@
  
         <!-- Featured Product & Best Selling Start -->
         @if (get_setting('enable_featured_products') == 1 || get_setting('enable_best_selling_products') == 1)
-            <div class="border-bottom">
-                <div class="layout-container mx-auto px-3 feactured-best-selling-product-section">
+            <div class="border-bottom ky-product-showcase-shell">
+                <div class="layout-container mx-auto px-3 feactured-best-selling-product-section ky-product-showcase">
                     <div class="row">
                         @php
                             $featured_products_title_sub_text = get_setting('featured_products_title_sub_text', null);
@@ -1093,22 +1093,23 @@
                         @endphp
                         <!-- Featured Products Start -->
                         @if (get_setting('enable_featured_products') == 1 && count(get_featured_products()) > 0)
-                            <div class="@if (get_setting('enable_featured_products') == 1 && get_setting('enable_best_selling_products') == 1) col-lg-6 @else col-lg-12 @endif py-30px featured-products-wrapper">
+                            <section class="@if (get_setting('enable_featured_products') == 1 && get_setting('enable_best_selling_products') == 1) col-lg-6 @else col-lg-12 @endif py-30px featured-products-wrapper ky-showcase-panel" aria-labelledby="featured-products-heading">
                                 <!-- Heading -->
-                                <div class="d-flex flex-wrap  align-items-start justify-content-between" style="gap: 12px">
-                                    <div class="flex-grow-1">
-                                        <h5 class="fs-20 fs-md-20 fw-bold mb-1">{{ translate('Featured Products') }}</h5>
-                                        <span class="fs-14 fw-400 text-reset">{{ $featured_products_title_sub_text }}
-                                        </span>
+                                <div class="d-flex align-items-center justify-content-between ky-showcase-heading">
+                                    <div class="flex-grow-1 ky-showcase-heading-copy">
+                                        <h5 id="featured-products-heading" class="fs-20 fs-md-20 fw-bold mb-0">{{ translate('Featured Products') }}</h5>
+                                        @if (!empty($featured_products_title_sub_text) && trim(strtolower($featured_products_title_sub_text)) !== trim(strtolower(translate('Featured Products'))))
+                                            <span class="fs-14 fw-400 text-reset ky-showcase-subtitle">{{ $featured_products_title_sub_text }}</span>
+                                        @endif
                                     </div>
-                                    <div>
+                                    <div class="ky-showcase-action">
                                         <a href="{{route('featured-products')}}"
-                                            class="fs-12 fw-bold text-white bg-dark px-3 py-2 rounded-pill hov-opacity-80 has-transition">{{ translate('View All') }}</a>
+                                            class="fs-12 fw-bold text-white bg-dark rounded-pill hov-opacity-80 has-transition ky-showcase-view-all">{{ translate('View All') }} <span aria-hidden="true">&rarr;</span></a>
                                     </div>
                                 </div>
 
                                 <!-- Slider -->
-                                <div class="aiz-carousel arrow-x-0 arrow-inactive-none  custom-product-slider overflow-hidden mt-4"
+                                <div class="aiz-carousel arrow-x-0 arrow-inactive-none custom-product-slider overflow-hidden mt-4 ky-showcase-slider"
                                     @if (get_setting('enable_featured_products') == 1 && get_setting('enable_best_selling_products') == 1) 
                                         data-items="4.2" data-full-hd-items="4.2" data-xxl-items="3" data-xl-items="3" data-lg-items="3" 
                                     @else 
@@ -1116,27 +1117,53 @@
                                     @endif
                                     data-md-items="4" data-sm-items="3" data-xs-items="2" data-arrows='false' data-autoplay="true" data-infinite="true">
                                     @foreach (get_featured_products() as $key => $product)
-                                        <div class="">
+                                        <article class="ky-showcase-card ky-skeleton-host">
+                                            @include('frontend.kneayerng_v1.partials.skeleton_card')
+                                            @if (discount_in_percentage($product) > 0)
+                                                <span class="ky-mobile-discount-badge">-{{ discount_in_percentage($product) }}%</span>
+                                            @endif
+                                            <button type="button" class="ky-mobile-favorite" onclick="addToWishList({{ $product->id }})" aria-label="{{ translate('Add to wishlist') }}">
+                                                <i class="lar la-heart"></i>
+                                            </button>
                                             <a href="{{ route('product', $product->slug) }}" title="{{ $product->getTranslation('name') }}"
-                                                class="d-block overflow-hidden text-center hov-scale-img rounded-2 img-aspect-ratio-300px">
+                                                class="d-block overflow-hidden text-center hov-scale-img rounded-2 img-aspect-ratio-300px ky-showcase-image">
                                                 <img class="w-100 lazyload  has-transition"
                                                     src="{{ static_asset('assets/img/placeholder.jpg') }}" data-src="{{ get_image($product->thumbnail) }}"
                                                     alt="{{ $product->getTranslation('name') }}"
                                                     onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
                                             </a>
                                             <a href="{{ route('product', $product->slug) }}" title="{{ $product->getTranslation('name') }}"
-                                                class="fs-14 fw-400 text-reset d-block mt-3 product-title hov-text-blue has-transition">{{ $product->getTranslation('name') }}
+                                                class="fs-14 fw-600 text-reset d-block mt-3 product-title hov-text-blue has-transition ky-showcase-title">{{ $product->getTranslation('name') }}
                                             </a>
-                                            <p class="mt-2 mb-0">
-                                                <span class="fs-13 fs-md-16 text-dark fw-bold mr-1">{{ home_discounted_base_price($product) }}</span>
+                                            <span class="ky-showcase-variant">{{ translate('New') }}</span>
+                                            <p class="mt-2 mb-0 ky-showcase-price">
+                                                <span class="fs-13 fs-md-16 text-dark fw-bold mr-1 ky-showcase-current-price">{{ home_discounted_base_price($product) }}</span>
                                                 @if (home_base_price($product) != home_discounted_base_price($product))
                                                     <del class="fs-11 fs-md-14 text-gray fw-400 ">{{ home_base_price($product) }}</del>
                                                 @endif
                                             </p>
-                                        </div>
+                                            @php
+                                                $showcaseColors = is_string($product->colors) ? json_decode($product->colors, true) : $product->colors;
+                                                $showcaseAttributes = is_string($product->attributes) ? json_decode($product->attributes, true) : $product->attributes;
+                                                $showcaseHasOptions = (is_array($showcaseColors) && count($showcaseColors) > 0) || (is_array($showcaseAttributes) && count($showcaseAttributes) > 0);
+                                            @endphp
+                                            @if ($product->auction_product == 0)
+                                                <button type="button" class="ky-mobile-card-action {{ $showcaseHasOptions ? 'has-options' : 'is-simple' }}"
+                                                    @if ($showcaseHasOptions)
+                                                        onclick="showAddToCartRightCanvas({{ $product->id }})"
+                                                    @elseif (Auth::check() || get_Setting('guest_checkout_activation') == 1)
+                                                        onclick="addToCartSingleProduct({{ $product->id }})"
+                                                    @else
+                                                        onclick="showLoginModal()"
+                                                    @endif
+                                                    aria-label="{{ $showcaseHasOptions ? translate('Select Options') : translate('Add to Cart') }}">
+                                                    @if ($showcaseHasOptions)<span>{{ translate('Select Options') }}</span>@else<i class="las la-plus"></i>@endif
+                                                </button>
+                                            @endif
+                                        </article>
                                     @endforeach
                                 </div>
-                            </div>
+                            </section>
                         @endif
                         <!-- Featured Products End -->
 
@@ -1145,22 +1172,23 @@
                             $best_selling_products = get_best_selling_products(20);
                         @endphp
                         @if (get_setting('best_selling') == 1 && count($best_selling_products) > 0 && get_setting('enable_best_selling_products') == 1)
-                            <div class="@if (get_setting('enable_featured_products') == 1 && get_setting('enable_best_selling_products') == 1) col-lg-6 @else col-lg-12 @endif py-30px best-selling-products-wrapper">
+                            <section class="@if (get_setting('enable_featured_products') == 1 && get_setting('enable_best_selling_products') == 1) col-lg-6 @else col-lg-12 @endif py-30px best-selling-products-wrapper ky-showcase-panel" aria-labelledby="best-selling-heading">
                                 <!-- Heading -->
-                                <div class="d-flex flex-wrap  align-items-start justify-content-between" style="gap: 12px">
-                                    <div class="flex-grow-1">
-                                        <h5 class="fs-20 fs-md-20 fw-bold mb-1">{{ translate('Best Selling') }}</h5>
-                                        <span class="fs-14 fw-400 text-reset">{{ $best_selling_products_title_sub_text }}
-                                        </span>
+                                <div class="d-flex align-items-center justify-content-between ky-showcase-heading">
+                                    <div class="flex-grow-1 ky-showcase-heading-copy">
+                                        <h5 id="best-selling-heading" class="fs-20 fs-md-20 fw-bold mb-0">{{ translate('Best Selling') }}</h5>
+                                        @if (!empty($best_selling_products_title_sub_text) && trim(strtolower($best_selling_products_title_sub_text)) !== trim(strtolower(translate('Best Selling'))))
+                                            <span class="fs-14 fw-400 text-reset ky-showcase-subtitle">{{ $best_selling_products_title_sub_text }}</span>
+                                        @endif
                                     </div>
-                                    <div>
+                                    <div class="ky-showcase-action">
                                         <a href="{{route('best-selling')}}"
-                                            class="fs-12 fw-bold text-white bg-dark px-3 py-2 rounded-pill hov-opacity-80 has-transition">{{ translate('View All') }}</a>
+                                            class="fs-12 fw-bold text-white bg-dark rounded-pill hov-opacity-80 has-transition ky-showcase-view-all">{{ translate('View All') }} <span aria-hidden="true">&rarr;</span></a>
                                     </div>
                                 </div>
 
                                 <!-- Slider -->
-                                <div class="aiz-carousel arrow-x-0 arrow-inactive-none  custom-product-slider overflow-hidden mt-4"
+                                <div class="aiz-carousel arrow-x-0 arrow-inactive-none custom-product-slider overflow-hidden mt-4 ky-showcase-slider"
                                     @if (get_setting('enable_featured_products') == 1 && get_setting('enable_best_selling_products') == 1) 
                                         data-items="4.2" data-full-hd-items="4.2" data-xxl-items="3" data-xl-items="3" data-lg-items="3" 
                                     @else 
@@ -1169,9 +1197,16 @@
                                     data-md-items="4" data-sm-items="3" data-xs-items="2" data-arrows='false'
                                     data-autoplay="true" data-infinite="true">
                                     @foreach ($best_selling_products as $key => $product)
-                                        <div class="">
+                                        <article class="ky-showcase-card ky-skeleton-host">
+                                            @include('frontend.kneayerng_v1.partials.skeleton_card')
+                                            @if (discount_in_percentage($product) > 0)
+                                                <span class="ky-mobile-discount-badge">-{{ discount_in_percentage($product) }}%</span>
+                                            @endif
+                                            <button type="button" class="ky-mobile-favorite" onclick="addToWishList({{ $product->id }})" aria-label="{{ translate('Add to wishlist') }}">
+                                                <i class="lar la-heart"></i>
+                                            </button>
                                             <a href="{{ route('product', $product->slug) }}" title="{{ $product->getTranslation('name') }}"
-                                                class="d-block overflow-hidden text-center hov-scale-img rounded-2 img-aspect-ratio-300px">
+                                                class="d-block overflow-hidden text-center hov-scale-img rounded-2 img-aspect-ratio-300px ky-showcase-image">
                                                 <img class="w-100 lazyload  has-transition"
                                                     src="{{ static_asset('assets/img/placeholder.jpg') }}"
                                                     data-src="{{ get_image($product->thumbnail) }}"
@@ -1179,18 +1214,37 @@
                                                     onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
                                             </a>
                                             <a href="{{ route('product', $product->slug) }}"
-                                                class="fs-14 fw-400 text-reset d-block mt-3 product-title hov-text-blue has-transition">{{ $product->getTranslation('name') }}
+                                                class="fs-14 fw-600 text-reset d-block mt-3 product-title hov-text-blue has-transition ky-showcase-title">{{ $product->getTranslation('name') }}
                                             </a>
-                                            <p class="mt-2 mb-0">
-                                                <span class="fs-13 fs-md-16 text-dark fw-bold mr-1">{{ home_discounted_base_price($product) }}</span>
+                                            <span class="ky-showcase-variant">{{ translate('New') }}</span>
+                                            <p class="mt-2 mb-0 ky-showcase-price">
+                                                <span class="fs-13 fs-md-16 text-dark fw-bold mr-1 ky-showcase-current-price">{{ home_discounted_base_price($product) }}</span>
                                                 @if (home_base_price($product) != home_discounted_base_price($product))
                                                     <del class="fs-11 fs-md-14 text-gray fw-400 ">{{ home_base_price($product) }}</del>
                                                 @endif
                                             </p>
-                                        </div>
+                                            @php
+                                                $showcaseColors = is_string($product->colors) ? json_decode($product->colors, true) : $product->colors;
+                                                $showcaseAttributes = is_string($product->attributes) ? json_decode($product->attributes, true) : $product->attributes;
+                                                $showcaseHasOptions = (is_array($showcaseColors) && count($showcaseColors) > 0) || (is_array($showcaseAttributes) && count($showcaseAttributes) > 0);
+                                            @endphp
+                                            @if ($product->auction_product == 0)
+                                                <button type="button" class="ky-mobile-card-action {{ $showcaseHasOptions ? 'has-options' : 'is-simple' }}"
+                                                    @if ($showcaseHasOptions)
+                                                        onclick="showAddToCartRightCanvas({{ $product->id }})"
+                                                    @elseif (Auth::check() || get_Setting('guest_checkout_activation') == 1)
+                                                        onclick="addToCartSingleProduct({{ $product->id }})"
+                                                    @else
+                                                        onclick="showLoginModal()"
+                                                    @endif
+                                                    aria-label="{{ $showcaseHasOptions ? translate('Select Options') : translate('Add to Cart') }}">
+                                                    @if ($showcaseHasOptions)<span>{{ translate('Select Options') }}</span>@else<i class="las la-plus"></i>@endif
+                                                </button>
+                                            @endif
+                                        </article>
                                     @endforeach
                                 </div>
-                            </div>
+                            </section>
                         @endif
                         <!-- Best Selling End -->
                     </div>
@@ -1766,16 +1820,24 @@
 
         <!-- Products Start -->
         <div class="layout-container px-3 py-5 mx-auto" id="nexa-product-wrapper" data-products-per-row="8">
-            <div id="section_newest"></div>
+            <div id="section_newest">
+                <div class="products-wrapper-grid ky-initial-skeleton-grid" role="status" aria-label="{{ translate('Loading products') }}">
+                    @for ($skeletonIndex = 0; $skeletonIndex < 8; $skeletonIndex++)
+                        <div class="grid-item single-product-item ky-initial-skeleton-card">
+                            @include('frontend.kneayerng_v1.partials.skeleton_card')
+                        </div>
+                    @endfor
+                </div>
+            </div>
 
             <!-- Accessories Section -->
             @if(isset($accessories) && count($accessories) > 0)
-            <div class="mt-5">
+            <div class="mt-5 ky-accessories-section">
                 <div class="d-flex mb-3 align-items-baseline border-bottom">
                     <h3 class="h5 fw-700 mb-0">
                         <span class="border-bottom border-primary border-width-2 pb-3 d-inline-block">{{ translate('New Accessories') }}</span>
                     </h3>
-                    <a href="{{ route('accessories.index') }}" class="ml-auto mr-0 btn btn-primary btn-sm shadow-md">{{ translate('View More') }}</a>
+                    <a href="{{ route('accessories.index') }}" class="ml-auto mr-0 btn btn-primary btn-sm shadow-md ky-accessories-view-all">{{ translate('View all') }} <span aria-hidden="true">&rarr;</span></a>
                 </div>
                 <div class="products-wrapper-grid" id="newest-accessories-list">
                     @foreach ($accessories as $accessory)
@@ -1953,11 +2015,48 @@
             });
         };
 
+        const prepareSkeletonCards = function () {
+            home.querySelectorAll('.ky-skeleton-host:not(.ky-skeleton-bound)').forEach(function (card) {
+                card.classList.add('ky-skeleton-bound');
+
+                const primaryImage = card.querySelector('.product-main-image, .ky-showcase-image img');
+                const revealCard = function () {
+                    card.classList.add('ky-skeleton-loaded');
+                };
+
+                if (!primaryImage) {
+                    revealCard();
+                    return;
+                }
+
+                const hasPendingLazySource = Boolean(primaryImage.dataset.src) && !primaryImage.classList.contains('lazyloaded');
+                if (primaryImage.complete && primaryImage.naturalWidth > 0 && !hasPendingLazySource) {
+                    revealCard();
+                    return;
+                }
+
+                primaryImage.addEventListener('lazyloaded', revealCard, { once: true });
+                primaryImage.addEventListener('load', function () {
+                    if (!primaryImage.dataset.src || primaryImage.classList.contains('lazyloaded')) {
+                        revealCard();
+                    }
+                });
+                primaryImage.addEventListener('error', revealCard, { once: true });
+
+                // Never leave real product content covered if an image request stalls.
+                window.setTimeout(revealCard, 8000);
+            });
+        };
+
         prepareProductCards();
+        prepareSkeletonCards();
 
         const newestSection = document.getElementById('section_newest');
         if (newestSection && 'MutationObserver' in window) {
-            new MutationObserver(prepareProductCards).observe(newestSection, {
+            new MutationObserver(function () {
+                prepareProductCards();
+                prepareSkeletonCards();
+            }).observe(newestSection, {
                 childList: true,
                 subtree: true
             });

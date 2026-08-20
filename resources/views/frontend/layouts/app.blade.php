@@ -433,7 +433,7 @@
 @endphp
 
 </head>
-<body>
+<body class="aiz-page-{{ get_setting('homepage_select') }}">
     <!-- aiz-main-wrapper -->
     <div class="aiz-main-wrapper d-flex flex-column bg-white aiz-{{ get_setting('homepage_select') }}">
         @php
@@ -489,12 +489,20 @@
             @if($custom_alert->id == 1)
                 <div class="aiz-cookie-alert mb-3" style="box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.24);">
                     <div class="p-3 px-lg-2rem rounded-2" style="background: {{ $custom_alert->background_color }};">
-                        <div class="text-{{ $custom_alert->text_color }} mb-3">
-                            {!! $custom_alert->description !!}
-                        </div>
-                        <button class="btn btn-block btn-primary rounded-0 aiz-cookie-accept">
-                            {{ translate('Ok. I Understood') }}
-                        </button>
+                        @if (get_setting('homepage_select') == 'kneayerng_v1')
+                            <div class="ky-cookie-copy">{{ translate('We use cookies to improve your shopping experience.') }}</div>
+                            <div class="ky-cookie-actions">
+                                <a href="{{ route('privacypolicy') }}" class="ky-cookie-manage">{{ translate('Manage settings') }}</a>
+                                <a href="#" role="button" class="aiz-cookie-accept ky-cookie-accept">{{ translate('Accept') }}</a>
+                            </div>
+                        @else
+                            <div class="text-{{ $custom_alert->text_color }} mb-3">
+                                {!! $custom_alert->description !!}
+                            </div>
+                            <button class="btn btn-block btn-primary rounded-0 aiz-cookie-accept">
+                                {{ translate('Ok. I Understood') }}
+                            </button>
+                        @endif
                     </div>
                 </div>
             @elseif($custom_alert->id == 200)

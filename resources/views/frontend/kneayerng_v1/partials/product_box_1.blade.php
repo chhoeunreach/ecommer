@@ -5,7 +5,8 @@
         $product_url = route('auction-product', $product->slug);
     }
 @endphp
-<div class="aiz-card-box shadcn-product-card">
+<div class="aiz-card-box shadcn-product-card ky-skeleton-host">
+    @include('frontend.kneayerng_v1.partials.skeleton_card')
     <div class="shadcn-card-img-wrap">
         <!-- Image -->
         <a href="{{ $product_url }}" class="d-block h-100 position-relative">
@@ -77,14 +78,17 @@
                     {{ $product->getTranslation('name') }}
                 </a>
             </h3>
+            @if ($product->auction_product == 0)
+                <div class="ky-product-variant">{{ translate('New') }}</div>
+            @endif
 
             <!-- Pricing -->
             <div class="shadcn-price-container">
                 @if ($product->auction_product == 0)
+                    <span class="shadcn-price-current">{{ home_discounted_base_price($product) }}</span>
                     @if (home_base_price($product) != home_discounted_base_price($product))
                         <span class="shadcn-price-old">{{ home_base_price($product) }}</span>
                     @endif
-                    <span class="shadcn-price-current">{{ home_discounted_base_price($product) }}</span>
                 @else
                     <span class="shadcn-price-current">{{ single_price($product->starting_bid) }}</span>
                 @endif
@@ -100,15 +104,16 @@
                 @endphp
 
                 @if ( (is_array($colors) && count($colors) > 0) || (is_array($attributes) && count($attributes) > 0) )
-                    <a class="shadcn-cta-btn @if (in_array($product->id, $cart_added)) active @endif"
+                    <a class="shadcn-cta-btn ky-options-button @if (in_array($product->id, $cart_added)) active @endif"
                         href="javascript:void(0)" onclick="showAddToCartRightCanvas({{ $product->id }})">
                         <i class="las la-sliders-h"></i>
-                        <span>{{ translate('Select Option') }}</span>
+                        <span>{{ translate('Select Options') }}</span>
                     </a>
                 @else
-                    <a class="shadcn-cta-btn @if (in_array($product->id, $cart_added)) active @endif"
+                    <a class="shadcn-cta-btn ky-add-button @if (in_array($product->id, $cart_added)) active @endif"
                         href="javascript:void(0)" @if (Auth::check() || get_Setting('guest_checkout_activation') == 1) onclick="addToCartSingleProduct({{ $product->id }})" @else onclick="showLoginModal()" @endif>
-                        <i class="las la-shopping-cart"></i>
+                        <i class="las la-shopping-cart ky-desktop-cart-icon"></i>
+                        <i class="las la-plus ky-mobile-plus-icon" aria-hidden="true"></i>
                         <span>{{ translate('Add to Cart') }}</span>
                     </a> 
                 @endif

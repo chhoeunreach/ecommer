@@ -12,7 +12,8 @@
         }
     }
 @endphp
-<div class="aiz-card-box shadcn-product-card">
+<div class="aiz-card-box shadcn-product-card ky-skeleton-host">
+    @include('frontend.kneayerng_v1.partials.skeleton_card')
     <div class="shadcn-card-img-wrap">
         <!-- Image -->
         <a href="{{ $product_url }}" class="d-block h-100 position-relative">
@@ -44,10 +45,10 @@
 
             <!-- Pricing -->
             <div class="shadcn-price-container">
+                <span class="shadcn-price-current">{{ single_price($discounted_price) }}</span>
                 @if ($price != $discounted_price)
                     <span class="shadcn-price-old">{{ single_price($price) }}</span>
                 @endif
-                <span class="shadcn-price-current">{{ single_price($discounted_price) }}</span>
             </div>
         </div>
     </div>

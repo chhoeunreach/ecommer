@@ -49,7 +49,53 @@
         </button>
     </div>
     @endif
-	@include('header.' .get_element_type_by_id(get_setting('header_element')))
+	<div class="ky-existing-site-header">
+		@include('header.' .get_element_type_by_id(get_setting('header_element')))
+	</div>
+
+@if (get_setting('homepage_select') == 'kneayerng_v1')
+    @php
+        $mobileNavCategories = get_level_zero_categories()->take(5);
+        $mobileCartCount = count(get_user_cart());
+    @endphp
+    <header class="ky-mobile-app-header d-md-none">
+        <div class="ky-mobile-header-bar">
+            <button type="button" class="ky-mobile-header-button" aria-label="{{ translate('Open menu') }}"
+                data-toggle="class-toggle" data-target=".aiz-top-menu-sidebar">
+                <i class="las la-bars"></i>
+            </button>
+            <a href="{{ route('home') }}" class="ky-mobile-brand" aria-label="{{ translate('Home') }}">
+                <span class="ky-mobile-brand-mark">A</span>
+                <span class="ky-mobile-brand-name">ACTIVE <strong>ECOMMERCE CMS</strong></span>
+            </a>
+            <a href="{{ route('cart') }}" class="ky-mobile-header-button ky-mobile-cart-button" aria-label="{{ translate('Cart') }}">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20 7H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="9.5" cy="19.5" r="1.25" fill="currentColor"/>
+                    <circle cx="17.5" cy="19.5" r="1.25" fill="currentColor"/>
+                </svg>
+                @if ($mobileCartCount > 0)
+                    <span class="ky-mobile-cart-count cart-count">{{ $mobileCartCount }}</span>
+                @endif
+            </a>
+        </div>
+
+        <form action="{{ route('search') }}" method="GET" class="ky-mobile-search-form">
+            <i class="las la-search" aria-hidden="true"></i>
+            <input type="search" name="keyword" value="{{ $query ?? '' }}"
+                placeholder="{{ translate('Search products...') }}" aria-label="{{ translate('Search products') }}">
+        </form>
+
+        <nav class="ky-mobile-category-pills" aria-label="{{ translate('Product categories') }}">
+            <a href="{{ route('categories.all') }}" class="ky-mobile-category-pill active">{{ translate('All') }}</a>
+            @foreach ($mobileNavCategories as $mobileNavCategory)
+                <a href="{{ route('products.category', $mobileNavCategory->slug) }}" class="ky-mobile-category-pill">
+                    {{ $mobileNavCategory->getTranslation('name') }}
+                </a>
+            @endforeach
+        </nav>
+    </header>
+@endif
 <!-- Top Menu Sidebar -->
 <div class="aiz-top-menu-sidebar collapse-sidebar-wrap sidebar-xl sidebar-left d-lg-none z-1035">
     <div class="overlay overlay-fixed dark c-pointer" data-toggle="class-toggle" data-target=".aiz-top-menu-sidebar"

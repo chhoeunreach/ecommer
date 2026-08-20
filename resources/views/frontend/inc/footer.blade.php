@@ -124,6 +124,40 @@
 @include('footer.' .get_element_type_by_id(get_setting('footer_element')))
 
 <!-- Mobile bottom nav -->
+@if (get_setting('homepage_select') == 'kneayerng_v1')
+    @php $mobileBottomCartCount = count(get_user_cart()); @endphp
+    <nav class="ky-mobile-bottom-nav d-md-none" aria-label="{{ translate('Primary navigation') }}">
+        <a href="{{ route('home') }}" class="ky-mobile-nav-item {{ areActiveRoutes(['home'], 'active') }}">
+            <i class="las la-home"></i>
+            <span>{{ translate('Home') }}</span>
+        </a>
+        <a href="{{ route('categories.all') }}" class="ky-mobile-nav-item {{ areActiveRoutes(['categories.all'], 'active') }}">
+            <i class="las la-th-large"></i>
+            <span>{{ translate('Categories') }}</span>
+        </a>
+        <a href="{{ route('cart') }}" class="ky-mobile-nav-item {{ areActiveRoutes(['cart'], 'active') }}">
+            <span class="ky-mobile-nav-icon-wrap">
+                <i class="las la-shopping-bag"></i>
+                @if ($mobileBottomCartCount > 0)
+                    <span class="ky-mobile-nav-badge cart-count">{{ $mobileBottomCartCount }}</span>
+                @endif
+            </span>
+            <span>{{ translate('Cart') }}</span>
+        </a>
+        @auth
+            <a href="{{ isAdmin() ? route('admin.dashboard') : route('dashboard') }}" class="ky-mobile-nav-item {{ areActiveRoutes(['dashboard'], 'active') }}">
+                <i class="las la-user"></i>
+                <span>{{ translate('Account') }}</span>
+            </a>
+        @else
+            <a href="{{ route('user.login') }}" class="ky-mobile-nav-item {{ areActiveRoutes(['user.login'], 'active') }}">
+                <i class="las la-user"></i>
+                <span>{{ translate('Account') }}</span>
+            </a>
+        @endauth
+    </nav>
+@endif
+
 <div class="aiz-mobile-bottom-nav d-xl-none fixed-bottom border-top border-sm-bottom border-sm-left border-sm-right mx-auto mb-sm-2"
     style="background-color: rgb(255 255 255 / 90%)!important;">
     <div class="row align-items-center gutters-5">
