@@ -1,8 +1,12 @@
 @if(count($combinations) > 0)
 @php
-    $storageOptions = \App\Models\AttributeValue::where('attribute_id', 4)->get();
-    $countryOptions = \App\Models\AttributeValue::where('attribute_id', 8)->get();
-    $conditionOptions = \App\Models\AttributeValue::where('attribute_id', 9)->get();
+    $storageAttr = \App\Models\Attribute::where('name', 'Storage')->first();
+    $countryAttr = \App\Models\Attribute::where('name', 'Code country')->first();
+    $conditionAttr = \App\Models\Attribute::where('name', 'Condition')->first();
+
+    $storageOptions = $storageAttr ? \App\Models\AttributeValue::where('attribute_id', $storageAttr->id)->get() : collect();
+    $countryOptions = $countryAttr ? \App\Models\AttributeValue::where('attribute_id', $countryAttr->id)->get() : collect();
+    $conditionOptions = $conditionAttr ? \App\Models\AttributeValue::where('attribute_id', $conditionAttr->id)->get() : collect();
 @endphp
 @include('backend.product.products.storage_variant_styles')
 
