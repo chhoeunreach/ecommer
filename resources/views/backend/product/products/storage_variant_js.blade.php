@@ -1,3 +1,91 @@
+@php
+    // This partial is shared by both the admin and seller product pages, which
+    // each have their own (identically named) attribute-value-store route.
+    $addAttributeValueRouteName = request()->is('seller/*')
+        ? 'seller.products.add-new-attribute-value'
+        : 'products.add-new-attribute-value';
+@endphp
+
+// Quick-add a new value for a fixed attribute (Storage/Country/Condition) from the
+// variant table, without leaving the page. Reuses the same right-offcanvas panel the
+// rest of the admin uses for quick-add forms, and adds the value to every select for
+// that field on success.
+function add_new_fixed_attribute_value(attributeId, label, fieldPrefix) {
+    var $offcanvas = $('#globalRightOffcanvas');
+    var $overlay = $('#globalRightOffcanvasOverlay');
+
+    if (!$offcanvas.length || !$overlay.length) {
+        return;
+    }
+
+    $offcanvas.addClass('active').html(
+        '<div class="border-sm-bottom pb-15px px-30px">' +
+            '<div class="d-flex align-items-center justify-content-between">' +
+                '<h6 class="fs-16 fw-700 text-dark mb-0">{{ translate("Add New") }} ' + label + '</h6>' +
+                '<button onclick="closeglobalRightOffcanvas()" class="border-0 bg-transparent">✕</button>' +
+            '</div>' +
+        '</div>' +
+        '<div class="right-offcanvas-body position-absolute h-100 px-30px pt-20px">' +
+            '<div class="form-group mb-3">' +
+                '<label class="col-from-label" for="new_fixed_attribute_value">' + label + '</label>' +
+                '<input type="text" placeholder="' + label + '" id="new_fixed_attribute_value" class="form-control" required>' +
+            '</div>' +
+        '</div>' +
+        '<div class="w-100 px-30px position-absolute bottom-0 bg-white right-offcavas-footer pt-20px pb-20px">' +
+            '<div class="d-flex justify-content-end">' +
+                '<button type="button" class="fs-14 fw-700 py-10px px-20px btn btn-primary" id="save-fixed-attribute-value">' +
+                    '{{ translate("Save") }}' +
+                '</button>' +
+            '</div>' +
+        '</div>'
+    );
+    $overlay.addClass('active');
+    $('body').addClass('body-no-scroll');
+    $('#new_fixed_attribute_value').trigger('focus');
+
+    $(document)
+        .off('click.saveFixedAttributeValue')
+        .on('click.saveFixedAttributeValue', '#save-fixed-attribute-value', function () {
+            var $button = $(this);
+            var value = $.trim($('#new_fixed_attribute_value').val() || '');
+
+            if (!value) {
+                AIZ.plugins.notify('warning', '{{ translate("Please enter a value.") }}');
+                return;
+            }
+
+            $button.prop('disabled', true);
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ route($addAttributeValueRouteName) }}',
+                data: {
+                    _token: AIZ.data.csrf,
+                    attribute_id: attributeId,
+                    value: value
+                },
+                success: function () {
+                    var displayValue = value.charAt(0).toUpperCase() + value.slice(1);
+                    $('select[name^="' + fieldPrefix + '"]').each(function () {
+                        var $select = $(this);
+                        if ($select.find('option[value="' + displayValue + '"]').length === 0) {
+                            $select.append($('<option>', {value: displayValue, text: displayValue}));
+                            if ($select.parent().hasClass('bootstrap-select')) {
+                                $select.selectpicker('refresh');
+                            }
+                        }
+                    });
+                    closeglobalRightOffcanvas();
+                    AIZ.plugins.notify('success', '{{ translate("Value added") }}');
+                },
+                error: function () {
+                    AIZ.plugins.notify('danger', '{{ translate("Something went wrong") }}');
+                    $button.prop('disabled', false);
+                }
+            });
+        });
+}
+
 // Row-based variant tables (Computers create/edit) delete a whole <tr>.
 function deleteProductVariant(element) {
     $(element).closest('tr.variant').remove();

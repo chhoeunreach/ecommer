@@ -1,8 +1,8 @@
 @if(count($combinations) > 0)
 @php
-    $storageAttr = \App\Models\Attribute::where('name', 'Storage')->first();
-    $countryAttr = \App\Models\Attribute::where('name', 'Code country')->first();
-    $conditionAttr = \App\Models\Attribute::where('name', 'Condition')->first();
+    $storageAttr = \App\Models\Attribute::firstOrCreate(['name' => 'Storage']);
+    $countryAttr = \App\Models\Attribute::firstOrCreate(['name' => 'Code country']);
+    $conditionAttr = \App\Models\Attribute::firstOrCreate(['name' => 'Condition']);
 
     $storageOptions = $storageAttr ? \App\Models\AttributeValue::where('attribute_id', $storageAttr->id)->get() : collect();
     $countryOptions = $countryAttr ? \App\Models\AttributeValue::where('attribute_id', $countryAttr->id)->get() : collect();
@@ -114,7 +114,12 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="attribute-label">{{ translate('Storage') }}</td>
+                                <td class="attribute-label">
+    {{ translate('Storage') }}
+    <a href="javascript:void(0)" onclick="add_new_fixed_attribute_value({{ $storageAttr->id ?? 4 }}, 'Storage', 'storage_')" class="text-blue fs-12 fw-600 has-transition d-block mt-1">
+        <i class="las la-plus mr-1"></i>{{ translate('Add New') }}
+    </a>
+</td>
                                 @foreach($rowKeys as $rowKey)
                                 <td class="variant-column-{{ $rowKey }}">
                                     <input type="hidden" name="storage_rows_{{ $fieldKey }}[]" value="{{ $rowKey }}" class="row-key-tracker">
@@ -149,7 +154,12 @@
                                 @endforeach
                             </tr>
                             <tr>
-                                <td class="attribute-label">{{ translate('Country') }}</td>
+                                <td class="attribute-label">
+    {{ translate('Country') }}
+    <a href="javascript:void(0)" onclick="add_new_fixed_attribute_value({{ $countryAttr->id ?? 8 }}, 'Country', 'country_')" class="text-blue fs-12 fw-600 has-transition d-block mt-1">
+        <i class="las la-plus mr-1"></i>{{ translate('Add New') }}
+    </a>
+</td>
                                 @foreach($rowKeys as $rowKey)
                                 <td class="variant-column-{{ $rowKey }}">
                                     @php
@@ -167,7 +177,12 @@
                                 @endforeach
                             </tr>
                             <tr>
-                                <td class="attribute-label">{{ translate('Condition') }}</td>
+                                <td class="attribute-label">
+    {{ translate('Condition') }}
+    <a href="javascript:void(0)" onclick="add_new_fixed_attribute_value({{ $conditionAttr->id ?? 9 }}, 'Condition', 'condition_')" class="text-blue fs-12 fw-600 has-transition d-block mt-1">
+        <i class="las la-plus mr-1"></i>{{ translate('Add New') }}
+    </a>
+</td>
                                 @foreach($rowKeys as $rowKey)
                                 <td class="variant-column-{{ $rowKey }}">
                                     @php
