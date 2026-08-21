@@ -1194,7 +1194,7 @@
     }
 
     .kneayerng-home .ky-accessories-section {
-        margin: 0 !important;
+        margin: 26px 0 0 !important;
     }
 
     .kneayerng-home .ky-accessories-section > .d-flex {
@@ -1246,10 +1246,57 @@
         width: 150px;
         min-width: 150px;
         flex: 0 0 150px;
+        align-self: flex-start;
         padding: 0;
         border: 0;
         border-radius: 18px;
         scroll-snap-align: start;
+    }
+
+    .kneayerng-home #newest-accessories-list .ky-accessory-card {
+        height: auto !important;
+        min-height: 0;
+    }
+
+    .kneayerng-home #newest-accessories-list .ky-accessory-card .shadcn-card-img-wrap {
+        aspect-ratio: 1 / 1;
+    }
+
+    .kneayerng-home #newest-accessories-list .ky-accessory-card .product-main-image {
+        padding: 8px;
+    }
+
+    .kneayerng-home #newest-accessories-list .ky-accessory-card .shadcn-card-body {
+        min-height: 92px;
+        padding: 10px !important;
+    }
+
+    .kneayerng-home #newest-accessories-list .ky-accessory-card .shadcn-product-title {
+        display: -webkit-box !important;
+        height: 35px !important;
+        margin: 0 0 7px !important;
+        overflow: hidden !important;
+        font-size: 12.5px !important;
+        font-weight: 650 !important;
+        line-height: 1.4 !important;
+        text-overflow: ellipsis;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .kneayerng-home #newest-accessories-list .ky-accessory-card .shadcn-price-container {
+        min-height: 21px;
+        margin: 0 !important;
+        padding: 0;
+        gap: 2px 5px !important;
+    }
+
+    .kneayerng-home #newest-accessories-list .ky-accessory-card .shadcn-price-current {
+        font-size: 14px !important;
+    }
+
+    .kneayerng-home #newest-accessories-list .ky-accessory-card .shadcn-price-old {
+        font-size: 9px !important;
     }
 
     .kneayerng-home .shadcn-product-card {
@@ -1299,8 +1346,15 @@
 
     .kneayerng-home .shadcn-card-body {
         position: relative;
-        min-height: 116px;
+        min-height: 148px;
         padding: 11px !important;
+    }
+
+    .kneayerng-home .shadcn-card-action {
+        display: flex;
+        align-items: flex-end;
+        margin-top: auto;
+        padding-top: 8px;
     }
 
     .kneayerng-home .shadcn-product-title {
@@ -1343,16 +1397,24 @@
     }
 
     .kneayerng-home .shadcn-cta-btn {
-        position: absolute;
-        right: 10px;
-        bottom: 10px;
-        width: auto !important;
-        min-width: 32px;
-        height: 32px !important;
-        padding: 0 9px !important;
+        position: static;
+        width: 100% !important;
+        min-width: 0;
+        height: 34px !important;
+        padding: 0 10px !important;
         border-radius: 10px !important;
         background: #7c3aed !important;
         box-shadow: 0 5px 12px rgba(124, 58, 237, 0.24) !important;
+    }
+
+    .kneayerng-home .shadcn-cta-btn.ky-add-button {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        width: 32px !important;
+        min-width: 32px;
+        height: 32px !important;
+        padding: 0 !important;
     }
 
     .kneayerng-home .shadcn-cta-btn.ky-add-button span,
@@ -1366,8 +1428,8 @@
     }
 
     .kneayerng-home .shadcn-cta-btn.ky-options-button {
-        max-width: 94px;
-        font-size: 9px !important;
+        max-width: none;
+        font-size: 10px !important;
         white-space: nowrap;
     }
 

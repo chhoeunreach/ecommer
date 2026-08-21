@@ -65,8 +65,15 @@
                 <i class="las la-bars"></i>
             </button>
             <a href="{{ route('home') }}" class="ky-mobile-brand" aria-label="{{ translate('Home') }}">
-                <span class="ky-mobile-brand-mark">A</span>
-                <span class="ky-mobile-brand-name">ACTIVE <strong>ECOMMERCE CMS</strong></span>
+                @php
+                    $header_logo = get_setting('header_logo');
+                @endphp
+                @if ($header_logo != null)
+                    <img src="{{ uploaded_asset($header_logo) }}" alt="{{ env('APP_NAME') }}" height="40" class="mw-100">
+                @else
+                    <span class="ky-mobile-brand-mark">A</span>
+                    <span class="ky-mobile-brand-name">ACTIVE <strong>ECOMMERCE CMS</strong></span>
+                @endif
             </a>
             <a href="{{ route('cart') }}" class="ky-mobile-header-button ky-mobile-cart-button" aria-label="{{ translate('Cart') }}">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">

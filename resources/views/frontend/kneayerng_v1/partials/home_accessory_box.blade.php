@@ -12,7 +12,7 @@
         }
     }
 @endphp
-<div class="aiz-card-box shadcn-product-card ky-skeleton-host">
+<div class="aiz-card-box shadcn-product-card ky-skeleton-host ky-accessory-card">
     @include('frontend.kneayerng_v1.partials.skeleton_card')
     <div class="shadcn-card-img-wrap">
         <!-- Image -->

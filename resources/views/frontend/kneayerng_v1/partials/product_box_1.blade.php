@@ -71,7 +71,7 @@
 
     <!-- Card Content -->
     <div class="shadcn-card-body">
-        <div>
+        <div class="shadcn-card-content">
             <!-- Product Title -->
             <h3 class="shadcn-product-title">
                 <a href="{{ $product_url }}" title="{{ $product->getTranslation('name') }}">
@@ -96,7 +96,7 @@
         </div>
 
         <!-- Action Button (Add to Cart / Option / Bid) -->
-        <div>
+        <div class="shadcn-card-action">
             @if ($product->auction_product == 0)
                 @php
                     $colors = is_string($product->colors) ? json_decode($product->colors, true) : $product->colors;

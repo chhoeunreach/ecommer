@@ -18,6 +18,18 @@ function add_new_fixed_attribute_value(attributeId, label, fieldPrefix) {
         return;
     }
 
+    // Storage values are always "<number>GB" — take just the digits and add the
+    // unit ourselves, instead of asking the admin to type "GB" every time.
+    var isStorage = fieldPrefix === 'storage_';
+    var fieldHtml = isStorage
+        ? '<div class="input-group">' +
+                '<input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="{{ translate("e.g. 512") }}" id="new_fixed_attribute_value" class="form-control" required>' +
+                '<div class="input-group-append">' +
+                    '<span class="input-group-text">GB</span>' +
+                '</div>' +
+            '</div>'
+        : '<input type="text" placeholder="' + label + '" id="new_fixed_attribute_value" class="form-control" required>';
+
     $offcanvas.addClass('active').html(
         '<div class="border-sm-bottom pb-15px px-30px">' +
             '<div class="d-flex align-items-center justify-content-between">' +
@@ -28,7 +40,7 @@ function add_new_fixed_attribute_value(attributeId, label, fieldPrefix) {
         '<div class="right-offcanvas-body position-absolute h-100 px-30px pt-20px">' +
             '<div class="form-group mb-3">' +
                 '<label class="col-from-label" for="new_fixed_attribute_value">' + label + '</label>' +
-                '<input type="text" placeholder="' + label + '" id="new_fixed_attribute_value" class="form-control" required>' +
+                fieldHtml +
             '</div>' +
         '</div>' +
         '<div class="w-100 px-30px position-absolute bottom-0 bg-white right-offcavas-footer pt-20px pb-20px">' +
@@ -43,16 +55,35 @@ function add_new_fixed_attribute_value(attributeId, label, fieldPrefix) {
     $('body').addClass('body-no-scroll');
     $('#new_fixed_attribute_value').trigger('focus');
 
+    if (isStorage) {
+        $(document)
+            .off('input.fixedAttributeValueDigitsOnly')
+            .on('input.fixedAttributeValueDigitsOnly', '#new_fixed_attribute_value', function () {
+                var digits = this.value.replace(/[^0-9]/g, '');
+                if (digits !== this.value) {
+                    this.value = digits;
+                }
+            });
+    }
+
     $(document)
         .off('click.saveFixedAttributeValue')
         .on('click.saveFixedAttributeValue', '#save-fixed-attribute-value', function () {
             var $button = $(this);
-            var value = $.trim($('#new_fixed_attribute_value').val() || '');
+            var rawValue = $.trim($('#new_fixed_attribute_value').val() || '');
 
-            if (!value) {
-                AIZ.plugins.notify('warning', '{{ translate("Please enter a value.") }}');
+            if (isStorage) {
+                rawValue = rawValue.replace(/[^0-9]/g, '');
+            }
+
+            if (!rawValue) {
+                AIZ.plugins.notify('warning', isStorage
+                    ? '{{ translate("Please enter a number.") }}'
+                    : '{{ translate("Please enter a value.") }}');
                 return;
             }
+
+            var value = isStorage ? (rawValue + 'GB') : rawValue;
 
             $button.prop('disabled', true);
 
@@ -65,7 +96,7 @@ function add_new_fixed_attribute_value(attributeId, label, fieldPrefix) {
                     value: value
                 },
                 success: function () {
-                    var displayValue = value.charAt(0).toUpperCase() + value.slice(1);
+                    var displayValue = isStorage ? value : (value.charAt(0).toUpperCase() + value.slice(1));
                     $('select[name^="' + fieldPrefix + '"]').each(function () {
                         var $select = $(this);
                         if ($select.find('option[value="' + displayValue + '"]').length === 0) {
