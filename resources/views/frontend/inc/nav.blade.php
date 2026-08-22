@@ -49,11 +49,16 @@
         </button>
     </div>
     @endif
-	<div class="ky-existing-site-header">
+	<div class="ky-existing-site-header @if(get_setting('homepage_select') == 'kneayerng_v1') d-none d-md-block @endif">
 		@include('header.' .get_element_type_by_id(get_setting('header_element')))
 	</div>
 
 @if (get_setting('homepage_select') == 'kneayerng_v1')
+    <style>
+        .ky-mobile-app-header {
+            background-color: #ffffff !important;
+        }
+    </style>
     @php
         $mobileNavCategories = get_level_zero_categories()->take(5);
         $mobileCartCount = count(get_user_cart());
