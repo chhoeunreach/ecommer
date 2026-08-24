@@ -433,6 +433,8 @@
 
 .kneayerng-home .single-product-item {
     min-width: 0;
+    max-width: 210px;
+    margin: 0 auto;
     padding: clamp(8px, 1vw, 12px);
     border: 1px solid var(--ky-border);
     border-radius: 18px;
@@ -1256,10 +1258,13 @@
     .kneayerng-home #newest-accessories-list .ky-accessory-card {
         height: auto !important;
         min-height: 0;
+        max-width: 210px !important;
+        margin: 0 auto !important;
     }
 
     .kneayerng-home #newest-accessories-list .ky-accessory-card .shadcn-card-img-wrap {
         aspect-ratio: 1 / 1;
+        max-height: 175px !important;
     }
 
     .kneayerng-home #newest-accessories-list .ky-accessory-card .product-main-image {

@@ -32,7 +32,9 @@ class Computer extends Model
         'colors',
         'choice_options',
         'attributes',
-        'is_variant'
+        'is_variant',
+        'sku',
+        'stock'
     ];
 
     public function brand()
@@ -48,5 +50,15 @@ class Computer extends Model
     public function stocks()
     {
         return $this->hasMany(ComputerStock::class);
+    }
+
+    public function computer_variants()
+    {
+        return $this->hasMany(ComputerVariant::class, 'computer_id');
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(ComputerVariant::class, 'computer_id');
     }
 }

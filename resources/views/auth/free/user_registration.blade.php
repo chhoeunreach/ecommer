@@ -43,9 +43,7 @@
                             <div id="emailOrPhoneDiv" class="shadcn-form-group">
                                 <label for="email-or-phone" class="shadcn-form-label">{{ translate('Email or Phone') }}</label>
                                 <div class="shadcn-phone-group {{ $errors->has('email') ? 'is-invalid' : '' }}">
-                                    <select id="country-code-select" name="country_code" class="shadcn-phone-select no-selectpicker" aria-label="{{ translate('Country code') }}">
-                                        <option value="">{{ translate('Country') }}</option>
-                                    </select>
+                                    <input type="hidden" name="country_code" value="855">
                                     <input type="text" id="email-or-phone" name="email"
                                         class="shadcn-phone-input"
                                         value="{{ old('email') }}" placeholder="{{ translate('Enter email or phone number') }}"

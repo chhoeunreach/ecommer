@@ -16,22 +16,80 @@ class ComputerController extends Controller
 
     public function show($id)
     {
-        $computer = Computer::with('stocks')->findOrFail($id);
+        $computer = Computer::with(['stocks', 'computer_variants', 'brand', 'warranty'])->findOrFail($id);
 
         return view('frontend.computers.show', compact('computer'));
     }
 
-    // Mirrors HomeController::variant_price() but for Computer's fixed
-    // Storage/Display/RAM/CPU/Chip facets instead of Product's generic
-    // choice_options + Storage/Code/Country/Condition combination.
     public function variantPrice(Request $request)
     {
-        $computer = Computer::with('stocks')->find($request->id);
+        $computer = Computer::with(['stocks', 'computer_variants'])->find($request->id);
 
         if (!$computer) {
             return response()->json(['in_stock' => 0], 404);
         }
 
+        $computer_variants = $computer->computer_variants;
+
+        if ($computer_variants->isNotEmpty()) {
+            $changedField = $request->input('changed_field');
+            $query = clone $computer_variants;
+
+            if ($changedField && $request->filled($changedField)) {
+                $val = $request->input($changedField);
+                $matchedChanged = $query->where($changedField, $val);
+                if ($matchedChanged->isNotEmpty()) {
+                    $query = $matchedChanged;
+                }
+            }
+
+            if ($request->filled('color')) {
+                $colorInput = $request->input('color');
+                $matchedColor = $query->filter(function ($v) use ($colorInput) {
+                    return strcasecmp($v->color, $colorInput) === 0;
+                });
+                if ($matchedColor->isNotEmpty()) {
+                    $query = $matchedColor;
+                }
+            }
+
+            foreach (['storage', 'display', 'ram', 'cpu', 'chip'] as $field) {
+                if ($field !== $changedField && $request->filled($field)) {
+                    $val = $request->input($field);
+                    $matchedField = $query->where($field, $val);
+                    if ($matchedField->isNotEmpty()) {
+                        $query = $matchedField;
+                    }
+                }
+            }
+
+            $variant = $query->first() ?: $computer_variants->first();
+
+            $rawPrice = $variant->price > 0 ? $variant->price : $computer->price;
+            $price = \App\Utility\CartUtility::discount_calculation($computer, $rawPrice);
+            $quantity = (int)$variant->stock;
+            $in_stock = $quantity >= 1 ? 1 : 0;
+
+            $variation = implode(' / ', array_filter([$variant->color, $variant->storage, $variant->ram, $variant->chip]));
+
+            return response()->json([
+                'price' => single_price($price * max((int) $request->quantity, 1)),
+                'quantity' => $quantity,
+                'variation' => $variation ?: $computer->name,
+                'max_limit' => $quantity,
+                'in_stock' => $in_stock,
+                'sku' => $computer->sku ?? 'N/A',
+                'image' => uploaded_asset($computer->thumbnail_img),
+                'color' => $variant->color ?? '',
+                'storage' => $variant->storage ?? '',
+                'display' => $variant->display ?? '',
+                'ram' => $variant->ram ?? '',
+                'cpu' => $variant->cpu ?? '',
+                'chip' => $variant->chip ?? '',
+            ]);
+        }
+
+        // Fallback for legacy computer stocks
         $str = '';
         if ($request->filled('color')) {
             $str = $request->input('color');
@@ -71,14 +129,15 @@ class ComputerController extends Controller
         }
 
         if (!$product_stock) {
+            $basePrice = \App\Utility\CartUtility::discount_calculation($computer, $computer->price);
             return response()->json([
-                'price' => single_price(0),
-                'quantity' => 0,
-                'variation' => $str,
-                'max_limit' => 0,
-                'in_stock' => 0,
-                'sku' => 'N/A',
-                'image' => '',
+                'price' => single_price($basePrice * max((int) $request->quantity, 1)),
+                'quantity' => $computer->stock,
+                'variation' => $computer->name,
+                'max_limit' => $computer->stock,
+                'in_stock' => $computer->stock >= 1 ? 1 : 0,
+                'sku' => $computer->sku ?? 'N/A',
+                'image' => uploaded_asset($computer->thumbnail_img),
                 'storage' => '', 'display' => '', 'ram' => '', 'cpu' => '', 'chip' => '',
             ]);
         }

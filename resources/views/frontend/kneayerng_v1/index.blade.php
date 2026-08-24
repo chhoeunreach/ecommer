@@ -251,11 +251,16 @@
         padding-bottom: 20px;
     }
 
-    /* Flash and today's deals */
+    /* Modern Flash and Today's Deals section styling */
+    @keyframes ky-pulse-glow {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.8; transform: scale(1.15); }
+    }
+
     .ky-deals-shell {
-        background:
-            radial-gradient(circle at 0 0, rgba(255, 91, 62, 0.07), transparent 24rem),
-            #ffffff;
+        background: radial-gradient(circle at 10% 20%, rgba(239, 68, 68, 0.04) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.04) 0%, transparent 40%),
+                    #f8fafc;
     }
 
     .ky-deals-shell > .row {
@@ -265,15 +270,11 @@
 
     .ky-deal-panel {
         min-width: 0;
-        padding: clamp(22px, 2.2vw, 34px) !important;
-    }
-
-    .ky-deal-panel + .ky-deal-panel {
-        border-left: 1px solid rgba(18, 28, 45, 0.09);
+        padding: clamp(20px, 2vw, 30px) !important;
     }
 
     .ky-deal-heading {
-        min-height: 64px;
+        min-height: 68px;
         gap: 16px;
     }
 
@@ -285,27 +286,45 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        margin-bottom: 5px;
-        color: #f04424;
+        margin-bottom: 6px;
+        padding: 4px 12px;
+        border-radius: 999px;
         font-size: 11px;
         font-weight: 800;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
+    }
+
+    .ky-deal-kicker-flash {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(249, 115, 22, 0.14) 100%);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.18);
+    }
+
+    .ky-deal-kicker-flash i {
+        display: inline-block;
+        animation: ky-pulse-glow 2s infinite ease-in-out;
+    }
+
+    .ky-deal-kicker-today {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.14) 100%);
+        color: #6366f1;
+        border: 1px solid rgba(99, 102, 241, 0.18);
     }
 
     .ky-deal-title {
         margin: 0;
-        color: #17192b;
-        font-size: clamp(20px, 1.6vw, 25px) !important;
+        color: #0f172a;
+        font-size: clamp(20px, 1.7vw, 26px) !important;
         font-weight: 800;
-        letter-spacing: -0.04em;
+        letter-spacing: -0.03em;
     }
 
     .ky-deal-subtitle {
         display: block;
         max-width: 360px;
         margin-top: 4px;
-        color: #73788a !important;
+        color: #64748b !important;
         font-size: 13px;
         line-height: 1.45;
     }
@@ -317,88 +336,128 @@
         gap: 9px;
     }
 
-    .ky-deal-link,
     .ky-deal-button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
+        gap: 7px;
         white-space: nowrap;
-    }
-
-    .ky-deal-link {
-        color: #4d5365;
-        font-size: 12px;
-        font-weight: 700;
-    }
-
-    .ky-deal-link:hover {
-        color: #f04424;
-    }
-
-    .ky-deal-button {
         min-height: 38px;
-        padding: 9px 15px;
+        padding: 8px 18px;
         border-radius: 999px;
-        background: #17192b;
-        box-shadow: 0 8px 18px rgba(23, 25, 43, 0.18);
+        background: #0f172a;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
         color: #ffffff !important;
         font-size: 12px;
-        font-weight: 750;
-        transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+        font-weight: 700;
+        transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .ky-deal-button:hover {
-        background: #f04424;
-        box-shadow: 0 10px 22px rgba(240, 68, 36, 0.24);
+        background: #2563eb;
+        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.28);
         transform: translateY(-2px);
+        color: #ffffff !important;
+    }
+
+    .ky-deal-button i {
+        transition: transform 200ms ease;
+    }
+
+    .ky-deal-button:hover i {
+        transform: translateX(4px);
     }
 
     .ky-countdown-row {
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: 10px;
-        margin-top: 12px;
+        gap: 8px;
+        margin-top: 8px;
     }
 
     .ky-countdown-label {
-        color: #73788a;
+        color: #64748b;
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 650;
         white-space: nowrap;
     }
 
     .ky-deals-shell .aiz-count-down {
         margin: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 3px !important;
     }
 
     .ky-deals-shell .aiz-count-down .countdown-item {
-        min-width: 40px;
-        border-radius: 10px;
-        background: linear-gradient(145deg, #ff6849, #ef3e20);
-        box-shadow: 0 7px 14px rgba(239, 62, 32, 0.2);
+        min-width: 32px;
+        height: 30px;
+        padding: 0 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 800;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
+    }
+
+    .ky-deals-shell .aiz-count-down .countdown-separator {
+        color: #ef4444;
+        font-size: 15px;
+        font-weight: 800;
+        margin: 0 1px;
     }
 
     .ky-flash-content {
         display: grid;
-        grid-template-columns: minmax(145px, 0.72fr) minmax(0, 1.7fr);
-        gap: clamp(16px, 1.7vw, 26px);
+        grid-template-columns: minmax(140px, 0.65fr) minmax(0, 1.65fr);
+        gap: clamp(14px, 1.5vw, 22px);
         align-items: stretch;
-        margin-top: 22px;
+        margin-top: 20px;
     }
 
     .ky-flash-banner {
         width: 100% !important;
-        height: auto !important;
-        min-height: 100%;
+        height: 100% !important;
+        min-height: 0;
         aspect-ratio: 4 / 5;
         border-radius: 18px !important;
-        background: #fff2ed;
-        box-shadow: none !important;
+        background: #f1f5f9;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05) !important;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ky-banner-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        z-index: 3;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .ky-flash-banner img {
-        object-fit: cover;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center !important;
+        transition: transform 400ms ease;
+    }
+
+    .ky-flash-banner:hover img {
+        transform: scale(1.05);
     }
 
     .ky-products-area {
@@ -407,13 +466,13 @@
 
     .ky-deals-shell .fd-product-slider.slick-slider,
     .ky-deals-shell .td-product-slider.slick-slider {
-        margin-top: -8px !important;
-        margin-bottom: -14px !important;
+        margin-top: -6px !important;
+        margin-bottom: -12px !important;
     }
 
     .ky-deals-shell .fd-product-slider.slick-slider .slick-list,
     .ky-deals-shell .td-product-slider.slick-slider .slick-list {
-        padding: 8px 0 14px !important;
+        padding: 6px 0 12px !important;
     }
 
     .ky-deals-shell .fd-product-slider,
@@ -421,75 +480,165 @@
         overflow: hidden;
     }
 
+    .ky-deals-shell .ky-static-row {
+        display: flex;
+        flex-wrap: wrap;
+        row-gap: 14px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    .ky-deals-shell .ky-static-row .ky-deal-slide {
+        flex: 1 1 135px;
+        max-width: 175px;
+    }
+
     .ky-deals-shell .fd-product-card,
     .ky-deals-shell .td-product-card {
         position: relative;
-        margin: 0 5px;
-        padding: 10px !important;
-        border: 1px solid rgba(18, 28, 45, 0.08) !important;
-        border-radius: 16px !important;
+        max-width: 175px;
+        margin: 0 4px;
+        padding: 8px !important;
+        border: 1px solid #f1f5f9 !important;
+        border-radius: 14px !important;
         background: #ffffff !important;
-        box-shadow: 0 7px 20px rgba(18, 28, 45, 0.06) !important;
+        box-shadow: 0 3px 10px rgba(15, 23, 42, 0.03) !important;
+        transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
     .ky-deals-shell .fd-product-card:hover,
     .ky-deals-shell .td-product-card:hover {
-        border-color: rgba(240, 68, 36, 0.25) !important;
-        box-shadow: 0 14px 30px rgba(18, 28, 45, 0.12) !important;
-        transform: translateY(-4px);
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08) !important;
+        transform: translateY(-3px);
+    }
+
+    .ky-deal-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 2;
+        padding: 2px 6px;
+        border-radius: 5px;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 800;
+        box-shadow: 0 3px 8px rgba(239, 68, 68, 0.25);
     }
 
     .ky-deals-shell .ky-deal-product-image {
         aspect-ratio: 1 / 1;
-        border-radius: 12px !important;
-        background: #f6f7f9 !important;
+        max-height: 135px;
+        border-radius: 10px !important;
+        background: #f8fafc !important;
+        position: relative;
+        overflow: hidden;
     }
 
     .ky-deals-shell .ky-deal-product-image img {
         display: block;
+        width: 100%;
+        height: 100%;
         object-fit: contain !important;
+        transition: transform 300ms ease;
     }
 
-    .ky-product-name {
-        min-height: 38px;
-        margin-top: 10px !important;
-        font-size: 13px;
-        font-weight: 650;
-        line-height: 1.45;
-    }
-
-    .ky-product-footer {
-        margin-top: 10px !important;
-        padding-top: 10px !important;
-    }
-
-    .ky-cart-button {
-        width: 34px;
-        height: 34px;
-        border: 0;
-        background: #fff0ed !important;
-        color: #f04424 !important;
-        transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
-    }
-
-    .ky-cart-button:hover {
-        background: #f04424 !important;
-        color: #ffffff !important;
+    .ky-deals-shell .fd-product-card:hover .ky-deal-product-image img,
+    .ky-deals-shell .td-product-card:hover .ky-deal-product-image img {
         transform: scale(1.06);
     }
 
+    .ky-product-name {
+        min-height: 32px;
+        margin-top: 6px !important;
+        color: #1e293b !important;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.35;
+        transition: color 180ms ease;
+    }
+
+    .ky-product-name:hover {
+        color: #2563eb !important;
+    }
+
+    .ky-stock-bar {
+        width: 100%;
+        height: 4px;
+        border-radius: 99px;
+        background: #fee2e2;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+
+    .ky-stock-bar-fill {
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, #ef4444 0%, #f97316 100%);
+    }
+
+    .ky-stock-text {
+        font-size: 9px;
+        font-weight: 700;
+        color: #ef4444;
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+    }
+
+    .ky-product-footer {
+        min-height: 36px;
+        margin-top: 6px !important;
+        padding-top: 6px !important;
+        border-top: 1px dashed #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .ky-price-current {
+        color: #0f172a;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .ky-price-original {
+        color: #94a3b8;
+        font-size: 10px;
+        font-weight: 500;
+        text-decoration: line-through;
+        margin-top: -1px;
+    }
+
+    .ky-cart-button {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: none;
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 200ms ease;
+    }
+
+    .ky-cart-button:hover {
+        background: #2563eb !important;
+        color: #ffffff !important;
+        transform: scale(1.08);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
     .ky-today-products {
-        margin-top: 22px;
+        margin-top: 20px;
     }
 
     @media (max-width: 1199px) {
-        .ky-deal-panel + .ky-deal-panel {
-            border-top: 1px solid rgba(18, 28, 45, 0.09);
-            border-left: 0;
-        }
-
         .ky-flash-content {
-            grid-template-columns: minmax(170px, 0.55fr) minmax(0, 2fr);
+            grid-template-columns: minmax(150px, 0.55fr) minmax(0, 2fr);
         }
 
         .ky-flash-banner {
@@ -499,101 +648,40 @@
 
     @media (max-width: 767px) {
         .kneayerng-home .ky-deals-shell .ky-deal-panel {
-            padding: 20px 14px !important;
+            padding: 18px 14px !important;
         }
 
         .ky-deal-heading {
             min-height: 0;
         }
 
-        .ky-deal-link {
-            display: none;
-        }
-
         .ky-deal-button {
             min-height: 36px;
-            padding: 8px 12px;
+            padding: 7px 14px;
         }
 
         .kneayerng-home .ky-deals-shell .ky-flash-content {
             display: block;
-            margin-top: 18px;
+            margin-top: 16px;
         }
 
         .kneayerng-home .ky-deals-shell .ky-flash-banner.fd-banner-container {
             width: 100% !important;
             height: auto !important;
             min-height: 0;
-            aspect-ratio: 3 / 2;
-            background: #f53218;
-        }
-
-        .kneayerng-home .ky-deals-shell .ky-flash-banner img {
-            object-fit: contain;
-        }
-
-        .ky-products-area {
-            margin-top: 18px;
-        }
-
-        .ky-today-products {
-            margin-top: 18px;
-        }
-
-        .kneayerng-home .ky-deals-shell .fd-product-slider,
-        .kneayerng-home .ky-deals-shell .td-product-slider {
-            width: 100%;
-            max-width: 100%;
-        }
-
-        .kneayerng-home .ky-deals-shell .fd-product-slider .slick-list,
-        .kneayerng-home .ky-deals-shell .td-product-slider .slick-list {
-            margin-right: 0 !important;
-            margin-left: 0 !important;
-            padding-right: 0 !important;
-            padding-left: 0 !important;
-        }
-
-        .kneayerng-home .ky-deals-shell .fd-product-card,
-        .kneayerng-home .ky-deals-shell .td-product-card {
-            margin-right: 4px;
-            margin-left: 4px;
-        }
-    }
-
-    @media (max-width: 420px) {
-        .ky-deal-heading {
-            align-items: flex-start !important;
-        }
-
-        .ky-deal-button span {
-            display: none;
-        }
-
-        .ky-deal-button {
-            width: 36px;
-            padding: 8px;
-        }
-
-        .ky-countdown-row {
-            display: block;
-        }
-
-        .ky-countdown-label {
-            display: block;
-            margin-bottom: 8px;
+            aspect-ratio: 16 / 9;
+            margin-bottom: 14px;
         }
     }
 
     /* Modern responsive deal hub */
     .kneayerng-home .ky-deals-shell {
-        padding: clamp(10px, 1.4vw, 18px) !important;
-        background: #f4f6fa;
+        padding: clamp(14px, 1.8vw, 24px) !important;
     }
 
     .kneayerng-home .ky-deals-grid {
         display: grid;
-        gap: clamp(12px, 1.4vw, 20px);
+        gap: clamp(16px, 1.8vw, 24px);
         margin: 0;
     }
 
@@ -609,60 +697,57 @@
         width: 100%;
         max-width: none;
         min-width: 0;
-        padding: clamp(18px, 1.8vw, 28px) !important;
-        border: 1px solid rgba(18, 28, 45, 0.08);
-        border-radius: 20px;
+        padding: clamp(20px, 2vw, 28px) !important;
+        border-radius: 24px;
         background: #ffffff;
-        box-shadow: 0 10px 30px rgba(18, 28, 45, 0.055);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+        transition: box-shadow 300ms ease, border-color 300ms ease;
+    }
+
+    .kneayerng-home .ky-deals-grid .ky-deal-panel:hover {
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.07);
     }
 
     .kneayerng-home .ky-deals-grid .ky-flash-panel {
-        background:
-            radial-gradient(circle at 0 0, rgba(255, 84, 53, 0.09), transparent 19rem),
-            #ffffff;
+        background: linear-gradient(145deg, #ffffff 0%, #fffdfd 60%, #fff7f7 100%);
+        border: 1px solid rgba(254, 202, 202, 0.6);
     }
 
-    .kneayerng-home .ky-deals-grid .ky-deal-panel + .ky-deal-panel {
-        border-top: 1px solid rgba(18, 28, 45, 0.08);
-        border-left: 1px solid rgba(18, 28, 45, 0.08);
+    .kneayerng-home .ky-deals-grid .ky-today-panel {
+        background: linear-gradient(145deg, #ffffff 0%, #fdfbf5 60%, #fffdfa 100%);
+        border: 1px solid rgba(224, 231, 255, 0.7);
     }
 
     .kneayerng-home .ky-deals-grid .ky-deal-heading {
-        min-height: 92px;
+        min-height: 72px;
         margin-bottom: 20px;
-        padding-bottom: 18px;
-        border-bottom: 1px solid rgba(18, 28, 45, 0.075);
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.7);
     }
 
     .kneayerng-home .ky-deals-grid .ky-deal-title {
-        font-size: clamp(21px, 1.6vw, 27px) !important;
-    }
-
-    .kneayerng-home .ky-deals-grid .ky-deal-button {
-        min-height: 40px;
-        padding: 10px 16px;
-        background: #202235;
+        font-size: clamp(20px, 1.7vw, 26px) !important;
     }
 
     .kneayerng-home .ky-deals-grid .ky-flash-content {
-        grid-template-columns: minmax(135px, 0.72fr) minmax(0, 1.55fr);
-        gap: clamp(14px, 1.5vw, 22px);
-        align-items: start;
+        grid-template-columns: minmax(130px, 0.65fr) minmax(0, 1.55fr);
+        gap: clamp(14px, 1.4vw, 20px);
+        align-items: stretch;
         margin-top: 0;
     }
 
     .kneayerng-home .ky-deals-grid .ky-flash-content > a {
-        align-self: start;
+        align-self: stretch;
     }
 
     .kneayerng-home .ky-deals-grid .ky-flash-banner.fd-banner-container {
         width: 100% !important;
-        height: auto !important;
+        height: 100% !important;
         min-height: 0;
-        aspect-ratio: 1 / 1;
+        aspect-ratio: auto;
         border-radius: 16px !important;
-        background: #f53218;
-        box-shadow: 0 12px 24px rgba(229, 55, 29, 0.16) !important;
+        background: #f1f5f9;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05) !important;
     }
 
     .kneayerng-home .ky-deals-grid .ky-flash-banner img {
@@ -678,34 +763,28 @@
 
     .kneayerng-home .ky-deals-grid .fd-product-card,
     .kneayerng-home .ky-deals-grid .td-product-card {
-        margin: 0 6px;
-        padding: 9px !important;
-        border-radius: 15px !important;
-        box-shadow: 0 6px 18px rgba(18, 28, 45, 0.055) !important;
+        margin: 0 5px;
+        padding: 10px !important;
+        border-radius: 18px !important;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.03) !important;
     }
 
     .kneayerng-home .ky-deals-grid .ky-deal-product-image {
-        border-radius: 11px !important;
-        background: #f1f3f6 !important;
+        border-radius: 14px !important;
+        background: #f8fafc !important;
     }
 
     .kneayerng-home .ky-deals-grid .ky-product-name {
-        min-height: 40px;
-        margin-top: 9px !important;
-        color: #262938 !important;
-        font-weight: 700;
+        min-height: 38px;
+        margin-top: 10px !important;
+        color: #1e293b !important;
+        font-weight: 650;
     }
 
     .kneayerng-home .ky-deals-grid .ky-product-footer {
-        min-height: 43px;
+        min-height: 40px;
         margin-top: 8px !important;
         padding-top: 8px !important;
-    }
-
-    .kneayerng-home .ky-deals-grid .ky-cart-button {
-        width: 32px;
-        height: 32px;
-        box-shadow: none;
     }
 
     @media (max-width: 991px) {
@@ -713,36 +792,31 @@
             grid-template-columns: minmax(0, 1fr);
         }
 
-        .kneayerng-home .ky-deals-grid .ky-deal-panel + .ky-deal-panel {
-            border-top: 1px solid rgba(18, 28, 45, 0.08);
-            border-left: 1px solid rgba(18, 28, 45, 0.08);
-        }
-
         .kneayerng-home .ky-deals-grid .ky-flash-content {
-            grid-template-columns: minmax(160px, 0.5fr) minmax(0, 2fr);
+            grid-template-columns: minmax(150px, 0.5fr) minmax(0, 2fr);
         }
     }
 
     @media (max-width: 575px) {
         .kneayerng-home .ky-deals-shell {
-            padding: 8px !important;
+            padding: 10px !important;
         }
 
         .kneayerng-home .ky-deals-grid .ky-deal-panel {
-            padding: 16px 12px !important;
-            border-radius: 16px;
+            padding: 18px 14px !important;
+            border-radius: 18px;
         }
 
         .kneayerng-home .ky-deals-grid .ky-deal-heading {
             min-height: 0;
             margin-bottom: 16px;
-            padding-bottom: 15px;
+            padding-bottom: 14px;
         }
 
         .kneayerng-home .ky-deals-grid .ky-flash-content {
             display: block;
         }
-
+    }
         .kneayerng-home .ky-deals-grid .ky-flash-banner.fd-banner-container {
             aspect-ratio: 16 / 9;
         }
@@ -831,9 +905,9 @@
                         <!-- Flash Deal -->
                         @if ($showFlashDeals)
                             <div class="ky-deal-panel ky-flash-panel @if ($showTodaysDeals) col-xl-6 @else col-12 @endif">
-                                <div class="ky-deal-heading d-flex align-items-start justify-content-between">
+                                <div class="ky-deal-heading d-flex align-items-center justify-content-between">
                                     <div class="ky-deal-heading-copy">
-                                        <span class="ky-deal-kicker"><i class="las la-bolt"></i> {{ translate('Limited time') }}</span>
+                                        <span class="ky-deal-kicker ky-deal-kicker-flash"><i class="las la-bolt"></i> {{ translate('Limited time') }}</span>
                                         <h2 class="ky-deal-title">{{ translate('Flash Deals') }}</h2>
                                         <div class="ky-countdown-row">
                                             <span class="ky-countdown-label">{{ translate('Ends in') }}</span>
@@ -841,9 +915,6 @@
                                         </div>
                                     </div>
                                     <div class="ky-deal-actions">
-                                        <a href="{{ route('flash-deal-details', $flash_deal->slug) }}" class="ky-deal-link has-transition">
-                                            {{ translate('View products') }} <i class="las la-arrow-right"></i>
-                                        </a>
                                         <a href="{{ route('flash-deals') }}" class="ky-deal-button">
                                             <span>{{ translate('All Deals') }}</span> <i class="las la-arrow-right"></i>
                                         </a>
@@ -851,9 +922,10 @@
                                 </div>
 
                                 <div class="ky-flash-content">
-                                    <a href="{{ route('flash-deal-details', $flash_deal->slug) }}" class="d-block">
-                                        <div class="ky-flash-banner fd-banner-container overflow-hidden hov-scale-img">
-                                            <img class="w-100 h-100 has-transition"
+                                    <a href="{{ route('flash-deal-details', $flash_deal->slug) }}" class="d-block h-100 position-relative">
+                                        <div class="ky-flash-banner fd-banner-container overflow-hidden">
+                                            <span class="ky-banner-badge"><i class="las la-fire text-warning"></i> {{ translate('Hot Deal') }}</span>
+                                            <img class="w-100 h-100"
                                                 src="{{ $flash_deal->banner ? uploaded_asset($flash_deal->banner) : static_asset('assets/img/placeholder.jpg') }}"
                                                 alt="{{ $flash_deal->title }}"
                                                 onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder-rect.jpg') }}';">
@@ -862,14 +934,21 @@
                                     <div class="ky-products-area">
                                             @php
                                                 $flash_deal_products = get_flash_deal_products($flash_deal->id);
+                                                $flash_visible_count = $flash_deal_products->filter(function ($fdp) {
+                                                    return $fdp->product != null && $fdp->product->published != 0;
+                                                })->count();
+                                                $flash_max_items = $showTodaysDeals ? 4 : 5;
+                                                $flash_use_carousel = $flash_visible_count > $flash_max_items;
                                             @endphp
-                                            <div class="aiz-carousel arrow-x-0 arrow-inactive-none fd-product-slider"
-                                                @if ($showTodaysDeals)
-                                                    data-items="2" data-full-hd-items="2" data-xxl-items="2" data-xl-items="2" data-lg-items="4"
-                                                @else 
-                                                    data-items="5" data-full-hd-items="5" data-xxl-items="4" data-xl-items="4" data-lg-items="4"
-                                                @endif 
-                                                data-md-items="2.5" data-sm-items="2" data-xs-items="2" data-arrows='false' data-autoplay="true" data-autoplay-speed="10000" data-infinite="true">
+                                            <div class="{{ $flash_use_carousel ? 'aiz-carousel arrow-x-0 arrow-inactive-none' : 'ky-static-row' }} fd-product-slider"
+                                                @if ($flash_use_carousel)
+                                                    @if ($showTodaysDeals)
+                                                        data-items="3" data-full-hd-items="3" data-xxl-items="3" data-xl-items="3" data-lg-items="3"
+                                                    @else
+                                                        data-items="5" data-full-hd-items="5" data-xxl-items="4" data-xl-items="4" data-lg-items="4"
+                                                    @endif
+                                                    data-md-items="2.5" data-sm-items="2" data-xs-items="2" data-arrows='false' data-autoplay="true" data-autoplay-speed="10000" data-infinite="true"
+                                                @endif>
                                                 @foreach ($flash_deal_products as $key => $flash_deal_product)
                                                     @if ($flash_deal_product->product != null && $flash_deal_product->product->published != 0)
                                                         @php
@@ -878,11 +957,11 @@
                                                                 $product_url = route('auction-product', $flash_deal_product->product->slug);
                                                             }
                                                         @endphp    
-                                                        <div class="h-100 py-1">
-                                                            <div class="h-100 d-flex flex-column justify-content-between fd-product-card has-transition overflow-hidden">
+                                                        <div class="h-100 py-1 ky-deal-slide">
+                                                            <div class="h-100 d-flex flex-column justify-content-between fd-product-card overflow-hidden">
                                                                 <!-- Discount Badge -->
                                                                 @if ($flash_deal_product->discount != null && $flash_deal_product->discount > 0)
-                                                                    <span class="badge badge-inline badge-danger position-absolute z-1 rounded-pill px-2 py-1 fs-11 fw-700" style="top: 8px; left: 8px;">
+                                                                    <span class="ky-deal-badge">
                                                                         -{{ $flash_deal_product->discount }}{{ $flash_deal_product->discount_type == 'percent' ? '%' : '' }}
                                                                     </span>
                                                                 @endif
@@ -890,8 +969,8 @@
                                                                 <div>
                                                                     <!-- Thumbnail Image -->
                                                                     <a href="{{ $product_url }}" title="{{ $flash_deal_product->product->getTranslation('name') }}"
-                                                                        class="ky-deal-product-image d-block overflow-hidden text-center mx-auto hov-scale-img position-relative">
-                                                                        <img class="w-100 h-100 lazyload has-transition"
+                                                                        class="ky-deal-product-image d-block text-center mx-auto position-relative">
+                                                                        <img class="w-100 h-100 lazyload"
                                                                             src="{{ get_image($flash_deal_product->product->thumbnail) }}"
                                                                             data-src="" alt="{{ $flash_deal_product->product->getTranslation('name') }}"
                                                                             onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
@@ -899,26 +978,34 @@
 
                                                                     <!-- Product Title -->
                                                                     <a href="{{ $product_url }}" title="{{ $flash_deal_product->product->getTranslation('name') }}"
-                                                                        class="ky-product-name text-dark d-block text-truncate-2 hov-text-primary has-transition">
+                                                                        class="ky-product-name d-block text-truncate-2">
                                                                         {{ $flash_deal_product->product->getTranslation('name') }}
                                                                     </a>
+
+                                                                    <!-- Stock Availability Bar -->
+                                                                    <div class="ky-stock-bar">
+                                                                        <div class="ky-stock-bar-fill" style="width: 78%;"></div>
+                                                                    </div>
+                                                                    <div class="ky-stock-text">
+                                                                        <i class="las la-fire"></i> {{ translate('Limited Stock') }}
+                                                                    </div>
                                                                 </div>
 
                                                                 <!-- Price & Cart Button -->
-                                                                <div class="ky-product-footer border-top border-gray-200 d-flex align-items-center justify-content-between">
+                                                                <div class="ky-product-footer">
                                                                     <div class="overflow-hidden mr-1">
                                                                         @if ($flash_deal_product->auction_product == 0)
-                                                                            <div class="fs-14 fw-700 text-primary text-truncate">
+                                                                            <div class="ky-price-current text-truncate">
                                                                                 {{ home_discounted_base_price($flash_deal_product->product) }}
                                                                             </div>
                                                                             @if (home_base_price($flash_deal_product->product) != home_discounted_base_price($flash_deal_product->product))
-                                                                                <del class="fs-11 text-muted d-block text-truncate" style="margin-top: -2px;">
+                                                                                <div class="ky-price-original text-truncate">
                                                                                     {{ home_base_price($flash_deal_product->product) }}
-                                                                                </del>
+                                                                                </div>
                                                                             @endif
                                                                         @endif
                                                                     </div>
-                                                                    <button type="button" class="ky-cart-button btn btn-icon btn-circle btn-sm flex-shrink-0"
+                                                                    <button type="button" class="ky-cart-button flex-shrink-0"
                                                                         onclick="showAddToCartModal({{ $flash_deal_product->product->id }})" title="{{ translate('Add to Cart') }}">
                                                                         <i class="las la-shopping-cart fs-15"></i>
                                                                     </button>
@@ -936,9 +1023,9 @@
                         @if ($showTodaysDeals)
                             <div class="ky-deal-panel ky-today-panel @if ($showFlashDeals) col-xl-6 @else col-12 @endif">
                                 <!-- Heading -->
-                                <div class="ky-deal-heading d-flex align-items-start justify-content-between">
+                                <div class="ky-deal-heading d-flex align-items-center justify-content-between">
                                     <div class="ky-deal-heading-copy">
-                                        <span class="ky-deal-kicker"><i class="las la-star"></i> {{ translate('Picked for today') }}</span>
+                                        <span class="ky-deal-kicker ky-deal-kicker-today"><i class="las la-star"></i> {{ translate('Picked for today') }}</span>
                                         <h2 class="ky-deal-title">{{ translate("Today's Deals") }}</h2>
                                         <span class="ky-deal-subtitle">
                                             {{ $todays_deal_title_sub_text ?: translate('Fresh offers selected for you today') }}
@@ -950,46 +1037,53 @@
                                 </div>
 
                                 <!-- Slider -->
-                                <div class="ky-today-products aiz-carousel arrow-x-0 arrow-inactive-none td-product-slider"
-                                    @if ($showFlashDeals)
-                                        data-items="3" data-full-hd-items="3" data-xxl-items="3" data-xl-items="3" data-lg-items="4"
-                                    @else 
-                                        data-items="6" data-full-hd-items="6" data-xxl-items="5" data-xl-items="4" data-lg-items="4"
-                                    @endif 
-                                    data-md-items="3" data-sm-items="2" data-xs-items="2" data-arrows='false'
-                                    data-autoplay="true" data-autoplay-speed="10000" data-infinite="true">
+                                @php
+                                    $todays_visible_count = $todays_deal_products->count();
+                                    $todays_max_items = $showFlashDeals ? 4 : 6;
+                                    $todays_use_carousel = $todays_visible_count > $todays_max_items;
+                                @endphp
+                                <div class="ky-today-products {{ $todays_use_carousel ? 'aiz-carousel arrow-x-0 arrow-inactive-none' : 'ky-static-row' }} td-product-slider"
+                                    @if ($todays_use_carousel)
+                                        @if ($showFlashDeals)
+                                            data-items="4" data-full-hd-items="4" data-xxl-items="4" data-xl-items="4" data-lg-items="4"
+                                        @else
+                                            data-items="6" data-full-hd-items="6" data-xxl-items="5" data-xl-items="4" data-lg-items="4"
+                                        @endif
+                                        data-md-items="3" data-sm-items="2" data-xs-items="2" data-arrows='false'
+                                        data-autoplay="true" data-autoplay-speed="10000" data-infinite="true"
+                                    @endif>
                                     @foreach ($todays_deal_products as $key => $product)
-                                            <div class="h-100 py-1">
-                                                <div class="h-100 d-flex flex-column justify-content-between td-product-card has-transition overflow-hidden">
+                                            <div class="h-100 py-1 ky-deal-slide">
+                                                <div class="h-100 d-flex flex-column justify-content-between td-product-card overflow-hidden">
                                                     <div>
                                                         <!-- Thumbnail Image -->
                                                         <a href="{{ route('product', $product->slug) }}" title="{{ $product->getTranslation('name') }}"
-                                                            class="ky-deal-product-image d-block overflow-hidden text-center mx-auto hov-scale-img position-relative">
-                                                            <img class="w-100 h-100 lazyload has-transition"
-                                                                src="{{ static_asset('assets/img/placeholder.jpg') }}" data-src="{{ get_image($product->thumbnail) }}"
+                                                            class="ky-deal-product-image d-block text-center mx-auto position-relative">
+                                                            <img class="w-100 h-100 lazyload"
+                                                                src="{{ get_image($product->thumbnail) }}" data-src=""
                                                                 alt="{{ $product->getTranslation('name') }}" onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
                                                         </a>
 
                                                         <!-- Product Title -->
                                                         <a href="{{ route('product', $product->slug) }}" title="{{ $product->getTranslation('name') }}"
-                                                            class="ky-product-name text-dark d-block text-truncate-2 hov-text-primary has-transition">
+                                                            class="ky-product-name d-block text-truncate-2">
                                                             {{ $product->getTranslation('name') }}
                                                         </a>
                                                     </div>
 
                                                     <!-- Price & Cart Button -->
-                                                    <div class="ky-product-footer border-top border-gray-200 d-flex align-items-center justify-content-between">
+                                                    <div class="ky-product-footer">
                                                         <div class="overflow-hidden mr-1">
-                                                            <div class="fs-14 fw-700 text-primary text-truncate">
+                                                            <div class="ky-price-current text-truncate">
                                                                 {{ home_discounted_base_price($product) }}
                                                             </div>
                                                             @if (home_base_price($product) != home_discounted_base_price($product))
-                                                                <del class="fs-11 text-muted d-block text-truncate" style="margin-top: -2px;">
+                                                                <div class="ky-price-original text-truncate">
                                                                     {{ home_base_price($product) }}
-                                                                </del>
+                                                                </div>
                                                             @endif
                                                         </div>
-                                                        <button type="button" class="ky-cart-button btn btn-icon btn-circle btn-sm flex-shrink-0"
+                                                        <button type="button" class="ky-cart-button flex-shrink-0"
                                                             onclick="showAddToCartModal({{ $product->id }})" title="{{ translate('Add to Cart') }}">
                                                             <i class="las la-shopping-cart fs-15"></i>
                                                         </button>
@@ -1829,6 +1923,27 @@
                     @endfor
                 </div>
             </div>
+
+            <!-- Computers Section -->
+            @if(isset($computers) && count($computers) > 0)
+            <div class="mt-5 ky-computers-section">
+                <div class="d-flex mb-3 align-items-baseline border-bottom">
+                    <h3 class="h5 fw-700 mb-0">
+                        <span class="border-bottom border-primary border-width-2 pb-3 d-inline-block">{{ translate('New Computers') }}</span>
+                    </h3>
+                    <a href="{{ route('computers.index') }}" class="ml-auto mr-0 btn btn-primary btn-sm shadow-md ky-computers-view-all">{{ translate('View all') }} <span aria-hidden="true">&rarr;</span></a>
+                </div>
+                <div class="products-wrapper-grid" id="newest-computers-list">
+                    @foreach ($computers as $computer)
+                        <div class="grid-item single-product-item">
+                            @include('frontend.' . get_setting('homepage_select') . '.partials.home_computer_box', [
+                                'computer' => $computer
+                            ])
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
 
             <!-- Accessories Section -->
             @if(isset($accessories) && count($accessories) > 0)

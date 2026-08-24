@@ -10,6 +10,8 @@ class ElementType extends Model
     use PreventDemoModeChanges;
 
     protected $fillable = [
+        'element_id',
+        'name',
         'is_default'
     ];
 

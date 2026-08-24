@@ -1,298 +1,297 @@
 @extends('backend.layouts.app')
 
 @section('content')
-    @php
-        $computerAttributeIdsByLabel = \App\Models\Attribute::whereIn('name', ['Storage', 'Display', 'RAM', 'CPU', 'Chip'])->pluck('id', 'name');
-        $computerAttributeValueOptions = [];
-        foreach ($computerAttributeIdsByLabel as $label => $attrId) {
-            $computerAttributeValueOptions[$label] = \App\Models\AttributeValue::where('attribute_id', $attrId)->pluck('value');
-        }
-    @endphp
     <div class="page-content">
         <div class="aiz-titlebar text-left mt-2 pb-2 px-3 px-md-2rem">
             <div class="row align-items-center">
                 <div class="col">
-                    <h1 class="h3 fw-700">{{ translate('Add New Computer') }}</h1>
+                    <h1 class="h3 fw-700">{{ translate('Create Computer') }}</h1>
+                </div>
+                <div class="col text-right">
+                    <a href="{{ route('admin.computers.index') }}" class="btn btn-link text-muted fw-600">
+                        <i class="las la-angle-left"></i> {{ translate('Back to list') }}
+                    </a>
                 </div>
             </div>
         </div>
 
-        <div class="px-3 px-md-2rem mb-4">
-            <form action="{{route('admin.computers.store')}}" method="POST" enctype="multipart/form-data" id="aizSubmitForm">
+        <div class="px-3 px-md-2rem mb-5">
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-xs mb-4" role="alert">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="las la-exclamation-circle fs-20 mr-2"></i>
+                        <strong class="fs-15">{{ translate('Please correct the errors below:') }}</strong>
+                    </div>
+                    <ul class="mb-0 pl-4 fs-13">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            @endif
+
+            <form action="{{ route('admin.computers.store') }}" method="POST" enctype="multipart/form-data" id="computerCreateForm">
                 @csrf
-                <div class="row gutters-5">
+                <div class="row gutters-15">
                     <div class="col-xl-8">
 
-                        <!-- Basic Information -->
-                        <div class="border border-gray-300 rounded-2 mb-4">
-                            <div class="bg-white border-radius-10px px-3 px-lg-4 py-3 py-lg-4">
-                                <div class="mb-3 pb-1 d-flex align-items-center justify-content-between border-bottom-dashed">
-                                    <h5 class="fs-16 fw-700">{{translate('Basic Information')}}</h5>
+                        <!-- Basic Information Card -->
+                        <div class="card border-0 shadow-sm rounded-3 mb-4">
+                            <div class="card-header bg-white border-bottom-dashed py-3 px-4 d-flex align-items-center">
+                                <div class="size-36px bg-soft-primary text-primary rounded-circle d-flex align-items-center justify-content-center mr-3" style="width:36px; height:36px; background:#e0e7ff; color:#4f46e5;">
+                                    <i class="las la-laptop fs-20"></i>
                                 </div>
-                                <div class="row gutters-5">
+                                <div>
+                                    <h5 class="fs-16 fw-700 mb-0 text-dark">{{ translate('Basic Information') }}</h5>
+                                    <span class="fs-12 text-muted">{{ translate('Enter computer name, SKU, brand, and available color choices.') }}</span>
+                                </div>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="row gutters-10">
                                     <div class="col-12">
                                         <div class="form-group mb-3">
-                                            <label class="col-from-label fs-14 fw-500">{{translate('Computer Name')}} <span class="text-danger">*</span></label>
-                                            <input type="text" placeholder="{{translate('Name')}}" name="name" class="form-control" required>
+                                            <label class="variant-input-label d-block">{{ translate('Computer Name') }} <span class="text-danger">*</span></label>
+                                            <input type="text" placeholder="{{ translate('e.g. MacBook Air M4 (2026)') }}" name="name" class="form-control form-control-lg fw-600 text-dark" value="{{ old('name') }}" required>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group mb-3">
+                                            <label class="variant-input-label d-block">{{ translate('SKU Code') }} <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control fw-700 text-primary" id="sku" name="sku" placeholder="{{ translate('e.g. MBA-M4-2026') }}" value="{{ old('sku') }}" required>
+                                                <div class="input-group-append">
+                                                    <button type="button" id="generateSKUBtn" class="btn btn-soft-primary fs-13 fw-700 px-3" onclick="generateSKU()">
+                                                        <i class="las la-magic mr-1"></i> {{ translate('Generate SKU') }}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
-                                            <label class="col-from-label fs-14 fw-500">{{translate('Brand')}}</label>
+                                            <label class="variant-input-label d-block">{{ translate('Brand') }}</label>
                                             <select class="form-control aiz-selectpicker" name="brand_id" data-live-search="true">
                                                 <option value="">{{ translate('Select Brand') }}</option>
                                                 @foreach ($brands as $brand)
-                                                    <option value="{{ $brand->id }}">{{ $brand->getTranslation('name') }}</option>
+                                                    <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>{{ $brand->getTranslation('name') }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
                                     </div>
+
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
-                                            <label class="col-from-label fs-14 fw-500">{{translate('Tags')}}</label>
-                                            <input type="text" class="form-control aiz-tag-input" name="tags" placeholder="{{ translate('Type and hit enter to add a tag') }}">
+                                            <label class="variant-input-label d-block">{{ translate('Colors (Pick available colors)') }} <span class="text-danger">*</span></label>
+                                            <select class="form-control aiz-selectpicker" data-live-search="true" data-selected-text-format="count" name="colors[]" id="colors" multiple onchange="onColorsChanged()">
+                                                @foreach (\App\Models\Color::orderBy('name', 'asc')->get() as $key => $color)
+                                                    <option value="{{ $color->code }}" data-color-name="{{ $color->name }}" data-content="<span><span class='size-15px d-inline-block mr-2 rounded border' style='background:{{ $color->code }}'></span><span>{{ $color->name }}</span></span>">{{ $color->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group mb-3">
+                                            <label class="variant-input-label d-block">{{ translate('Tags') }}</label>
+                                            <input type="text" class="form-control aiz-tag-input" name="tags" value="{{ old('tags') }}" placeholder="{{ translate('Type tag and hit enter') }}">
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group mb-3">
-                                    <label class="col-from-label fs-14 fw-500">{{translate('Description')}}</label>
-                                    <textarea name="description" rows="5" class="form-control"></textarea>
+
+                                <div class="form-group mb-0">
+                                    <label class="variant-input-label d-block">{{ translate('Description') }}</label>
+                                    <textarea name="description" rows="4" class="form-control" placeholder="{{ translate('Enter computer details, features, and description...') }}">{{ old('description') }}</textarea>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Price and Discount -->
-                        <div class="border border-gray-300 rounded-2 mb-4">
-                            <div class="bg-white border-radius-10px px-3 px-lg-4 py-3 py-lg-4">
-                                <div class="mb-3 pb-1 d-flex align-items-center justify-content-between border-bottom-dashed">
-                                    <h5 class="fs-16 fw-700">{{translate('Price & Discount')}}</h5>
+                        <!-- Storage & Color Variants Section Card -->
+                        <div class="card border-0 shadow-sm rounded-3 mb-4">
+                            <div class="card-header bg-white border-bottom-dashed py-3 px-4 d-flex align-items-center justify-content-between flex-wrap" style="gap: 15px;">
+                                <div class="d-flex align-items-center">
+                                    <div class="size-36px bg-soft-info text-info rounded-circle d-flex align-items-center justify-content-center mr-3" style="width:36px; height:36px; background:#e0f2fe; color:#0284c7;">
+                                        <i class="las la-hdd fs-20"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fs-16 fw-700 mb-0 text-dark">{{ translate('Storage Variants') }}</h5>
+                                        <span class="fs-12 text-muted">{{ translate('Configure storage variants per chosen color (RAM, CPU, Chip, Price, Stock).') }}</span>
+                                    </div>
                                 </div>
-                                <div class="row gutters-5">
+                                <div class="d-flex align-items-center flex-wrap" style="gap: 10px;">
+                                    <div class="d-flex align-items-center" style="gap: 6px;">
+                                        <label class="variant-input-label mb-0 whitespace-nowrap">{{ translate('Variants Per Color') }}:</label>
+                                        <select id="variants_per_color_select" class="form-control custom-select fw-700 text-info bg-light border-info" style="width: 120px;" onchange="onVariantsPerColorChange()">
+                                            <option value="1" selected>1 Variant</option>
+                                            <option value="2">2 Variants</option>
+                                            <option value="3">3 Variants</option>
+                                            <option value="4">4 Variants</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="d-flex align-items-center" style="gap: 6px;">
+                                        <label class="variant-input-label mb-0 whitespace-nowrap">{{ translate('Total') }}:</label>
+                                        <select id="variant_count_select" class="form-control custom-select fw-700 text-primary bg-light border-primary" style="width: 80px;" onchange="onVariantCountSelectChange()">
+                                            @for ($i = 1; $i <= 12; $i++)
+                                                <option value="{{ $i }}" {{ old('variants') ? (count(old('variants')) == $i ? 'selected' : '') : ($i == 1 ? 'selected' : '') }}>{{ $i }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+
+                                    <button type="button" class="btn btn-soft-primary btn-sm fs-13 fw-700 px-3" onclick="addStorageVariant()">
+                                        <i class="las la-plus-circle"></i> {{ translate('Add Variant') }}
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="alert alert-soft-primary border-0 rounded-3 mb-4 py-2 px-3 d-flex align-items-center" style="background:#eff6ff; color:#1d4ed8;">
+                                    <i class="las la-lightbulb fs-20 mr-2 text-primary"></i>
+                                    <span class="fs-13 fw-600"><strong>{{ translate('Step 1:') }}</strong> {{ translate('Select 1 or more Colors in Basic Information.') }} &nbsp;|&nbsp; <strong>{{ translate('Step 2:') }}</strong> {{ translate('Storage Variants generate automatically for each color below.') }}</span>
+                                </div>
+
+                                <!-- Dynamic Variant Boxes Container -->
+                                <div id="storage_variants_container"></div>
+                            </div>
+                        </div>
+
+                        <!-- Price, Discount & Warranty Card -->
+                        <div class="card border-0 shadow-sm rounded-3 mb-4">
+                            <div class="card-header bg-white border-bottom-dashed py-3 px-4 d-flex align-items-center">
+                                <div class="size-36px bg-soft-success text-success rounded-circle d-flex align-items-center justify-content-center mr-3" style="width:36px; height:36px; background:#dcfce7; color:#16a34a;">
+                                    <i class="las la-tags fs-20"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fs-16 fw-700 mb-0 text-dark">{{ translate('Discount & Warranty') }}</h5>
+                                    <span class="fs-12 text-muted">{{ translate('Configure overall promotion discounts and product warranty terms.') }}</span>
+                                </div>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="row gutters-10">
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
-                                            <label class="col-from-label fs-14 fw-500">{{translate('Discount')}}</label>
-                                            <input type="number" min="0" step="0.01" placeholder="{{translate('Discount')}}" name="discount" class="form-control">
+                                            <label class="variant-input-label d-block">{{ translate('Discount Value') }}</label>
+                                            <input type="number" min="0" step="0.01" placeholder="{{ translate('Discount') }}" name="discount" class="form-control fw-600" value="{{ old('discount') }}">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
-                                            <label class="col-from-label fs-14 fw-500">{{translate('Discount Type')}}</label>
+                                            <label class="variant-input-label d-block">{{ translate('Discount Type') }}</label>
                                             <select class="form-control aiz-selectpicker" name="discount_type">
-                                                <option value="amount">{{translate('Flat')}}</option>
-                                                <option value="percent">{{translate('Percent')}}</option>
+                                                <option value="amount" {{ old('discount_type') == 'amount' ? 'selected' : '' }}>{{ translate('Flat Amount ($)') }}</option>
+                                                <option value="percent" {{ old('discount_type') == 'percent' ? 'selected' : '' }}>{{ translate('Percent (%)') }}</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-12">
                                         <div class="form-group mb-3">
-                                            <label class="col-from-label fs-14 fw-500">{{translate('Discount Date Range')}}</label>
-                                            <input type="text" class="form-control aiz-date-range" name="date_range" placeholder="{{translate('Select Date')}}" data-time-picker="true" data-format="DD-MM-Y HH:mm:ss" data-separator=" to " autocomplete="off">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Variation & Stock -->
-                        <div class="border border-gray-300 rounded-2 mb-4">
-                            <div class="bg-white border-radius-10px px-3 px-lg-4 py-3 py-lg-4">
-                                <div class="mb-3 pb-1 d-flex align-items-center justify-content-between border-bottom-dashed">
-                                    <h5 class="fs-16 fw-700">{{translate('Variation & Stock')}}</h5>
-                                </div>
-
-                                <!-- Colors -->
-                                <div class="form-group row gutters-5 mb-0">
-                                    <div class="col-md-3">
-                                        <input type="text" class="form-control" value="{{translate('Colors')}}" disabled>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <select class="form-control aiz-selectpicker" data-live-search="true" data-selected-text-format="count" name="colors[]" id="colors" multiple disabled>
-                                            @foreach (\App\Models\Color::orderBy('name', 'asc')->get() as $key => $color)
-                                            <option value="{{ $color->code }}" data-color-id="{{ $color->id }}" data-content="<span><span class='size-15px d-inline-block mr-2 rounded border' style='background:{{ $color->code }}'></span><span>{{ $color->name }}</span></span>"></option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-md-1 align-content-center">
-                                        <label class="aiz-switch aiz-switch-blue mb-0">
-                                            <input value="1" type="checkbox" name="colors_active">
-                                            <span></span>
-                                        </label>
-                                    </div>
-                                </div>
-                                @can('add_color')
-                                    <div class="mt-1 d-none" id="add_color">
-                                        <a href="#" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">
-                                            <svg xmlns="http://www.w3.org/2000/svg"  height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>
-                                            <span> {{translate('New Color') }}</span>
-                                        </a>
-                                    </div>
-                                @endcan
-                                <div class="product-color-actions d-none mt-2">
-                                    <div class="product-color-items"></div>
-                                    <small class="d-block text-muted mt-1">{{ translate('Edit a color name or code, or remove that color from this computer.') }}</small>
-                                </div>
-
-                                <!-- Choose Attributes (kept functional for backward compatibility, hidden from view: variant rows are now added one by one below) -->
-                                <div class="d-none" aria-hidden="true">
-                                    <div class="form-group row gutters-5 mb-2 mt-3">
-                                        <label class="col-md-3 col-from-label fs-14 fw-500">{{ translate('Choose Attributes') }}</label>
-                                        <div class="col-md-9">
-                                            <select name="choice_attributes[]" id="choice_attributes" class="form-control aiz-selectpicker" data-selected-text-format="count" data-live-search="true" multiple data-placeholder="{{ translate('Choose Attributes') }}">
-                                                @foreach ($attributes as $attribute)
-                                                    <option value="{{ $attribute->id }}">{{ $attribute->getTranslation('name') }}</option>
-                                                @endforeach
-                                            </select>
-                                            @can('add_product_attribute')
-                                                <a href="#" id="add_attribute" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center mt-1">
-                                                    <i class="las la-plus fs-16 mr-1"></i><span>{{ translate('New Attribute') }}</span>
-                                                </a>
-                                            @endcan
-                                        </div>
-                                    </div>
-                                    <div id="chose_options_text" class="d-none" aria-hidden="true">
-                                        <p class="fs-12 text-muted mb-2">{{ translate('Choose the attributes and select the values used to build variants (e.g. Storage, Display, RAM, CPU, Chip).') }}</p>
-                                    </div>
-                                    <div class="customer_choice_options mb-3 d-none" id="customer_choice_options" aria-hidden="true"></div>
-                                </div>
-
-                                <!-- Flat stock/sku (used only while there are no variant combinations) -->
-                                <div id="show-hide-div">
-                                    <div class="row gutters-5 mt-3">
-                                        <div class="col-md-6">
-                                            <div class="form-group mb-2 mb-lg-3">
-                                                <label class="col-from-label fs-14 fw-500">{{ translate('Stock') }}</label>
-                                                <input type="number" lang="en" value="0" step="1" integer-only name="current_stock" class="form-control" placeholder="10">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group mb-2 mb-lg-3">
-                                                <label class="col-from-label fs-14 fw-500">{{ translate('SKU') }}</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" id="sku" name="sku" placeholder="{{ translate('Computer SKU') }}">
-                                                    <div class="input-group-prepend">
-                                                        <button type="button" id="generateSKUBtn" class="bg-gray text-white fs-14 fw-400 border-0 rounded-right px-3 w-100px" onclick="generateSKU()">{{ translate('Generate') }}</button>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <label class="variant-input-label d-block">{{ translate('Discount Date Range') }}</label>
+                                            <input type="text" class="form-control aiz-date-range" name="date_range" placeholder="{{ translate('Select Date Range') }}" data-time-picker="true" data-format="DD-MM-Y HH:mm:ss" data-separator=" to " autocomplete="off" value="{{ old('date_range') }}">
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- SKU Combination (variant table) -->
-                                <div class="d-flex justify-content-between align-items-center mt-3 mb-1">
-                                    <h6 class="fs-14 fw-700 mb-0">{{ translate('Variants') }}</h6>
-                                    <button type="button" class="btn btn-sm btn-soft-primary" id="add-variant-row-btn">
-                                        <i class="las la-plus"></i> {{ translate('Add Variant Row') }}
-                                    </button>
-                                </div>
-                                <div class="sku_combination table-responsive" id="sku_combination" style="overflow-x: auto; width: 100%;"></div>
-                            </div>
-                        </div>
-
-                        <!-- Warranty -->
-                        <div class="border border-gray-300 rounded-2 mb-4">
-                            <div class="bg-white border-radius-10px px-3 px-lg-4 py-3 py-lg-4">
-                                <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{translate('Warranty')}}</h5>
-                                <div class="form-group d-flex align-items-center mb-0">
+                                <div class="form-group d-flex align-items-center mb-0 mt-2 p-3 bg-light rounded-3 border">
                                     <label class="aiz-switch aiz-switch-success mb-0 mr-3">
-                                        <input type="checkbox" name="has_warranty" id="has_warranty" value="1" onchange="toggleWarranty()">
+                                        <input type="checkbox" name="has_warranty" id="has_warranty" value="1" onchange="toggleWarranty()" {{ old('has_warranty') ? 'checked' : '' }}>
                                         <span></span>
                                     </label>
-                                    <span class="fs-14 fw-400">{{translate('Enable warranty for this computer')}}</span>
+                                    <div>
+                                        <span class="fs-14 fw-700 text-dark d-block">{{ translate('Enable Warranty Coverage') }}</span>
+                                        <span class="fs-12 text-muted">{{ translate('Check this to attach a warranty plan to this computer.') }}</span>
+                                    </div>
                                 </div>
-                                <div class="form-group mt-3" id="warranty_selection" style="display: none;">
-                                    <label class="col-from-label fs-14 fw-500">{{translate('Select Warranty')}}</label>
+                                <div class="form-group mt-3" id="warranty_selection" style="display: {{ old('has_warranty') ? 'block' : 'none' }};">
+                                    <label class="variant-input-label d-block">{{ translate('Select Warranty Plan') }}</label>
                                     <select class="form-control aiz-selectpicker" name="warranty_id" data-live-search="true">
                                         <option value="">{{ translate('Select Warranty') }}</option>
                                         @foreach ($warranties as $warranty)
-                                            <option value="{{ $warranty->id }}">{{ $warranty->getTranslation('text') }}</option>
+                                            <option value="{{ $warranty->id }}" {{ old('warranty_id') == $warranty->id ? 'selected' : '' }}>{{ $warranty->getTranslation('text') }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- SEO Meta Tags -->
-                        <div class="border border-gray-300 rounded-2 mt-4 mb-4">
-                            <div class="bg-white border-radius-10px px-3 px-lg-4 py-3 py-lg-4">
-                                <div class="mb-3 pb-1 d-flex align-items-center justify-content-between border-bottom-dashed">
-                                    <h5 class="fs-16 fw-700">{{translate('SEO Meta Tags')}}</h5>
-                                </div>
-                                <div class="row gutters-5">
-                                    <!-- Meta Title -->
-                                    <div class="col-12">
-                                        <div class="form-group mb-2 mb-lg-3">
-                                            <label class="col-from-label fs-14 fw-500">{{translate('Meta Title')}}</label>
-                                            <input type="text" class="form-control" name="meta_title" placeholder="{{translate('Meta Title')}}">
-                                        </div>
-                                    </div>
-                                    <!-- Description -->
-                                    <div class="col-12">
-                                        <div class="form-group mb-2 mb-lg-3">
-                                            <label class="col-from-label fs-14 fw-500">{{translate('Description')}}</label>
-                                            <textarea name="meta_description" rows="5" class="form-control"></textarea>
-                                        </div>
-                                    </div>
-                                    <!-- Meta Image -->
-                                    <div class="col-12">
-                                        <div class="form-group mb-2 mb-lg-3">
-                                            <label class="col-from-label fs-14 fw-500">{{translate('Meta Image')}}</label>
-                                            <div class="input-group" data-toggle="aizuploader" data-type="image">
-                                                <div class="input-group-prepend">
-                                                    <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
-                                                </div>
-                                                <div class="form-control file-amount">{{ translate('Choose File') }}</div>
-                                                <input type="hidden" name="meta_img" class="selected-files">
-                                            </div>
-                                            <div class="file-preview box sm"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
 
+                    <!-- Right Sidebar -->
                     <div class="col-xl-4">
-                        <!-- Product Configuration -->
-                        <div class="border border-gray-300 rounded-2 mb-4">
-                            <div class="bg-white border-radius-10px px-3 px-lg-4 py-3 py-lg-4">
-                                <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{ translate('Product Configuration') }}</h5>
-                                <div class="mb-3">
-                                    <div class="d-flex align-items-center mt-3 mb-2">
-                                        <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
+                        <!-- Publish Status Card -->
+                        <div class="card border-0 shadow-sm rounded-3 mb-4">
+                            <div class="card-header bg-white border-bottom-dashed py-3 px-4">
+                                <h5 class="fs-15 fw-700 mb-0 text-dark">{{ translate('Publish Status') }}</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3 border">
+                                    <span class="fs-14 fw-600 text-dark">{{ translate('Publish Product') }}</span>
+                                    <div class="d-flex align-items-center">
+                                        <label class="aiz-switch aiz-switch-blue mb-0 mr-2">
                                             <input value="1" type="checkbox" name="published" checked onchange="updateStatusLabel(this)">
                                             <span></span>
                                         </label>
-                                        <span class="fs-14 fw-600 d-block status-label text-success" style="margin-top: -6px">{{ translate('Active') }}</span>
+                                        <span class="fs-13 fw-700 status-label text-success">{{ translate('Active') }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Image -->
-                        <div class="border border-gray-300 rounded-2 mb-4">
-                            <div class="bg-white border-radius-10px px-3 px-lg-4 py-3 py-lg-4">
-                                <h5 class="fs-16 fw-700 border-bottom-dashed mb-3 pb-2">{{translate('Computer Image')}}</h5>
+                        <!-- Product Photos Card -->
+                        <div class="card border-0 shadow-sm rounded-3 mb-4">
+                            <div class="card-header bg-white border-bottom-dashed py-3 px-4">
+                                <h5 class="fs-15 fw-700 mb-0 text-dark">{{ translate('Computer Images') }}</h5>
+                            </div>
+                            <div class="card-body p-4">
                                 <div class="form-group mb-3">
-                                    <label class="col-from-label fs-14 fw-500">{{translate('Thumbnail Image')}}</label>
+                                    <label class="variant-input-label d-block">{{ translate('Thumbnail Image') }} <span class="text-danger">*</span></label>
                                     <div class="input-group" data-toggle="aizuploader" data-type="image">
                                         <div class="input-group-prepend">
-                                            <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
+                                            <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse') }}</div>
                                         </div>
                                         <div class="form-control file-amount">{{ translate('Choose File') }}</div>
-                                        <input type="hidden" name="thumbnail_img" class="selected-files">
+                                        <input type="hidden" name="thumbnail_img" class="selected-files" value="{{ old('thumbnail_img') }}">
                                     </div>
                                     <div class="file-preview box sm"></div>
                                 </div>
-                                <div class="form-group mb-3">
-                                    <label class="col-from-label fs-14 fw-500">{{translate('Gallery Images')}}</label>
+                                <div class="form-group mb-0">
+                                    <label class="variant-input-label d-block">{{ translate('Gallery Images') }}</label>
                                     <div class="input-group" data-toggle="aizuploader" data-type="image" data-multiple="true">
                                         <div class="input-group-prepend">
-                                            <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
+                                            <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse') }}</div>
                                         </div>
                                         <div class="form-control file-amount">{{ translate('Choose File') }}</div>
-                                        <input type="hidden" name="gallery" class="selected-files">
+                                        <input type="hidden" name="gallery" class="selected-files" value="{{ old('gallery') }}">
+                                    </div>
+                                    <div class="file-preview box sm"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SEO Meta Tags Card -->
+                        <div class="card border-0 shadow-sm rounded-3 mb-4">
+                            <div class="card-header bg-white border-bottom-dashed py-3 px-4">
+                                <h5 class="fs-15 fw-700 mb-0 text-dark">{{ translate('SEO Meta Tags') }}</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="form-group mb-3">
+                                    <label class="variant-input-label d-block">{{ translate('Meta Title') }}</label>
+                                    <input type="text" class="form-control" name="meta_title" placeholder="{{ translate('Meta Title') }}" value="{{ old('meta_title') }}">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="variant-input-label d-block">{{ translate('Meta Description') }}</label>
+                                    <textarea name="meta_description" rows="3" class="form-control" placeholder="{{ translate('Meta Description') }}">{{ old('meta_description') }}</textarea>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label class="variant-input-label d-block">{{ translate('Meta Image') }}</label>
+                                    <div class="input-group" data-toggle="aizuploader" data-type="image">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse') }}</div>
+                                        </div>
+                                        <div class="form-control file-amount">{{ translate('Choose File') }}</div>
+                                        <input type="hidden" name="meta_img" class="selected-files" value="{{ old('meta_img') }}">
                                     </div>
                                     <div class="file-preview box sm"></div>
                                 </div>
@@ -302,21 +301,643 @@
                     </div>
                 </div>
 
-                <div class="row align-items-center mb-4">
-                    <div class="col-12 text-right">
-                        <button type="submit" class="btn btn-primary w-200px fs-14 fw-700">{{ translate('Save Computer') }}</button>
+                <!-- Sticky Form Action Bar -->
+                <div class="card p-3 border-0 shadow-lg rounded-3 mt-4 position-sticky bottom-0 bg-white" style="z-index: 99; bottom: 15px; border: 1px solid #cbd5e1 !important;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <a href="{{ route('admin.computers.index') }}" class="btn btn-light px-4 fs-14 fw-600 text-muted">{{ translate('Cancel') }}</a>
+                        <button type="submit" class="btn btn-primary px-5 fs-14 fw-700 shadow-primary py-2 rounded-2">
+                            <i class="las la-check-circle fs-18 mr-1"></i> {{ translate('Save & Create Computer') }}
+                        </button>
                     </div>
                 </div>
 
             </form>
         </div>
     </div>
+
+    <style>
+        .color-group-section {
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            background: #f8fafc;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.03);
+            margin-bottom: 24px;
+            transition: all 0.25s ease;
+        }
+        .color-group-section:hover {
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
+        }
+        .color-group-header {
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+        .variant-card-box {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        .variant-card-box:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+        }
+        .variant-card-header {
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            padding: 10px 16px;
+            border-bottom: 1px dashed #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .variant-card-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .variant-card-body {
+            padding: 16px;
+        }
+        .variant-badge {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            color: #ffffff;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+        }
+        .variant-input-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+        .variant-storage-input {
+            color: #4f46e5 !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+        }
+        .variant-price-input {
+            color: #059669 !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+        }
+        .variant-stock-input {
+            color: #2563eb !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+        }
+        /* Custom Input Group Dropdowns for Storage, Display, RAM, CPU, Chip */
+        .variant-card-box .btn-dropdown-preset::after,
+        .variant-card-box .dropdown-toggle::after {
+            display: none !important;
+        }
+        .variant-card-box .btn-dropdown-preset {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: none;
+            color: #64748b;
+            border-top-right-radius: 6px;
+            border-bottom-right-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+        }
+        .variant-card-box .btn-dropdown-preset:hover,
+        .variant-card-box .btn-dropdown-preset:focus,
+        .variant-card-box .show > .btn-dropdown-preset {
+            background: #e2e8f0;
+            color: #1e293b;
+            border-color: #cbd5e1;
+        }
+        .variant-card-box .dropdown-menu {
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 10px !important;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12) !important;
+            padding: 6px !important;
+            min-width: 170px;
+            z-index: 1050 !important;
+        }
+        .variant-card-box .dropdown-item {
+            padding: 8px 12px !important;
+            border-radius: 6px !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            color: #334155 !important;
+            transition: all 0.15s ease;
+        }
+        .variant-card-box .dropdown-item:hover,
+        .variant-card-box .dropdown-item:focus {
+            background: #eff6ff !important;
+            color: #2563eb !important;
+            font-weight: 700 !important;
+        }
+    </style>
 @endsection
 
 @section('script')
 <script>
+    // Preserved form state across dropdown count changes
+    var currentVariantsState = [];
+
+    // Pre-fill from old() input if validation error occurs
+    @if(old('variants'))
+        currentVariantsState = @json(old('variants'));
+    @else
+        currentVariantsState = [
+            { storage: '256GB', display: '13.6-inch Liquid Retina', ram: '16GB', cpu: '10-core', chip: 'Apple M4', color: 'Space Gray', price: '999', stock: '10' }
+        ];
+    @endif
+
+    var defaultPresets = [
+        { storage: '256GB', display: '13.6-inch Liquid Retina', ram: '16GB', cpu: '10-core', chip: 'Apple M4', color: 'Space Gray', price: '999', stock: '10' },
+        { storage: '512GB', display: '13.6-inch Liquid Retina', ram: '24GB', cpu: '10-core', chip: 'Apple M4', color: 'Silver', price: '1199', stock: '10' },
+        { storage: '1TB', display: '13.6-inch Liquid Retina', ram: '24GB', cpu: '10-core', chip: 'Apple M4', color: 'Midnight', price: '1499', stock: '10' },
+        { storage: '2TB', display: '13.6-inch Liquid Retina', ram: '32GB', cpu: '12-core', chip: 'Apple M4 Pro', color: 'Space Black', price: '1999', stock: '10' },
+    ];
+
+    function captureCurrentInputs() {
+        $('#storage_variants_container .variant-card-box').each(function(index) {
+            var $box = $(this);
+            currentVariantsState[index] = {
+                storage: $box.find('.variant-storage-input').val() || '',
+                display: $box.find('.variant-display-input').val() || '',
+                ram: $box.find('.variant-ram-input').val() || '',
+                cpu: $box.find('.variant-cpu-input').val() || '',
+                chip: $box.find('.variant-chip-input').val() || '',
+                color: $box.find('.variant-color-select').val() || $box.find('.variant-color-input').val() || '',
+                price: $box.find('.variant-price-input').val() || '',
+                stock: $box.find('.variant-stock-input').val() || ''
+            };
+        });
+    }
+
+    function getSelectedColorNames() {
+        var names = [];
+        $('#colors option:selected').each(function() {
+            var name = $(this).attr('data-color-name') || $(this).text().trim();
+            if (name && names.indexOf(name) === -1) {
+                names.push(name);
+            }
+        });
+        return names;
+    }
+
+    function onColorsChanged() {
+        onVariantsPerColorChange();
+    }
+
+    function onVariantsPerColorChange() {
+        var selectedColors = getSelectedColorNames();
+        var perColor = parseInt($('#variants_per_color_select').val()) || 1;
+
+        captureCurrentInputs();
+        var storagePresets = ['256GB', '512GB', '1TB', '2TB'];
+
+        currentVariantsState = [];
+
+        if (selectedColors.length > 0) {
+            selectedColors.forEach(function(color) {
+                for (var k = 0; k < perColor; k++) {
+                    var storage = storagePresets[k % storagePresets.length];
+                    var price = 999 + (k * 200);
+                    currentVariantsState.push({
+                        storage: storage,
+                        display: '13.6-inch Liquid Retina',
+                        ram: k > 1 ? '32GB' : (k > 0 ? '24GB' : '16GB'),
+                        cpu: '10-core',
+                        chip: 'Apple M4',
+                        color: color,
+                        price: price.toString(),
+                        stock: '10'
+                    });
+                }
+            });
+            var totalCount = currentVariantsState.length;
+            $('#variant_count_select').val(totalCount);
+            renderStorageVariants(totalCount);
+        } else {
+            $('#variant_count_select').val(0);
+            renderStorageVariants(0);
+        }
+    }
+
+    function onVariantCountSelectChange() {
+        var count = parseInt($('#variant_count_select').val()) || 1;
+        captureCurrentInputs();
+
+        var selectedColors = getSelectedColorNames();
+        var storagePresets = ['256GB', '512GB', '1TB', '2TB'];
+
+        while (currentVariantsState.length < count) {
+            var k = currentVariantsState.length;
+            var fallbackColor = selectedColors.length > 0 ? selectedColors[k % selectedColors.length] : 'Space Gray';
+            currentVariantsState.push({
+                storage: storagePresets[k % storagePresets.length],
+                display: '13.6-inch Liquid Retina',
+                ram: k > 1 ? '32GB' : (k > 0 ? '24GB' : '16GB'),
+                cpu: '10-core',
+                chip: 'Apple M4',
+                color: fallbackColor,
+                price: (999 + k * 200).toString(),
+                stock: '10'
+            });
+        }
+
+        if (currentVariantsState.length > count) {
+            currentVariantsState = currentVariantsState.slice(0, count);
+        }
+
+        renderStorageVariants(count);
+    }
+
+    function changeColorVariantCount(targetColor, delta) {
+        captureCurrentInputs();
+        var storagePresets = ['256GB', '512GB', '1TB', '2TB'];
+
+        if (delta > 0) {
+            var colorItems = currentVariantsState.filter(function(v) { return v.color === targetColor; });
+            var k = colorItems.length;
+            var storage = storagePresets[k % storagePresets.length];
+            var price = (999 + k * 200).toString();
+
+            currentVariantsState.push({
+                storage: storage,
+                display: '13.6-inch Liquid Retina',
+                ram: k > 1 ? '32GB' : (k > 0 ? '24GB' : '16GB'),
+                cpu: '10-core',
+                chip: 'Apple M4',
+                color: targetColor,
+                price: price,
+                stock: '10'
+            });
+        } else if (delta < 0) {
+            var colorItems = currentVariantsState.filter(function(v) { return v.color === targetColor; });
+            var targetIndex = -1;
+            for (var idx = currentVariantsState.length - 1; idx >= 0; idx--) {
+                if (currentVariantsState[idx].color === targetColor) {
+                    targetIndex = idx;
+                    break;
+                }
+            }
+
+            if (targetIndex !== -1 && colorItems.length > 1) {
+                currentVariantsState.splice(targetIndex, 1);
+            }
+        }
+
+        var newTotal = currentVariantsState.length;
+        $('#variant_count_select').val(newTotal);
+        renderStorageVariants(newTotal);
+    }
+
+    function addStorageVariant() {
+        var selectedColors = getSelectedColorNames();
+        if (selectedColors.length === 0) {
+            alert("{{ translate('Please select at least 1 Color first.') }}");
+            return;
+        }
+
+        captureCurrentInputs();
+        var newCount = currentVariantsState.length + 1;
+        var fallbackColor = selectedColors[(newCount - 1) % selectedColors.length];
+
+        currentVariantsState.push({
+            storage: '256GB',
+            display: '13.6-inch Liquid Retina',
+            ram: '16GB',
+            cpu: '10-core',
+            chip: 'Apple M4',
+            color: fallbackColor,
+            price: '999',
+            stock: '10'
+        });
+
+        $('#variant_count_select').val(newCount);
+        renderStorageVariants(newCount);
+    }
+
+    function removeVariantCard(btn) {
+        captureCurrentInputs();
+        var $box = $(btn).closest('.variant-card-box');
+        var index = parseInt($box.attr('data-index'));
+
+        if (currentVariantsState.length <= 1) {
+            return;
+        }
+
+        currentVariantsState.splice(index, 1);
+        var newCount = currentVariantsState.length;
+        $('#variant_count_select').val(newCount);
+        renderStorageVariants(newCount);
+    }
+
+    var colorCodeMap = {};
+    @foreach (\App\Models\Color::orderBy('name', 'asc')->get() as $key => $color)
+        colorCodeMap[@json($color->name)] = @json($color->code);
+    @endforeach
+
+    function updateVariantHeaderColor(selectEl) {
+        captureCurrentInputs();
+        var currentCount = currentVariantsState.length;
+        renderStorageVariants(currentCount);
+    }
+
+    function updateVariantTitleText(inputEl) {
+        var $box = $(inputEl).closest('.variant-card-box');
+        var storageVal = $(inputEl).val();
+        var colorVal = $box.find('.variant-color-select').val();
+        $box.find('.variant-title-text').text((colorVal ? colorVal + ' — ' : '') + (storageVal ? storageVal + ' Storage Option' : 'Storage Variant'));
+    }
+
+    function renderStorageVariants(count) {
+        captureCurrentInputs();
+        var $container = $('#storage_variants_container');
+        $container.empty();
+
+        var selectedColors = getSelectedColorNames();
+
+        if (selectedColors.length === 0 || count === 0) {
+            var noColorHtml = `
+                <div class="text-center py-5 border border-dashed rounded-3 bg-light my-2 px-3">
+                    <div class="size-60px bg-soft-primary text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width:54px; height:54px; background:#e0e7ff; color:#4f46e5;">
+                        <i class="las la-palette fs-28"></i>
+                    </div>
+                    <h6 class="fs-16 fw-700 text-dark mb-1">{{ translate("No Color Selected") }}</h6>
+                    <p class="fs-13 text-muted mb-0 mx-auto" style="max-width:420px;">{{ translate("Please select 1 or more Colors in the Colors section above. Storage Variants will automatically generate and group for each chosen color.") }}</p>
+                </div>
+            `;
+            $container.html(noColorHtml);
+            return;
+        }
+
+        // Group variants by color
+        var groupedVariants = {};
+        selectedColors.forEach(function(c) {
+            groupedVariants[c] = [];
+        });
+
+        for (var i = 0; i < count; i++) {
+            var fallbackColor = selectedColors[i % selectedColors.length];
+
+            var data = currentVariantsState[i] || defaultPresets[i] || {
+                storage: (128 * Math.pow(2, i)) + 'GB',
+                display: '13.6-inch',
+                ram: '16GB',
+                cpu: '10-core',
+                chip: 'Apple M4',
+                color: fallbackColor,
+                price: '999',
+                stock: '10'
+            };
+
+            if (!data.color || selectedColors.indexOf(data.color) === -1) {
+                data.color = fallbackColor;
+            }
+
+            if (!groupedVariants[data.color]) {
+                groupedVariants[data.color] = [];
+            }
+
+            data.originalIndex = i;
+            groupedVariants[data.color].push(data);
+        }
+
+        // Render each color group section
+        selectedColors.forEach(function(colorName) {
+            var variantList = groupedVariants[colorName] || [];
+            if (variantList.length === 0) return;
+
+            var hexCode = colorCodeMap[colorName] || '#3b82f6';
+            var groupHtml = `
+                <div class="color-group-section border rounded-3 p-3 p-md-4 mb-4 bg-light-50 shadow-xs" style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 5px solid ${hexCode};">
+                    <div class="color-group-header d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom flex-wrap" style="border-color: #cbd5e1 !important; gap: 10px;">
+                        <h6 class="fs-15 fw-700 text-dark mb-0 d-flex align-items-center">
+                            <span class="size-18px d-inline-block mr-2 rounded-circle border shadow-xs" style="background: ${hexCode}; width: 18px; height: 18px; box-shadow: 0 0 0 2px #fff, 0 0 0 3px ${hexCode};"></span>
+                            <span>${colorName} Storage Variants</span>
+                            <span class="badge badge-inline badge-soft-primary ml-2 px-3 py-1 fs-12 fw-700 rounded-pill">${variantList.length} Variants</span>
+                        </h6>
+                        <div class="d-flex align-items-center" style="gap: 8px;">
+                            <span class="fs-12 text-muted fw-700 uppercase mr-1">{{ translate("Variants") }}:</span>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-secondary px-2 font-weight-bold" onclick="changeColorVariantCount('${colorName}', -1)" title="Decrease variant for ${colorName}" ${variantList.length <= 1 ? 'disabled' : ''}>
+                                    <i class="las la-minus"></i>
+                                </button>
+                                <span class="btn btn-light disabled px-3 fw-700 text-dark">${variantList.length}</span>
+                                <button type="button" class="btn btn-outline-secondary px-2 font-weight-bold" onclick="changeColorVariantCount('${colorName}', 1)" title="Increase variant for ${colorName}">
+                                    <i class="las la-plus"></i>
+                                </button>
+                            </div>
+                            <button type="button" class="btn btn-soft-primary btn-sm fs-12 fw-700 px-3 ml-1" onclick="changeColorVariantCount('${colorName}', 1)">
+                                <i class="las la-plus-circle"></i> Add Variant
+                            </button>
+                        </div>
+                    </div>
+                    <div class="color-group-body">
+            `;
+
+            variantList.forEach(function(data) {
+                var i = data.originalIndex;
+                var titleText = (data.color ? data.color + ' — ' : '') + (data.storage ? data.storage + ' Storage Option' : 'Storage Variant #' + (i + 1));
+
+                var boxHtml = `
+                    <div class="variant-card-box mb-3" data-index="${i}">
+                        <div class="variant-card-header">
+                            <h6 class="variant-card-title mb-0">
+                                <span class="variant-badge">Variant #${i + 1}</span>
+                                <span class="variant-title-text fw-700 text-dark ml-2">${titleText}</span>
+                                <span class="badge badge-inline badge-soft-info ml-2 variant-color-badge">${data.color || ''}</span>
+                            </h6>
+                            <div class="d-flex align-items-center" style="gap: 8px;">
+                                <span class="text-muted fs-12 mr-2">${i === 0 ? '{{ translate("Default Base Variant") }}' : ''}</span>
+                                ${count > 1 ? `<button type="button" class="btn btn-icon btn-circle btn-sm btn-soft-danger" onclick="removeVariantCard(this)" title="{{ translate('Delete Variant') }}"><i class="las la-trash fs-14"></i></button>` : ''}
+                            </div>
+                        </div>
+                        <div class="variant-card-body">
+                            <div class="row gutters-10">
+                                <!-- Storage -->
+                                <div class="col-md-3">
+                                    <div class="form-group mb-3">
+                                        <label class="variant-input-label d-block">{{ translate("Storage") }} <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="text" name="variants[${i}][storage]" class="form-control variant-storage-input" placeholder="e.g. 256GB" value="${data.storage || ''}" oninput="updateVariantTitleText(this)" required>
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-dropdown-preset dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="las la-angle-down"></i></button>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'storage', '128GB')">128GB</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'storage', '256GB')">256GB</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'storage', '512GB')">512GB</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'storage', '1TB')">1TB</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'storage', '2TB')">2TB</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'storage', '4TB')">4TB</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Display -->
+                                <div class="col-md-3">
+                                    <div class="form-group mb-3">
+                                        <label class="variant-input-label d-block">{{ translate("Display") }} <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="text" name="variants[${i}][display]" class="form-control variant-display-input" placeholder="e.g. 13.6-inch" value="${data.display || ''}" required>
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-dropdown-preset dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="las la-angle-down"></i></button>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'display', '13.6-inch Liquid Retina')">13.6-inch Liquid Retina</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'display', '14.2-inch Liquid Retina XDR')">14.2-inch Liquid Retina XDR</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'display', '15.3-inch Liquid Retina')">15.3-inch Liquid Retina</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'display', '16.2-inch Liquid Retina XDR')">16.2-inch Liquid Retina XDR</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'display', '24-inch 4.5K Retina')">24-inch 4.5K Retina</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- RAM -->
+                                <div class="col-md-3">
+                                    <div class="form-group mb-3">
+                                        <label class="variant-input-label d-block">{{ translate("RAM") }} <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="text" name="variants[${i}][ram]" class="form-control variant-ram-input" placeholder="e.g. 16GB" value="${data.ram || ''}" required>
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-dropdown-preset dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="las la-angle-down"></i></button>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '8GB')">8GB</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '16GB')">16GB</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '24GB')">24GB</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '32GB')">32GB</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '64GB')">64GB</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '128GB')">128GB</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Color -->
+                                <div class="col-md-3">
+                                    <div class="form-group mb-3">
+                                        <label class="variant-input-label d-block">{{ translate("Color") }}</label>
+                                        <select name="variants[${i}][color]" class="form-control variant-color-select" onchange="updateVariantHeaderColor(this)">
+                                            ${selectedColors.map(c => `<option value="${c}" ${c === data.color ? 'selected' : ''}>${c}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- CPU -->
+                                <div class="col-md-3">
+                                    <div class="form-group mb-3 mb-md-0">
+                                        <label class="variant-input-label d-block">{{ translate("CPU") }} <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="text" name="variants[${i}][cpu]" class="form-control variant-cpu-input" placeholder="e.g. 10-core" value="${data.cpu || ''}" required>
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-dropdown-preset dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="las la-angle-down"></i></button>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'cpu', '8-core')">8-core</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'cpu', '10-core')">10-core</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'cpu', '12-core')">12-core</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'cpu', '14-core')">14-core</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'cpu', '16-core')">16-core</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Chip -->
+                                <div class="col-md-3">
+                                    <div class="form-group mb-3 mb-md-0">
+                                        <label class="variant-input-label d-block">{{ translate("Chip") }} <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="text" name="variants[${i}][chip]" class="form-control variant-chip-input" placeholder="e.g. Apple M4" value="${data.chip || ''}" required>
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-dropdown-preset dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="las la-angle-down"></i></button>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Apple M1')">Apple M1</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Apple M2')">Apple M2</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Apple M3')">Apple M3</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Apple M4')">Apple M4</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Apple M4 Pro')">Apple M4 Pro</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Apple M4 Max')">Apple M4 Max</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Intel Core i7')">Intel Core i7</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Intel Core i9')">Intel Core i9</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Price -->
+                                <div class="col-md-3">
+                                    <div class="form-group mb-3 mb-md-0">
+                                        <label class="variant-input-label d-block">{{ translate("Price ($)") }} <span class="text-danger">*</span></label>
+                                        <input type="number" lang="en" min="0" step="0.01" name="variants[${i}][price]" class="form-control variant-price-input" placeholder="e.g. 999" value="${data.price || ''}" required>
+                                    </div>
+                                </div>
+
+                                <!-- Stock per variant -->
+                                <div class="col-md-3">
+                                    <div class="form-group mb-0">
+                                        <label class="variant-input-label d-block">{{ translate("Stock") }} <span class="text-danger">*</span></label>
+                                        <input type="number" lang="en" min="0" step="1" name="variants[${i}][stock]" class="form-control variant-stock-input" placeholder="e.g. 10" value="${data.stock !== undefined ? data.stock : '10'}" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                groupHtml += boxHtml;
+            });
+
+            groupHtml += `
+                    </div>
+                </div>
+            `;
+
+            $container.append(groupHtml);
+        });
+    }
+
+    function setVariantField(btn, fieldName, val) {
+        var $box = $(btn).closest('.form-group');
+        $box.find('input').val(val).trigger('change');
+    }
+
+    function generateSKU() {
+        const btn = document.getElementById('generateSKUBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="las la-spinner la-spin"></i>';
+        setTimeout(() => {
+            const prefix = 'COMP-';
+            const randomCode = Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('sku').value = prefix + randomCode;
+            btn.innerHTML = '<i class="las la-check-circle text-success"></i>';
+            setTimeout(() => {
+                btn.innerHTML = "{{ translate('Generate') }}";
+                btn.disabled = false;
+            }, 1000);
+        }, 300);
+    }
+
     function toggleWarranty() {
-        if($('#has_warranty').is(':checked')) {
+        if ($('#has_warranty').is(':checked')) {
             $('#warranty_selection').show();
         } else {
             $('#warranty_selection').hide();
@@ -325,427 +946,25 @@
 
     function updateStatusLabel(el) {
         let label = $(el).closest('.d-flex').find('.status-label');
-        if(el.checked) {
-            label.text('{{ translate('Active') }}').removeClass('text-danger').addClass('text-success');
+        if (el.checked) {
+            label.text('{{ translate("Active") }}').removeClass('text-danger').addClass('text-success');
         } else {
-            label.text('{{ translate('Disabled') }}').removeClass('text-success').addClass('text-danger');
+            label.text('{{ translate("Disabled") }}').removeClass('text-success').addClass('text-danger');
         }
     }
 
-    function generateSKU() {
-        const btn = document.getElementById('generateSKUBtn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="las la-spinner la-spin"></i>';
-        setTimeout(() => {
-            const now = Date.now();
-            const randomSuffix = Math.floor(Math.random() * 100);
-            const barcode = Number(now.toString() + randomSuffix.toString().padStart(2, '0'));
+    $(document).ready(function() {
+        var initialCount = parseInt($('#variant_count_select').val()) || 2;
+        renderStorageVariants(initialCount);
 
-            document.getElementById('sku').value = barcode;
-            btn.innerHTML = '<i class="las la-check-circle text-success"></i>';
-            setTimeout(() => {
-                btn.innerHTML = "{{ translate('Regenerate') }}";
-                btn.disabled = false;
-            }, 1200);
-        }, 300);
-    }
-
-    function add_more_customer_choice_option(i, name){
-        return $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            type:"POST",
-            url:'{{ route('products.add-more-choice-option') }}',
-            data:{
-               attribute_id: i
-            },
-            success: function(data) {
-                $('#chose_options_text').removeClass('d-none');
-                var obj = JSON.parse(data);
-                $('#customer_choice_options').removeClass('d-none').append('\
-                <div class="form-group row">\
-                    <div class="col-md-3">\
-                        <input type="hidden" name="choice_no[]" value="'+i+'">\
-                        <input type="text" class="form-control" name="choice[]" value="'+name+'" placeholder="{{ translate('Choice Title') }}" readonly>\
-                    </div>\
-                    <div class="col-md-9">\
-                        <select class="form-control aiz-selectpicker attribute_choice" data-live-search="true" name="choice_options_'+ i +'[]" data-selected-text-format="count" multiple required>\
-                            '+obj+'\
-                        </select>\
-                        <div class="mt-1">\
-                            <a href="javascript:void(0)" onclick="add_new_attribute_value('+i+', \''+name+'\')" class="text-blue fs-12 fw-600 hov-opacity-80 has-transition d-flex align-items-center" style="margin-left: -2px;">\
-                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#3390f3"><path d="M444-444H240v-72h204v-204h72v204h204v72H516v204h-72v-204Z"/></svg>\
-                                <span> {{translate("New ") }} ' + name + '</span>\
-                            </a>\
-                        </div>\
-                    </div>\
-                </div>');
-                AIZ.plugins.bootstrapSelect('refresh');
-           }
-       });
-    }
-
-    function add_new_attribute_value(attribute_id, attribute_name) {
-        var value = prompt("{{ translate('Enter new ') }}" + attribute_name + " {{ translate('value:') }}");
-        if(value != null && value.trim() != "") {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: "POST",
-                url: '{{ route("products.add-new-attribute-value") }}',
-                data: {
-                    attribute_id: attribute_id,
-                    value: value
-                },
-                success: function(data) {
-                    var obj = JSON.parse(data);
-                    var select = $('select[name="choice_options_' + attribute_id + '[]"]');
-                    var currentValues = select.val() || [];
-                    select.html(obj);
-                    currentValues.push(value.trim().charAt(0).toUpperCase() + value.trim().slice(1));
-                    select.val(currentValues);
-                    AIZ.plugins.bootstrapSelect('refresh');
-                    update_sku();
-                }
-            });
-        }
-    }
-
-    $('input[name="colors_active"]').on('change', function() {
-        if(!$('input[name="colors_active"]').is(':checked')) {
-            $('#colors').prop('disabled', true);
-            $('#add_color').addClass('d-none');
-            AIZ.plugins.bootstrapSelect('refresh');
-        }
-        else {
-            $('#colors').prop('disabled', false);
-            $('#add_color').removeClass('d-none');
-            AIZ.plugins.bootstrapSelect('refresh');
-        }
-        update_sku();
-    });
-
-    $(document).on("change", ".attribute_choice", function() {
-        update_sku();
-    });
-
-    $('#colors').on('change', function() {
-        update_sku();
-    });
-
-    @include('backend.product.products.storage_variant_js')
-
-    function update_sku(){
-        $.ajax({
-           type:"POST",
-           url:'{{ route('admin.computers.sku_combination') }}',
-           data:$('#aizSubmitForm').serialize(),
-           success: function(data) {
-                $('#sku_combination').html(data);
-                AIZ.uploader.previewGenerate();
-                AIZ.plugins.sectionFooTable('#sku_combination');
-                AIZ.plugins.bootstrapSelect('refresh');
-                if (data.trim().length > 1) {
-                   $('#show-hide-div').hide();
-                }
-                else {
-                    $('#show-hide-div').show();
-                }
-           }
-       });
-    }
-
-    var $openVariantAttrMenu = null;
-
-    // Removes the popover DOM only, without acting on its selection. Use closeVariantAttrMenu()
-    // instead unless you're about to process the selection yourself right after.
-    function removeVariantAttrMenu() {
-        if ($openVariantAttrMenu) {
-            $openVariantAttrMenu.remove();
-            $openVariantAttrMenu = null;
-        }
-    }
-
-    // Closing the popover is the single point where a multi-checked cell actually splits its
-    // row. Splitting on every checkbox click instead (checked once, react immediately) let a
-    // still-open popover's checkboxes drift out of sync with the row it had already split off,
-    // so a 3rd click would re-read stale checked boxes and split the same value again.
-    function closeVariantAttrMenu() {
-        if (!$openVariantAttrMenu) {
-            return;
-        }
-        var $select = $($openVariantAttrMenu.data('for'));
-        removeVariantAttrMenu();
-        maybeSplitRow($select);
-    }
-
-    function refreshVariantAttrToggleLabel($select) {
-        var values = $select.val() || [];
-        var label = '-';
-        if (values.length === 1) {
-            label = values[0];
-        } else if (values.length > 1) {
-            label = values.length + ' {{ translate("selected") }}';
-        }
-        $select.siblings('.variant-attr-toggle').find('.variant-attr-toggle-label').text(label);
-    }
-
-    // Clicking a Storage/Display/RAM/CPU/Chip cell opens a small checkbox popover
-    // (appended to <body> so it's never clipped by the table's scroll box).
-    $(document).on('click', '.variant-attr-toggle', function(e) {
-        e.stopPropagation();
-        var $toggle = $(this);
-        var $select = $toggle.siblings('select.variant-attr-select');
-
-        var reopening = $openVariantAttrMenu && $openVariantAttrMenu.data('for') === $select.get(0);
-        closeVariantAttrMenu();
-        if (reopening) {
-            return;
-        }
-
-        var $menu = $('<div class="variant-attr-dropdown-menu"></div>').data('for', $select.get(0));
-        var currentVals = $select.val() || [];
-
-        $select.find('option').each(function() {
-            var val = $(this).val();
-            var $opt = $('<label class="variant-attr-option"></label>');
-            $('<input>', { type: 'checkbox', value: val })
-                .prop('checked', currentVals.indexOf(val) !== -1)
-                .appendTo($opt);
-            $('<span>').text(val).appendTo($opt);
-            $menu.append($opt);
+        $('#variant_count_select').on('change', function() {
+            var count = parseInt($(this).val()) || 1;
+            renderStorageVariants(count);
         });
 
-        $('body').append($menu);
-        var rect = $toggle.get(0).getBoundingClientRect();
-        $menu.css({
-            position: 'absolute',
-            top: (rect.bottom + window.scrollY + 4) + 'px',
-            left: (rect.left + window.scrollX) + 'px',
-            minWidth: rect.width + 'px'
-        });
-
-        $openVariantAttrMenu = $menu;
-    });
-
-    $(document).on('click', '.variant-attr-dropdown-menu', function(e) {
-        e.stopPropagation();
-    });
-
-    $(document).on('click', function() {
-        closeVariantAttrMenu();
-    });
-
-    // Checking/unchecking only updates the select + the live label; it does NOT split yet.
-    // The actual split happens once, when the popover closes (see closeVariantAttrMenu above).
-    $(document).on('change', '.variant-attr-dropdown-menu input[type="checkbox"]', function() {
-        var $menu = $(this).closest('.variant-attr-dropdown-menu');
-        var $select = $($menu.data('for'));
-        var checkedVals = $menu.find('input[type="checkbox"]:checked').map(function() {
-            return $(this).val();
-        }).get();
-        $select.val(checkedVals);
-        refreshVariantAttrToggleLabel($select);
-    });
-
-    $(document).on('click', '.add-variant-attr-value', function() {
-        var $link = $(this);
-        var attributeId = $link.data('attribute-id');
-        var attributeName = $link.data('attribute-name');
-        var $select = $link.siblings('select.variant-attr-select');
-
-        if (!attributeId) {
-            return;
-        }
-
-        var value = prompt("{{ translate('Enter new ') }}" + attributeName + " {{ translate('value:') }}");
-        if (value == null || value.trim() == "") {
-            return;
-        }
-
-        $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            type: "POST",
-            url: '{{ route("products.add-new-attribute-value") }}',
-            data: {
-                attribute_id: attributeId,
-                value: value
-            },
-            success: function() {
-                var newVal = value.trim().charAt(0).toUpperCase() + value.trim().slice(1);
-                if ($select.find('option[value="' + newVal + '"]').length === 0) {
-                    $select.append($('<option>', { value: newVal, text: newVal }));
-                }
-                var current = $select.val() || [];
-                if (current.indexOf(newVal) === -1) {
-                    current.push(newVal);
-                }
-                $select.val(current);
-                if ($openVariantAttrMenu && $openVariantAttrMenu.data('for') === $select.get(0)) {
-                    removeVariantAttrMenu();
-                }
-                maybeSplitRow($select);
-            }
+        $(document).on('change change.bs.select', '#colors', function() {
+            onColorsChanged();
         });
     });
-
-    $('#choice_attributes').on('change', function() {
-        $('#customer_choice_options').html(null);
-
-        var pendingRequests = $.map($("#choice_attributes option:selected"), function(option){
-            return add_more_customer_choice_option($(option).val(), $(option).text());
-        });
-
-        $.when.apply($, pendingRequests).always(function() {
-            update_sku();
-        });
-    });
-
-    var computerAttributeIdsByLabel = @json($computerAttributeIdsByLabel ?? []);
-    var computerAttributeValueOptions = @json($computerAttributeValueOptions ?? []);
-    var variantFields = { Storage: 'storage', Display: 'display', RAM: 'ram', CPU: 'cpu', Chip: 'chip' };
-
-    function buildVariantAttrCellHtml(label, field, key, selectedValue) {
-        var attributeId = computerAttributeIdsByLabel[label] || '';
-        var options = computerAttributeValueOptions[label] || [];
-        var html = '<button type="button" class="form-control variant-attr-toggle">' +
-            '<span class="variant-attr-toggle-label">' + (selectedValue || '-') + '</span>' +
-            '<i class="las la-angle-down variant-attr-caret"></i>' +
-        '</button>';
-        html += '<select name="' + field + '_' + key + '" class="variant-attr-select" multiple style="display:none;">';
-        options.forEach(function(val) {
-            html += '<option value="' + val + '"' + (val === selectedValue ? ' selected' : '') + '>' + val + '</option>';
-        });
-        html += '</select>';
-        html += '<a href="javascript:void(0)" class="add-variant-attr-value text-blue fs-11 fw-600 d-block mt-1" data-field="' + field + '" data-attribute-id="' + attributeId + '" data-attribute-name="' + label + '"><i class="las la-plus"></i> {{ translate("Add New") }}</a>';
-        return html;
-    }
-
-    function ensureVariantTableSkeleton() {
-        if ($('#sku_combination table').length > 0) {
-            return;
-        }
-
-        var head = '<tr>' +
-            '<td class="text-center" style="min-width:120px;">{{ translate("SKU") }}</td>' +
-            '<td class="text-center" style="min-width:110px;">{{ translate("Storage") }}</td>' +
-            '<td class="text-center" style="min-width:110px;">{{ translate("Display") }}</td>' +
-            '<td class="text-center" style="min-width:100px;">{{ translate("RAM") }}</td>' +
-            '<td class="text-center" style="min-width:130px;">{{ translate("CPU") }}</td>' +
-            '<td class="text-center" style="min-width:130px;">{{ translate("Chip") }}</td>' +
-            '<td class="text-center" style="min-width:130px;">{{ translate("Price") }}</td>' +
-            '<td class="text-center" style="min-width:110px;">{{ translate("Stock") }}</td>' +
-            '<td class="text-center" style="min-width:190px;">{{ translate("Photo") }}</td>' +
-            '<td class="text-center" style="min-width:80px;">{{ translate("Action") }}</td>' +
-        '</tr>';
-
-        $('#sku_combination').html(
-            '<table class="table table-bordered aiz-table product-variant-table">' +
-                '<thead>' + head + '</thead>' +
-                '<tbody></tbody>' +
-            '</table>'
-        );
-    }
-
-    // prefill: { sku, price, qty, storage, display, ram, cpu, chip }
-    function buildVariantRowElement(key, prefill) {
-        prefill = prefill || {};
-        var $row = $('<tr class="variant"></tr>');
-
-        $row.append(
-            '<td>' +
-                '<input type="hidden" name="manual_variant_keys[]" value="' + key + '">' +
-                '<input type="text" name="sku_' + key + '" class="form-control" value="' + (prefill.sku || '') + '">' +
-            '</td>'
-        );
-
-        Object.keys(variantFields).forEach(function(label) {
-            var field = variantFields[label];
-            $row.append('<td>' + buildVariantAttrCellHtml(label, field, key, prefill[field] || '') + '</td>');
-        });
-
-        $row.append('<td><input type="number" lang="en" name="price_' + key + '" value="' + (prefill.price || '') + '" min="0" step="0.01" class="form-control" required></td>');
-        $row.append('<td><input type="number" lang="en" name="qty_' + key + '" value="' + (prefill.qty || 0) + '" min="0" step="1" class="form-control" required></td>');
-        $row.append(
-            '<td>' +
-                '<div class="input-group variant-photo-uploader" data-toggle="aizuploader" data-type="image">' +
-                    '<div class="form-control file-amount text-truncate"><i class="las la-image mr-1"></i>{{ translate("Choose Photo") }}</div>' +
-                    '<input type="hidden" name="img_' + key + '" class="selected-files">' +
-                '</div>' +
-                '<div class="file-preview box sm"></div>' +
-            '</td>'
-        );
-        $row.append('<td class="text-center variant-action-cell"><button type="button" class="btn btn-icon btn-sm btn-danger" onclick="deleteProductVariant(this)"><i class="las la-trash"></i></button></td>');
-
-        return $row;
-    }
-
-    function addVariantRow() {
-        ensureVariantTableSkeleton();
-        $('#sku_combination table tbody').append(buildVariantRowElement(nextVariantRowKey()));
-        $('#show-hide-div').hide();
-    }
-
-    $('#add-variant-row-btn').on('click', function() {
-        addVariantRow();
-    });
-
-    // Picking more than one value for a Storage/Display/RAM/CPU/Chip cell splits the row:
-    // the first picked value stays on this row, each additional value gets its own new row
-    // (copying everything else from this row) right below it. Called once the popover closes
-    // (or right after "+ Add New" resolves), never mid-selection.
-    var variantRowKeyCounter = 0;
-
-    function nextVariantRowKey() {
-        variantRowKeyCounter += 1;
-        return 'manual' + Date.now() + '_' + variantRowKeyCounter;
-    }
-
-    function maybeSplitRow($select) {
-        var values = $select.val() || [];
-        if (values.length <= 1) {
-            return;
-        }
-
-        var name = $select.attr('name');
-        var sepIndex = name.indexOf('_');
-        var field = name.substring(0, sepIndex);
-        var key = name.substring(sepIndex + 1);
-        var $row = $select.closest('tr.variant');
-        if ($row.length === 0) {
-            return;
-        }
-
-        var keepValue = values[0];
-        var extraValues = values.slice(1);
-        $select.val([keepValue]);
-        refreshVariantAttrToggleLabel($select);
-
-        var prefill = {
-            sku: $row.find('input[name="sku_' + key + '"]').val(),
-            price: $row.find('input[name="price_' + key + '"]').val(),
-            qty: $row.find('input[name="qty_' + key + '"]').val()
-        };
-        Object.keys(variantFields).forEach(function(label) {
-            var f = variantFields[label];
-            var val = $row.find('select[name="' + f + '_' + key + '"]').val();
-            prefill[f] = (val && val.length) ? val[0] : '';
-        });
-
-        var $insertAfter = $row;
-        extraValues.forEach(function(val) {
-            var newPrefill = $.extend({}, prefill);
-            newPrefill[field] = val;
-            var $newRow = buildVariantRowElement(nextVariantRowKey(), newPrefill);
-            $insertAfter.after($newRow);
-            $insertAfter = $newRow;
-        });
-
-        $('#show-hide-div').hide();
-    }
 </script>
 @endsection

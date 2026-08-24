@@ -29,9 +29,9 @@
             <p class="shadcn-header-subtitle">{{ translate('Explore our premium collection of accessories designed just for you.') }}</p>
         </div>
 
-        <div class="row gutters-16 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-4 row-cols-md-3 row-cols-2">
+        <div class="row gutters-16 row-cols-xxl-6 row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-2 justify-content-center">
             @forelse ($accessories as $accessory)
-                <div class="col listing-product-card">
+                <div class="col listing-product-card mb-3">
                     @include('frontend.' . get_setting('homepage_select') . '.partials.home_accessory_box', ['accessory' => $accessory])
                 </div>
             @empty
