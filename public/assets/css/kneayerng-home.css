@@ -1599,3 +1599,310 @@
         animation: none;
     }
 }
+
+/* Mobile storefront refresh
+   Keep this final layer together so the phone layout remains independent of
+   the desktop carousel and card rules above. */
+@media (max-width: 767px) {
+    body.aiz-page-kneayerng_v1 {
+        padding-bottom: calc(76px + env(safe-area-inset-bottom));
+    }
+
+    .ky-mobile-app-header {
+        padding: env(safe-area-inset-top) 14px 10px;
+        border-bottom-color: rgba(17, 24, 39, 0.08);
+        box-shadow: 0 4px 18px rgba(17, 24, 39, 0.04);
+    }
+
+    .ky-mobile-header-bar {
+        height: 46px;
+        grid-template-columns: 42px minmax(0, 1fr) 42px;
+    }
+
+    .ky-mobile-header-button {
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
+    }
+
+    .ky-mobile-cart-button {
+        position: relative;
+        top: auto;
+        right: auto;
+        z-index: auto;
+        justify-self: end;
+    }
+
+    .ky-mobile-brand {
+        width: min(100%, 148px);
+        margin: 0 auto;
+    }
+
+    .ky-mobile-brand img {
+        display: block;
+        width: auto;
+        max-width: 138px !important;
+        height: auto !important;
+        max-height: 30px;
+        object-fit: contain;
+    }
+
+    .ky-mobile-search-form {
+        height: 44px;
+        margin-top: 5px;
+        border-color: #eceef2;
+        border-radius: 14px;
+        background: #f5f6f8;
+    }
+
+    .ky-mobile-search-form i {
+        margin-left: 14px;
+        font-size: 19px;
+    }
+
+    .ky-mobile-search-form input {
+        min-width: 0;
+        padding-right: 13px;
+        font-size: 13px;
+    }
+
+    .ky-mobile-category-pills {
+        gap: 7px;
+        margin-top: 10px;
+        padding-bottom: 1px;
+        overscroll-behavior-inline: contain;
+        scroll-padding-inline: 14px;
+        scroll-snap-type: x proximity;
+        touch-action: pan-x;
+    }
+
+    .ky-mobile-category-pill {
+        min-height: 32px;
+        padding: 6px 13px;
+        border: 1px solid #eceef2;
+        background: #fff;
+        font-size: 11px;
+        scroll-snap-align: start;
+    }
+
+    .ky-mobile-category-pill i {
+        margin-right: 4px;
+        font-size: 14px;
+        line-height: 1;
+    }
+
+    .ky-mobile-home-pill {
+        padding-left: 11px;
+    }
+
+    .ky-mobile-category-pill.active {
+        border-color: #7c3aed;
+        background: #7c3aed;
+    }
+
+    .kneayerng-home {
+        padding-bottom: 34px;
+    }
+
+    .kneayerng-home > .ky-product-showcase-shell {
+        width: auto;
+        margin: 12px 12px 0;
+        border: 1px solid rgba(17, 24, 39, 0.06) !important;
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(17, 24, 39, 0.055);
+        overflow: hidden;
+    }
+
+    .kneayerng-home .ky-product-showcase {
+        padding: 0 12px !important;
+    }
+
+    .kneayerng-home .ky-showcase-panel {
+        padding: 18px 0 16px !important;
+    }
+
+    .kneayerng-home .ky-showcase-panel + .ky-showcase-panel {
+        border-top: 1px solid #eef0f3;
+    }
+
+    .kneayerng-home .ky-showcase-heading {
+        min-height: 34px;
+        gap: 12px;
+    }
+
+    .kneayerng-home .ky-showcase-heading h5 {
+        font-size: 18px !important;
+        line-height: 1.25;
+    }
+
+    .kneayerng-home .ky-showcase-view-all {
+        min-height: 32px;
+        gap: 4px;
+        padding: 6px 2px 6px 8px;
+        font-size: 11px !important;
+    }
+
+    .kneayerng-home .ky-showcase-view-all span {
+        font-size: 14px;
+    }
+
+    .kneayerng-home .ky-showcase-slider {
+        margin: 10px -4px -4px !important;
+    }
+
+    .kneayerng-home .ky-showcase-slider.slick-slider .slick-list {
+        padding: 3px 0 8px !important;
+    }
+
+    .kneayerng-home .ky-showcase-slider .slick-track {
+        display: flex;
+    }
+
+    .kneayerng-home .ky-showcase-slider .slick-slide {
+        float: none;
+        height: auto;
+    }
+
+    .kneayerng-home .ky-showcase-slider .slick-slide > div {
+        height: 100%;
+    }
+
+    .kneayerng-home .ky-showcase-slider .slick-slide > div > .ky-showcase-card {
+        display: flex !important;
+        height: calc(100% - 6px);
+        min-height: 286px;
+        flex-direction: column;
+        margin: 3px 4px;
+        padding: 8px 8px 10px;
+        border-color: #e8eaee;
+        border-radius: 16px;
+        box-shadow: 0 4px 14px rgba(17, 24, 39, 0.055);
+        overflow: hidden;
+    }
+
+    .kneayerng-home .ky-showcase-image {
+        flex: 0 0 auto;
+        border-radius: 12px !important;
+    }
+
+    .kneayerng-home .ky-showcase-image img {
+        padding: 7px;
+        border-radius: 12px !important;
+    }
+
+    .kneayerng-home .ky-showcase-title {
+        display: -webkit-box !important;
+        min-height: 37px;
+        margin-top: 9px !important;
+        overflow: hidden;
+        font-size: 12.5px !important;
+        line-height: 1.45;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .kneayerng-home .ky-showcase-variant {
+        min-height: 14px;
+        margin-top: 2px;
+    }
+
+    .kneayerng-home .ky-showcase-price {
+        display: flex;
+        min-height: 23px;
+        align-items: baseline;
+        flex-wrap: wrap;
+        margin-top: auto !important;
+        padding: 5px 0 0;
+        overflow: hidden;
+    }
+
+    .kneayerng-home .ky-showcase-current-price {
+        max-width: 100%;
+        overflow: hidden;
+        font-size: 14px !important;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .kneayerng-home .ky-mobile-discount-badge {
+        top: 13px;
+        left: 13px;
+    }
+
+    .kneayerng-home .ky-mobile-favorite {
+        top: 12px;
+        right: 12px;
+        width: 29px;
+        height: 29px;
+    }
+
+    .kneayerng-home .ky-mobile-card-action,
+    .kneayerng-home .ky-mobile-card-action.has-options {
+        position: static;
+        width: 100%;
+        max-width: none;
+        min-height: 36px;
+        height: 36px;
+        gap: 6px;
+        margin-top: 8px;
+        padding: 0 8px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 750;
+        line-height: 1.1;
+        white-space: normal;
+        box-shadow: 0 4px 10px rgba(124, 58, 237, 0.2);
+    }
+
+    .kneayerng-home .ky-mobile-card-action i {
+        flex: 0 0 auto;
+        font-size: 15px;
+    }
+
+    .ky-mobile-bottom-nav {
+        min-height: calc(68px + env(safe-area-inset-bottom));
+        padding: 6px 8px env(safe-area-inset-bottom);
+        border-top-color: rgba(17, 24, 39, 0.09);
+        box-shadow: 0 -10px 28px rgba(17, 24, 39, 0.07);
+    }
+
+    .ky-mobile-nav-item {
+        min-height: 56px;
+        gap: 3px;
+        border-radius: 13px;
+        font-size: 9.5px;
+    }
+
+    .ky-mobile-nav-item > i,
+    .ky-mobile-nav-icon-wrap > i {
+        font-size: 21px;
+    }
+
+    .ky-mobile-nav-item.active {
+        background: rgba(124, 58, 237, 0.07);
+    }
+}
+
+@media (max-width: 359px) {
+    .kneayerng-home > .ky-product-showcase-shell {
+        margin-right: 8px;
+        margin-left: 8px;
+    }
+
+    .kneayerng-home .ky-product-showcase {
+        padding-right: 8px !important;
+        padding-left: 8px !important;
+    }
+
+    .kneayerng-home .ky-showcase-slider .slick-slide > div > .ky-showcase-card {
+        margin-right: 3px;
+        margin-left: 3px;
+        padding-right: 7px;
+        padding-left: 7px;
+    }
+
+    .kneayerng-home .ky-mobile-card-action,
+    .kneayerng-home .ky-mobile-card-action.has-options {
+        font-size: 9px;
+    }
+}

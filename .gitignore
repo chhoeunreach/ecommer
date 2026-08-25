@@ -82,6 +82,7 @@ yarn-error.log*
 !/public/assets/css/product-details-v2.css
 !/public/assets/css/category-listing.css
 !/public/assets/css/admin-crud-feedback.css
+!/public/assets/css/computer-details.css
 !/public/assets/js/
 /public/assets/js/*
 !/public/assets/js/admin-crud-feedback.js

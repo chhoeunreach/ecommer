@@ -9,7 +9,10 @@ class ComputerController extends Controller
 {
     public function index(Request $request)
     {
-        $computers = Computer::where('status', 1)->orderBy('created_at', 'desc')->paginate(12);
+        $computers = Computer::with(['brand', 'computer_variants', 'stocks'])
+            ->where('status', 1)
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
 
         return view('frontend.computers.index', compact('computers'));
     }

@@ -131,7 +131,7 @@
             <i class="las la-home"></i>
             <span>{{ translate('Home') }}</span>
         </a>
-        <a href="{{ route('categories.all') }}" class="ky-mobile-nav-item {{ areActiveRoutes(['categories.all'], 'active') }}">
+        <a href="{{ route('categories.all') }}" class="ky-mobile-nav-item {{ areActiveRoutes(['categories.all', 'products.category', 'computers.index', 'computers.show'], 'active') }}">
             <i class="las la-th-large"></i>
             <span>{{ translate('Categories') }}</span>
         </a>

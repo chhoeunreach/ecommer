@@ -1251,7 +1251,12 @@
                                                         onclick="showLoginModal()"
                                                     @endif
                                                     aria-label="{{ $showcaseHasOptions ? translate('Select Options') : translate('Add to Cart') }}">
-                                                    @if ($showcaseHasOptions)<span>{{ translate('Select Options') }}</span>@else<i class="las la-plus"></i>@endif
+                                                    @if ($showcaseHasOptions)
+                                                        <span>{{ translate('Select Options') }}</span>
+                                                    @else
+                                                        <i class="las la-shopping-bag" aria-hidden="true"></i>
+                                                        <span>{{ translate('Add to Cart') }}</span>
+                                                    @endif
                                                 </button>
                                             @endif
                                         </article>
@@ -1332,7 +1337,12 @@
                                                         onclick="showLoginModal()"
                                                     @endif
                                                     aria-label="{{ $showcaseHasOptions ? translate('Select Options') : translate('Add to Cart') }}">
-                                                    @if ($showcaseHasOptions)<span>{{ translate('Select Options') }}</span>@else<i class="las la-plus"></i>@endif
+                                                    @if ($showcaseHasOptions)
+                                                        <span>{{ translate('Select Options') }}</span>
+                                                    @else
+                                                        <i class="las la-shopping-bag" aria-hidden="true"></i>
+                                                        <span>{{ translate('Add to Cart') }}</span>
+                                                    @endif
                                                 </button>
                                             @endif
                                         </article>

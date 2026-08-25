@@ -62,6 +62,12 @@
     @php
         $mobileNavCategories = get_level_zero_categories()->take(5);
         $mobileCartCount = count(get_user_cart());
+        $activeMobileCategorySlug = request()->routeIs('products.category')
+            ? request()->route('category_slug')
+            : null;
+        $isComputerCatalogRoute = request()->routeIs('computers.*');
+        $isMobileHomeRoute = request()->routeIs('home');
+        $isMobileAllCategoriesRoute = request()->routeIs('categories.all');
     @endphp
     <header class="ky-mobile-app-header d-md-none">
         <div class="ky-mobile-header-bar">
@@ -99,9 +105,25 @@
         </form>
 
         <nav class="ky-mobile-category-pills" aria-label="{{ translate('Product categories') }}">
-            <a href="{{ route('categories.all') }}" class="ky-mobile-category-pill active">{{ translate('All') }}</a>
+            <a href="{{ route('home') }}"
+                class="ky-mobile-category-pill ky-mobile-home-pill {{ $isMobileHomeRoute ? 'active' : '' }}"
+                @if($isMobileHomeRoute) aria-current="page" @endif>
+                <i class="las la-home" aria-hidden="true"></i>
+                <span>{{ translate('Home') }}</span>
+            </a>
+            <a href="{{ route('categories.all') }}"
+                class="ky-mobile-category-pill {{ $isMobileAllCategoriesRoute ? 'active' : '' }}"
+                @if($isMobileAllCategoriesRoute) aria-current="page" @endif>{{ translate('All') }}</a>
             @foreach ($mobileNavCategories as $mobileNavCategory)
-                <a href="{{ route('products.category', $mobileNavCategory->slug) }}" class="ky-mobile-category-pill">
+                @php
+                    $isComputerMobileCategory = strtolower(trim($mobileNavCategory->getTranslation('name'))) === 'computer'
+                        || str_starts_with(strtolower($mobileNavCategory->slug), 'computer');
+                    $isActiveMobileCategory = $activeMobileCategorySlug === $mobileNavCategory->slug
+                        || ($isComputerCatalogRoute && $isComputerMobileCategory);
+                @endphp
+                <a href="{{ route('products.category', $mobileNavCategory->slug) }}"
+                    class="ky-mobile-category-pill {{ $isActiveMobileCategory ? 'active' : '' }}"
+                    @if($isActiveMobileCategory) aria-current="page" @endif>
                     {{ $mobileNavCategory->getTranslation('name') }}
                 </a>
             @endforeach

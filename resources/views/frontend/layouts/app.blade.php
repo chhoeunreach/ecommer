@@ -432,6 +432,8 @@
     echo get_setting('header_gtm_script');
 @endphp
 
+@yield('style')
+
 </head>
 <body class="aiz-page-{{ get_setting('homepage_select') }}">
     <!-- aiz-main-wrapper -->
@@ -1869,6 +1871,15 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     @yield('script')
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var activeMobilePill = document.querySelector('.ky-mobile-category-pills .ky-mobile-category-pill.active');
+            if (activeMobilePill && typeof activeMobilePill.scrollIntoView === 'function') {
+                activeMobilePill.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
+            }
+        });
+    </script>
 
     @php
         echo get_setting('footer_script');
