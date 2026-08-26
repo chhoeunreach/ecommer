@@ -4,6 +4,10 @@
     $c_meta_title = $computer->meta_title ?: $computer->name;
     $c_meta_description = $computer->meta_description ?: \Illuminate\Support\Str::limit(strip_tags($computer->description ?? ''), 160);
     $c_meta_image = $computer->meta_img ? uploaded_asset($computer->meta_img) : uploaded_asset($computer->thumbnail_img);
+    $computerBuyNowAlertEnabled = (int) get_setting('product_detail_buy_now_click_message_enabled', 0) === 1;
+    $computerAddToCartAlertEnabled = (int) get_setting('product_detail_add_to_cart_click_message_enabled', 0) === 1;
+    $computerBuyNowAlertMessage = trim((string) get_setting('product_detail_buy_now_click_message')) ?: translate('It is coming soon');
+    $computerAddToCartAlertMessage = trim((string) get_setting('product_detail_add_to_cart_click_message')) ?: translate('It is coming soon');
 @endphp
 
 @section('meta_title'){{ $c_meta_title }}@stop
@@ -83,6 +87,26 @@
     $allImages = array_values(array_filter(array_unique(array_merge([$computer->thumbnail_img], $galleryIds))));
     $imageUrls = array_map(fn ($id) => uploaded_asset($id), $allImages);
     $mainImage = $imageUrls[0] ?? static_asset('assets/img/placeholder.jpg');
+
+    $showContactSales = (int) get_setting('product_detail_show_contact_sales', 1) === 1;
+    $contactSalesText = get_setting('product_detail_contact_sales_text') ?: translate('Contact Sales');
+    $contactSalesNewTab = (int) get_setting('product_detail_contact_sales_new_tab', 1) === 1;
+    $isTelegramUrl = static function ($url) {
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+        return $scheme === 'https' && in_array($host, ['t.me', 'telegram.me', 'www.telegram.me'], true);
+    };
+    $configuredContactSalesUrl = trim((string) get_setting('product_detail_contact_sales_telegram_url'));
+    $chatButtonUrl = trim((string) get_setting('product_detail_chat_button_url'));
+    $footerTelegramUrl = collect(footer_social_links())->firstWhere('platform', 'telegram')['url'] ?? '';
+    $contactSalesUrl = $isTelegramUrl($configuredContactSalesUrl)
+        ? $configuredContactSalesUrl
+        : ($isTelegramUrl($chatButtonUrl)
+            ? $chatButtonUrl
+            : ($isTelegramUrl($footerTelegramUrl) ? $footerTelegramUrl : 'https://t.me/'));
 @endphp
 
 <main class="computer-product-page">
@@ -180,8 +204,30 @@
                             </div>
                         </div>
                         <div class="computer-actions {{ $stockQty < 1 ? 'd-none' : '' }}">
-                            <button type="button" onclick="buyNow()" class="computer-action computer-action--primary buy-now"><i class="las la-bolt" aria-hidden="true"></i>{{ translate('Buy Now') }}</button>
-                            <button type="button" onclick="addToCart()" class="computer-action computer-action--secondary add-to-cart"><i class="las la-shopping-bag" aria-hidden="true"></i>{{ translate('Add to Cart') }}</button>
+                            <button type="button"
+                                @if ($computerBuyNowAlertEnabled)
+                                    data-click-title="{{ translate('Coming Soon') }}" data-click-message="{{ $computerBuyNowAlertMessage }}"
+                                    onclick="return showProductActionMessage(this)"
+                                @else
+                                    onclick="buyNow()"
+                                @endif
+                                class="computer-action computer-action--primary buy-now"><i class="las la-bolt" aria-hidden="true"></i>{{ translate('Buy Now') }}</button>
+                            <button type="button"
+                                @if ($computerAddToCartAlertEnabled)
+                                    data-click-title="{{ translate('Coming Soon') }}" data-click-message="{{ $computerAddToCartAlertMessage }}"
+                                    onclick="return showProductActionMessage(this)"
+                                @else
+                                    onclick="addToCart()"
+                                @endif
+                                class="computer-action computer-action--secondary add-to-cart"><i class="las la-shopping-bag" aria-hidden="true"></i>{{ translate('Add to Cart') }}</button>
+                            @if ($showContactSales)
+                                <a href="{{ $contactSalesUrl }}" data-telegram-url="{{ $contactSalesUrl }}"
+                                    data-product-name="{{ $computer->getTranslation('name') }}"
+                                    data-product-url="{{ route('computers.show', $computer->id) }}"
+                                    onclick="return contactSalesOnTelegram(this)"
+                                    @if ($contactSalesNewTab) target="_blank" rel="noopener noreferrer" @endif
+                                    class="computer-action computer-action--contact contact-sales-btn"><i class="lab la-telegram-plane" aria-hidden="true"></i>{{ $contactSalesText }}</a>
+                            @endif
                             <a href="{{ route('custom-pages.show_custom_page', 'contact-us') }}" class="computer-action computer-action--contact"><i class="las la-headset" aria-hidden="true"></i>{{ translate('Need help choosing? Contact us') }}</a>
                         </div>
                         <button type="button" class="computer-action computer-action--contact out-of-stock w-100 {{ $stockQty >= 1 ? 'd-none' : '' }}" disabled>{{ translate('Out of Stock') }}</button>

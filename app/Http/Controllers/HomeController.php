@@ -84,7 +84,7 @@ class HomeController extends Controller
         }
 
         $accessories = \App\Models\Accessory::where('status', 1)->latest()->take(8)->get();
-        $computers = \App\Models\Computer::where('status', 1)->latest()->take(8)->get();
+        $computers = \App\Models\Computer::with('brand')->where('status', 1)->latest()->take(8)->get();
 
         $t0 = microtime(true);
         $view = view('frontend.' . get_setting('homepage_select') . '.index', compact('featured_categories','hot_categories', 'lang', 'accessories', 'computers'));

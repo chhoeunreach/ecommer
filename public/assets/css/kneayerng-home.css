@@ -712,6 +712,96 @@
     }
 }
 
+/* Product and accessory cards: let the uploaded image fill the media frame. */
+.kneayerng-home .shadcn-product-card .shadcn-card-img-wrap .product-main-image,
+.kneayerng-home .shadcn-product-card .shadcn-card-img-wrap .product-hover-image {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    padding: 0 !important;
+    object-fit: cover !important;
+    object-position: center !important;
+}
+
+/* Give newest-product cards more room instead of constraining them to 210px. */
+.kneayerng-home #newest-products-list > .single-product-item {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.kneayerng-home #newest-products-list > .single-product-item:hover {
+    box-shadow: none;
+    transform: none;
+}
+
+.kneayerng-home #newest-products-list .shadcn-product-card {
+    max-width: none;
+    min-height: 390px;
+}
+
+.kneayerng-home #newest-products-list .shadcn-card-body {
+    min-height: 166px;
+    padding: 14px !important;
+}
+
+.kneayerng-home #newest-products-list .shadcn-cta-btn {
+    min-height: 40px;
+    height: 40px !important;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .kneayerng-home #newest-products-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 16px !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .kneayerng-home #newest-products-list {
+        gap: 12px !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-product-card {
+        min-height: 365px;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-card-body {
+        min-height: 158px;
+        padding: 13px !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-product-title {
+        font-size: 14px !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-cta-btn {
+        min-height: 39px;
+        height: 39px !important;
+        font-size: 11px !important;
+    }
+}
+
+@media (max-width: 575px) {
+    .kneayerng-home #newest-products-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-product-card {
+        min-height: 350px;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-card-body {
+        min-height: 150px;
+        padding: 11px !important;
+    }
+}
+
 @media (max-width: 575px) {
     .kneayerng-home .mf-w-wf-bc-grid > .ky-category-group {
         flex: 0 0 100%;
@@ -1904,5 +1994,424 @@
     .kneayerng-home .ky-mobile-card-action,
     .kneayerng-home .ky-mobile-card-action.has-options {
         font-size: 9px;
+    }
+}
+
+/* New computers — dedicated card system */
+.kneayerng-home .ky-computers-section {
+    margin-top: clamp(32px, 5vw, 58px) !important;
+}
+
+.kneayerng-home .ky-computers-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e7e9ef;
+}
+
+.kneayerng-home .ky-computers-heading__title {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 12px;
+}
+
+.kneayerng-home .ky-computers-heading__icon {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(124, 58, 237, 0.14);
+    border-radius: 14px;
+    background: linear-gradient(145deg, #f4f0ff, #ffffff);
+    color: #6d3df1;
+    box-shadow: 0 6px 18px rgba(109, 61, 241, 0.09);
+    font-size: 22px;
+}
+
+.kneayerng-home .ky-computers-heading h3 {
+    margin: 0;
+    color: #111827;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+}
+
+.kneayerng-home .ky-computers-heading p {
+    margin: 3px 0 0;
+    color: #7b8190;
+    font-size: 12px;
+}
+
+.kneayerng-home .ky-computers-view-all {
+    display: inline-flex;
+    min-height: 38px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 8px 13px;
+    border: 1px solid #e3e5eb;
+    border-radius: 12px;
+    background: #fff;
+    color: #232633;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none !important;
+    transition: border-color 200ms ease, color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+
+.kneayerng-home .ky-computers-view-all:hover {
+    border-color: rgba(109, 61, 241, 0.35);
+    color: #6d3df1;
+    box-shadow: 0 7px 18px rgba(31, 35, 48, 0.08);
+    transform: translateY(-2px);
+}
+
+.kneayerng-home #newest-computers-list > .single-product-item {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 20px;
+    background: transparent;
+    box-shadow: none;
+}
+
+.kneayerng-home #newest-computers-list > .single-product-item:hover {
+    box-shadow: none;
+    transform: none;
+}
+
+.kneayerng-home .ky-computer-card {
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #e5e7ed;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 7px 22px rgba(25, 28, 40, 0.06);
+    transition: border-color 240ms ease, box-shadow 240ms ease, transform 240ms cubic-bezier(.2, .75, .25, 1);
+}
+
+.kneayerng-home .ky-computer-card:hover {
+    border-color: rgba(109, 61, 241, 0.26);
+    box-shadow: 0 18px 36px rgba(35, 28, 65, 0.12);
+    transform: translateY(-6px);
+}
+
+.kneayerng-home .ky-computer-card__media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    margin: 8px 8px 0;
+    border-radius: 15px;
+    background: #f4f5f8;
+}
+
+.kneayerng-home .ky-computer-card__image {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kneayerng-home .ky-computer-card__image .product-main-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    object-fit: cover !important;
+    object-position: center !important;
+    transition: transform 350ms cubic-bezier(.2, .75, .25, 1);
+}
+
+.kneayerng-home .ky-computer-card:hover .ky-computer-card__image .product-main-image {
+    transform: scale(1.06);
+}
+
+.kneayerng-home .ky-computer-card__new,
+.kneayerng-home .ky-computer-card__discount {
+    position: absolute;
+    z-index: 2;
+    top: 10px;
+    display: inline-flex;
+    min-height: 23px;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.kneayerng-home .ky-computer-card__new {
+    left: 10px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #6533e8;
+    box-shadow: 0 4px 12px rgba(25, 28, 40, 0.08);
+}
+
+.kneayerng-home .ky-computer-card__discount {
+    right: 42px;
+    background: #ef4444;
+    color: #fff;
+}
+
+.kneayerng-home .ky-computer-card__open {
+    position: absolute;
+    z-index: 2;
+    top: 9px;
+    right: 9px;
+    display: inline-flex;
+    width: 26px;
+    height: 26px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #222634;
+    box-shadow: 0 4px 12px rgba(25, 28, 40, 0.08);
+    font-size: 13px;
+}
+
+.kneayerng-home .ky-computer-card__open i {
+    transform: rotate(45deg);
+}
+
+.kneayerng-home .ky-computer-card__body {
+    display: flex;
+    min-height: 142px;
+    flex: 1 1 auto;
+    flex-direction: column;
+    padding: 13px 14px 14px;
+}
+
+.kneayerng-home .ky-computer-card__meta {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 6px;
+    color: #7b8190;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+}
+
+.kneayerng-home .ky-computer-card__meta > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kneayerng-home .ky-computer-card__config {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 3px;
+    color: #6d3df1;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.kneayerng-home .ky-computer-card__title {
+    display: -webkit-box;
+    height: 40px;
+    margin: 0;
+    overflow: hidden;
+    color: #151824;
+    font-size: 14px;
+    font-weight: 750;
+    letter-spacing: -0.02em;
+    line-height: 1.42;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.kneayerng-home .ky-computer-card__title a {
+    color: inherit;
+    text-decoration: none !important;
+}
+
+.kneayerng-home .ky-computer-card__title a:hover {
+    color: #6d3df1;
+}
+
+.kneayerng-home .ky-computer-card__footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 12px;
+}
+
+.kneayerng-home .ky-computer-card__pricing {
+    display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 1px 6px;
+}
+
+.kneayerng-home .ky-computer-card__pricing small {
+    width: 100%;
+    color: #8a909e;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.kneayerng-home .ky-computer-card__pricing .shadcn-price-current {
+    color: #111827 !important;
+    font-size: 16px !important;
+    font-weight: 850 !important;
+    letter-spacing: -0.035em !important;
+}
+
+.kneayerng-home .ky-computer-card__pricing .shadcn-price-old {
+    color: #9ba0ac !important;
+    font-size: 10px !important;
+}
+
+.kneayerng-home .ky-computer-card__cta {
+    display: inline-flex;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: #6d3df1;
+    color: #fff !important;
+    box-shadow: 0 7px 16px rgba(109, 61, 241, 0.25);
+    text-decoration: none !important;
+    transition: background 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+
+.kneayerng-home .ky-computer-card__cta:hover {
+    background: #5727da;
+    box-shadow: 0 9px 20px rgba(109, 61, 241, 0.32);
+    transform: translateX(2px);
+}
+
+@media (max-width: 767px) {
+    .kneayerng-home .ky-computers-section {
+        margin-top: 30px !important;
+    }
+
+    .kneayerng-home .ky-computers-heading {
+        margin: 0 16px 14px;
+        padding-bottom: 12px;
+    }
+
+    .kneayerng-home .ky-computers-heading__icon {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+        border-radius: 12px;
+        font-size: 19px;
+    }
+
+    .kneayerng-home .ky-computers-heading h3 {
+        font-size: 18px;
+    }
+
+    .kneayerng-home .ky-computers-heading p {
+        display: none;
+    }
+
+    .kneayerng-home .ky-computers-view-all {
+        min-height: 34px;
+        padding: 6px 10px;
+        border-color: transparent;
+        background: #f1edff;
+        color: #6533e8;
+        font-size: 11px;
+    }
+
+    .kneayerng-home #newest-computers-list {
+        padding: 0 16px;
+    }
+
+    .kneayerng-home .ky-computer-card {
+        border-radius: 17px;
+        box-shadow: 0 5px 17px rgba(25, 28, 40, 0.065);
+    }
+
+    .kneayerng-home .ky-computer-card__media {
+        margin: 6px 6px 0;
+        border-radius: 13px;
+    }
+
+    .kneayerng-home .ky-computer-card__body {
+        min-height: 132px;
+        padding: 11px;
+    }
+
+    .kneayerng-home .ky-computer-card__config {
+        display: none;
+    }
+
+    .kneayerng-home .ky-computer-card__title {
+        height: 36px;
+        font-size: 12.5px;
+        line-height: 1.42;
+    }
+
+    .kneayerng-home .ky-computer-card__footer {
+        padding-top: 9px;
+    }
+
+    .kneayerng-home .ky-computer-card__pricing .shadcn-price-current {
+        font-size: 15px !important;
+    }
+
+    .kneayerng-home .ky-computer-card__cta {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+        border-radius: 10px;
+    }
+}
+
+@media (max-width: 374px) {
+    .kneayerng-home #newest-computers-list {
+        gap: 8px !important;
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    .kneayerng-home .ky-computer-card__body {
+        min-height: 126px;
+        padding: 9px;
+    }
+
+    .kneayerng-home .ky-computer-card__pricing small,
+    .kneayerng-home .ky-computer-card__new {
+        font-size: 8px;
+    }
+
+    .kneayerng-home .ky-computer-card__cta {
+        width: 29px;
+        height: 29px;
+        flex-basis: 29px;
     }
 }

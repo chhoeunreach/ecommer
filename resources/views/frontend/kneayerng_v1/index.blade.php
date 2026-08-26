@@ -1937,11 +1937,17 @@
             <!-- Computers Section -->
             @if(isset($computers) && count($computers) > 0)
             <div class="mt-5 ky-computers-section">
-                <div class="d-flex mb-3 align-items-baseline border-bottom">
-                    <h3 class="h5 fw-700 mb-0">
-                        <span class="border-bottom border-primary border-width-2 pb-3 d-inline-block">{{ translate('New Computers') }}</span>
-                    </h3>
-                    <a href="{{ route('computers.index') }}" class="ml-auto mr-0 btn btn-primary btn-sm shadow-md ky-computers-view-all">{{ translate('View all') }} <span aria-hidden="true">&rarr;</span></a>
+                <div class="ky-computers-heading">
+                    <div class="ky-computers-heading__title">
+                        <span class="ky-computers-heading__icon"><i class="las la-laptop" aria-hidden="true"></i></span>
+                        <div>
+                            <h3>{{ translate('New Computers') }}</h3>
+                            <p>{{ translate('Discover the latest performance machines') }}</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('computers.index') }}" class="ky-computers-view-all">
+                        <span>{{ translate('View all') }}</span><i class="las la-arrow-right" aria-hidden="true"></i>
+                    </a>
                 </div>
                 <div class="products-wrapper-grid" id="newest-computers-list">
                     @foreach ($computers as $computer)
