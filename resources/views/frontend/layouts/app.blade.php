@@ -1818,6 +1818,32 @@
         });
     });
 
+    function showProductActionMessage(button) {
+        var message = button && button.dataset.clickMessage
+            ? button.dataset.clickMessage
+            : @json(translate('It is coming soon'));
+        var title = button && button.dataset.clickTitle
+            ? button.dataset.clickTitle
+            : @json(translate('Coming Soon'));
+
+        if (window.Swal) {
+            window.Swal.fire({
+                title: title,
+                text: message,
+                icon: 'info',
+                confirmButtonText: @json(translate('Close')),
+                confirmButtonColor: '#3390f3',
+                backdrop: 'rgba(15, 23, 42, 0.55)',
+                allowOutsideClick: true,
+                heightAuto: false
+            });
+        } else {
+            window.alert(message);
+        }
+
+        return false;
+    }
+
     function contactSalesOnTelegram(button) {
         if (!button) return true;
         var form = document.getElementById('option-choice-form');

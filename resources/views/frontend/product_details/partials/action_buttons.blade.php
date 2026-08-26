@@ -3,6 +3,10 @@
     $cartCount = $cartCount ?? '';
     $buyNowText = get_setting('product_detail_buy_now_text') ?: translate('Buy Now');
     $addToCartText = get_setting('product_detail_add_to_cart_text') ?: translate('Add to Cart');
+    $buyNowClickMessage = trim((string) get_setting('product_detail_buy_now_click_message'));
+    $addToCartClickMessage = trim((string) get_setting('product_detail_add_to_cart_click_message'));
+    $showBuyNowClickMessage = (int) get_setting('product_detail_buy_now_click_message_enabled', 0) === 1;
+    $showAddToCartClickMessage = (int) get_setting('product_detail_add_to_cart_click_message_enabled', 0) === 1;
     $customButtonText = get_setting('product_detail_custom_button_text') ?: translate('Contact Us');
     $customButtonUrl = get_setting('product_detail_custom_button_url')
         ?: route('custom-pages.show_custom_page', 'contact-us');
@@ -42,7 +46,14 @@
 
 @if ((int) get_setting('product_detail_show_buy_now', 1) === 1)
     <button type="button"
-        @if (Auth::check() || get_setting('guest_checkout_activation') == 1) onclick="buyNow()" @else onclick="showLoginModal()" @endif
+        @if ($showBuyNowClickMessage)
+            data-click-message="{{ $buyNowClickMessage ?: translate('It is coming soon') }}"
+            data-click-title="{{ translate('Coming Soon') }}" onclick="return showProductActionMessage(this)"
+        @elseif (Auth::check() || get_setting('guest_checkout_activation') == 1)
+            onclick="buyNow()"
+        @else
+            onclick="showLoginModal()"
+        @endif
         class="border-0 rounded-2 fs-14 fw-bold has-transition {{ $buttonPadding }} px-20px w-100 mb-2 mb-md-0 mr-0 mr-md-2 buy-now product-action-btn product-action-btn--buy d-inline-flex align-items-center justify-content-center"
         style="background-color: {{ get_setting('product_detail_buy_now_bg_color', '#17171f') }}; color: {{ get_setting('product_detail_buy_now_text_color', '#ffffff') }}; min-height: 44px;">
         <span class="product-action-btn__content">
@@ -54,7 +65,14 @@
 
 @if ((int) get_setting('product_detail_show_add_to_cart', 1) === 1)
     <button type="button" id="added_to_cart_btn"
-        @if (Auth::check() || get_setting('guest_checkout_activation') == 1) onclick="addToCart()" @else onclick="showLoginModal()" @endif
+        @if ($showAddToCartClickMessage)
+            data-click-message="{{ $addToCartClickMessage ?: translate('It is coming soon') }}"
+            data-click-title="{{ translate('Coming Soon') }}" onclick="return showProductActionMessage(this)"
+        @elseif (Auth::check() || get_setting('guest_checkout_activation') == 1)
+            onclick="addToCart()"
+        @else
+            onclick="showLoginModal()"
+        @endif
         class="border-0 rounded-2 fs-14 fw-bold has-transition {{ $buttonPadding }} px-20px w-100 mb-2 mb-md-0 mr-0 mr-md-2 add-to-cart product-action-btn product-action-btn--cart d-inline-flex align-items-center justify-content-center"
         style="background-color: {{ get_setting('product_detail_add_to_cart_bg_color', '#dcebff') }}; color: {{ get_setting('product_detail_add_to_cart_text_color', '#3390f3') }}; min-height: 44px;">
         <span class="product-action-btn__content">

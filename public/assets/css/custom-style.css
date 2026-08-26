@@ -4928,6 +4928,13 @@ select.shadcn-input {
     transform: translateX(-2px) !important;
 }
 
+/* Guard against product carousels flashing as an unsliced, overflowing row
+   before the Slick JS plugin finishes initializing (seen on slow mobile
+   connections) */
+.aiz-carousel {
+    overflow-x: hidden;
+}
+
 
 
 

@@ -201,8 +201,8 @@
                         @csrf
 
                         @foreach ([
-                            'product_detail_show_buy_now', 'product_detail_buy_now_text', 'product_detail_buy_now_bg_color', 'product_detail_buy_now_text_color',
-                            'product_detail_show_add_to_cart', 'product_detail_add_to_cart_text', 'product_detail_add_to_cart_bg_color', 'product_detail_add_to_cart_text_color',
+                            'product_detail_show_buy_now', 'product_detail_buy_now_text', 'product_detail_buy_now_click_message_enabled', 'product_detail_buy_now_click_message', 'product_detail_buy_now_bg_color', 'product_detail_buy_now_text_color',
+                            'product_detail_show_add_to_cart', 'product_detail_add_to_cart_text', 'product_detail_add_to_cart_click_message_enabled', 'product_detail_add_to_cart_click_message', 'product_detail_add_to_cart_bg_color', 'product_detail_add_to_cart_text_color',
                             'product_detail_show_custom_button', 'product_detail_custom_button_text', 'product_detail_custom_button_url', 'product_detail_custom_button_new_tab',
                             'product_detail_custom_button_bg_color', 'product_detail_custom_button_text_color',
                             'product_detail_show_chat_button', 'product_detail_chat_button_text', 'product_detail_chat_button_url', 'product_detail_chat_button_new_tab',
@@ -248,6 +248,24 @@
                                 <input type="color" class="form-control p-1" name="product_detail_buy_now_text_color"
                                     value="{{ get_setting('product_detail_buy_now_text_color', '#ffffff') }}">
                             </div>
+                            <div class="col-12 form-group">
+                                <div class="d-flex align-items-center visibility-control">
+                                    <input type="hidden" name="product_detail_buy_now_click_message_enabled" value="0">
+                                    <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
+                                        <input type="checkbox" name="product_detail_buy_now_click_message_enabled" value="1"
+                                            @checked((int) get_setting('product_detail_buy_now_click_message_enabled', 0) === 1)>
+                                        <span></span>
+                                    </label>
+                                    <span>{{ translate('Show alert message when clicked') }}</span>
+                                </div>
+                            </div>
+                            <div class="col-12 form-group mb-0">
+                                <label>{{ translate('Click Message (Optional)') }}</label>
+                                <input type="text" class="form-control" name="product_detail_buy_now_click_message"
+                                    value="{{ get_setting('product_detail_buy_now_click_message') }}" maxlength="255"
+                                    placeholder="{{ translate('It is coming soon') }}">
+                                <small class="text-muted">{{ translate('When the alert status is on, this message appears instead of continuing to checkout.') }}</small>
+                            </div>
                         </div>
                         </section>
 
@@ -284,6 +302,24 @@
                                 <label>{{ translate('Text Color') }}</label>
                                 <input type="color" class="form-control p-1" name="product_detail_add_to_cart_text_color"
                                     value="{{ get_setting('product_detail_add_to_cart_text_color', '#3390f3') }}">
+                            </div>
+                            <div class="col-12 form-group">
+                                <div class="d-flex align-items-center visibility-control">
+                                    <input type="hidden" name="product_detail_add_to_cart_click_message_enabled" value="0">
+                                    <label class="aiz-switch aiz-switch-blue mb-0 pr-2">
+                                        <input type="checkbox" name="product_detail_add_to_cart_click_message_enabled" value="1"
+                                            @checked((int) get_setting('product_detail_add_to_cart_click_message_enabled', 0) === 1)>
+                                        <span></span>
+                                    </label>
+                                    <span>{{ translate('Show alert message when clicked') }}</span>
+                                </div>
+                            </div>
+                            <div class="col-12 form-group mb-0">
+                                <label>{{ translate('Click Message (Optional)') }}</label>
+                                <input type="text" class="form-control" name="product_detail_add_to_cart_click_message"
+                                    value="{{ get_setting('product_detail_add_to_cart_click_message') }}" maxlength="255"
+                                    placeholder="{{ translate('It is coming soon') }}">
+                                <small class="text-muted">{{ translate('When the alert status is on, this message appears instead of adding the product to the cart.') }}</small>
                             </div>
                         </div>
                         </section>
