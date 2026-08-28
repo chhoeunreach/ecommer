@@ -404,15 +404,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group mb-2 mt-3">
-                                <label class="col-from-label fs-14 fw-500">{{ translate('3D Model Link (Sketchfab / .glb / .gltf)') }}</label>
-                                <small class="d-block text-muted fs-12 fw-400 mb-2">{{ translate('Paste a direct link to a .glb/.gltf file or a Sketchfab embed URL to show a 3D viewer on the product page.') }}</small>
-                                <div class="row mb-2">
-                                    <div class="col-md-12">
-                                        <input type="text" class="form-control" name="model_3d" value="{{ $product->model_3d }}" placeholder="{{ translate('Paste 3D URL here') }}">
-                                    </div>
-                                </div>
-                            </div>
+                            @include('partials.product.model_3d_field', ['product' => $product])
                             
                             <!-- Video/Thumbnail -->
                             <div class="row mt-4">

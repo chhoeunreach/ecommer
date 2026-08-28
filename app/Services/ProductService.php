@@ -9,6 +9,7 @@ use App\Models\Color;
 use App\Models\Product;
 use App\Models\SellerCategory;
 use App\Models\Shop;
+use App\Models\Upload;
 use App\Models\User;
 use App\Models\Wishlist;
 use App\Utility\ProductUtility;
@@ -21,6 +22,7 @@ class ProductService
     public function store(array $data)
     {
         $collection = collect($data);
+        $this->resolveModel3dUpload($collection);
         $collection['draft'] = 0;
         $collection['discount']= $collection['discount'] ?? 0.00;
         $collection['weight']= $collection['weight'] ?? 0.00;
@@ -208,6 +210,7 @@ class ProductService
     public function update(array $data, Product $product)
     {
         $collection = collect($data);
+        $this->resolveModel3dUpload($collection);
         //Log::info('Filter Products Request: ', $data);
         $slug = Str::slug($collection['name']);
         $slug = Str::slug($collection['slug'] ?? $collection['name']);
@@ -601,6 +604,7 @@ class ProductService
     public function storeOrUpdateDraft(array $data)
     {
         $collection = collect($data);
+        $this->resolveModel3dUpload($collection);
         $collection['discount']= $collection['discount'] ?? 0.00;
         $collection['weight']= $collection['weight'] ?? 0.00;
         
@@ -740,6 +744,33 @@ class ProductService
         }
 
         return Product::create($productData);
+    }
+
+    /**
+     * Convert a selected uploader record into the public model path stored on
+     * the product. A manually entered Sketchfab/direct URL remains supported.
+     */
+    private function resolveModel3dUpload($collection): void
+    {
+        $uploadId = (int) $collection->get('model_3d_upload', 0);
+
+        if ($uploadId > 0) {
+            $uploadQuery = Upload::query()
+                ->whereKey($uploadId)
+                ->whereIn('extension', ['glb', 'gltf']);
+
+            if (auth()->check() && auth()->user()->user_type === 'seller') {
+                $uploadQuery->where('user_id', auth()->id());
+            }
+
+            $upload = $uploadQuery->first();
+
+            if ($upload) {
+                $collection->put('model_3d', $upload->file_name);
+            }
+        }
+
+        $collection->forget('model_3d_upload');
     }
 
     public function products_search(array $data)

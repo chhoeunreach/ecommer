@@ -14,13 +14,11 @@
                 class="lazyload mx-auto product-main-image"
                 src="{{ get_image($product->thumbnail) }}"
                 alt="{{ $product->getTranslation('name') }}"
-                title="{{ $product->getTranslation('name') }}"
                 onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
             <img
                 class="lazyload mx-auto product-hover-image"
                 src="{{ get_first_product_image($product->thumbnail, $product->photos) }}"
                 alt="{{ $product->getTranslation('name') }}"
-                title="{{ $product->getTranslation('name') }}"
                 onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
         </a>
 
@@ -49,7 +47,7 @@
             <div class="shadcn-actions-wrap">
                 <!-- Wishlist Icon -->
                 <a href="javascript:void(0)" class="shadcn-action-btn" onclick="addToWishList({{ $product->id }})"
-                    data-toggle="tooltip" data-title="{{ translate('Add to wishlist') }}" data-placement="left">
+                    aria-label="{{ translate('Add to wishlist') }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                     </svg>
@@ -57,7 +55,7 @@
 
                 <!-- Compare Icon -->
                 <a href="javascript:void(0)" class="shadcn-action-btn" onclick="addToCompare({{ $product->id }})"
-                    data-toggle="tooltip" data-title="{{ translate('Add to compare') }}" data-placement="left">
+                    aria-label="{{ translate('Add to compare') }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M16 3h5v5"/>
                         <path d="M8 21H3v-5"/>
@@ -74,7 +72,7 @@
         <div class="shadcn-card-content">
             <!-- Product Title -->
             <h3 class="shadcn-product-title">
-                <a href="{{ $product_url }}" title="{{ $product->getTranslation('name') }}">
+                <a href="{{ $product_url }}">
                     {{ $product->getTranslation('name') }}
                 </a>
             </h3>

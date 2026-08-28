@@ -885,7 +885,7 @@
                 } else if (window.innerWidth < 992) {
                     perRow = 4;
                 } else if (window.innerWidth < 1700) {
-                    perRow = 5;
+                    perRow = 6;
                 } else if (window.innerWidth < 2100) {
                     perRow = 6;
                 } else if (window.innerWidth < 2415) {
@@ -907,7 +907,7 @@
 
                 let perRow = parseInt($('#nexa-product-wrapper').attr('data-products-per-row')) || 4;
 
-                dynamicLimit = perRow * 2;
+                dynamicLimit = perRow * 5;
 
             @endif
 

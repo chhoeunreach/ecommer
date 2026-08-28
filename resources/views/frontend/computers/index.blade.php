@@ -12,7 +12,7 @@
     <div class="computer-catalog-shell">
         <header class="computer-catalog-hero">
             <div class="computer-catalog-hero__copy">
-                <span class="computer-catalog-eyebrow"><i class="las la-laptop" aria-hidden="true"></i>{{ translate('Computer collection') }}</span>
+                <span class="computer-catalog-eyebrow">{{ translate('Computer collection') }}</span>
                 <h1>{{ translate('Find your next computer') }}</h1>
                 <p>{{ translate('Compare available models, prices, and configurations in one clean collection.') }}</p>
             </div>

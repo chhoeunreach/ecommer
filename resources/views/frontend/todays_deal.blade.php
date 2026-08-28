@@ -316,6 +316,14 @@
             text-align: center;
         }
 
+        /* The site-wide floating quick-nav buttons are fixed to the left
+           edge at this breakpoint and up; this page's container otherwise
+           sits close enough to that edge that the first card ends up
+           underneath them. */
+        @media (min-width: 992px) {
+            .todays-deal-page { padding-left: 130px; }
+        }
+
         @media (max-width: 1199px) {
             .todays-deal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
         }
@@ -358,7 +366,7 @@
             <header class="todays-deal-heading">
                 <div>
                     <span class="todays-deal-eyebrow">
-                        <i class="las la-bolt"></i>{{ translate('Limited-time offers') }}
+                        {{ translate('Limited-time offers') }}
                     </span>
                     <h1>{{ translate("Today's Deals") }}</h1>
                 </div>

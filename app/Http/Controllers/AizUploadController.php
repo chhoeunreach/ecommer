@@ -90,6 +90,8 @@ class AizUploadController extends Controller
             "swf" => "video",
             "mkv" => "video",
             "wmv" => "video",
+            "glb" => "model",
+            "gltf" => "model",
             "wma" => "audio",
             "aac" => "audio",
             "wav" => "audio",

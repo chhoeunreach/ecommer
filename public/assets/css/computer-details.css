@@ -1,17 +1,17 @@
 .computer-product-page {
-    --computer-accent: #6d3df1;
-    --computer-accent-dark: #5727d6;
-    --computer-ink: #161b2c;
-    --computer-muted: #697386;
-    --computer-line: #e7eaf0;
-    --computer-soft: #f5f6f9;
-    background: #f6f7fa;
+    --computer-accent: #2357d9;
+    --computer-accent-dark: #173f9f;
+    --computer-ink: #172033;
+    --computer-muted: #667085;
+    --computer-line: #e3e7ee;
+    --computer-soft: #f7f8fa;
+    background: #f5f6f8;
     color: var(--computer-ink);
     padding: 24px 0 64px;
 }
 
 .computer-product-page .computer-shell {
-    width: min(1180px, calc(100% - 32px));
+    width: min(1240px, calc(100% - 40px));
     margin: 0 auto;
 }
 
@@ -20,14 +20,18 @@
     min-width: 0;
     align-items: center;
     gap: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     color: var(--computer-muted);
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
 }
 
 .computer-breadcrumb a {
     color: inherit;
+}
+
+.computer-breadcrumb a:hover {
+    color: var(--computer-accent-dark);
 }
 
 .computer-breadcrumb__current {
@@ -40,21 +44,32 @@
 .computer-product-card,
 .computer-content-card {
     border: 1px solid var(--computer-line);
-    border-radius: 24px;
+    border-radius: 18px;
     background: #fff;
-    box-shadow: 0 16px 40px rgba(22, 27, 44, 0.06);
+    box-shadow: 0 8px 30px rgba(23, 32, 51, .045);
 }
 
 .computer-product-card {
     display: grid;
-    grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr);
-    gap: 42px;
-    padding: 30px;
+    grid-template-columns: minmax(0, 1.08fr) minmax(420px, .92fr);
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
 }
 
 .computer-gallery,
 .computer-details {
     min-width: 0;
+}
+
+.computer-gallery {
+    padding: 32px;
+    background: #fbfbfc;
+}
+
+.computer-details {
+    padding: 38px 40px;
+    border-left: 1px solid var(--computer-line);
 }
 
 .computer-gallery__stage {
@@ -63,14 +78,14 @@
     aspect-ratio: 1 / .82;
     place-items: center;
     overflow: hidden;
-    border-radius: 20px;
-    background: linear-gradient(145deg, #f8f9fb, #f1f3f7);
+    border-radius: 14px;
+    background: #fff;
 }
 
 .computer-gallery__stage img {
     width: 100%;
     height: 100%;
-    padding: clamp(22px, 5vw, 54px);
+    padding: clamp(28px, 5vw, 64px);
     object-fit: contain;
     transition: opacity 160ms ease, transform 220ms ease;
 }
@@ -85,9 +100,9 @@
     z-index: 2;
     top: 16px;
     left: 16px;
-    padding: 7px 10px;
-    border-radius: 999px;
-    background: #e9435a;
+    padding: 7px 11px;
+    border-radius: 6px;
+    background: var(--computer-ink);
     color: #fff;
     font-size: 10px;
     font-weight: 800;
@@ -105,11 +120,18 @@
     place-items: center;
     padding: 0;
     border: 1px solid rgba(22, 27, 44, .08);
-    border-radius: 13px;
-    background: rgba(255, 255, 255, .94);
+    border-radius: 8px;
+    background: #fff;
     color: var(--computer-ink);
-    box-shadow: 0 7px 18px rgba(22, 27, 44, .08);
+    box-shadow: 0 4px 12px rgba(23, 32, 51, .07);
     font-size: 18px;
+    transition: border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.computer-gallery__share:hover {
+    border-color: rgba(35, 87, 217, .3);
+    color: var(--computer-accent);
+    transform: translateY(-1px);
 }
 
 .computer-gallery__thumbs {
@@ -133,7 +155,7 @@
     flex: 0 0 66px;
     padding: 5px;
     border: 1.5px solid var(--computer-line);
-    border-radius: 14px;
+    border-radius: 9px;
     background: #fff;
     cursor: pointer;
     scroll-snap-align: start;
@@ -143,13 +165,13 @@
 .computer-thumb-box img {
     width: 100%;
     height: 100%;
-    border-radius: 9px;
+    border-radius: 6px;
     object-fit: contain;
 }
 
 .computer-thumb-box.active {
     border-color: var(--computer-accent);
-    box-shadow: 0 0 0 3px rgba(109, 61, 241, .11);
+    box-shadow: 0 0 0 2px rgba(35, 87, 217, .1);
 }
 
 .computer-thumb-box:active {
@@ -161,34 +183,34 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 7px;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
 }
 
 .computer-status,
 .computer-brand {
     display: inline-flex;
-    min-height: 27px;
+    min-height: 28px;
     align-items: center;
     gap: 5px;
-    padding: 5px 9px;
-    border-radius: 999px;
-    font-size: 10px;
-    font-weight: 750;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
 }
 
 .computer-brand {
-    background: rgba(109, 61, 241, .08);
+    background: rgba(35, 87, 217, .08);
     color: var(--computer-accent-dark);
 }
 
 .computer-status.is-in-stock {
-    background: #ecf8e8;
-    color: #4d9a3c;
+    background: var(--computer-soft);
+    color: var(--computer-ink);
 }
 
 .computer-status.is-out-of-stock {
-    background: #fff0f1;
-    color: #d83e51;
+    background: var(--computer-soft);
+    color: var(--computer-muted);
 }
 
 .computer-status__dot {
@@ -199,12 +221,12 @@
 }
 
 .computer-title {
-    margin: 0 0 16px;
+    margin: 0 0 20px;
     color: var(--computer-ink);
-    font-size: clamp(24px, 3vw, 36px);
-    font-weight: 800;
-    letter-spacing: -.04em;
-    line-height: 1.15;
+    font-size: clamp(27px, 3vw, 38px);
+    font-weight: 750;
+    letter-spacing: -.035em;
+    line-height: 1.18;
 }
 
 .computer-price {
@@ -212,11 +234,9 @@
     align-items: flex-end;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 18px;
-    padding: 16px 18px;
-    border: 1px solid rgba(109, 61, 241, .12);
-    border-radius: 16px;
-    background: linear-gradient(135deg, rgba(109, 61, 241, .08), rgba(109, 61, 241, .025));
+    margin-bottom: 22px;
+    padding: 0 0 20px;
+    border-bottom: 1px solid var(--computer-line);
 }
 
 .computer-price__label {
@@ -230,9 +250,9 @@
 }
 
 .computer-price__current {
-    color: var(--computer-accent-dark);
+    color: var(--computer-ink);
     font-size: clamp(25px, 3.3vw, 34px);
-    font-weight: 850;
+    font-weight: 800;
     letter-spacing: -.04em;
     line-height: 1;
 }
@@ -246,25 +266,25 @@
 .computer-price__saving {
     flex: 0 0 auto;
     padding: 6px 9px;
-    border-radius: 999px;
-    background: #e9435a;
-    color: #fff;
+    border: 1px solid rgba(35, 87, 217, .22);
+    border-radius: 6px;
+    background: rgba(35, 87, 217, .07);
+    color: var(--computer-accent-dark);
     font-size: 10px;
     font-weight: 800;
 }
 
 .computer-configurator {
-    padding: 18px;
-    border: 1px solid var(--computer-line);
-    border-radius: 18px;
-    background: #fff;
+    padding: 0;
+    border: 0;
+    background: transparent;
 }
 
 .computer-configurator__heading {
-    margin: 0 0 15px;
+    margin: 0 0 18px;
     color: var(--computer-ink);
-    font-size: 14px;
-    font-weight: 800;
+    font-size: 15px;
+    font-weight: 750;
 }
 
 .computer-option-group {
@@ -280,9 +300,9 @@
 .computer-option-group legend {
     width: auto;
     margin-bottom: 8px;
-    color: #4b5565;
-    font-size: 10px;
-    font-weight: 800;
+    color: var(--computer-muted);
+    font-size: 11px;
+    font-weight: 700;
     letter-spacing: .06em;
     text-transform: uppercase;
 }
@@ -313,11 +333,11 @@
     gap: 7px;
     padding: 8px 12px;
     border: 1.5px solid #dce0e8;
-    border-radius: 12px;
+    border-radius: 8px;
     background: #fff;
     color: #454e60;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 650;
     transition: border-color 150ms ease, background 150ms ease, color 150ms ease, box-shadow 150ms ease;
 }
 
@@ -337,15 +357,15 @@
 }
 
 .computer-option input:focus-visible + .computer-option__surface {
-    outline: 3px solid rgba(109, 61, 241, .18);
+    outline: 3px solid rgba(35, 87, 217, .16);
     outline-offset: 2px;
 }
 
 .computer-option input:checked + .computer-option__surface {
     border-color: var(--computer-accent);
-    background: var(--computer-accent);
-    color: #fff;
-    box-shadow: 0 6px 15px rgba(109, 61, 241, .22);
+    background: rgba(35, 87, 217, .06);
+    color: var(--computer-accent-dark);
+    box-shadow: inset 0 0 0 1px var(--computer-accent);
 }
 
 .computer-option input:checked + .computer-option__surface .computer-option__check {
@@ -370,10 +390,11 @@
 }
 
 .computer-purchase {
-    margin-top: 14px;
-    padding: 16px;
-    border-radius: 18px;
-    background: var(--computer-soft);
+    margin-top: 20px;
+    padding: 20px 0 0;
+    border-top: 1px solid var(--computer-line);
+    border-radius: 0;
+    background: transparent;
 }
 
 .computer-quantity-row {
@@ -398,7 +419,7 @@
     grid-template-columns: 36px 1fr 36px;
     overflow: hidden;
     border: 1px solid #dce0e8;
-    border-radius: 12px;
+    border-radius: 8px;
     background: #fff;
 }
 
@@ -428,34 +449,54 @@
 
 .computer-action {
     display: inline-flex;
-    min-height: 46px;
+    min-height: 48px;
     align-items: center;
     justify-content: center;
     gap: 8px;
     padding: 10px 14px;
     border: 1px solid transparent;
-    border-radius: 13px;
+    border-radius: 8px;
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 700;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.computer-action:not(:disabled):hover {
+    transform: translateY(-1px);
+}
+
+.computer-action--primary:hover {
+    background: var(--computer-accent-dark);
+}
+
+.computer-action--secondary:hover {
+    border-color: var(--computer-accent);
+    color: var(--computer-accent-dark) !important;
+}
+
+.computer-action--contact:hover {
+    border-color: #c4cad4;
+    background: var(--computer-soft);
+    color: var(--computer-ink) !important;
 }
 
 .computer-action--primary {
     background: var(--computer-accent);
     color: #fff !important;
-    box-shadow: 0 8px 18px rgba(109, 61, 241, .22);
+    box-shadow: 0 7px 16px rgba(35, 87, 217, .18);
 }
 
 .computer-action--secondary {
-    border-color: rgba(109, 61, 241, .24);
+    border-color: var(--computer-ink);
     background: #fff;
-    color: var(--computer-accent-dark) !important;
+    color: var(--computer-ink) !important;
 }
 
 .computer-action--contact {
     grid-column: 1 / -1;
     border-color: #dce0e8;
     background: transparent;
-    color: #4b5565 !important;
+    color: var(--computer-muted) !important;
 }
 
 .computer-warranty {
@@ -464,9 +505,9 @@
     gap: 12px;
     margin-top: 14px;
     padding: 13px 14px;
-    border: 1px solid #d9eee2;
-    border-radius: 15px;
-    background: #f2fbf5;
+    border: 1px solid var(--computer-line);
+    border-radius: 10px;
+    background: var(--computer-soft);
 }
 
 .computer-warranty__icon {
@@ -475,8 +516,8 @@
     height: 38px;
     flex: 0 0 38px;
     place-items: center;
-    border-radius: 11px;
-    background: #3da06c;
+    border-radius: 8px;
+    background: var(--computer-accent);
     color: #fff;
     font-size: 19px;
 }
@@ -494,7 +535,7 @@
 }
 
 .computer-content-card {
-    margin-top: 20px;
+    margin-top: 24px;
     overflow: hidden;
 }
 
@@ -532,7 +573,7 @@
     right: 14px;
     bottom: 0;
     left: 14px;
-    height: 3px;
+    height: 2px;
     border-radius: 3px 3px 0 0;
     background: var(--computer-accent);
     content: "";
@@ -548,7 +589,7 @@
 }
 
 .computer-content-card__body {
-    padding: 26px;
+    padding: 32px;
 }
 
 .computer-description {
@@ -563,7 +604,7 @@
     gap: 1px;
     overflow: hidden;
     border: 1px solid var(--computer-line);
-    border-radius: 15px;
+    border-radius: 10px;
     background: var(--computer-line);
 }
 
@@ -934,7 +975,17 @@
 @media (max-width: 991px) {
     .computer-product-card {
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 0;
+    }
+
+    .computer-gallery {
+        padding: 28px;
+    }
+
+    .computer-details {
+        padding: 32px;
+        border-top: 1px solid var(--computer-line);
+        border-left: 0;
     }
 
     .computer-gallery__stage {
@@ -981,7 +1032,13 @@
     }
 
     .computer-gallery {
+        padding: 0;
         margin: 0 -16px 18px;
+    }
+
+    .computer-details {
+        padding: 0;
+        border-top: 0;
     }
 
     .computer-gallery__stage {
@@ -1029,8 +1086,7 @@
 
     .computer-price {
         margin-bottom: 14px;
-        padding: 14px;
-        border-radius: 15px;
+        padding: 0 0 16px;
     }
 
     .computer-price__current {
@@ -1038,8 +1094,7 @@
     }
 
     .computer-configurator {
-        padding: 15px;
-        border-radius: 16px;
+        padding: 0;
     }
 
     .computer-option-group {
@@ -1060,8 +1115,7 @@
 
     .computer-purchase {
         margin-top: 12px;
-        padding: 14px;
-        border-radius: 16px;
+        padding: 16px 0 0;
     }
 
     .computer-actions {

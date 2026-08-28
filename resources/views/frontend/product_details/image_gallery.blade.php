@@ -6,7 +6,30 @@
     $short_video = $detailedProduct->short_video != null ? explode(',', $detailedProduct->short_video) : [];
     $short_video_thumb =
     $detailedProduct->short_video != null ? explode(',', $detailedProduct->short_video_thumbnail) : [];
-    $total_gallery= count($photos)  +count($short_video) + (is_iterable($videos) ? count($videos) : 0);
+    $model3dValue = trim((string) $detailedProduct->model_3d);
+    $model3dSource = null;
+    $model3dIsSketchfab = false;
+
+    if ($model3dValue !== '') {
+        $model3dScheme = strtolower((string) parse_url($model3dValue, PHP_URL_SCHEME));
+        $model3dHost = strtolower((string) parse_url($model3dValue, PHP_URL_HOST));
+
+        if (in_array($model3dScheme, ['http', 'https'], true)) {
+            $model3dSource = $model3dValue;
+            $model3dIsSketchfab = in_array($model3dHost, ['sketchfab.com', 'www.sketchfab.com'], true);
+
+            if ($model3dIsSketchfab && preg_match('~/3d-models/(?:[^/]+-)?([a-f0-9]{32})(?:[/?#]|$)~i', $model3dValue, $model3dMatch)) {
+                $model3dSource = 'https://sketchfab.com/models/' . $model3dMatch[1] . '/embed';
+            }
+        } elseif (!str_contains($model3dValue, '..')) {
+            $model3dSource = static_asset(ltrim($model3dValue, '/'));
+        }
+    }
+
+    $total_gallery = count($photos)
+        + count($short_video)
+        + (is_iterable($videos) ? count($videos) : 0)
+        + ($model3dSource ? 1 : 0);
 
 @endphp
 <div class="row product-gallery-layout">
@@ -77,7 +100,7 @@
                     @endif
 
                     <!-- 3D Model -->
-                    @if (!empty($detailedProduct->model_3d))
+                    @if ($model3dSource)
                         <div
                             class="swiper-slide position-relative rounded-corner-8px border  border-light-gray bg-light cursor-pointer overflow-hidden d-flex align-items-center justify-content-center" data-variation="3d-model">
                                 <img class="img-fluid object-fit-cover object-position-cent" src="{{ uploaded_asset($detailedProduct->thumbnail_img) }}"
@@ -193,11 +216,11 @@
                 @endif
                 
                 <!-- 3D Model -->
-                @if (!empty($detailedProduct->model_3d))
+                @if ($model3dSource)
                     <div class="swiper-slide rounded-corner-8px border border-light-gray bg-light overflow-hidden">
-                        @if (str_contains(strtolower($detailedProduct->model_3d), 'sketchfab.com'))
+                        @if ($model3dIsSketchfab)
                             <iframe class="w-100 h-100 border-0"
-                                src="{{ $detailedProduct->model_3d }}"
+                                src="{{ $model3dSource }}"
                                 title="3D Model Viewer"
                                 allow="autoplay; fullscreen; xr-spatial-tracking"
                                 xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share
@@ -206,7 +229,7 @@
                         @else
                             <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
                             <model-viewer class="w-100 h-100"
-                                src="{{ $detailedProduct->model_3d }}"
+                                src="{{ $model3dSource }}"
                                 alt="{{ $detailedProduct->name }}"
                                 auto-rotate camera-controls shadow-intensity="1">
                             </model-viewer>

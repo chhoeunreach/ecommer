@@ -689,6 +689,11 @@
     .kneayerng-home .ky-initial-skeleton-card .ky-card-skeleton {
         min-height: 230px;
     }
+
+    #backToTop {
+        bottom: calc(90px + env(safe-area-inset-bottom)) !important;
+        z-index: 1030 !important;
+    }
 }
 
 @media (max-width: 374px) {
@@ -800,6 +805,62 @@
         min-height: 150px;
         padding: 11px !important;
     }
+}
+
+/* Keep the product grid visually consistent when product images have different ratios. */
+.kneayerng-home #newest-products-list {
+    align-items: stretch;
+    grid-auto-rows: 1fr;
+}
+
+.kneayerng-home #newest-products-list .shadcn-product-card {
+    height: 100%;
+    overflow: hidden;
+}
+
+.kneayerng-home #newest-products-list .shadcn-card-img-wrap {
+    flex: 0 0 auto;
+    aspect-ratio: 1 / .88;
+    max-height: none;
+    background: #f5f6f8 !important;
+}
+
+.kneayerng-home #newest-products-list .shadcn-card-img-wrap a {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.kneayerng-home #newest-products-list .shadcn-card-body {
+    display: flex !important;
+    flex: 1 1 auto;
+    flex-direction: column !important;
+}
+
+.kneayerng-home #newest-products-list .shadcn-card-content {
+    display: flex;
+    min-height: 94px;
+    flex-direction: column;
+}
+
+.kneayerng-home #newest-products-list .shadcn-product-title {
+    flex: 0 0 auto;
+    min-height: 38px;
+    margin-bottom: 3px !important;
+}
+
+.kneayerng-home #newest-products-list .ky-product-variant {
+    min-height: 15px;
+    margin-bottom: 5px;
+}
+
+.kneayerng-home #newest-products-list .shadcn-price-container {
+    margin-top: auto !important;
+}
+
+.kneayerng-home #newest-products-list .shadcn-card-action {
+    width: 100%;
+    margin-top: auto;
 }
 
 @media (max-width: 575px) {
@@ -1171,16 +1232,18 @@
         height: calc(100% - 8px);
         min-height: 252px;
         margin: 4px 5px;
-        padding: 9px 9px 12px;
-        border: 1px solid rgba(229, 231, 235, 0.75);
-        border-radius: 18px;
-        background: #fff;
-        box-shadow: 0 5px 18px rgba(17, 24, 39, 0.07);
+        padding: 10px !important;
+        border: none !important;
+        border-radius: 16px !important;
+        background: #ffffff !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
     }
 
     .kneayerng-home .ky-showcase-image {
-        border-radius: 14px !important;
-        background: #f5f5f7 !important;
+        border-radius: 12px !important;
+        background: #e2e2e2 !important;
+        border: 0 !important;
+        overflow: hidden;
     }
 
     .kneayerng-home .ky-showcase-image img {
@@ -1190,21 +1253,30 @@
     }
 
     .kneayerng-home .ky-showcase-title {
+        height: auto !important;
         min-height: 38px;
-        margin-top: 10px !important;
+        margin-top: 12px !important;
+        margin-bottom: 2px !important;
         padding-right: 2px;
-        color: #111827 !important;
+        color: #0f172a !important;
         font-size: 13px !important;
-        font-weight: 650 !important;
-        line-height: 1.42;
+        font-weight: 700 !important;
+        line-height: 1.4 !important;
     }
 
     .kneayerng-home .ky-showcase-variant {
         display: block;
         margin-top: 2px;
-        color: #6b7280;
-        font-size: 10px;
+        color: #0f172a !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
         line-height: 1.35;
+        border-bottom: 1px dashed #cbd5e1;
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
     }
 
     .kneayerng-home .ky-showcase-price {
@@ -1214,7 +1286,7 @@
     }
 
     .kneayerng-home .ky-showcase-current-price {
-        color: #111827 !important;
+        color: #0f172a !important;
         font-size: 15px !important;
         font-weight: 800 !important;
     }
@@ -1263,21 +1335,36 @@
     .kneayerng-home .ky-mobile-card-action {
         right: 10px;
         bottom: 10px;
-        min-width: 32px;
-        height: 32px;
-        padding: 0 9px;
-        border-radius: 10px;
-        background: #7c3aed;
-        color: #fff;
-        box-shadow: 0 5px 12px rgba(124, 58, 237, 0.25);
-        font-size: 16px;
+        width: 32px !important;
+        min-width: 32px !important;
+        height: 32px !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        background: #f1f5f9 !important;
+        box-shadow: none !important;
+        color: #0f172a !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 200ms ease;
+    }
+
+    .kneayerng-home .ky-mobile-card-action:hover {
+        background: #e2e8f0 !important;
+        transform: scale(1.05);
     }
 
     .kneayerng-home .ky-mobile-card-action.has-options {
-        max-width: 92px;
-        font-size: 9px;
-        font-weight: 700;
-        white-space: nowrap;
+        /* Remove max-width override so it stays circular */
+    }
+
+    .kneayerng-home .ky-mobile-card-action span {
+        display: none !important;
+    }
+
+    .kneayerng-home .ky-mobile-card-action i {
+        display: block !important;
+        font-size: 16px !important;
     }
 
     .kneayerng-home > #nexa-product-wrapper {
@@ -1395,15 +1482,18 @@
     }
 
     .kneayerng-home .shadcn-product-card {
-        border: 1px solid rgba(229, 231, 235, 0.8) !important;
-        border-radius: 18px !important;
-        background: #fff !important;
-        box-shadow: 0 5px 18px rgba(17, 24, 39, 0.065) !important;
+        border: none !important;
+        border-radius: 16px !important;
+        background: #ffffff !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
+        padding: 10px !important;
     }
 
     .kneayerng-home .shadcn-card-img-wrap {
+        border-radius: 12px !important;
+        background: #e2e2e2 !important;
         border: 0 !important;
-        background: #f5f5f7 !important;
+        overflow: hidden;
     }
 
     .kneayerng-home .shadcn-card-img-wrap .product-main-image {
@@ -1441,8 +1531,8 @@
 
     .kneayerng-home .shadcn-card-body {
         position: relative;
-        min-height: 148px;
-        padding: 11px !important;
+        min-height: auto;
+        padding: 12px 4px 4px 4px !important;
     }
 
     .kneayerng-home .shadcn-card-action {
@@ -1452,21 +1542,29 @@
         padding-top: 8px;
     }
 
+    .kneayerng-home .shadcn-card-content {
+        border-bottom: 1px dashed #cbd5e1;
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+    }
+
     .kneayerng-home .shadcn-product-title {
-        height: 38px !important;
-        margin-bottom: 3px !important;
-        color: #111827 !important;
+        height: auto !important;
+        min-height: 38px;
+        margin-bottom: 2px !important;
+        color: #0f172a !important;
         font-size: 13px !important;
-        font-weight: 650 !important;
-        line-height: 1.42 !important;
+        font-weight: 700 !important;
+        line-height: 1.4 !important;
     }
 
     .kneayerng-home .ky-product-variant {
         display: block;
         overflow: hidden;
         margin-bottom: 5px;
-        color: #6b7280;
-        font-size: 10px;
+        color: #0f172a !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
@@ -1481,7 +1579,7 @@
     }
 
     .kneayerng-home .shadcn-price-current {
-        color: #111827 !important;
+        color: #0f172a !important;
         font-size: 15px !important;
         font-weight: 800 !important;
     }
@@ -1492,60 +1590,58 @@
     }
 
     .kneayerng-home .shadcn-cta-btn {
-        position: static;
-        width: 100% !important;
-        min-width: 0;
-        height: 34px !important;
-        padding: 0 10px !important;
-        border-radius: 10px !important;
-        background: #7c3aed !important;
-        box-shadow: 0 5px 12px rgba(124, 58, 237, 0.24) !important;
-    }
-
-    .kneayerng-home .shadcn-cta-btn.ky-add-button {
         position: absolute;
-        right: 10px;
-        bottom: 10px;
+        right: 4px;
+        bottom: 8px;
         width: 32px !important;
         min-width: 32px;
         height: 32px !important;
         padding: 0 !important;
+        border-radius: 50% !important;
+        background: #f1f5f9 !important;
+        box-shadow: none !important;
+        color: #0f172a !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 200ms ease;
     }
 
-    .kneayerng-home .shadcn-cta-btn.ky-add-button span,
-    .kneayerng-home .shadcn-cta-btn.ky-add-button .ky-desktop-cart-icon {
-        display: none;
+    .kneayerng-home .shadcn-cta-btn:hover {
+        background: #e2e8f0 !important;
+        transform: scale(1.05);
     }
 
+    .kneayerng-home .shadcn-cta-btn span,
     .kneayerng-home .shadcn-cta-btn.ky-add-button .ky-mobile-plus-icon {
-        display: inline-block;
+        display: none !important;
+    }
+
+    .kneayerng-home .shadcn-cta-btn i.ky-desktop-cart-icon,
+    .kneayerng-home .shadcn-cta-btn.ky-options-button i,
+    .kneayerng-home .shadcn-cta-btn i.la-gavel {
+        display: block !important;
         font-size: 16px !important;
     }
-
-    .kneayerng-home .shadcn-cta-btn.ky-options-button {
-        max-width: none;
-        font-size: 10px !important;
-        white-space: nowrap;
-    }
-
-    .kneayerng-home .shadcn-cta-btn.ky-options-button i {
-        display: none;
     }
 
     .ky-mobile-bottom-nav {
         position: fixed;
         z-index: 1040;
-        right: 0;
-        bottom: 0;
-        left: 0;
+        right: 16px;
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        left: 16px;
         display: grid;
-        min-height: calc(64px + env(safe-area-inset-bottom));
+        min-height: 60px;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        align-items: start;
-        padding: 7px 8px env(safe-area-inset-bottom);
-        border-top: 1px solid #e5e7eb;
-        background: rgba(255, 255, 255, 0.98);
-        box-shadow: 0 -8px 24px rgba(17, 24, 39, 0.05);
+        align-items: center;
+        padding: 6px 8px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 8px 32px rgba(17, 24, 39, 0.08);
     }
 
     .ky-mobile-nav-item {
@@ -1568,7 +1664,7 @@
     }
 
     .ky-mobile-nav-item.active {
-        color: #7c3aed !important;
+        color: #6366f1 !important;
     }
 
     .ky-mobile-nav-icon-wrap {
@@ -2413,5 +2509,293 @@
         width: 29px;
         height: 29px;
         flex-basis: 29px;
+    }
+}
+
+/* Final product-card polish: preserve the complete product photo and reduce empty space. */
+.kneayerng-home #newest-products-list .shadcn-product-card {
+    min-height: 350px;
+}
+
+.kneayerng-home #newest-products-list .shadcn-card-img-wrap {
+    aspect-ratio: 1 / .86;
+}
+
+.kneayerng-home #newest-products-list .shadcn-card-img-wrap .product-main-image,
+.kneayerng-home #newest-products-list .shadcn-card-img-wrap .product-hover-image {
+    padding: 9px !important;
+    object-fit: contain !important;
+}
+
+.kneayerng-home #newest-products-list .shadcn-card-body {
+    min-height: 145px;
+    padding: 12px !important;
+}
+
+.kneayerng-home #newest-products-list .shadcn-card-content {
+    min-height: 82px;
+}
+
+.kneayerng-home #newest-products-list .shadcn-cta-btn {
+    min-height: 38px;
+    height: 38px !important;
+}
+
+@media (max-width: 767px) {
+    .kneayerng-home #newest-products-list .shadcn-product-card {
+        min-height: 340px;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-card-body {
+        min-height: 138px;
+        padding: 11px !important;
+    }
+}
+
+/* New products: six columns on desktop, then collapse cleanly for smaller screens. */
+.kneayerng-home #section_newest .products-wrapper-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+}
+
+.kneayerng-home .ky-newest-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #e7e9ef;
+}
+
+.kneayerng-home .ky-newest-heading h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+}
+
+.kneayerng-home .ky-newest-heading p {
+    margin: 3px 0 0;
+    color: #7b8190;
+    font-size: 12px;
+}
+
+.kneayerng-home .ky-newest-see-all {
+    display: inline-flex;
+    min-height: 38px;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 13px;
+    border: 1px solid #e3e5eb;
+    border-radius: 12px;
+    background: #fff;
+    color: #6533e8;
+    font-size: 12px;
+    font-weight: 750;
+    text-decoration: none !important;
+    transition: box-shadow 200ms ease, transform 200ms ease, border-color 200ms ease;
+}
+
+.kneayerng-home .ky-newest-see-all:hover {
+    border-color: rgba(101, 51, 232, .3);
+    box-shadow: 0 7px 18px rgba(31, 35, 48, .08);
+    transform: translateY(-2px);
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .kneayerng-home #section_newest .products-wrapper-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .kneayerng-home .ky-newest-heading {
+        margin: 0 12px 14px;
+        padding-bottom: 12px;
+    }
+
+    .kneayerng-home .ky-newest-heading h2 {
+        font-size: 18px;
+    }
+
+    .kneayerng-home .ky-newest-heading p {
+        display: none;
+    }
+
+    .kneayerng-home .ky-newest-see-all {
+        min-height: 34px;
+        padding: 6px 10px;
+        border-color: transparent;
+        background: #f1edff;
+        font-size: 11px;
+    }
+
+    .kneayerng-home #section_newest .products-wrapper-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 12px !important;
+    }
+}
+
+@media (max-width: 575px) {
+    .kneayerng-home #section_newest .products-wrapper-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+    }
+}
+
+/* Keep floating card actions fully inside the image frame. */
+.kneayerng-home #newest-products-list .shadcn-actions-wrap {
+    top: 10px !important;
+    right: 12px !important;
+    gap: 6px;
+}
+
+.kneayerng-home #newest-products-list .shadcn-action-btn {
+    width: 32px;
+    height: 32px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 575px) {
+    .kneayerng-home #newest-products-list .shadcn-actions-wrap {
+        top: 8px !important;
+        right: 5px !important;
+        gap: 4px;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-action-btn {
+        width: 24px;
+        height: 24px;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-action-btn svg {
+        width: 12px;
+        height: 12px;
+    }
+}
+
+@media (max-width: 380px) {
+    .kneayerng-home #newest-products-list .shadcn-actions-wrap {
+        top: 5px !important;
+        right: 4px !important;
+        gap: 3px;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-action-btn {
+        width: 21px;
+        height: 21px;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-action-btn svg {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+/* The same action positioning also applies to product cards loaded in other homepage sections. */
+.kneayerng-home .shadcn-product-card .shadcn-actions-wrap {
+    right: 10px !important;
+    top: 10px !important;
+}
+
+@media (max-width: 575px) {
+    .kneayerng-home .shadcn-product-card .shadcn-actions-wrap {
+        right: 6px !important;
+        top: 6px !important;
+        gap: 4px;
+    }
+
+    .kneayerng-home .shadcn-product-card .shadcn-action-btn {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+@media (max-width: 380px) {
+    .kneayerng-home .shadcn-product-card .shadcn-actions-wrap {
+        right: 4px !important;
+        top: 4px !important;
+    }
+
+    .kneayerng-home .shadcn-product-card .shadcn-action-btn {
+        width: 21px;
+        height: 21px;
+    }
+}
+
+/* Global safeguard for cards rendered outside the newest-products section. */
+.shadcn-product-card .shadcn-card-img-wrap {
+    position: relative;
+}
+
+.shadcn-product-card .shadcn-actions-wrap {
+    right: 12px !important;
+    top: 12px !important;
+    z-index: 10 !important;
+    width: max-content !important;
+    max-width: calc(100% - 24px);
+    transform: none !important;
+}
+
+.shadcn-product-card .shadcn-action-btn {
+    flex: 0 0 auto;
+    border: 2px solid rgba(255, 255, 255, .95) !important;
+    background: #fff !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .18) !important;
+}
+
+@media (max-width: 575px) {
+    .shadcn-product-card .shadcn-actions-wrap {
+        right: 8px !important;
+        top: 8px !important;
+        width: max-content !important;
+        max-width: calc(100% - 16px);
+        transform: none !important;
+    }
+}
+
+/* Refined Select Options button icon. */
+.kneayerng-home #newest-products-list .shadcn-cta-btn.ky-options-button {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.kneayerng-home #newest-products-list .shadcn-cta-btn.ky-options-button i {
+    display: inline-flex !important;
+    width: 23px;
+    height: 23px;
+    flex: 0 0 23px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, .12);
+    color: rgba(255, 255, 255, .95);
+    font-size: 13px;
+    line-height: 1;
+}
+
+.kneayerng-home #newest-products-list .shadcn-cta-btn.ky-options-button:hover {
+    background: #1b243b !important;
+    box-shadow: 0 8px 16px rgba(15, 23, 42, .2) !important;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 575px) {
+    .kneayerng-home #newest-products-list .shadcn-cta-btn.ky-options-button {
+        gap: 6px;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-cta-btn.ky-options-button i {
+        width: 21px;
+        height: 21px;
+        flex-basis: 21px;
+        border-radius: 6px;
+        font-size: 12px;
     }
 }

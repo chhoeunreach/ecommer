@@ -46,6 +46,8 @@ class ProductRequest extends FormRequest
         $rules['free_accessories.*.title'] = 'nullable|required_if:free_accessory_enabled,1|max:255';
         $rules['free_accessories.*.description'] = 'nullable|max:2000';
         $rules['free_accessories.*.image'] = 'nullable|integer';
+        $rules['model_3d'] = 'nullable|url:http,https|max:2048';
+        $rules['model_3d_upload'] = 'nullable|integer|exists:uploads,id';
 
         return $rules;
     }
@@ -80,6 +82,8 @@ class ProductRequest extends FormRequest
             'auction_date_range.required' => translate('Auction Date Range is required'),
             'free_accessories.required_if' => translate('Add at least one free accessory when the offer is enabled'),
             'free_accessories.*.title.required_if' => translate('Each free accessory needs a name'),
+            'model_3d.url' => translate('The 3D model link must be a valid HTTP or HTTPS URL'),
+            'model_3d_upload.exists' => translate('The selected 3D model file could not be found'),
         ];
 
         return $messages;

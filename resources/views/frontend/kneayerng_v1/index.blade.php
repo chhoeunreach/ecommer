@@ -247,8 +247,8 @@
     
     /* Main container breathing room */
     .feactured-best-selling-product-section {
-        padding-top: 20px;
-        padding-bottom: 20px;
+        padding-top: 40px;
+        padding-bottom: 40px;
     }
 
     /* Modern Flash and Today's Deals section styling */
@@ -1924,6 +1924,15 @@
 
         <!-- Products Start -->
         <div class="layout-container px-3 py-5 mx-auto" id="nexa-product-wrapper" data-products-per-row="8">
+            <div class="ky-newest-heading">
+                <div>
+                    <h2>{{ translate('New Products') }}</h2>
+                    <p>{{ translate('Fresh arrivals selected for you') }}</p>
+                </div>
+                <a href="{{ route('search') }}" class="ky-newest-see-all">
+                    <span>{{ translate('See All') }}</span><i class="las la-arrow-right" aria-hidden="true"></i>
+                </a>
+            </div>
             <div id="section_newest">
                 <div class="products-wrapper-grid ky-initial-skeleton-grid" role="status" aria-label="{{ translate('Loading products') }}">
                     @for ($skeletonIndex = 0; $skeletonIndex < 8; $skeletonIndex++)
@@ -2053,13 +2062,13 @@
         $button.html('{{ translate("Loading...") }} <i id="spinner-icon" class="las la-lg la-spinner la-spin"></i>');
         $button.prop('disabled', true);
 
-        let loadMoreLimit = 18;
+                let loadMoreLimit = 30;
 
         @if (in_array(get_setting('homepage_select'), ['nexa', 'kneayerng_v1']))
 
             let perRow = parseInt($('#nexa-product-wrapper').attr('data-products-per-row')) || 4;
 
-            loadMoreLimit = perRow * 3;
+                    loadMoreLimit = perRow * 5;
 
         @endif
 
