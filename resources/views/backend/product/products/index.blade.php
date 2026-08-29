@@ -632,20 +632,19 @@
 
             // Open function
             function openRightcanvas(id, name) {
-                // content.textContent = data;
                 rightOffcanvas.classList.add('active');
                 overlay.classList.add('active');
                 document.body.classList.add('body-no-scroll');
-                rightOffcanvas.innerHTML='';
+                $(rightOffcanvas).html('<div class="d-flex align-items-center justify-content-center h-100"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div>');
 
                 $.ajax({
                     type: "GET",
                     url: "{{ route('stock.show', '') }}/" + id,
                     success: function (data) {
-                        rightOffcanvas.innerHTML = data;
+                        $(rightOffcanvas).html(data);
                     },
                     error: function () {
-                        rightOffcanvas.innerHTML = '<p class="text-danger">{{ translate("Failed to load stock data") }}</p>';
+                        $(rightOffcanvas).html('<p class="text-danger p-4">{{ translate("Failed to load stock data") }}</p>');
                     }
                 });
             }

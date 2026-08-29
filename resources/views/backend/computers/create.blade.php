@@ -315,6 +315,35 @@
         </div>
     </div>
 
+    <!-- Add Custom Value Modal Dialog -->
+    <div class="modal fade" id="customValueModal" tabindex="-1" role="dialog" aria-labelledby="customModalTitle" aria-hidden="true" style="z-index: 1090;">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+            <div class="modal-content border-0 shadow-lg rounded-3">
+                <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+                    <div>
+                        <h5 class="modal-title fs-16 fw-700 text-dark" id="customModalTitle">{{ translate('Add Custom Value') }}</h5>
+                        <p class="text-muted fs-13 mb-0 mt-1" id="customModalDescription">{{ translate('Enter a custom value for this option.') }}</p>
+                    </div>
+                    <button type="button" class="close text-secondary p-0 m-0" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" class="fs-20">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="form-group mb-0">
+                        <label class="variant-input-label text-uppercase text-secondary fw-700 fs-11" id="customModalInputLabel">{{ translate('Custom Value') }}</label>
+                        <input type="text" id="customModalInput" class="form-control form-control-lg fs-14 fw-600 text-dark" placeholder="{{ translate('Type new custom value...') }}">
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0 pb-4 px-4 d-flex justify-content-end" style="gap: 10px;">
+                    <button type="button" class="btn btn-light px-4 fs-13 fw-600 rounded-pill" data-dismiss="modal">{{ translate('Cancel') }}</button>
+                    <button type="button" class="btn btn-primary px-4 fs-13 fw-700 rounded-pill shadow-sm" onclick="applyCustomValueModal()">
+                        <i class="las la-check-circle mr-1"></i> {{ translate('Save & Apply') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <style>
         .color-group-section {
             border: 1px solid #e2e8f0;
@@ -323,6 +352,7 @@
             box-shadow: 0 4px 15px rgba(15, 23, 42, 0.03);
             margin-bottom: 24px;
             transition: all 0.25s ease;
+            overflow: visible !important;
         }
         .color-group-section:hover {
             box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
@@ -337,12 +367,17 @@
             background: #ffffff;
             box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
             margin-bottom: 16px;
-            overflow: hidden;
+            overflow: visible !important;
             transition: all 0.2s ease;
+            position: relative;
+            z-index: 1;
         }
-        .variant-card-box:hover {
+        .variant-card-box:hover,
+        .variant-card-box:focus-within,
+        .variant-card-box.show {
             border-color: #cbd5e1;
             box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+            z-index: 50 !important;
         }
         .variant-card-header {
             background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
@@ -363,6 +398,7 @@
         }
         .variant-card-body {
             padding: 16px;
+            overflow: visible !important;
         }
         .variant-badge {
             background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
@@ -399,6 +435,12 @@
             font-size: 14px !important;
         }
         /* Custom Input Group Dropdowns for Storage, Display, RAM, CPU, Chip */
+        .variant-card-box .input-group {
+            position: relative !important;
+        }
+        .variant-card-box .input-group-append {
+            position: static !important;
+        }
         .variant-card-box .btn-dropdown-preset::after,
         .variant-card-box .dropdown-toggle::after {
             display: none !important;
@@ -424,12 +466,22 @@
             border-color: #cbd5e1;
         }
         .variant-card-box .dropdown-menu {
+            position: absolute !important;
+            top: 100% !important;
+            left: 0 !important;
+            right: auto !important;
+            transform: none !important;
+            width: 100% !important;
+            min-width: 240px !important;
+            max-height: 220px !important;
+            overflow-y: auto !important;
+            margin-top: 4px !important;
             border: 1px solid #cbd5e1 !important;
             border-radius: 10px !important;
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12) !important;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18) !important;
             padding: 6px !important;
-            min-width: 170px;
-            z-index: 1050 !important;
+            z-index: 1080 !important;
+            background: #ffffff !important;
         }
         .variant-card-box .dropdown-item {
             padding: 8px 12px !important;
@@ -776,13 +828,16 @@
                                             <input type="text" name="variants[${i}][storage]" class="form-control variant-storage-input" placeholder="e.g. 256GB" value="${data.storage || ''}" oninput="updateVariantTitleText(this)" required>
                                             <div class="input-group-append">
                                                 <button type="button" class="btn btn-dropdown-preset dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="las la-angle-down"></i></button>
-                                                <div class="dropdown-menu dropdown-menu-right">
+                                                <div class="dropdown-menu">
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'storage', '128GB')">128GB</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'storage', '256GB')">256GB</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'storage', '512GB')">512GB</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'storage', '1TB')">1TB</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'storage', '2TB')">2TB</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'storage', '4TB')">4TB</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'storage', '8TB')">8TB</a>
+                                                    <div class="dropdown-divider my-1"></div>
+                                                    <a class="dropdown-item text-primary font-weight-bold" href="javascript:void(0)" onclick="setVariantField(this, 'storage', 'CUSTOM_PROMPT')"><i class="las la-plus-circle mr-1"></i> {{ translate('+ Add Custom Storage...') }}</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -797,12 +852,15 @@
                                             <input type="text" name="variants[${i}][display]" class="form-control variant-display-input" placeholder="e.g. 13.6-inch" value="${data.display || ''}" required>
                                             <div class="input-group-append">
                                                 <button type="button" class="btn btn-dropdown-preset dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="las la-angle-down"></i></button>
-                                                <div class="dropdown-menu dropdown-menu-right">
+                                                <div class="dropdown-menu">
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'display', '13.6-inch Liquid Retina')">13.6-inch Liquid Retina</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'display', '14.2-inch Liquid Retina XDR')">14.2-inch Liquid Retina XDR</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'display', '15.3-inch Liquid Retina')">15.3-inch Liquid Retina</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'display', '16.2-inch Liquid Retina XDR')">16.2-inch Liquid Retina XDR</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'display', '24-inch 4.5K Retina')">24-inch 4.5K Retina</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'display', '27-inch 5K Retina')">27-inch 5K Retina</a>
+                                                    <div class="dropdown-divider my-1"></div>
+                                                    <a class="dropdown-item text-primary font-weight-bold" href="javascript:void(0)" onclick="setVariantField(this, 'display', 'CUSTOM_PROMPT')"><i class="las la-plus-circle mr-1"></i> {{ translate('+ Add Custom Display...') }}</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -817,13 +875,17 @@
                                             <input type="text" name="variants[${i}][ram]" class="form-control variant-ram-input" placeholder="e.g. 16GB" value="${data.ram || ''}" required>
                                             <div class="input-group-append">
                                                 <button type="button" class="btn btn-dropdown-preset dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="las la-angle-down"></i></button>
-                                                <div class="dropdown-menu dropdown-menu-right">
+                                                <div class="dropdown-menu">
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '8GB')">8GB</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '16GB')">16GB</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '24GB')">24GB</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '32GB')">32GB</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '64GB')">64GB</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '96GB')">96GB</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '128GB')">128GB</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'ram', '192GB')">192GB</a>
+                                                    <div class="dropdown-divider my-1"></div>
+                                                    <a class="dropdown-item text-primary font-weight-bold" href="javascript:void(0)" onclick="setVariantField(this, 'ram', 'CUSTOM_PROMPT')"><i class="las la-plus-circle mr-1"></i> {{ translate('+ Add Custom RAM...') }}</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -848,12 +910,16 @@
                                             <input type="text" name="variants[${i}][cpu]" class="form-control variant-cpu-input" placeholder="e.g. 10-core" value="${data.cpu || ''}" required>
                                             <div class="input-group-append">
                                                 <button type="button" class="btn btn-dropdown-preset dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="las la-angle-down"></i></button>
-                                                <div class="dropdown-menu dropdown-menu-right">
+                                                <div class="dropdown-menu">
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'cpu', '8-core')">8-core</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'cpu', '10-core')">10-core</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'cpu', '12-core')">12-core</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'cpu', '14-core')">14-core</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'cpu', '16-core')">16-core</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'cpu', '24-core')">24-core</a>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'cpu', '32-core')">32-core</a>
+                                                    <div class="dropdown-divider my-1"></div>
+                                                    <a class="dropdown-item text-primary font-weight-bold" href="javascript:void(0)" onclick="setVariantField(this, 'cpu', 'CUSTOM_PROMPT')"><i class="las la-plus-circle mr-1"></i> {{ translate('+ Add Custom CPU...') }}</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -868,7 +934,7 @@
                                             <input type="text" name="variants[${i}][chip]" class="form-control variant-chip-input" placeholder="e.g. Apple M4" value="${data.chip || ''}" required>
                                             <div class="input-group-append">
                                                 <button type="button" class="btn btn-dropdown-preset dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="las la-angle-down"></i></button>
-                                                <div class="dropdown-menu dropdown-menu-right">
+                                                <div class="dropdown-menu">
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Apple M1')">Apple M1</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Apple M2')">Apple M2</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Apple M3')">Apple M3</a>
@@ -877,6 +943,8 @@
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Apple M4 Max')">Apple M4 Max</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Intel Core i7')">Intel Core i7</a>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'Intel Core i9')">Intel Core i9</a>
+                                                    <div class="dropdown-divider my-1"></div>
+                                                    <a class="dropdown-item text-primary font-weight-bold" href="javascript:void(0)" onclick="setVariantField(this, 'chip', 'CUSTOM_PROMPT')"><i class="las la-plus-circle mr-1"></i> {{ translate('+ Add Custom Chip...') }}</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -915,10 +983,122 @@
         });
     }
 
+    var activeTargetInput = null;
+    var activeFieldName = '';
+
     function setVariantField(btn, fieldName, val) {
         var $box = $(btn).closest('.form-group');
-        $box.find('input').val(val).trigger('change');
+        var $input = $box.find('input');
+
+        if (val === 'CUSTOM_PROMPT') {
+            activeTargetInput = $input;
+            activeFieldName = fieldName;
+
+            var prettyName = fieldName ? (fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) : 'Option';
+            $('#customModalTitle').text('{{ translate("Add Custom") }} ' + prettyName);
+            $('#customModalDescription').text('{{ translate("Enter a new custom") }} ' + fieldName + ' {{ translate("option for this variant.") }}');
+            $('#customModalInputLabel').text(prettyName.toUpperCase() + ' {{ translate("VALUE") }}');
+            $('#customModalInput').val('').attr('placeholder', '{{ translate("e.g. Custom") }} ' + prettyName);
+
+            $('#customValueModal').modal('show');
+
+            setTimeout(function() {
+                $('#customModalInput').focus();
+            }, 300);
+        } else {
+            $input.val(val).trigger('input').trigger('change');
+            if (fieldName === 'storage') {
+                updateVariantTitleText($input[0]);
+            }
+        }
     }
+
+    function formatCustomValue(fieldName, rawVal) {
+        if (!rawVal) return '';
+        var trimmed = rawVal.trim();
+        if (!trimmed) return '';
+
+        if (fieldName === 'storage') {
+            if (/gb|tb|mb/i.test(trimmed)) {
+                return trimmed.replace(/gb/i, 'GB').replace(/tb/i, 'TB').replace(/mb/i, 'MB');
+            }
+
+            var pureNum = trimmed.replace(/[^0-9]/g, '');
+            if (pureNum.length > 0) {
+                if (pureNum.length === 1) {
+                    return pureNum + 'TB';
+                } else {
+                    return pureNum + 'GB';
+                }
+            }
+        } else if (fieldName === 'ram') {
+            if (/gb|mb/i.test(trimmed)) {
+                return trimmed.replace(/gb/i, 'GB').replace(/mb/i, 'MB');
+            }
+            var pureNum = trimmed.replace(/[^0-9]/g, '');
+            if (pureNum.length > 0) {
+                return pureNum + 'GB';
+            }
+        } else if (fieldName === 'cpu') {
+            if (/core/i.test(trimmed)) {
+                return trimmed;
+            }
+            var pureNum = trimmed.replace(/[^0-9]/g, '');
+            if (pureNum.length > 0) {
+                return pureNum + '-core';
+            }
+        }
+
+        return trimmed;
+    }
+
+    function applyCustomValueModal() {
+        var rawVal = $('#customModalInput').val();
+        if (rawVal && rawVal.trim() !== '') {
+            var formattedVal = formatCustomValue(activeFieldName, rawVal);
+            if (activeTargetInput) {
+                activeTargetInput.val(formattedVal).trigger('input').trigger('change');
+                if (activeFieldName === 'storage') {
+                    updateVariantTitleText(activeTargetInput[0]);
+                }
+            }
+            $('#customValueModal').modal('hide');
+        } else {
+            $('#customModalInput').focus();
+        }
+    }
+
+    $(document).on('keypress', '#customModalInput', function(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            applyCustomValueModal();
+        }
+    });
+
+    $(document).on('change blur', '.variant-storage-input', function() {
+        var val = $(this).val();
+        if (val && /^[0-9]+$/.test(val.trim())) {
+            var formatted = formatCustomValue('storage', val);
+            $(this).val(formatted);
+            updateVariantTitleText(this);
+        }
+    });
+
+    $(document).on('change blur', '.variant-ram-input', function() {
+        var val = $(this).val();
+        if (val && /^[0-9]+$/.test(val.trim())) {
+            var formatted = formatCustomValue('ram', val);
+            $(this).val(formatted);
+        }
+    });
+
+    $(document).on('change blur', '.variant-cpu-input', function() {
+        var val = $(this).val();
+        if (val && /^[0-9]+$/.test(val.trim())) {
+            var formatted = formatCustomValue('cpu', val);
+            $(this).val(formatted);
+        }
+    });
 
     function generateSKU() {
         const btn = document.getElementById('generateSKUBtn');

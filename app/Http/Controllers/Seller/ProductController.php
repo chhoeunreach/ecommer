@@ -751,26 +751,58 @@ class ProductController extends Controller
     {
         if ($request->stocks) {
             $product = Product::findOrFail($request->product_id);
-            foreach ($request->stocks as $stock_id => $qty) {
+            foreach ($request->stocks as $stock_id => $stock_data) {
                 if (is_numeric($stock_id) && $stock_id > 0) {
                     $product_stock = ProductStock::find($stock_id);
                 } else {
                     $product_stock = null;
                 }
+
+                if (is_array($stock_data)) {
+                    $qty = isset($stock_data['qty']) ? (int)$stock_data['qty'] : 0;
+                    $price = (isset($stock_data['price']) && $stock_data['price'] !== '') ? (float)$stock_data['price'] : null;
+                } else {
+                    $qty = (int)$stock_data;
+                    $price = null;
+                }
+
                 if (!$product_stock) {
                     $product_stock = new ProductStock;
                     $product_stock->product_id = $request->product_id;
                     $product_stock->variant = '';
-                     $product_stock->price = $product->unit_price;
+                    $product_stock->price = $price !== null ? $price : $product->unit_price;
                     $product_stock->sku = NULL;
+                } else {
+                    if ($price !== null) {
+                        $product_stock->price = $price;
+                    }
                 }
                 $product_stock->qty = $qty;
                 $product_stock->save();
             }
+
+            if ($product->variant_product) {
+                $min_price = $product->stocks()->min('price');
+                if ($min_price !== null) {
+                    $product->unit_price = $min_price;
+                }
+            } else {
+                if ($request->has('unit_price') && $request->unit_price !== null && $request->unit_price !== '') {
+                    $product->unit_price = (float)$request->unit_price;
+                } else {
+                    $first_stock = $product->stocks->first();
+                    if ($first_stock && $first_stock->price !== null) {
+                        $product->unit_price = $first_stock->price;
+                    }
+                }
+            }
+            $product->save();
+
             Artisan::call('view:clear');
             Artisan::call('cache:clear');
             return 1;
         }
+        return 0;
     }
 
     public function generateWithAI(Request $request)
