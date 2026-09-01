@@ -83,6 +83,7 @@ yarn-error.log*
 !/public/assets/css/category-listing.css
 !/public/assets/css/admin-crud-feedback.css
 !/public/assets/css/computer-details.css
+!/public/assets/css/branch-locations.css
 !/public/assets/js/
 /public/assets/js/*
 !/public/assets/js/admin-crud-feedback.js
@@ -92,6 +93,8 @@ yarn-error.log*
 !/public/assets/img/footers/*.svg
 !/public/assets/img/social/
 !/public/assets/img/social/tiktok.png
+!/public/assets/img/branches/
+!/public/assets/img/branches/*.jpg
 
 # Runtime data (uploads, logs) bind-mounted into containers — never commit
 /data/

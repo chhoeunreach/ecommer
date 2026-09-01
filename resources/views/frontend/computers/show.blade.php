@@ -99,14 +99,17 @@
         $host = strtolower((string) parse_url($url, PHP_URL_HOST));
         return $scheme === 'https' && in_array($host, ['t.me', 'telegram.me', 'www.telegram.me'], true);
     };
+    $typeContactSalesUrl = trim((string) get_setting('computer_detail_contact_sales_telegram_url'));
     $configuredContactSalesUrl = trim((string) get_setting('product_detail_contact_sales_telegram_url'));
     $chatButtonUrl = trim((string) get_setting('product_detail_chat_button_url'));
     $footerTelegramUrl = collect(footer_social_links())->firstWhere('platform', 'telegram')['url'] ?? '';
-    $contactSalesUrl = $isTelegramUrl($configuredContactSalesUrl)
-        ? $configuredContactSalesUrl
-        : ($isTelegramUrl($chatButtonUrl)
-            ? $chatButtonUrl
-            : ($isTelegramUrl($footerTelegramUrl) ? $footerTelegramUrl : 'https://t.me/'));
+    $contactSalesUrl = $isTelegramUrl($typeContactSalesUrl)
+        ? $typeContactSalesUrl
+        : ($isTelegramUrl($configuredContactSalesUrl)
+            ? $configuredContactSalesUrl
+            : ($isTelegramUrl($chatButtonUrl)
+                ? $chatButtonUrl
+                : ($isTelegramUrl($footerTelegramUrl) ? $footerTelegramUrl : 'https://t.me/')));
 @endphp
 
 <main class="computer-product-page">

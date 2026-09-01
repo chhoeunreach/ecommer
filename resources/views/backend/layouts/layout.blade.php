@@ -25,7 +25,7 @@
     @if(is_rtl_language())
     <link rel="stylesheet" href="{{ static_asset('assets/css/bootstrap-rtl.min.css') }}">
     @endif
-	<link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ rand(1000,9999) }}">
+	<link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ filemtime(public_path('assets/css/aiz-core.css')) }}">
 
     <style>
         body {
@@ -71,7 +71,7 @@
 
 
     <script src="{{ static_asset('assets/js/vendors.js') }}" ></script>
-    <script src="{{ static_asset('assets/js/aiz-core.js?v=') }}{{ rand(1000,9999) }}" ></script>
+    <script src="{{ static_asset('assets/js/aiz-core.js?v=') }}{{ filemtime(public_path('assets/js/aiz-core.js')) }}" ></script>
 
     @yield('script')
 

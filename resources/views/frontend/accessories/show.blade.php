@@ -254,7 +254,7 @@
                                     <hr class="border-soft-light my-20px">
                                     
                                     <div class="d-flex flex-wrap product-action-buttons">
-                                        @include('frontend.product_details.partials.action_buttons', ['buttonPadding' => 'py-2', 'productObj' => $accessory])
+                                        @include('frontend.product_details.partials.action_buttons', ['buttonPadding' => 'py-2', 'productObj' => $accessory, 'contactType' => 'accessory'])
                                     </div>
                                 </div>
                             </form>
@@ -304,7 +304,7 @@
                 </div>
             </div>
             <div class="d-flex flex-grow-1 justify-content-end ml-2">
-                @include('frontend.product_details.partials.action_buttons', ['buttonPadding' => 'py-2', 'productObj' => $accessory])
+                @include('frontend.product_details.partials.action_buttons', ['buttonPadding' => 'py-2', 'productObj' => $accessory, 'contactType' => 'accessory'])
             </div>
         </div>
     </div>

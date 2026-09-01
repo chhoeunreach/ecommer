@@ -2101,6 +2101,13 @@
                             @endcan
                             @can('website_appearance')
                                 <li class="aiz-side-nav-item">
+                                    <a href="{{ route('website.branches.edit') }}"
+                                        class="aiz-side-nav-link {{ areActiveRoutes(['website.branches.edit'])}}">
+                                        <span class="aiz-side-nav-text"
+                                            style="color: {{ get_setting('navbar_text_color') }}">{{translate('Branch Locations')}}</span>
+                                    </a>
+                                </li>
+                                <li class="aiz-side-nav-item">
                                     <a href="{{ route('website.appearance') }}"
                                         class="aiz-side-nav-link {{ areActiveRoutes(['website.appearance'])}}">
                                         <span class="aiz-side-nav-text"

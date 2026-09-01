@@ -69,7 +69,7 @@
     @if ($rtl == 1)
         <link rel="stylesheet" href="{{ static_asset('assets/css/bootstrap-rtl.min.css') }}">
     @endif
-    <link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ rand(1000, 9999) }}">
+    <link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ filemtime(public_path('assets/css/aiz-core.css')) }}">
     <link rel="stylesheet" href="{{ static_asset('assets/css/custom-style.css?v=') }}{{ get_setting('current_version') }}-{{ filemtime(public_path('assets/css/custom-style.css')) }}">
     @if(get_setting('homepage_select') == 'thecore')
     <link rel="stylesheet" href="{{ static_asset('assets/css/thecore.css') }}">
@@ -717,7 +717,7 @@
 
     <!-- SCRIPTS -->
     <script src="{{ static_asset('assets/js/vendors.js?v=') }}{{ get_setting('current_version') }}"></script>
-    <script src="{{ static_asset('assets/js/aiz-core.js?v=') }}{{ rand(1000, 9999) }}"></script>
+    <script src="{{ static_asset('assets/js/aiz-core.js?v=') }}{{ filemtime(public_path('assets/js/aiz-core.js')) }}"></script>
 
     <script>
         window.addEventListener('pageshow', function (event) {

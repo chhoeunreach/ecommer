@@ -75,11 +75,13 @@ class AccessoryController extends Controller
         $accessory->save();
         $this->syncStock($accessory);
 
-        flash(translate('Accessory has been inserted successfully'))->success();
-        
         Artisan::call('cache:clear');
 
-        return redirect()->route('admin.accessories.index');
+        return response()->json([
+            'success' => true,
+            'message' => translate('Accessory has been inserted successfully'),
+            'redirect' => route('admin.accessories.index'),
+        ]);
     }
 
     public function edit($id)
@@ -141,11 +143,13 @@ class AccessoryController extends Controller
         $accessory->save();
         $this->syncStock($accessory);
 
-        flash(translate('Accessory has been updated successfully'))->success();
-
         Artisan::call('cache:clear');
 
-        return redirect()->route('admin.accessories.index');
+        return response()->json([
+            'success' => true,
+            'message' => translate('Accessory has been updated successfully'),
+            'redirect' => route('admin.accessories.index'),
+        ]);
     }
 
     public function destroy($id)

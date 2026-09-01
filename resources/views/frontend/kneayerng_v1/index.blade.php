@@ -1222,7 +1222,7 @@
                                             <a href="{{ route('product', $product->slug) }}" title="{{ $product->getTranslation('name') }}"
                                                 class="d-block overflow-hidden text-center hov-scale-img rounded-2 img-aspect-ratio-300px ky-showcase-image">
                                                 <img class="w-100 lazyload  has-transition"
-                                                    src="{{ static_asset('assets/img/placeholder.jpg') }}" data-src="{{ get_image($product->thumbnail) }}"
+                                                    src="{{ get_image($product->thumbnail) }}" data-src="{{ get_image($product->thumbnail) }}"
                                                     alt="{{ $product->getTranslation('name') }}"
                                                     onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
                                             </a>
@@ -1252,6 +1252,7 @@
                                                     @endif
                                                     aria-label="{{ $showcaseHasOptions ? translate('Select Options') : translate('Add to Cart') }}">
                                                     @if ($showcaseHasOptions)
+                                                        <i class="las la-sliders-h" aria-hidden="true"></i>
                                                         <span>{{ translate('Select Options') }}</span>
                                                     @else
                                                         <i class="las la-shopping-bag" aria-hidden="true"></i>
@@ -1307,7 +1308,7 @@
                                             <a href="{{ route('product', $product->slug) }}" title="{{ $product->getTranslation('name') }}"
                                                 class="d-block overflow-hidden text-center hov-scale-img rounded-2 img-aspect-ratio-300px ky-showcase-image">
                                                 <img class="w-100 lazyload  has-transition"
-                                                    src="{{ static_asset('assets/img/placeholder.jpg') }}"
+                                                    src="{{ get_image($product->thumbnail) }}"
                                                     data-src="{{ get_image($product->thumbnail) }}"
                                                     alt="{{ $product->getTranslation('name') }}"
                                                     onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
@@ -1338,6 +1339,7 @@
                                                     @endif
                                                     aria-label="{{ $showcaseHasOptions ? translate('Select Options') : translate('Add to Cart') }}">
                                                     @if ($showcaseHasOptions)
+                                                        <i class="las la-sliders-h" aria-hidden="true"></i>
                                                         <span>{{ translate('Select Options') }}</span>
                                                     @else
                                                         <i class="las la-shopping-bag" aria-hidden="true"></i>

@@ -536,6 +536,9 @@ Route::controller(BlogController::class)->group(function () {
 
 });
 
+// Premium ANLYN POP / ANLYN BLOOM store locator.
+Route::view('/branches', 'frontend.branches')->name('branches');
+
 Route::controller(PageController::class)->group(function () {
     //mobile app balnk page for webview
     Route::get('/mobile-page/{slug}', 'mobile_custom_page')->name('mobile.custom-pages');

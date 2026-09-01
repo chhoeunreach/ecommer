@@ -208,6 +208,7 @@
                             'product_detail_show_chat_button', 'product_detail_chat_button_text', 'product_detail_chat_button_url', 'product_detail_chat_button_new_tab',
                             'product_detail_chat_button_bg_color', 'product_detail_chat_button_text_color',
                             'product_detail_show_contact_sales', 'product_detail_contact_sales_text', 'product_detail_contact_sales_telegram_url',
+                            'computer_detail_contact_sales_telegram_url', 'accessory_detail_contact_sales_telegram_url',
                             'product_detail_contact_sales_new_tab', 'product_detail_contact_sales_bg_color', 'product_detail_contact_sales_text_color'
                         ] as $settingType)
                             <input type="hidden" name="types[]" value="{{ $settingType }}">
@@ -351,11 +352,25 @@
                                     placeholder="{{ translate('Contact Sales') }}">
                             </div>
                             <div class="col-md-8 form-group">
-                                <label>{{ translate('Telegram Link') }}</label>
+                                <label>{{ translate('Phone Products Telegram Link') }}</label>
                                 <input type="url" class="form-control" name="product_detail_contact_sales_telegram_url"
                                     value="{{ get_setting('product_detail_contact_sales_telegram_url') }}"
                                     placeholder="https://t.me/your_username">
-                                <small class="text-muted">{{ translate('Enter the complete Telegram link, for example: https://t.me/your_username') }}</small>
+                                <small class="text-muted">{{ translate('Used on regular product pages. Also used as the fallback for computers/accessories below when left empty.') }}</small>
+                            </div>
+                            <div class="col-md-8 offset-md-4 form-group">
+                                <label>{{ translate('Computer Products Telegram Link') }}</label>
+                                <input type="url" class="form-control" name="computer_detail_contact_sales_telegram_url"
+                                    value="{{ get_setting('computer_detail_contact_sales_telegram_url') }}"
+                                    placeholder="https://t.me/your_computer_sales_username">
+                                <small class="text-muted">{{ translate('Used on computer detail pages. Leave empty to use the Phone Products link above.') }}</small>
+                            </div>
+                            <div class="col-md-8 offset-md-4 form-group">
+                                <label>{{ translate('Accessory Products Telegram Link') }}</label>
+                                <input type="url" class="form-control" name="accessory_detail_contact_sales_telegram_url"
+                                    value="{{ get_setting('accessory_detail_contact_sales_telegram_url') }}"
+                                    placeholder="https://t.me/your_accessory_sales_username">
+                                <small class="text-muted">{{ translate('Used on accessory detail pages. Leave empty to use the Phone Products link above.') }}</small>
                             </div>
                             <div class="col-md-3 form-group">
                                 <label>{{ translate('Background Color') }}</label>

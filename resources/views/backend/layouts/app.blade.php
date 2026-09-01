@@ -30,8 +30,8 @@
     @if (is_rtl_language())
         <link rel="stylesheet" href="{{ static_asset('assets/css/bootstrap-rtl.min.css') }}">
     @endif
-    <link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ rand(1000,9999) }}">
-    <link rel="stylesheet" href="{{ static_asset('assets/css/custom-style.css?v=') }}{{ rand(1000,9999) }}">
+    <link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ filemtime(public_path('assets/css/aiz-core.css')) }}">
+    <link rel="stylesheet" href="{{ static_asset('assets/css/custom-style.css?v=') }}{{ filemtime(public_path('assets/css/custom-style.css')) }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="{{ static_asset('assets/css/admin-crud-feedback.css?v=') }}{{ get_setting('current_version') }}">
 
@@ -205,8 +205,8 @@
 
 
     <script src="{{ static_asset('assets/js/vendors.js?v=') }}{{ get_setting('current_version') }}"></script>
-    <script src="{{ static_asset('assets/js/aiz-core.js?v=') }}{{ rand(1000,9999) }}"></script>
-    <script src="{{ static_asset('assets/js/aiz-form-submission.js?v=') }}{{ rand(1000,9999) }}"></script>
+    <script src="{{ static_asset('assets/js/aiz-core.js?v=') }}{{ filemtime(public_path('assets/js/aiz-core.js')) }}"></script>
+    <script src="{{ static_asset('assets/js/aiz-form-submission.js?v=') }}{{ filemtime(public_path('assets/js/aiz-form-submission.js')) }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
         window.AdminCrudMessages = {

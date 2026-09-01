@@ -1048,6 +1048,15 @@
         color: #111827 !important;
     }
 
+    .ky-mobile-brand img {
+        max-height: 32px;
+        max-width: 170px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+    }
+
     .ky-mobile-brand-mark {
         display: inline-flex;
         width: 25px;
@@ -1623,7 +1632,6 @@
         display: block !important;
         font-size: 16px !important;
     }
-    }
 
     .ky-mobile-bottom-nav {
         position: fixed;
@@ -1633,7 +1641,7 @@
         left: 16px;
         display: grid;
         min-height: 60px;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(5, minmax(0, 1fr));
         align-items: center;
         padding: 6px 8px;
         border: 1px solid rgba(255, 255, 255, 0.6);
@@ -2797,5 +2805,585 @@
         flex-basis: 21px;
         border-radius: 6px;
         font-size: 12px;
+    }
+}
+
+/* Mobile UI consolidation
+   This is the single final mobile layer for the app header, newest-product
+   grid and persistent navigation. Keep phone-specific adjustments here so
+   they do not drift from the tablet and desktop card system. */
+@media (max-width: 767px) {
+    body.aiz-page-kneayerng_v1 {
+        --ky-mobile-accent: #6d3df5;
+        --ky-mobile-text: #101828;
+        --ky-mobile-muted: #667085;
+        --ky-mobile-border: #e7e9ef;
+        --ky-mobile-page: #f6f7f9;
+        background: var(--ky-mobile-page);
+        padding-bottom: calc(92px + env(safe-area-inset-bottom));
+    }
+
+    body.aiz-page-kneayerng_v1 .aiz-main-wrapper,
+    body.aiz-page-kneayerng_v1 .kneayerng-home {
+        background: var(--ky-mobile-page) !important;
+    }
+
+    .ky-mobile-app-header {
+        padding: env(safe-area-inset-top) 16px 11px;
+        border-bottom: 1px solid rgba(16, 24, 40, .07);
+        background: rgba(255, 255, 255, .96) !important;
+        box-shadow: 0 4px 18px rgba(16, 24, 40, .035);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+
+    .ky-mobile-header-bar {
+        height: 48px;
+        grid-template-columns: 44px minmax(0, 1fr) 44px;
+    }
+
+    .ky-mobile-header-button {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        color: var(--ky-mobile-text);
+    }
+
+    .ky-mobile-header-button:active {
+        background: #f0edff;
+        color: var(--ky-mobile-accent);
+    }
+
+    .ky-mobile-brand img {
+        max-width: 132px !important;
+        max-height: 29px;
+    }
+
+    .ky-mobile-search-form {
+        height: 46px;
+        margin-top: 6px;
+        border: 1px solid var(--ky-mobile-border);
+        border-radius: 15px;
+        background: #f7f8fa;
+    }
+
+    .ky-mobile-search-form:focus-within {
+        border-color: rgba(109, 61, 245, .42);
+        box-shadow: 0 0 0 3px rgba(109, 61, 245, .09);
+    }
+
+    .ky-mobile-search-form i {
+        color: #7c8494;
+        font-size: 19px;
+    }
+
+    .ky-mobile-search-form input {
+        color: var(--ky-mobile-text);
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .ky-mobile-category-pills {
+        gap: 8px;
+        margin: 11px -16px 0;
+        padding: 0 16px 2px;
+    }
+
+    .ky-mobile-category-pill {
+        min-height: 34px;
+        padding: 7px 14px;
+        border: 1px solid var(--ky-mobile-border);
+        border-radius: 999px;
+        background: #fff;
+        color: #475467 !important;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .ky-mobile-category-pill.active {
+        border-color: var(--ky-mobile-accent);
+        background: linear-gradient(135deg, #7c4dff, #6533e8);
+        box-shadow: 0 5px 14px rgba(109, 61, 245, .23);
+        color: #fff !important;
+    }
+
+    .kneayerng-home > #nexa-product-wrapper {
+        width: 100%;
+        margin: 0;
+        padding: 22px 16px 32px !important;
+    }
+
+    .kneayerng-home .ky-newest-heading {
+        margin: 0 0 14px;
+        padding: 0 0 12px;
+        border-bottom-color: rgba(16, 24, 40, .08);
+    }
+
+    .kneayerng-home .ky-newest-heading h2 {
+        color: var(--ky-mobile-text);
+        font-size: 19px;
+        line-height: 1.25;
+        letter-spacing: -.035em;
+    }
+
+    .kneayerng-home .ky-newest-see-all {
+        min-height: 34px;
+        gap: 5px;
+        padding: 7px 10px;
+        border: 0;
+        border-radius: 11px;
+        background: #eee9ff;
+        color: var(--ky-mobile-accent);
+        font-size: 11px;
+    }
+
+    .kneayerng-home #section_newest .products-wrapper-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px !important;
+    }
+
+    .kneayerng-home #newest-products-list {
+        align-items: stretch;
+        grid-auto-rows: 1fr;
+    }
+
+    .kneayerng-home #newest-products-list > .single-product-item {
+        width: 100%;
+        max-width: none;
+        padding: 0;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-product-card {
+        display: flex;
+        height: 100%;
+        min-height: 0 !important;
+        flex-direction: column;
+        padding: 8px !important;
+        border: 1px solid var(--ky-mobile-border) !important;
+        border-radius: 18px !important;
+        background: #fff !important;
+        box-shadow: 0 5px 18px rgba(16, 24, 40, .055) !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-card-img-wrap {
+        aspect-ratio: 1 / 1;
+        border-radius: 14px !important;
+        background: linear-gradient(145deg, #f8f9fb, #f0f2f5) !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-card-img-wrap .product-main-image,
+    .kneayerng-home #newest-products-list .shadcn-card-img-wrap .product-hover-image {
+        padding: 8px !important;
+        object-fit: contain !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-actions-wrap {
+        top: 8px !important;
+        right: 8px !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-action-btn {
+        width: 28px;
+        height: 28px;
+        border: 1px solid rgba(231, 233, 239, .9) !important;
+        box-shadow: 0 3px 10px rgba(16, 24, 40, .09) !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-card-body {
+        display: flex !important;
+        min-height: 128px;
+        flex: 1 1 auto;
+        flex-direction: column;
+        padding: 11px 4px 3px !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-card-content {
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-product-title {
+        display: -webkit-box !important;
+        height: 38px !important;
+        min-height: 38px;
+        margin: 0 0 4px !important;
+        overflow: hidden;
+        color: var(--ky-mobile-text) !important;
+        font-size: 13px !important;
+        font-weight: 750 !important;
+        line-height: 1.45 !important;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .kneayerng-home #newest-products-list .ky-product-variant {
+        margin: 0 0 5px;
+        color: var(--ky-mobile-muted) !important;
+        font-size: 10px !important;
+        font-weight: 650 !important;
+        line-height: 1.3;
+        text-transform: capitalize;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-price-container {
+        min-height: 26px;
+        gap: 2px 5px !important;
+        margin: 0 !important;
+        padding: 2px 38px 0 0;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-price-current {
+        color: var(--ky-mobile-text) !important;
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        letter-spacing: -.02em;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-card-action {
+        min-height: 34px;
+        margin-top: auto;
+        padding: 0;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-cta-btn,
+    .kneayerng-home #newest-products-list .shadcn-cta-btn.ky-options-button {
+        right: 3px;
+        bottom: 3px;
+        width: 34px !important;
+        min-width: 34px;
+        min-height: 34px;
+        height: 34px !important;
+        padding: 0 !important;
+        border-radius: 11px !important;
+        background: #f0edff !important;
+        box-shadow: none !important;
+        color: var(--ky-mobile-accent) !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-cta-btn.ky-options-button i {
+        width: auto;
+        height: auto;
+        flex-basis: auto;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font-size: 16px;
+    }
+
+    .ky-mobile-bottom-nav {
+        right: 12px;
+        bottom: calc(8px + env(safe-area-inset-bottom));
+        left: 12px;
+        min-height: 66px;
+        padding: 6px;
+        border: 1px solid rgba(16, 24, 40, .08);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, .94);
+        box-shadow: 0 12px 36px rgba(16, 24, 40, .14);
+    }
+
+    .ky-mobile-nav-item {
+        min-height: 52px;
+        gap: 3px;
+        border-radius: 14px;
+        color: #98a2b3 !important;
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    .ky-mobile-nav-item > i,
+    .ky-mobile-nav-icon-wrap > i {
+        font-size: 21px;
+    }
+
+    .ky-mobile-nav-item.active {
+        background: #f0edff;
+        color: var(--ky-mobile-accent) !important;
+    }
+
+    /* Featured and best-selling cards use a carousel, but should share the
+       same compact visual language as the product grid below. */
+    .kneayerng-home > .ky-product-showcase-shell {
+        margin: 12px 12px 0;
+        border: 1px solid rgba(16, 24, 40, .06) !important;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 7px 24px rgba(16, 24, 40, .05);
+    }
+
+    .kneayerng-home .ky-product-showcase {
+        padding: 0 12px !important;
+    }
+
+    .kneayerng-home .ky-showcase-panel {
+        padding: 18px 0 16px !important;
+    }
+
+    .kneayerng-home .ky-showcase-heading h5 {
+        color: var(--ky-mobile-text);
+        font-size: 18px !important;
+        line-height: 1.25;
+    }
+
+    .kneayerng-home .ky-showcase-view-all {
+        min-height: 34px;
+        padding: 7px 10px !important;
+        border: 0 !important;
+        border-radius: 11px !important;
+        background: #eee9ff !important;
+        box-shadow: none !important;
+        color: var(--ky-mobile-accent) !important;
+        font-size: 11px !important;
+    }
+
+    .kneayerng-home .ky-showcase-slider {
+        margin: 10px -4px -4px !important;
+    }
+
+    .kneayerng-home .ky-showcase-slider.slick-slider .slick-list {
+        padding: 3px 0 9px !important;
+    }
+
+    .kneayerng-home .ky-showcase-slider .slick-track {
+        display: flex;
+    }
+
+    .kneayerng-home .ky-showcase-slider .slick-slide {
+        float: none;
+        height: auto;
+    }
+
+    .kneayerng-home .ky-showcase-slider .slick-slide > div {
+        height: 100%;
+    }
+
+    .kneayerng-home .ky-showcase-slider .slick-slide > div > .ky-showcase-card {
+        position: relative;
+        display: flex !important;
+        height: calc(100% - 6px);
+        min-height: clamp(240px, 73vw, 284px);
+        flex-direction: column;
+        margin: 3px 4px;
+        padding: 8px 8px 10px !important;
+        border: 1px solid var(--ky-mobile-border) !important;
+        border-radius: 17px !important;
+        background: #fff !important;
+        box-shadow: 0 5px 16px rgba(16, 24, 40, .05) !important;
+        overflow: hidden;
+    }
+
+    .kneayerng-home .ky-showcase-image {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        flex: 0 0 auto;
+        border: 0 !important;
+        border-radius: 13px !important;
+        background: linear-gradient(145deg, #f8f9fb, #f0f2f5) !important;
+    }
+
+    .kneayerng-home .ky-showcase-image img {
+        width: 100% !important;
+        height: 100% !important;
+        padding: 8px !important;
+        border-radius: 13px !important;
+        object-fit: contain !important;
+    }
+
+    .kneayerng-home .ky-showcase-title {
+        display: -webkit-box !important;
+        height: 38px !important;
+        min-height: 38px;
+        margin: 9px 1px 3px !important;
+        overflow: hidden;
+        color: var(--ky-mobile-text) !important;
+        font-size: 12px !important;
+        font-weight: 750 !important;
+        line-height: 1.45 !important;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .kneayerng-home .ky-showcase-variant {
+        min-height: 13px;
+        margin: 0 1px 4px;
+        padding: 0;
+        border: 0;
+        color: var(--ky-mobile-muted) !important;
+        font-size: 10px !important;
+        font-weight: 650 !important;
+        line-height: 1.3;
+        text-transform: capitalize;
+    }
+
+    .kneayerng-home .ky-showcase-price {
+        min-height: 28px;
+        align-items: center;
+        gap: 2px 5px;
+        margin: auto 1px 0 !important;
+        padding: 3px 38px 0 0;
+        border: 0;
+    }
+
+    .kneayerng-home .ky-showcase-current-price {
+        color: var(--ky-mobile-text) !important;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+        letter-spacing: -.02em;
+    }
+
+    .kneayerng-home .ky-mobile-favorite {
+        top: 13px;
+        right: 13px;
+        width: 29px;
+        height: 29px;
+        border: 1px solid rgba(231, 233, 239, .9);
+        background: rgba(255, 255, 255, .95);
+        color: #667085;
+        box-shadow: 0 3px 10px rgba(16, 24, 40, .09);
+    }
+
+    .kneayerng-home .ky-mobile-card-action,
+    .kneayerng-home .ky-mobile-card-action.has-options {
+        position: absolute;
+        right: 9px;
+        bottom: 9px;
+        width: 34px;
+        min-width: 34px;
+        max-width: 34px;
+        min-height: 34px;
+        height: 34px;
+        margin: 0;
+        padding: 0;
+        border-radius: 11px;
+        background: #f0edff;
+        box-shadow: none;
+        color: var(--ky-mobile-accent);
+    }
+
+    .kneayerng-home .ky-mobile-card-action span {
+        display: none !important;
+    }
+
+    .kneayerng-home .ky-mobile-card-action i {
+        display: block !important;
+        font-size: 16px !important;
+    }
+
+    #backToTop {
+        right: 16px !important;
+        bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+    }
+}
+
+@media (max-width: 374px) {
+    .ky-mobile-app-header {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    .ky-mobile-category-pills {
+        margin-right: -12px;
+        margin-left: -12px;
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    .kneayerng-home > #nexa-product-wrapper {
+        padding-right: 12px !important;
+        padding-left: 12px !important;
+    }
+
+    .kneayerng-home #section_newest .products-wrapper-grid {
+        gap: 9px !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-product-card {
+        padding: 7px !important;
+        border-radius: 16px !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-product-title {
+        font-size: 12px !important;
+    }
+
+    .kneayerng-home #newest-products-list .shadcn-price-current {
+        font-size: 14px !important;
+    }
+}
+
+/* Full-frame mobile layout: sections span the phone viewport while their
+   content keeps a small, consistent safe gutter. */
+@media (max-width: 767px) {
+    body.aiz-page-kneayerng_v1,
+    body.aiz-page-kneayerng_v1 .aiz-main-wrapper,
+    body.aiz-page-kneayerng_v1 .kneayerng-home {
+        width: 100%;
+        max-width: none;
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    body.aiz-page-kneayerng_v1 .kneayerng-home {
+        padding-top: 0;
+    }
+
+    .kneayerng-home .layout-container,
+    .kneayerng-home > .border-bottom,
+    .kneayerng-home > .aiz-carousel,
+    .kneayerng-home > .layout-container:not(#nexa-product-wrapper),
+    .kneayerng-home > .ky-product-showcase-shell {
+        width: 100%;
+        max-width: none;
+        margin-right: 0;
+        margin-left: 0;
+        box-sizing: border-box;
+    }
+
+    .kneayerng-home > .border-bottom,
+    .kneayerng-home > .layout-container:not(#nexa-product-wrapper),
+    .kneayerng-home > .ky-product-showcase-shell {
+        border-right: 0 !important;
+        border-left: 0 !important;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .kneayerng-home > .ky-product-showcase-shell {
+        margin-top: 12px;
+    }
+
+    .kneayerng-home .ky-product-showcase,
+    .kneayerng-home > #nexa-product-wrapper {
+        width: 100%;
+        max-width: none;
+        padding-right: 16px !important;
+        padding-left: 16px !important;
+        box-sizing: border-box;
+    }
+
+    .ky-mobile-bottom-nav {
+        right: 0;
+        bottom: 0;
+        left: 0;
+        min-height: calc(70px + env(safe-area-inset-bottom));
+        padding-bottom: calc(6px + env(safe-area-inset-bottom));
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: 0;
+    }
+
+    #backToTop {
+        bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+    }
+}
+
+@media (max-width: 374px) {
+    .kneayerng-home .ky-product-showcase,
+    .kneayerng-home > #nexa-product-wrapper {
+        padding-right: 12px !important;
+        padding-left: 12px !important;
     }
 }

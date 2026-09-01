@@ -135,6 +135,10 @@
             <i class="las la-th-large"></i>
             <span>{{ translate('Categories') }}</span>
         </a>
+        <a href="{{ route('branches') }}" class="ky-mobile-nav-item {{ areActiveRoutes(['branches'], 'active') }}">
+            <i class="las la-store"></i>
+            <span>{{ translate('Branch') }}</span>
+        </a>
         <a href="{{ route('cart') }}" class="ky-mobile-nav-item {{ areActiveRoutes(['cart'], 'active') }}">
             <span class="ky-mobile-nav-icon-wrap">
                 <i class="las la-shopping-bag"></i>

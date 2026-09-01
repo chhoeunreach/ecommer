@@ -14,6 +14,7 @@ use App\Http\Controllers\BlogCategoryController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BrandBulkUploadController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\BranchSettingsController;
 use App\Http\Controllers\BusinessSettingsController;
 use App\Http\Controllers\CarrierController;
 use App\Http\Controllers\CategoryBulkUploadController;
@@ -548,6 +549,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
             Route::get('/pages', 'pages')->name('website.pages');
             Route::get('/portfolio-header', 'portfolio_header')->name('website.portfolioheader');
 
+        });
+
+        Route::controller(BranchSettingsController::class)->group(function () {
+            Route::get('/branches', 'edit')->name('website.branches.edit');
+            Route::post('/branches', 'update')->name('website.branches.update');
         });
 
         // Custom Page

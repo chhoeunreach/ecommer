@@ -28,14 +28,23 @@
 
         return $scheme === 'https' && in_array($host, ['t.me', 'telegram.me', 'www.telegram.me'], true);
     };
+    $contactType = $contactType ?? 'product';
+    $contactTypeSettingKeys = [
+        'product' => 'product_detail_contact_sales_telegram_url',
+        'computer' => 'computer_detail_contact_sales_telegram_url',
+        'accessory' => 'accessory_detail_contact_sales_telegram_url',
+    ];
+    $typeContactSalesUrl = trim((string) get_setting($contactTypeSettingKeys[$contactType] ?? $contactTypeSettingKeys['product']));
     $configuredContactSalesUrl = trim((string) get_setting('product_detail_contact_sales_telegram_url'));
     $footerTelegramUrl = collect(footer_social_links())
         ->firstWhere('platform', 'telegram')['url'] ?? '';
-    $contactSalesUrl = $isTelegramUrl($configuredContactSalesUrl)
-        ? $configuredContactSalesUrl
-        : ($isTelegramUrl($chatButtonUrl)
-            ? $chatButtonUrl
-            : ($isTelegramUrl($footerTelegramUrl) ? $footerTelegramUrl : 'https://t.me/'));
+    $contactSalesUrl = $isTelegramUrl($typeContactSalesUrl)
+        ? $typeContactSalesUrl
+        : ($isTelegramUrl($configuredContactSalesUrl)
+            ? $configuredContactSalesUrl
+            : ($isTelegramUrl($chatButtonUrl)
+                ? $chatButtonUrl
+                : ($isTelegramUrl($footerTelegramUrl) ? $footerTelegramUrl : 'https://t.me/')));
     $showContactSales = (int) get_setting('product_detail_show_contact_sales', 1) === 1;
     $contactSalesText = get_setting('product_detail_contact_sales_text') ?: translate('Contact Sales');
     $contactSalesBgColor = get_setting('product_detail_contact_sales_bg_color', '#ffffff');
