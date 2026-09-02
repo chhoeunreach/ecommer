@@ -72,6 +72,20 @@
         border-color: #3390f3 !important;
     }
 
+    .ky-category-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid rgba(0,0,0,0.04) !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.03) !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .ky-category-card:hover {
+        box-shadow: 0 10px 24px rgba(0,0,0,0.08) !important;
+        border-color: rgba(51, 144, 243, 0.2) !important;
+        transform: translateY(-3px);
+    }
+
     .ky-category-card .ky-category-card-header {
         min-height: 52px;
         gap: 12px;
@@ -86,32 +100,60 @@
         white-space: nowrap;
     }
 
-    .ky-category-card .ky-category-cover {
-        position: relative;
-        aspect-ratio: 3 / 4;
+    .ky-category-cover-new {
         background: #f8fafc;
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        height: 180px;
     }
 
-    .ky-category-card .ky-category-cover img,
-    .ky-category-card .ky-child-category-image img {
-        display: block;
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
-        object-position: center !important;
+    .ky-category-cover-new img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transition: transform 0.4s ease;
     }
 
-    .ky-category-card .ky-category-cover img {
-        position: absolute;
-        inset: 0;
+    .ky-category-card:hover .ky-category-cover-new img {
+        transform: scale(1.08);
     }
 
-    .ky-category-card .ky-child-category-list {
+    .ky-child-category-list {
         gap: 8px;
     }
 
-    .ky-category-card .ky-child-category-link {
-        min-height: 58px;
+    .ky-child-category-link {
+        background: #f8fafc;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 6px 10px;
+        transition: all 0.2s;
+    }
+
+    .ky-child-category-link:hover {
+        background: #eff6ff !important;
+        border-color: #bfdbfe;
+    }
+
+    .ky-child-category-image {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    
+    .ky-child-category-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     @media (max-width: 374px) {
@@ -119,13 +161,13 @@
             padding: 12px !important;
         }
 
-        .ky-category-card .ky-child-category-link {
+        .ky-child-category-link {
             padding: 6px !important;
         }
 
-        .ky-category-card .ky-child-category-image {
-            width: 34px !important;
-            height: 34px !important;
+        .ky-child-category-image {
+            width: 28px !important;
+            height: 28px !important;
         }
     }
 
@@ -1387,7 +1429,7 @@
                             @endphp
 
                             <div class="col-12 col-md-6 col-xl-4 mb-4">
-                                <div class="card ky-category-card h-100 border border-gray-200 rounded-3 shadow-none overflow-hidden bg-white has-transition hov-shadow-md">
+                                <div class="card ky-category-card h-100 overflow-hidden bg-white">
                                     <!-- Category Card Header -->
                                     <div class="ky-category-card-header p-3 bg-soft-primary-light border-bottom d-flex align-items-center justify-content-between">
                                         <h5 class="ky-category-card-title fs-16 fs-md-18 fw-bold text-dark m-0 text-truncate">
@@ -1400,47 +1442,56 @@
                                     </div>
 
                                     <!-- Category Card Body -->
-                                    <div class="ky-category-card-body p-3">
-                                        <div class="row gutters-12 align-items-stretch">
-                                            <!-- Main Cover Image -->
-                                            <div class="col-5">
-                                                <a href="{{ route('products.category', $mainCategory->slug) }}" class="ky-category-cover d-block position-relative h-100 rounded-2 overflow-hidden hov-scale-img border border-gray-200">
-                                                    <img class="w-100 h-100 has-transition"
-                                                        src="{{ $mainCategoryImage }}"
+                                    <div class="ky-category-card-body p-3 d-flex flex-column h-100">
+                                        @if(count($selectedChildren) > 0)
+                                            <div class="row gutters-12 h-100 align-items-stretch">
+                                                <!-- Main Cover Image -->
+                                                <div class="col-5">
+                                                    <a href="{{ route('products.category', $mainCategory->slug) }}" class="ky-category-cover-new d-block h-100 border border-gray-200">
+                                                        <img src="{{ $mainCategoryImage }}"
+                                                            alt="{{ $mainCategory->getTranslation('name') }}"
+                                                            onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
+                                                    </a>
+                                                </div>
+
+                                                <!-- Child Categories -->
+                                                <div class="col-7 pl-1">
+                                                    <div class="ky-child-category-list d-flex h-100 flex-column justify-content-center">
+                                                        @foreach ($selectedChildren->take(3) as $childCategory)
+                                                            @php
+                                                                $childCategoryImageId = $childCategory->cover_image ?: ($childCategory->banner ?: $childCategory->icon);
+                                                                $childCategoryImage = $childCategoryImageId
+                                                                    ? uploaded_asset($childCategoryImageId)
+                                                                    : static_asset('assets/img/placeholder.jpg');
+                                                            @endphp
+                                                            <a href="{{ route('products.category', $childCategory->slug) }}"
+                                                               class="ky-child-category-link d-flex align-items-center text-reset has-transition border border-gray-100">
+                                                                <div class="ky-child-category-image flex-shrink-0 mr-2 border border-gray-200">
+                                                                    <img src="{{ $childCategoryImage }}"
+                                                                        alt="{{ $childCategory->getTranslation('name') }}"
+                                                                        onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
+                                                                </div>
+                                                                <div class="overflow-hidden flex-grow-1">
+                                                                    <div class="fs-13 fw-bold text-dark text-truncate" title="{{ $childCategory->getTranslation('name') }}">
+                                                                        {{ $childCategory->getTranslation('name') }}
+                                                                    </div>
+                                                                    <div class="fs-11 text-muted">{{ translate('Shop Now') }}</div>
+                                                                </div>
+                                                            </a>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <!-- Layout without children -->
+                                            <div class="d-flex align-items-center justify-content-center flex-grow-1">
+                                                <a href="{{ route('products.category', $mainCategory->slug) }}" class="ky-category-cover-new d-block w-100 border border-gray-200" style="height: 200px;">
+                                                    <img src="{{ $mainCategoryImage }}"
                                                         alt="{{ $mainCategory->getTranslation('name') }}"
                                                         onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
                                                 </a>
                                             </div>
-
-                                            <!-- Child Categories -->
-                                            <div class="col-7 pl-1">
-                                                <div class="ky-child-category-list d-flex h-100 flex-column justify-content-center">
-                                                    @foreach ($selectedChildren as $childCategory)
-                                                        @php
-                                                            $childCategoryImageId = $childCategory->cover_image ?: ($childCategory->banner ?: $childCategory->icon);
-                                                            $childCategoryImage = $childCategoryImageId
-                                                                ? uploaded_asset($childCategoryImageId)
-                                                                : static_asset('assets/img/placeholder.jpg');
-                                                        @endphp
-                                                        <a href="{{ route('products.category', $childCategory->slug) }}"
-                                                           class="ky-child-category-link d-flex align-items-center p-2 rounded-2 text-reset bg-light hov-bg-soft-primary has-transition border border-gray-100">
-                                                            <div class="ky-child-category-image size-40px rounded-1 overflow-hidden flex-shrink-0 mr-2 bg-white border border-gray-200 d-flex align-items-center justify-content-center">
-                                                                <img class="w-100 h-100"
-                                                                    src="{{ $childCategoryImage }}"
-                                                                    alt="{{ $childCategory->getTranslation('name') }}"
-                                                                    onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
-                                                            </div>
-                                                            <div class="overflow-hidden flex-grow-1">
-                                                                <div class="fs-13 fw-bold text-dark text-truncate" title="{{ $childCategory->getTranslation('name') }}">
-                                                                    {{ $childCategory->getTranslation('name') }}
-                                                                </div>
-                                                                <div class="fs-11 text-muted">{{ translate('Shop Now') }}</div>
-                                                            </div>
-                                                        </a>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

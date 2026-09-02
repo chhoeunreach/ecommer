@@ -1,19 +1,32 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-    <section class="mb-5" style="margin-top: 2rem;">
+    <!-- Header Section -->
+    <section class="pt-4 pt-md-5 pb-3">
         <div class="container">
-            <h1 class="fw-700 fs-20 fs-md-24 text-dark mb-4">{{ translate('Featured Products') }}</h1>
-            <!-- Products Section -->
-            <div class="px-3">
-                <div class="row row-cols-xxl-6 row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-2 gutters-16">
-                    @foreach ($featured_products as $key => $product)
-                        <div class="col mb-3">
-                            @include('frontend.'.get_setting('homepage_select').'.partials.product_box_1',['product' => $product])
-                        </div>
-                    @endforeach
-                </div>
+            <div class="d-flex align-items-center mb-2">
+                <h1 class="fw-800 fs-20 fs-md-28 text-dark mb-0" style="letter-spacing: -0.5px;">{{ translate('Featured Products') }}</h1>
             </div>
+            <div class="w-100 h-1px bg-gray-200 mt-3 mb-4"></div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="pb-5 mb-4">
+        <div class="container">
+            <div class="row row-cols-xxl-6 row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-2 gutters-10 gutters-md-16">
+                @foreach ($featured_products as $key => $product)
+                    <div class="col mb-3 mb-md-4">
+                        @include('frontend.'.get_setting('homepage_select').'.partials.product_box_1',['product' => $product])
+                    </div>
+                @endforeach
+            </div>
+            
+            @if(isset($has_pagination) && $has_pagination)
+            <div class="aiz-pagination mt-4">
+                {{ $featured_products->links() }}
+            </div>
+            @endif
         </div>
     </section>
 @endsection

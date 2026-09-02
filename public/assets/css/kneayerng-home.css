@@ -427,6 +427,7 @@
 }
 
 .kneayerng-home .products-wrapper-grid {
+    display: grid !important;
     grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
     gap: clamp(10px, 1.4vw, 20px) !important;
 }
