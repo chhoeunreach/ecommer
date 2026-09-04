@@ -66,6 +66,13 @@
             <div class="col-6 text-right d-none d-lg-block top-text-color-visibility"
                 style="color: {{ $topHeaderTextColor }}">
                 <ul class="list-inline mb-0 h-100 d-flex justify-content-end align-items-center">
+                    <!-- Find My Store -->
+                    <li class="list-inline-item mr-3 pr-3 border-right border-soft-light top-text-color-visibility" style="color: {{ $topHeaderTextColor }}">
+                        <a href="{{ route('branches') }}" class="fs-12 d-inline-block py-2 top-text-color-visibility" style="color: {{ $topHeaderTextColor }}">
+                            <i class="las la-store text-primary mr-1"></i>
+                            <span>{{ translate('Find My Store') }}</span>
+                        </a>
+                    </li>
                     @if (get_setting('vendor_system_activation') == 1)
                         <!-- Seller Dropdown and Helpline -->
                         <li class="list-inline-item d-flex">

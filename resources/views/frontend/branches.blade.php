@@ -526,7 +526,6 @@
                         setFindMyStoreState('{{ translate('Find My Store') }}', false);
 
                         if (!nearestCard) {
-                            alert('{{ translate('We could not determine your nearest store. Please browse the list below.') }}');
                             return;
                         }
 
