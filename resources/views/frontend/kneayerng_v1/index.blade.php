@@ -2047,9 +2047,9 @@
             <!-- Load More Button -->
             <div class="mt-5 mb-5 d-flex align-items-center justify-content-center d-none" id="view-more-container">
                 <button type="button" id="view-more-btn"
-                    class="flex-shrink-0 border border-dashed border-gray-400 rounded-1 bg-white hov-bg-dark text-gray hov-text-white has-transition fs-16 fw-bold py-2 px-4 py-md-3 px-md-4 w-200px w-md-300px w-lg-400px">
+                    class="btn btn-dark rounded-pill fw-bold py-2 px-4 py-md-3 px-md-5 fs-15 shadow-sm has-transition d-inline-flex align-items-center justify-content-center gap-2" style="min-width: 200px;">
                     {{ translate('Load More') }}
-                    <i id="spinner-icon" class="las la-lg la-spinner la-spin d-none"></i>
+                    <i id="spinner-icon" class="las la-spinner la-spin d-none ml-2"></i>
                 </button>
             </div>
         </div>

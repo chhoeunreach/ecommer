@@ -260,6 +260,23 @@
     box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
 }
 
+.ky-find-my-store-btn {
+    background: #ecfdf5;
+    color: #059669;
+    border-color: #a7f3d0;
+}
+
+.ky-find-my-store-btn:hover {
+    background: #059669;
+    color: #ffffff;
+    border-color: #059669;
+}
+
+.ky-find-my-store-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
 /* Highlights Banner */
 .ky-highlights-strip {
     display: grid;
@@ -388,6 +405,17 @@
 
 .ky-branch-card.hidden {
     display: none !important;
+}
+
+.ky-branch-card.ky-branch-nearest {
+    border-color: #059669;
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.25), var(--ky-b-shadow-lg);
+    animation: kyNearestPulse 1.4s ease-in-out 2;
+}
+
+@keyframes kyNearestPulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.25), var(--ky-b-shadow-lg); }
+    50% { box-shadow: 0 0 0 6px rgba(5, 150, 105, 0.15), var(--ky-b-shadow-lg); }
 }
 
 /* Card Media */

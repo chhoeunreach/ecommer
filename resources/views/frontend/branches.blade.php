@@ -39,6 +39,8 @@
                 'map' => 'https://www.google.com/maps/search/?api=1&query=AEON+Mall+Sen+Sok+City+Phnom+Penh',
                 'city' => 'Phnom Penh',
                 'services' => ['Smartphones', 'Laptops & Mac', 'Repair Center', 'Click & Collect'],
+                'lat' => 11.5744,
+                'lng' => 104.8722,
                 'active' => true,
             ],
             [
@@ -51,6 +53,8 @@
                 'map' => 'https://www.google.com/maps/search/?api=1&query=BKK1+Phnom+Penh',
                 'city' => 'Phnom Penh',
                 'services' => ['Apple Products', 'Accessories', 'Fast Trade-in', 'Consultation'],
+                'lat' => 11.5474,
+                'lng' => 104.9160,
                 'active' => true,
             ],
             [
@@ -63,6 +67,8 @@
                 'map' => 'https://www.google.com/maps/search/?api=1&query=Chip+Mong+271+Mega+Mall+Phnom+Penh',
                 'city' => 'Phnom Penh',
                 'services' => ['Phones & Tablets', 'Gaming Laptops', 'Audio & Gadgets', 'Express Service'],
+                'lat' => 11.5588,
+                'lng' => 104.9337,
                 'active' => true,
             ],
         ];
@@ -168,6 +174,9 @@
                                 <i class="las la-map-marker-alt"></i> {{ $city }}
                             </button>
                         @endforeach
+                        <button type="button" class="ky-filter-btn ky-find-my-store-btn" id="kyFindMyStoreBtn">
+                            <i class="las la-location-arrow"></i> <span id="kyFindMyStoreLabel">{{ translate('Find My Store') }}</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -231,7 +240,10 @@
                 @foreach ($branches as $index => $branch)
                     <article class="ky-branch-card"
                         data-city="{{ strtolower($branch['city']) }}"
-                        data-search="{{ strtolower($branch['name'] . ' ' . $branch['address'] . ' ' . $branch['city']) }}">
+                        data-search="{{ strtolower($branch['name'] . ' ' . $branch['address'] . ' ' . $branch['city']) }}"
+                        data-lat="{{ $branch['lat'] ?? '' }}"
+                        data-lng="{{ $branch['lng'] ?? '' }}"
+                        data-map="{{ $branch['map'] }}">
                         
                         <!-- Media Header -->
                         <div class="ky-branch-media">
@@ -456,6 +468,88 @@
                         b.classList.toggle('active', b.getAttribute('data-filter') === 'all');
                     });
                     filterStores();
+                });
+            }
+
+            // Find My Store (nearest branch via geolocation)
+            var findMyStoreBtn = document.getElementById('kyFindMyStoreBtn');
+            var findMyStoreLabel = document.getElementById('kyFindMyStoreLabel');
+
+            function toRad(value) {
+                return (value * Math.PI) / 180;
+            }
+
+            function distanceKm(lat1, lng1, lat2, lng2) {
+                var R = 6371;
+                var dLat = toRad(lat2 - lat1);
+                var dLng = toRad(lng2 - lng1);
+                var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                    Math.sin(dLng / 2) * Math.sin(dLng / 2);
+                var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c;
+            }
+
+            function setFindMyStoreState(text, disabled) {
+                if (findMyStoreLabel) findMyStoreLabel.textContent = text;
+                if (findMyStoreBtn) findMyStoreBtn.disabled = !!disabled;
+            }
+
+            if (findMyStoreBtn) {
+                findMyStoreBtn.addEventListener('click', function () {
+                    if (!navigator.geolocation) {
+                        alert('{{ translate('Geolocation is not supported by your browser.') }}');
+                        return;
+                    }
+
+                    setFindMyStoreState('{{ translate('Locating…') }}', true);
+
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var userLat = position.coords.latitude;
+                        var userLng = position.coords.longitude;
+
+                        var nearestCard = null;
+                        var nearestDistance = Infinity;
+
+                        cards.forEach(function (card) {
+                            var lat = parseFloat(card.getAttribute('data-lat'));
+                            var lng = parseFloat(card.getAttribute('data-lng'));
+                            if (isNaN(lat) || isNaN(lng)) return;
+
+                            var d = distanceKm(userLat, userLng, lat, lng);
+                            if (d < nearestDistance) {
+                                nearestDistance = d;
+                                nearestCard = card;
+                            }
+                        });
+
+                        setFindMyStoreState('{{ translate('Find My Store') }}', false);
+
+                        if (!nearestCard) {
+                            alert('{{ translate('We could not determine your nearest store. Please browse the list below.') }}');
+                            return;
+                        }
+
+                        // Reset filters so the nearest store is guaranteed to be visible
+                        currentFilter = 'all';
+                        if (searchInput) searchInput.value = '';
+                        filterBtns.forEach(function (b) {
+                            b.classList.toggle('active', b.getAttribute('data-filter') === 'all');
+                        });
+                        filterStores();
+
+                        cards.forEach(function (c) { c.classList.remove('ky-branch-nearest'); });
+                        nearestCard.classList.add('ky-branch-nearest');
+
+                        nearestCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                        setTimeout(function () {
+                            nearestCard.classList.remove('ky-branch-nearest');
+                        }, 4000);
+                    }, function () {
+                        setFindMyStoreState('{{ translate('Find My Store') }}', false);
+                        alert('{{ translate('Location access was denied. Please enable location permissions and try again.') }}');
+                    });
                 });
             }
         });
