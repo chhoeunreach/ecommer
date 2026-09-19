@@ -92,6 +92,7 @@ class ComputerController extends Controller
             'variants.*.color' => 'nullable|string|max:255',
             'variants.*.price' => 'required|numeric|min:0',
             'variants.*.stock' => 'required|integer|min:0',
+            'variants.*.warranty_id' => 'nullable|exists:warranties,id',
         ]);
 
         $storages = array_map(function ($v) {
@@ -160,6 +161,7 @@ class ComputerController extends Controller
                     'color' => $vData['color'] ?? null,
                     'price' => $vData['price'],
                     'stock' => $vData['stock'] ?? 0,
+                    'warranty_id' => !empty($vData['warranty_id']) ? $vData['warranty_id'] : null,
                 ]);
             }
 
@@ -203,6 +205,7 @@ class ComputerController extends Controller
             'variants.*.color' => 'nullable|string|max:255',
             'variants.*.price' => 'required|numeric|min:0',
             'variants.*.stock' => 'required|integer|min:0',
+            'variants.*.warranty_id' => 'nullable|exists:warranties,id',
         ]);
 
         $storages = array_map(function ($v) {
@@ -282,6 +285,7 @@ class ComputerController extends Controller
                     'color' => $vData['color'] ?? null,
                     'price' => $vData['price'],
                     'stock' => $vData['stock'] ?? 0,
+                    'warranty_id' => !empty($vData['warranty_id']) ? $vData['warranty_id'] : null,
                 ]);
             }
 

@@ -7,6 +7,7 @@
     $storageOptions = $storageAttr ? \App\Models\AttributeValue::where('attribute_id', $storageAttr->id)->get() : collect();
     $countryOptions = $countryAttr ? \App\Models\AttributeValue::where('attribute_id', $countryAttr->id)->get() : collect();
     $conditionOptions = $conditionAttr ? \App\Models\AttributeValue::where('attribute_id', $conditionAttr->id)->get() : collect();
+    $warrantyOptions = \App\Models\Warranty::all();
 @endphp
 @include('backend.product.products.storage_variant_styles')
 
@@ -234,6 +235,23 @@
                                             : ($stock != null ? $stock->price : $unit_price);
                                     @endphp
                                     <input type="number" lang="en" name="price_{{ $rowKey }}" value="{{ $val_price }}" min="0" step="0.01" class="form-control" required>
+                                </td>
+                                @endforeach
+                            </tr>
+                            <tr>
+                                <td class="attribute-label">{{ translate('Warranty') }}</td>
+                                @foreach($rowKeys as $rowKey)
+                                <td class="variant-column-{{ $rowKey }}">
+                                    @php
+                                        $stock = $rowSource[$rowKey]['stock'] ?? null;
+                                        $val_warranty = request()->has('warranty_'.$rowKey) ? request()->input('warranty_'.$rowKey) : ($stock != null ? $stock->warranty_id : null);
+                                    @endphp
+                                    <select name="warranty_{{ $rowKey }}" class="form-control aiz-selectpicker" data-live-search="true">
+                                        <option value="">{{ translate('No Warranty') }}</option>
+                                        @foreach($warrantyOptions as $warranty)
+                                        <option value="{{ $warranty->id }}" @selected($val_warranty == $warranty->id)>{{ $warranty->getTranslation('text') }}</option>
+                                        @endforeach
+                                    </select>
                                 </td>
                                 @endforeach
                             </tr>

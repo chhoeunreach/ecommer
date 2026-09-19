@@ -5,24 +5,24 @@
     $baseColor = get_setting('base_color', '#1b74e4');
     $baseColor = preg_match('/^#[0-9a-fA-F]{6}$/', (string) $baseColor) ? $baseColor : '#1b74e4';
 @endphp
-<div class="all-cat-theme" style="--all-cat-accent: {{ $baseColor }};">
+<div class="all-cat-theme" style="--all-cat-accent: {{ $baseColor }}; background-color: #f5f7fb; min-height: 100vh;">
 <style>
     .all-cat-hero {
-        background: linear-gradient(135deg, var(--all-cat-accent) 0%, #111723 100%);
-        color: #fff;
-        padding: 3.5rem 0 5rem;
+        background: transparent;
+        color: #0f172a;
+        padding: 3.5rem 0 2.5rem;
     }
 
     .all-cat-hero h1 {
-        font-size: 2rem;
+        font-size: 2.2rem;
         font-weight: 800;
         margin-bottom: .5rem;
-        letter-spacing: -0.5px;
+        letter-spacing: -1px;
     }
 
     .all-cat-hero-sub {
-        opacity: .85;
-        font-size: .95rem;
+        color: #64748b;
+        font-size: 1.05rem;
         margin-bottom: 0;
     }
 
@@ -30,33 +30,30 @@
         background: transparent;
         padding: 0;
         font-size: .9rem;
-        font-weight: 500;
+        font-weight: 600;
         margin-bottom: 0;
     }
 
     .all-cat-hero .breadcrumb-item a {
-        color: rgba(255, 255, 255, .8);
+        color: #64748b;
         text-decoration: none;
+        transition: color 0.2s ease;
     }
 
     .all-cat-hero .breadcrumb-item a:hover {
-        color: #fff;
+        color: var(--all-cat-accent);
     }
 
     .all-cat-hero .breadcrumb-item.active {
-        color: #fff;
-        font-weight: 700;
+        color: #0f172a;
     }
 
     .all-cat-hero .breadcrumb-item+.breadcrumb-item::before {
-        color: rgba(255, 255, 255, .4);
+        color: #cbd5e1;
     }
 
     .all-cat-wrapper {
-        margin-top: -3rem;
-        position: relative;
-        z-index: 5;
-        padding-bottom: 4rem;
+        padding-bottom: 5rem;
     }
 
     .cat-tiles-grid {
@@ -86,152 +83,176 @@
     @media (min-width: 1200px) {
         .cat-tiles-grid {
             grid-template-columns: repeat(6, 1fr);
+            gap: 1.5rem;
         }
     }
 
     .cat-tile {
-        position: relative;
-        display: block;
-        border-radius: 16px;
-        overflow: hidden;
-        aspect-ratio: 1 / 1;
-        background: #f2f3f8;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, .06);
-        transition: transform .25s ease, box-shadow .25s ease;
+        display: flex;
+        flex-direction: column;
+        border-radius: 18px;
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.035);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         text-decoration: none !important;
         cursor: pointer;
+        overflow: hidden;
     }
 
     .cat-tile:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 16px 32px rgba(0, 0, 0, .12);
+        transform: translateY(-5px);
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+        border-color: rgba(51, 144, 243, 0.2);
     }
 
     .cat-tile-media {
-        position: absolute;
-        inset: 0;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        background: #f8fafc;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-bottom: 1px solid rgba(0,0,0,0.02);
     }
 
     .cat-tile-media img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
+        transition: transform 0.4s ease;
     }
 
-    .cat-tile-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, .75) 100%);
+    .cat-tile:hover .cat-tile-media img {
+        transform: scale(1.08);
     }
 
     .cat-tile-info {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        padding: .85rem;
-        color: #fff;
+        padding: 1.25rem 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        flex-grow: 1;
+        justify-content: center;
+        background: #ffffff;
     }
 
     .cat-tile-name {
-        display: block;
-        font-size: .92rem;
+        color: #0f172a;
+        font-size: 1.05rem;
         font-weight: 700;
-        line-height: 1.25;
-        margin-bottom: .3rem;
+        line-height: 1.3;
+        margin-bottom: 0.3rem;
+        transition: color 0.2s ease;
+    }
+
+    .cat-tile:hover .cat-tile-name {
+        color: var(--all-cat-accent);
     }
 
     .cat-tile-count {
-        display: inline-block;
-        font-size: .7rem;
+        color: #64748b;
+        font-size: 0.8rem;
         font-weight: 600;
-        background: rgba(255, 255, 255, .18);
-        backdrop-filter: blur(4px);
-        padding: .15rem .55rem;
-        border-radius: 999px;
     }
 
     .cat-modal .modal-content {
         border: none;
-        border-radius: 20px;
+        border-radius: 24px;
         overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
     }
 
     .cat-modal-close {
         position: absolute;
-        top: 1rem;
-        right: 1rem;
+        top: 1.25rem;
+        right: 1.25rem;
         z-index: 5;
-        background: rgba(255, 255, 255, .18);
-        color: #fff;
+        background: #f1f5f9;
+        color: #475569;
         border: none;
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
-        font-size: 1.25rem;
+        font-size: 1.4rem;
         line-height: 1;
         opacity: 1;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .cat-modal-close:hover {
-        background: rgba(255, 255, 255, .3);
-        color: #fff;
+        background: #e2e8f0;
+        color: #0f172a;
+        transform: scale(1.05);
     }
 
     .cat-modal-header {
         position: relative;
         display: flex;
-        align-items: flex-end;
-        gap: 1rem;
-        padding: 1.75rem;
-        min-height: 150px;
-        background: linear-gradient(135deg, var(--all-cat-accent) 0%, #111723 100%);
-        color: #fff;
+        align-items: center;
+        gap: 1.25rem;
+        padding: 2rem;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        color: #0f172a;
     }
 
     .cat-modal-image {
-        width: 64px;
-        height: 64px;
-        border-radius: 14px;
+        width: 72px;
+        height: 72px;
+        border-radius: 16px;
         overflow: hidden;
         flex-shrink: 0;
-        background: rgba(255, 255, 255, .15);
-        border: 1px solid rgba(255, 255, 255, .3);
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        padding: 0.5rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
     }
 
     .cat-modal-image img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
     }
 
     .cat-modal-heading h3 {
-        font-size: 1.35rem;
+        font-size: 1.4rem;
         font-weight: 800;
-        margin: 0 0 .35rem;
+        margin: 0 0 .25rem;
+        letter-spacing: -0.5px;
     }
 
     .cat-modal-view-all {
-        color: #fff;
-        font-weight: 600;
-        font-size: .85rem;
+        color: var(--all-cat-accent);
+        font-weight: 700;
+        font-size: .9rem;
         text-decoration: none;
-        border-bottom: 1px dashed rgba(255, 255, 255, .6);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: opacity 0.2s ease;
     }
 
     .cat-modal-view-all:hover {
-        color: #fff;
-        border-bottom-style: solid;
+        opacity: 0.8;
+        color: var(--all-cat-accent);
     }
 
     .cat-modal-body {
         max-height: 60vh;
         overflow-y: auto;
-        padding: 1.75rem;
+        padding: 2rem;
+        background: #ffffff;
     }
 
     .cat-modal-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.75rem;
     }
 
     .cat-modal-group:last-child {
@@ -239,14 +260,15 @@
     }
 
     .cat-modal-group-title {
-        font-size: .95rem;
+        font-size: 1rem;
         font-weight: 700;
-        margin-bottom: .6rem;
+        margin-bottom: .8rem;
     }
 
     .cat-modal-group-title a {
-        color: #1b2133;
+        color: #0f172a;
         text-decoration: none;
+        transition: color 0.2s ease;
     }
 
     .cat-modal-group-title a:hover {
@@ -256,23 +278,26 @@
     .cat-modal-chips {
         display: flex;
         flex-wrap: wrap;
-        gap: .5rem;
+        gap: .6rem;
     }
 
     .cat-chip {
-        font-size: .8rem;
-        font-weight: 500;
-        color: #4e5561;
-        background: #f2f3f8;
-        padding: .35rem .8rem;
-        border-radius: 999px;
+        font-size: .85rem;
+        font-weight: 600;
+        color: #475569;
+        background: #f1f5f9;
+        border: 1px solid transparent;
+        padding: .4rem .9rem;
+        border-radius: 99px;
         text-decoration: none !important;
         transition: all .2s ease;
     }
 
     .cat-chip:hover {
-        background: var(--all-cat-accent);
-        color: #fff;
+        background: #ffffff;
+        color: var(--all-cat-accent);
+        border-color: rgba(51, 144, 243, 0.3);
+        box-shadow: 0 4px 10px rgba(52, 144, 243, 0.1);
     }
 
     .cat-modal-empty {
@@ -285,16 +310,33 @@
         text-align: center;
         padding: 3rem 0;
         color: #8f97ab;
+        grid-column: 1 / -1;
     }
 
-    @media (max-width: 575px) {
+    @media (max-width: 767px) {
         .all-cat-hero {
-            padding: 2.5rem 0 4rem;
+            padding: 2.5rem 0 2rem;
             text-align: center;
         }
 
         .all-cat-hero .breadcrumb {
             justify-content: center !important;
+        }
+        
+        .cat-tiles-grid {
+            gap: 1rem;
+        }
+        
+        .cat-tile-media {
+            padding: 1rem;
+        }
+        
+        .cat-tile-info {
+            padding: 1rem 0.5rem;
+        }
+        
+        .cat-tile-name {
+            font-size: 0.95rem;
         }
     }
 </style>
@@ -332,17 +374,16 @@
                     data-name="{{ $category->getTranslation('name') }}"
                     data-image="{{ uploaded_asset($category->banner) }}"
                     data-link="{{ route('products.category', $category->slug) }}">
-                    <span class="cat-tile-media">
+                    <div class="cat-tile-media">
                         <img src="{{ uploaded_asset($category->banner) }}" alt="{{ $category->getTranslation('name') }}"
                             onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder-rect.jpg') }}';">
-                    </span>
-                    <span class="cat-tile-overlay"></span>
-                    <span class="cat-tile-info">
-                        <span class="cat-tile-name">{{ $category->getTranslation('name') }}</span>
+                    </div>
+                    <div class="cat-tile-info">
+                        <div class="cat-tile-name">{{ $category->getTranslation('name') }}</div>
                         @if ($subCount > 0)
-                            <span class="cat-tile-count">{{ $subCount }} {{ translate('Categories') }}</span>
+                            <div class="cat-tile-count">{{ $subCount }} {{ translate('Categories') }}</div>
                         @endif
-                    </span>
+                    </div>
                 </a>
             @empty
                 <div class="cat-empty">{{ translate('No categories found') }}</div>
@@ -385,7 +426,7 @@
         <div class="modal-content">
             <button type="button" class="cat-modal-close" data-dismiss="modal" aria-label="{{ translate('Close') }}">&times;</button>
             <div class="cat-modal-header">
-                <span class="cat-modal-image"><img id="categoryModalImage" src="" alt=""></span>
+                <div class="cat-modal-image"><img id="categoryModalImage" src="" alt=""></div>
                 <div class="cat-modal-heading">
                     <h3 id="categoryModalTitle"></h3>
                     <a id="categoryModalLink" href="#" class="cat-modal-view-all">

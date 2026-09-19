@@ -91,6 +91,22 @@
 
                 <div class="row gutters-12">
                     <div class="col-md-6">
+                        <div class="form-group">
+                            <label>{{ translate('Latitude') }}</label>
+                            <input type="text" inputmode="decimal" name="branches[{{ $index }}][lat]" class="form-control" maxlength="20" value="{{ $field('lat') }}" placeholder="11.5744">
+                            <small class="text-muted">{{ translate('Needed for the store-locator map & "Find my store" feature.') }}</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>{{ translate('Longitude') }}</label>
+                            <input type="text" inputmode="decimal" name="branches[{{ $index }}][lng]" class="form-control" maxlength="20" value="{{ $field('lng') }}" placeholder="104.8722">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row gutters-12">
+                    <div class="col-md-6">
                         <div class="form-group mb-md-0">
                             <label><i class="lab la-facebook-f mr-1"></i>{{ translate('Facebook URL') }}</label>
                             <input type="url" name="branches[{{ $index }}][facebook]" class="form-control" maxlength="1000" value="{{ $field('facebook') }}" placeholder="https://facebook.com/…">

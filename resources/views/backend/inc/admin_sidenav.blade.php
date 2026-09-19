@@ -134,6 +134,24 @@
                                             </a>
                                         </li>
                                         <li class="aiz-side-nav-item">
+                                            <a class="aiz-side-nav-link {{ areActiveRoutes(['admin.upcoming-products.index', 'admin.upcoming-products.create', 'admin.upcoming-products.edit']) ? 'active' : '' }}" href="{{ route('admin.upcoming-products.index') }}">
+                                                <span class="aiz-side-nav-text"
+                                                    style="color: {{ get_setting('navbar_text_color') }}">{{translate('Pre-order & Coming Soon')}}</span>
+                                            </a>
+                                        </li>
+                                        <li class="aiz-side-nav-item">
+                                            <a class="aiz-side-nav-link {{ areActiveRoutes(['admin.pre-order-requests.index']) ? 'active' : '' }}" href="{{ route('admin.pre-order-requests.index') }}">
+                                                <span class="aiz-side-nav-text"
+                                                    style="color: {{ get_setting('navbar_text_color') }}">{{translate('Pre-order Requests')}}</span>
+                                            </a>
+                                        </li>
+                                        <li class="aiz-side-nav-item">
+                                            <a class="aiz-side-nav-link {{ areActiveRoutes(['admin.ipads.index', 'admin.ipads.create', 'admin.ipads.edit']) ? 'active' : '' }}" href="{{ route('admin.ipads.index') }}">
+                                                <span class="aiz-side-nav-text"
+                                                    style="color: {{ get_setting('navbar_text_color') }}">{{translate('iPads')}}</span>
+                                            </a>
+                                        </li>
+                                        <li class="aiz-side-nav-item">
                                             <a class="aiz-side-nav-link {{ areActiveRoutes(['admin.computers.index', 'admin.computers.create', 'admin.computers.edit']) ? 'active' : '' }}" href="{{ route('admin.computers.index') }}">
                                                 <span class="aiz-side-nav-text"
                                                     style="color: {{ get_setting('navbar_text_color') }}">{{translate('Computer')}}</span>
@@ -2105,6 +2123,13 @@
                                         class="aiz-side-nav-link {{ areActiveRoutes(['website.branches.edit'])}}">
                                         <span class="aiz-side-nav-text"
                                             style="color: {{ get_setting('navbar_text_color') }}">{{translate('Branch Locations')}}</span>
+                                    </a>
+                                </li>
+                                <li class="aiz-side-nav-item">
+                                    <a href="{{ route('website.product_card_style.edit') }}"
+                                        class="aiz-side-nav-link {{ areActiveRoutes(['website.product_card_style.edit'])}}">
+                                        <span class="aiz-side-nav-text"
+                                            style="color: {{ get_setting('navbar_text_color') }}">{{translate('Product Card Style')}}</span>
                                     </a>
                                 </li>
                                 <li class="aiz-side-nav-item">

@@ -279,6 +279,24 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/accessories/destroy/{id}', 'destroy')->name('admin.accessories.destroy');
     });
 
+    Route::resource('ipads', App\Http\Controllers\Admin\IpadController::class, ['as' => 'admin'])->except(['destroy']);
+    Route::controller(App\Http\Controllers\Admin\IpadController::class)->group(function () {
+        Route::post('/ipads/update-status', 'update_status')->name('admin.ipads.update_status');
+        Route::get('/ipads/destroy/{id}', 'destroy')->name('admin.ipads.destroy');
+    });
+
+    // Pre-order & Coming Soon
+    Route::resource('upcoming-products', App\Http\Controllers\Admin\UpcomingProductController::class, ['as' => 'admin'])->except(['show', 'destroy']);
+    Route::controller(App\Http\Controllers\Admin\UpcomingProductController::class)->group(function () {
+        Route::post('/upcoming-products/update-status', 'update_status')->name('admin.upcoming-products.update_status');
+        Route::get('/upcoming-products/destroy/{id}', 'destroy')->name('admin.upcoming-products.destroy');
+    });
+    Route::controller(App\Http\Controllers\Admin\PreOrderRequestController::class)->group(function () {
+        Route::get('/pre-order-requests', 'index')->name('admin.pre-order-requests.index');
+        Route::post('/pre-order-requests/update-status', 'update_status')->name('admin.pre-order-requests.update_status');
+        Route::get('/pre-order-requests/destroy/{id}', 'destroy')->name('admin.pre-order-requests.destroy');
+    });
+
     // Computer
     Route::resource('computers', App\Http\Controllers\Admin\ComputerController::class, ['as' => 'admin'])->except(['destroy']);
     Route::controller(App\Http\Controllers\Admin\ComputerController::class)->group(function () {
@@ -554,6 +572,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::controller(BranchSettingsController::class)->group(function () {
             Route::get('/branches', 'edit')->name('website.branches.edit');
             Route::post('/branches', 'update')->name('website.branches.update');
+        });
+
+        Route::controller(App\Http\Controllers\Admin\ProductCardStyleController::class)->group(function () {
+            Route::get('/product-card-style', 'edit')->name('website.product_card_style.edit');
+            Route::post('/product-card-style', 'update')->name('website.product_card_style.update');
         });
 
         // Custom Page

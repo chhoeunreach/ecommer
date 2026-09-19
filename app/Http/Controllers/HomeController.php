@@ -85,9 +85,13 @@ class HomeController extends Controller
 
         $accessories = \App\Models\Accessory::where('status', 1)->latest()->take(8)->get();
         $computers = \App\Models\Computer::with('brand')->where('status', 1)->latest()->take(8)->get();
+        $ipads = \App\Models\Ipad::with('brand')->where('status', 1)->latest()->take(8)->get();
+        $upcoming_products = Cache::remember('home_upcoming_products', 600, function () {
+            return \App\Models\UpcomingProduct::with('brand')->active()->orderBy('sort_order')->latest()->take(16)->get();
+        });
 
         $t0 = microtime(true);
-        $view = view('frontend.' . get_setting('homepage_select') . '.index', compact('featured_categories','hot_categories', 'lang', 'accessories', 'computers'));
+        $view = view('frontend.' . get_setting('homepage_select') . '.index', compact('featured_categories','hot_categories', 'lang', 'accessories', 'computers', 'ipads', 'upcoming_products'));
         $html = $view->render();
         \Illuminate\Support\Facades\Log::info('HOMETIME controller ' . round((microtime(true) - $t0) * 1000) . 'ms render ' . strlen($html) . 'B');
         return $html;

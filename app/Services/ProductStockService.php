@@ -51,6 +51,7 @@ class ProductStockService
                     $product_stock->code = request()->input('code_' . $rowKey);
                     $product_stock->qty = request()->input('qty_' . $rowKey, 0);
                     $product_stock->image = request()->input('img_' . $rowKey);
+                    $product_stock->warranty_id = request()->input('warranty_' . $rowKey) ?: null;
                     $product_stock->save();
                 }
             }
@@ -80,6 +81,7 @@ class ProductStockService
             $product_stock->price       = $stock->price;
             $product_stock->sku         = null;
             $product_stock->qty         = $stock->qty;
+            $product_stock->warranty_id = $stock->warranty_id;
             $product_stock->save();
         }
     }

@@ -1341,8 +1341,17 @@ if (!function_exists('app_timezone')) {
 if (!function_exists('uploaded_asset')) {
     function uploaded_asset($id)
     {
-        if (($asset = Upload::find($id)) != null) {
-            return $asset->external_link == null ? my_asset($asset->file_name) : $asset->external_link;
+        static $cachedAssets = [];
+
+        if ($id) {
+            if (!array_key_exists($id, $cachedAssets)) {
+                $cachedAssets[$id] = Upload::find($id);
+            }
+            $asset = $cachedAssets[$id];
+            
+            if ($asset != null) {
+                return $asset->external_link == null ? my_asset($asset->file_name) : $asset->external_link;
+            }
         }
         return static_asset('assets/img/placeholder.jpg');
     }
@@ -1518,30 +1527,38 @@ if (!function_exists('get_setting')) {
     function get_setting($key, $default = null, $lang = false)
     {
         $request = app()->bound('request') ? app('request') : null;
-        $requestCacheKey = '_business_settings_collection';
+        $requestCacheKey = '_business_settings_dict';
 
         if ($request && $request->attributes->has($requestCacheKey)) {
-            $settings = $request->attributes->get($requestCacheKey);
+            $settingsDict = $request->attributes->get($requestCacheKey);
         } else {
-            // Business settings are edited from either the local app or
-            // Docker, while their cache stores are separate. Reading the
-            // database here prevents Design Studio changes from remaining
-            // stale in the other environment. The request attribute still
-            // ensures this is queried only once per request.
             $settings = BusinessSetting::all();
-
+            $settingsDict = [];
+            foreach ($settings as $setting) {
+                if (!isset($settingsDict[$setting->type])) {
+                    $settingsDict[$setting->type] = [];
+                }
+                $langKey = $setting->lang ?: 'en';
+                $settingsDict[$setting->type][$langKey] = $setting->value;
+            }
             if ($request) {
-                $request->attributes->set($requestCacheKey, $settings);
+                $request->attributes->set($requestCacheKey, $settingsDict);
             }
         }
 
-        if ($lang == false) {
-            $setting = $settings->where('type', $key)->first();
-        } else {
-            $setting = $settings->where('type', $key)->where('lang', $lang)->first();
-            $setting = !$setting ? $settings->where('type', $key)->first() : $setting;
+        if (isset($settingsDict[$key])) {
+            if ($lang !== false && isset($settingsDict[$key][$lang])) {
+                return $settingsDict[$key][$lang];
+            }
+            // fallback to 'en' or first available
+            if (isset($settingsDict[$key]['en'])) {
+                return $settingsDict[$key]['en'];
+            }
+            $first = reset($settingsDict[$key]);
+            return $first !== false ? $first : $default;
         }
-        return $setting == null ? $default : $setting->value;
+
+        return $default;
     }
 }
 
@@ -2892,10 +2909,18 @@ if (!function_exists('get_first_product_image')) {
         $firstPhotoId = reset($photos);
         $image = null;
         if (!empty($firstPhotoId)) {
-            $image = Upload::find($firstPhotoId);
+            static $cachedUploads = [];
+            if (!array_key_exists($firstPhotoId, $cachedUploads)) {
+                $cachedUploads[$firstPhotoId] = Upload::find($firstPhotoId);
+            }
+            $image = $cachedUploads[$firstPhotoId];
         }
         if ($image == null && $thumbnail != null) {
-            $image = Upload::find($thumbnail);
+            static $cachedThumbnails = [];
+            if (!array_key_exists($thumbnail, $cachedThumbnails)) {
+                $cachedThumbnails[$thumbnail] = Upload::find($thumbnail);
+            }
+            $image = $cachedThumbnails[$thumbnail];
         }
         if ($image instanceof \Illuminate\Database\Eloquent\Collection) {
             $image = $image->first();
@@ -3552,19 +3577,23 @@ if (!function_exists('get_all_sale_alert_products')) {
 if (!function_exists('get_custom_labels')) {
     function get_custom_labels($labels) {
         static $hasCustomLabelStatusColumn = null;
+        static $cachedLabels = null;
 
         $labels_array = [];
         if($labels){
             $hasCustomLabelStatusColumn ??= Schema::hasColumn('custom_labels', 'status');
-            $labels = explode(',',$labels);
-            foreach($labels as $label){
-                $label_query = CustomLabel::where('id', $label);
+            if ($cachedLabels === null) {
+                $query = CustomLabel::query();
                 if ($hasCustomLabelStatusColumn) {
-                    $label_query->where('status', 1);
+                    $query->where('status', 1);
                 }
-                $label_data = $label_query->first();
-                if($label_data){
-                    $labels_array[] = $label_data;
+                $cachedLabels = $query->get()->keyBy('id');
+            }
+
+            $labels = explode(',', $labels);
+            foreach($labels as $label){
+                if($cachedLabels->has($label)){
+                    $labels_array[] = $cachedLabels->get($label);
                 }
             }
         }

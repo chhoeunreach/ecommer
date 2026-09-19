@@ -1217,7 +1217,13 @@
             @endif
         @endif
         <!-- Banner Section End -->
- 
+
+        <!-- Pre-order & Coming Soon Start -->
+        @if (isset($upcoming_products) && $upcoming_products->isNotEmpty())
+            @include('frontend.kneayerng_v1.partials.home_upcoming_products')
+        @endif
+        <!-- Pre-order & Coming Soon End -->
+
         <!-- Featured Product & Best Selling Start -->
         @if (get_setting('enable_featured_products') == 1 || get_setting('enable_best_selling_products') == 1)
             <div class="border-bottom ky-product-showcase-shell">
@@ -2016,6 +2022,33 @@
                         <div class="grid-item single-product-item">
                             @include('frontend.' . get_setting('homepage_select') . '.partials.home_computer_box', [
                                 'computer' => $computer
+                            ])
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            <!-- iPads Section -->
+            @if(isset($ipads) && count($ipads) > 0)
+            <div class="mt-5 ky-ipads-section">
+                <div class="ky-ipads-heading">
+                    <div class="ky-ipads-heading__title">
+                        <span class="ky-ipads-heading__icon"><i class="las la-tablet" aria-hidden="true"></i></span>
+                        <div>
+                            <h3>{{ translate('New iPads') }}</h3>
+                            <p>{{ translate('Discover the latest iPads') }}</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('ipads.index') }}" class="ky-ipads-view-all">
+                        <span>{{ translate('View all') }}</span><i class="las la-arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+                <div class="products-wrapper-grid ky-ipads-grid" id="newest-ipads-list">
+                    @foreach ($ipads as $ipad)
+                        <div class="grid-item single-product-item">
+                            @include('frontend.' . get_setting('homepage_select') . '.partials.home_ipad_box', [
+                                'ipad' => $ipad
                             ])
                         </div>
                     @endforeach

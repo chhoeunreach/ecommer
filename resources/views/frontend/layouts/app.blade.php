@@ -71,6 +71,9 @@
     @endif
     <link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ filemtime(public_path('assets/css/aiz-core.css')) }}">
     <link rel="stylesheet" href="{{ static_asset('assets/css/custom-style.css?v=') }}{{ get_setting('current_version') }}-{{ filemtime(public_path('assets/css/custom-style.css')) }}">
+    @if(file_exists(public_path('assets/css/product-card-styles.css')))
+    <link rel="stylesheet" href="{{ static_asset('assets/css/product-card-styles.css?v=') }}{{ filemtime(public_path('assets/css/product-card-styles.css')) }}">
+    @endif
     @if(get_setting('homepage_select') == 'thecore')
     <link rel="stylesheet" href="{{ static_asset('assets/css/thecore.css') }}">
     @endif
@@ -205,6 +208,23 @@
         }
 
         /* Premium animated pills for the main header navigation. */
+        .bottom-background-color-visibility .ml-xl-4.w-100.overflow-hidden {
+            min-width: 0;
+        }
+
+        .bottom-background-color-visibility .hor-swipe {
+            max-width: 100%;
+            min-width: 0;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .bottom-background-color-visibility .hor-swipe::-webkit-scrollbar {
+            display: none;
+        }
+
         .bottom-background-color-visibility .header_menu_links {
             position: relative;
             display: inline-flex !important;
@@ -290,12 +310,6 @@
             box-shadow: 0 3px 8px rgba(0, 0, 0, .18);
             transform: translateY(0) scale(.92);
             transition-duration: 80ms !important;
-        }
-
-        @media (min-width: 1200px) {
-            .bottom-background-color-visibility .ml-xl-4.w-100.overflow-hidden {
-                overflow: visible !important;
-            }
         }
 
         .header-menu-ripple {
@@ -435,7 +449,7 @@
 @yield('style')
 
 </head>
-<body class="aiz-page-{{ get_setting('homepage_select') }}">
+<body class="aiz-page-{{ get_setting('homepage_select') }}" data-card-style="{{ get_setting('product_card_style', 'default') }}">
     <!-- aiz-main-wrapper -->
     <div class="aiz-main-wrapper d-flex flex-column bg-white aiz-{{ get_setting('homepage_select') }}">
         @php
@@ -920,6 +934,9 @@
                 @if (in_array(get_setting('homepage_select'), ['thecore', 'kystor', 'nexa', 'kneayerng_v1']))
                  toggleViewMoreButton();
                 @endif
+            }).fail(function() {
+                // Drop the loading placeholders instead of leaving them on screen forever.
+                $('#section_newest').find('.ky-initial-skeleton-grid').remove();
             });
 
             $.post('{{ route('home.section.auction_products') }}', {

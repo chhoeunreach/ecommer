@@ -18,7 +18,13 @@ class ComputerVariant extends Model
         'color',
         'price',
         'stock',
+        'warranty_id',
     ];
+
+    public function warranty()
+    {
+        return $this->belongsTo(Warranty::class);
+    }
 
     public function computer()
     {

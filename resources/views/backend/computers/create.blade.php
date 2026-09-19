@@ -532,7 +532,8 @@
                 chip: $box.find('.variant-chip-input').val() || '',
                 color: $box.find('.variant-color-select').val() || $box.find('.variant-color-input').val() || '',
                 price: $box.find('.variant-price-input').val() || '',
-                stock: $box.find('.variant-stock-input').val() || ''
+                stock: $box.find('.variant-stock-input').val() || '',
+                warranty_id: $box.find('.variant-warranty-select').val() || ''
             };
         });
     }
@@ -701,6 +702,9 @@
     @foreach (\App\Models\Color::orderBy('name', 'asc')->get() as $key => $color)
         colorCodeMap[@json($color->name)] = @json($color->code);
     @endforeach
+
+    // Each variant picks its own warranty; text is pre-escaped since it's rendered into HTML strings.
+    var warrantyOptions = @json($warranties->map(fn ($w) => ['id' => $w->id, 'text' => e($w->getTranslation('text'))])->values());
 
     function updateVariantHeaderColor(selectEl) {
         captureCurrentInputs();
@@ -964,6 +968,17 @@
                                     <div class="form-group mb-0">
                                         <label class="variant-input-label d-block">{{ translate("Stock") }} <span class="text-danger">*</span></label>
                                         <input type="number" lang="en" min="0" step="1" name="variants[${i}][stock]" class="form-control variant-stock-input" placeholder="e.g. 10" value="${data.stock !== undefined ? data.stock : '10'}" required>
+                                    </div>
+                                </div>
+
+                                <!-- Warranty per variant -->
+                                <div class="col-md-6 mt-3">
+                                    <div class="form-group mb-0">
+                                        <label class="variant-input-label d-block">{{ translate("Warranty") }}</label>
+                                        <select name="variants[${i}][warranty_id]" class="form-control variant-warranty-select">
+                                            <option value="">{{ translate("No Warranty") }}</option>
+                                            ${warrantyOptions.map(w => `<option value="${w.id}" ${String(w.id) === String(data.warranty_id || '') ? 'selected' : ''}>${w.text}</option>`).join('')}
+                                        </select>
                                     </div>
                                 </div>
                             </div>

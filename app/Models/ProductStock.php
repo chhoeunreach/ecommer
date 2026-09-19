@@ -9,10 +9,14 @@ class ProductStock extends Model
 {
     use PreventDemoModeChanges;
 
-    protected $fillable = ['product_id', 'variant', 'sku', 'price', 'qty', 'image', 'country', 'condition', 'storage', 'code'];
+    protected $fillable = ['product_id', 'variant', 'sku', 'price', 'qty', 'image', 'country', 'condition', 'storage', 'code', 'warranty_id'];
     //
     public function product(){
     	return $this->belongsTo(Product::class);
+    }
+
+    public function warranty() {
+        return $this->belongsTo(Warranty::class);
     }
 
     public function wholesalePrices() {

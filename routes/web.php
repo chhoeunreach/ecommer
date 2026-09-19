@@ -294,6 +294,12 @@ Route::resource('subscribers', SubscriberController::class)->only(['store']);
 Route::get('/accessories', [App\Http\Controllers\AccessoryController::class, 'index'])->name('accessories.index');
 Route::get('/accessories/{id}', [App\Http\Controllers\AccessoryController::class, 'show'])->name('accessories.show');
 
+Route::get('/ipads', [App\Http\Controllers\IpadController::class, 'index'])->name('ipads.index');
+Route::get('/ipads/{id}', [App\Http\Controllers\IpadController::class, 'show'])->name('ipads.show');
+
+// Pre-order & Coming Soon
+Route::post('/pre-orders', [App\Http\Controllers\PreOrderRequestController::class, 'store'])->middleware('throttle:10,1')->name('pre-orders.store');
+
 // Computer
 Route::get('/computers', [App\Http\Controllers\ComputerController::class, 'index'])->name('computers.index');
 Route::get('/computers/{id}', [App\Http\Controllers\ComputerController::class, 'show'])->name('computers.show');
