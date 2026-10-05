@@ -1322,6 +1322,15 @@
                                     </a>
                                 </li>
                             @endcan
+                            @can('edit_website_page')
+                                <li class="aiz-side-nav-item">
+                                    <a href="{{ route('website.video_grid.edit') }}"
+                                        class="aiz-side-nav-link {{ areActiveRoutes(['website.video_grid.edit']) }}">
+                                        <span class="aiz-side-nav-text"
+                                            style="color: {{ get_setting('navbar_text_color') }}">{{ translate('Video Grid') }}</span>
+                                    </a>
+                                </li>
+                            @endcan
                             @can('view_all_flash_deals')
                                 <li class="aiz-side-nav-item">
                                     <a href="{{ route('flash_deals.index') }}"

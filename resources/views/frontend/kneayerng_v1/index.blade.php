@@ -932,6 +932,10 @@
         </div>
         <!-- Home Banner End -->
 
+        <!-- Video Grid Start -->
+        @include('frontend.kneayerng_v1.partials.home_video_grid')
+        <!-- Video Grid End -->
+
         <!-- Flash & Todays Deals Start -->
         @php
             $flash_deal = get_featured_flash_deal();

@@ -115,12 +115,12 @@
                         </form>
 
                         <!-- Social Login -->
-                        @if(get_setting('google_login') == 1 || get_setting('facebook_login') == 1 || get_setting('twitter_login') == 1 || get_setting('apple_login') == 1)
+                        @if(google_login_ready() || get_setting('facebook_login') == 1 || get_setting('twitter_login') == 1 || get_setting('apple_login') == 1)
                             <div class="shadcn-divider">
                                 <span>{{ translate('Or join with') }}</span>
                             </div>
                             <div class="row gutters-10">
-                                @if (get_setting('google_login') == 1)
+                                @if (google_login_ready())
                                     <div class="col-6 mb-2">
                                         <a href="{{ route('social.login', ['provider' => 'google']) }}" class="shadcn-social-btn">
                                             <i class="lab la-google text-danger fs-18"></i>

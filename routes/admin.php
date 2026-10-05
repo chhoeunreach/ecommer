@@ -574,6 +574,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
             Route::post('/branches', 'update')->name('website.branches.update');
         });
 
+        Route::controller(App\Http\Controllers\Admin\VideoGridController::class)->group(function () {
+            Route::get('/video-grid', 'edit')->name('website.video_grid.edit');
+            Route::post('/video-grid', 'update')->name('website.video_grid.update');
+            Route::post('/video-grid/preview', 'preview')->name('website.video_grid.preview');
+        });
+
         Route::controller(App\Http\Controllers\Admin\ProductCardStyleController::class)->group(function () {
             Route::get('/product-card-style', 'edit')->name('website.product_card_style.edit');
             Route::post('/product-card-style', 'update')->name('website.product_card_style.update');

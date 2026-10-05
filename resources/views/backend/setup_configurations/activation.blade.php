@@ -71,6 +71,26 @@
                     </div>
                 </div>
 
+                <!-- Single -->
+                <div class="col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+                    <div class="card border border-2 border-gray-200 card-no-shadow has-transition rounded-2 p-3 p-lg-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <img src="{{ static_asset('assets/img/feature-activation/maintainance-mode.svg') }}"
+                                class="flex-shrink-0" alt="Icon">
+                            <label class="aiz-switch aiz-switch-blue mb-0">
+                                <input type="checkbox" onchange="updateSettings(this, 'not_found_mode')"
+                                <?php if (get_setting('not_found_mode') == 1) {
+                                    echo 'checked';
+                                } ?>>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <h6 class="fs-16 fw-semibold mt-3 mb-2">{{ translate('404 Mode') }} </h6>
+                        <span
+                            class="fs-12 fw-400 sub-title">{{ translate('Enable this to show a 404 Not Found page on the whole website. Admin panel stays accessible.') }}</span>
+                    </div>
+                </div>
+
                 <!-- Seller & Vendor -->
                 <div class="col-12">
                     <h5 class="fs-14 fw-bold text-dark text-uppercase mt-3 mb-3">{{ translate('SELLER & VENDOR') }} </h5>

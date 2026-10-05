@@ -877,7 +877,7 @@
                             <p class="text-muted mb-0">{{ translate('Dont have an account?')}}</p>
                             <a href="{{ route('user.registration') }}">{{ translate('Register Now')}}</a>
                         </div>
-                        @if(get_setting('google_login') == 1 ||
+                        @if(google_login_ready() ||
                             get_setting('facebook_login') == 1 ||
                             get_setting('twitter_login') == 1 ||
                             get_setting('apple_login') == 1)
@@ -902,7 +902,7 @@
                                         </a>
                                     </li>
                                 @endif
-                                @if(get_setting('google_login') == 1)
+                                @if(google_login_ready())
                                     <li class="list-inline-item">
                                         <a href="{{ route('social.login', ['provider' => 'google']) }}" class="google">
                                             <i class="lab la-google"></i>

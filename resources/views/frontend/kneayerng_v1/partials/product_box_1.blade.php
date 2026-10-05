@@ -105,6 +105,7 @@
                     <a class="shadcn-cta-btn ky-options-button @if (in_array($product->id, $cart_added)) active @endif"
                         href="javascript:void(0)" onclick="showAddToCartRightCanvas({{ $product->id }})">
                         <i class="las la-sliders-h"></i>
+                        <i class="las la-shopping-cart ky-mobile-options-icon" aria-hidden="true"></i>
                         <span>{{ translate('Select Options') }}</span>
                     </a>
                 @else

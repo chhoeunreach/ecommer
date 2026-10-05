@@ -1386,6 +1386,19 @@ if (!function_exists('my_asset')) {
     }
 }
 
+if (!function_exists('google_login_ready')) {
+    /**
+     * Google login is only usable when it is switched on AND OAuth credentials exist;
+     * otherwise Google answers the redirect with a 403 error page.
+     */
+    function google_login_ready()
+    {
+        return get_setting('google_login') == 1
+            && !empty(config('services.google.client_id'))
+            && !empty(config('services.google.client_secret'));
+    }
+}
+
 if (!function_exists('static_asset')) {
     /**
      * Generate an asset path for the application.

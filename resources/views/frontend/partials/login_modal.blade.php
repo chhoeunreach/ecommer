@@ -62,7 +62,7 @@
                     </div>
                     
                     <!-- Social Login -->
-                    @if (get_setting('google_login') == 1 || get_setting('facebook_login') == 1 || get_setting('twitter_login') == 1 || get_setting('apple_login') == 1)
+                    @if (google_login_ready() || get_setting('facebook_login') == 1 || get_setting('twitter_login') == 1 || get_setting('apple_login') == 1)
                         <div class="separator mb-3">
                             <span class="bg-white px-3 opacity-60">{{ translate('Or Login With') }}</span>
                         </div>
@@ -89,7 +89,7 @@
                                 </li>
                             @endif
                             <!-- Google -->
-                            @if (get_setting('google_login') == 1)
+                            @if (google_login_ready())
                                 <li class="list-inline-item">
                                     <a href="{{ route('social.login', ['provider' => 'google']) }}"
                                         class="google">
